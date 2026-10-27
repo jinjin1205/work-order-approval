@@ -3601,7 +3601,7 @@
   },
   {
     "path": "evidence/R07/report-concurrency.md",
-    "original_sha256": "3a37308e19e5489193dca5a3269c883cccbfb43050aadaf3be7760af5c531ea0",
+    "original_sha256": "82709b32fa2493ba56c42ac6c74b61a2a63c2c26ebdc54261f1d6e85b0ab3c19",
     "published": true,
     "reason": "public copy"
   },
@@ -3614,6 +3614,18 @@
   {
     "path": "evidence/R07/source-manifest.json",
     "original_sha256": "190d1510b2c8d29ceac63a5969cb003d6a03dfd268b1333aeab0cc0ddb2de956",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R07/time-config-binding.md",
+    "original_sha256": "354354a3a852a5d7cda5d652ab3f1ec77944033971cc8f69d83dde917468d45c",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R07/time-config-source-manifest.json",
+    "original_sha256": "44afa926d60ce4510c71443001244b30e955eb92e09101997eb50f507550c222",
     "published": true,
     "reason": "public copy"
   },
@@ -3640,6 +3652,12 @@
     "original_sha256": "a16abef6fd0efe980a82f6881d30968315476d882bad58c29efa14e866d05a1b",
     "published": false,
     "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/发布/B04-time-metrics-2026-10-27-remote.json",
+    "original_sha256": "fc0b99dfeb375301c9f77321d2dfcb6a530922b36fd43d2f0d74da4bfddb2cd6",
+    "published": true,
+    "reason": "public copy"
   },
   {
     "path": "evidence/发布/B19-2026-10-27-remote.json",

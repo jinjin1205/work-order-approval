@@ -1,0 +1,147 @@
+{
+  "date": "2026-10-27",
+  "evidence_level": "static_binding_only_not_runtime_acceptance",
+  "public_source_commit": "7d2e9453c35e217eac38674f359b1fbfa196ee78",
+  "erpnext_upstream_commit": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+  "frappe_fixed_commit": "f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab",
+  "unchanged_product_patch_sha256": "fc68d4af7ab3c74ed84ca898bffebe36b24c5c66041b272ec851e241754214e3",
+  "product_code_changed": false,
+  "schema_or_database_changed": false,
+  "business_tests_run": false,
+  "checked_files": [
+    {
+      "source": "erpnext_maintenance",
+      "path": "erpnext/manufacturing/doctype/manufacturing_settings/manufacturing_settings.json",
+      "sha256": "26cda729b66d7b767ca3e2b8517dd1792ada0cdc23369db28c4df5d56cb02c3d"
+    },
+    {
+      "source": "erpnext_maintenance",
+      "path": "erpnext/manufacturing/doctype/manufacturing_settings/manufacturing_settings.py",
+      "sha256": "21efe343c0f690d351e5fe83304a709637c7f66f75be3e8eb1bcb690355b697a"
+    },
+    {
+      "source": "erpnext_maintenance",
+      "path": "erpnext/manufacturing/doctype/workstation/workstation.py",
+      "sha256": "d30659f7fa0e0fb9310e00970ebc7d9467c292ed056c2d40d5e414e7f03510c8"
+    },
+    {
+      "source": "erpnext_maintenance",
+      "path": "erpnext/manufacturing/doctype/workstation/workstation.json",
+      "sha256": "c0f11f3d33f55ec11ce388012428cec16a594e42d6363279f754699bd7e71638"
+    },
+    {
+      "source": "erpnext_maintenance",
+      "path": "erpnext/manufacturing/doctype/workstation_working_hour/workstation_working_hour.json",
+      "sha256": "e2416038af5d646580876cd48c1d22cc82b0d71cfe6595f4d3b069eede2f99a4"
+    },
+    {
+      "source": "erpnext_maintenance",
+      "path": "erpnext/manufacturing/doctype/downtime_entry/downtime_entry.py",
+      "sha256": "253692ed5202d0bde81bff3c327cb3ea13cb225b374d74ff23027683c365375b"
+    },
+    {
+      "source": "erpnext_maintenance",
+      "path": "erpnext/manufacturing/doctype/downtime_entry/downtime_entry.json",
+      "sha256": "5fb38d6369d00abf2dee8fc8234f686b3c96a96bb5c84eb38dab55f830f46917"
+    },
+    {
+      "source": "erpnext_maintenance",
+      "path": "erpnext/manufacturing/doctype/operation/operation.json",
+      "sha256": "7662eaa37c88484019180e7a32ea242f9372054233d0cdd3ed78321bb3499699"
+    },
+    {
+      "source": "erpnext_maintenance",
+      "path": "erpnext/manufacturing/doctype/job_card/job_card.py",
+      "sha256": "e6db1367a778785ec92a8ce37dab145bdf22c549c08e42889736bf055accdc79"
+    },
+    {
+      "source": "erpnext_maintenance",
+      "path": "erpnext/manufacturing/doctype/job_card/job_card.json",
+      "sha256": "0a9c82618accc7f0d7aeb81aa056680e7810a637c2494ecaee28484337efa379"
+    },
+    {
+      "source": "erpnext_maintenance",
+      "path": "erpnext/manufacturing/doctype/job_card/test_job_card.py",
+      "sha256": "89f91df580ad7b4524f71bd5556289e7e6ced709470865d6e4a458b51a39f313"
+    },
+    {
+      "source": "erpnext_maintenance",
+      "path": "erpnext/manufacturing/doctype/work_order/work_order.py",
+      "sha256": "62344dd188932ea9470458b67b3535bca86d6f8e6d416976fbde47a8a9c6043c"
+    },
+    {
+      "source": "erpnext_maintenance",
+      "path": "erpnext/manufacturing/doctype/work_order_operation/work_order_operation.json",
+      "sha256": "40c67f07851e51dfa87ef4f019da471283f0609ca5e044b563ec6dc4b49b874a"
+    },
+    {
+      "source": "erpnext_maintenance",
+      "path": "erpnext/hooks.py",
+      "sha256": "daf07bd8adb0c735d8458bcced833ef84eb13c601ac259319014ab8466370fd3"
+    },
+    {
+      "source": "fixed_frappe_snapshot",
+      "path": "frappe/__init__.py",
+      "sha256": "4004d1c114d43dd6f36f8f02f0d6b60525593d56b295c8563b8bd4c287a21334"
+    },
+    {
+      "source": "fixed_frappe_snapshot",
+      "path": "frappe/client.py",
+      "sha256": "96fb791dd4e3832601491c7698baac7a35dee1333a198c702f59288503464cf5"
+    },
+    {
+      "source": "fixed_frappe_snapshot",
+      "path": "frappe/permissions.py",
+      "sha256": "efe6de57546d7c59a4c2ebe44fde123bdcdbfd83bbd7ec4bb889c562ecedc73a"
+    },
+    {
+      "source": "fixed_frappe_snapshot",
+      "path": "frappe/model/document.py",
+      "sha256": "173e9c5eb9d4c9fd86569903df71d78f787705af281639f05be05fee6a549aca"
+    },
+    {
+      "source": "fixed_frappe_snapshot",
+      "path": "frappe/model/db_query.py",
+      "sha256": "e016409709d991e7cd3bdb13b7c14373367903dd1b5b6198994314e6d6e08f61"
+    },
+    {
+      "source": "fixed_frappe_snapshot",
+      "path": "frappe/model/base_document.py",
+      "sha256": "1abd07c34abc8abd7e8873b96b1f20c2a4319643bfea82c4a6016fa4af8460b1"
+    },
+    {
+      "source": "fixed_frappe_snapshot",
+      "path": "frappe/core/doctype/user_permission/user_permission.py",
+      "sha256": "326fb2f3ef7e2b19200f9e7a42efa59f9cc3a289ca634d9348e7f7df6bd1753c"
+    }
+  ],
+  "planned_not_existing": [
+    "erpnext/manufacturing/doctype/production_time_rule/production_time_rule.py",
+    "erpnext/manufacturing/doctype/production_time_period/production_time_period.json"
+  ],
+  "checks": {
+    "listed_sources_parse": true,
+    "frappe_hashes_match_previous_fixed_snapshot": true,
+    "existing_calculators_located": true,
+    "planned_apis_absent": true,
+    "new_rule_doctypes_absent": true
+  },
+  "limits": [
+    "Static source and metadata only; no B14/B08 permission or snapshot runtime acceptance",
+    "B04 historic 12-test receipt unchanged, not rerun",
+    "G1/G2/G3 remain open"
+  ],
+  "document_checks": {
+    "relative_links_exist": true,
+    "fenced_blocks_closed": true,
+    "binding_covers_p0_p8_and_limits": true,
+    "documents": {
+      "docs/开发TODO.md": "1ce28068eb953c0e1a99c99ac04ea9cf95676a69dc23b659e02dae98da8cb3d3",
+      "docs/决策与范围.md": "83e3c2eb3d47662c2a2d2ef7f9270e5b494b5020e0e2f2b46562d123eb0bdc1d",
+      "docs/任务卡/01-复用核验与选型.md": "038674e6c8eed3546620e637591f19bc9d02a743e63575734cbb7c06993b4ac5",
+      "docs/任务卡/02-生产与物料闭环.md": "be3a9e27012403741891c315e57efd43652a3edc9d9c78407514276af8b79f1e",
+      "evidence/R07/report-concurrency.md": "82709b32fa2493ba56c42ac6c74b61a2a63c2c26ebdc54261f1d6e85b0ab3c19",
+      "evidence/R07/time-config-binding.md": "354354a3a852a5d7cda5d652ab3f1ec77944033971cc8f69d83dde917468d45c"
+    }
+  }
+}

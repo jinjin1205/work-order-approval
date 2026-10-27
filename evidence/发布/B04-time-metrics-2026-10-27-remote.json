@@ -1,0 +1,30 @@
+{
+  "verified_at": "2026-10-27T17:38:10.056752+08:00",
+  "repository": "https://github.com/jinjin1205/work-order-approval",
+  "branch": "main",
+  "commit": "7d2e9453c35e217eac38674f359b1fbfa196ee78",
+  "remote_main_sha": "7d2e9453c35e217eac38674f359b1fbfa196ee78",
+  "verification": "successful push, fresh shallow clone and live git ls-remote main",
+  "manifest_sha256": "1a2dc2f5d7f3969590dea55d1edf01913687d07e4386144dbaeb9b7fae3ebcbc",
+  "files_including_manifest": 209,
+  "all_manifest_hashes_match": true,
+  "modified_sources_exact": 12,
+  "runtime_verified_source_patch": "fc68d4af7ab3c74ed84ca898bffebe36b24c5c66041b272ec851e241754214e3",
+  "public_source_matches_local_product": true,
+  "publication_worktree_clean": true,
+  "known_credential_and_runtime_data_exclusion_check": "passed before commit",
+  "archive_diff_check": "Non-patch files pass; literal patch context produces whitespace diagnostics, retained byte-exact to product diff",
+  "not_included": [
+    "credentials",
+    "raw runtime documents",
+    "raw logs",
+    "screenshots",
+    "local databases"
+  ],
+  "limitations": [
+    "B04 partial, calculations not connected to B08/B14/B16 UI and persistence",
+    "G1/G2/G3 remain open",
+    "No customer acceptance or CI claim"
+  ],
+  "receipt_note": "Post-push local readback receipt; not recursively recommitted"
+}

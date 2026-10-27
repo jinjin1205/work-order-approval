@@ -153,13 +153,13 @@
     "source": "docs/任务卡/01-复用核验与选型.md",
     "public_path": "docs/任务卡/01-复用核验与选型.md",
     "treatment": "unchanged",
-    "source_sha256": "3d00a36306352ae592d2e026f1dbe34ce9fadf972b1a502b24bade328df6ae14"
+    "source_sha256": "038674e6c8eed3546620e637591f19bc9d02a743e63575734cbb7c06993b4ac5"
   },
   {
     "source": "docs/任务卡/02-生产与物料闭环.md",
     "public_path": "docs/任务卡/02-生产与物料闭环.md",
     "treatment": "personal paths/runtime identifiers removed",
-    "source_sha256": "9af1addbc78b1100e514512d4a52330d03a038351cdac3c2378353746448401a"
+    "source_sha256": "be3a9e27012403741891c315e57efd43652a3edc9d9c78407514276af8b79f1e"
   },
   {
     "source": "docs/任务卡/03-AI与交付.md",
@@ -171,13 +171,13 @@
     "source": "docs/决策与范围.md",
     "public_path": "docs/决策与范围.md",
     "treatment": "personal paths/runtime identifiers removed",
-    "source_sha256": "a8cf91e699929f5b7c259796810691fa318301ee7802c174a451e598f50b8882"
+    "source_sha256": "83e3c2eb3d47662c2a2d2ef7f9270e5b494b5020e0e2f2b46562d123eb0bdc1d"
   },
   {
     "source": "docs/开发TODO.md",
     "public_path": "docs/开发TODO.md",
     "treatment": "unchanged",
-    "source_sha256": "25998625b58ae99c263c9f4c247b7efdc4894b8725c05025e4b2060c0ca2c1fb"
+    "source_sha256": "1ce28068eb953c0e1a99c99ac04ea9cf95676a69dc23b659e02dae98da8cb3d3"
   },
   {
     "source": "docs/验收样例.md",
@@ -465,7 +465,13 @@
     "source": "evidence/R07/report-concurrency.md",
     "public_path": "evidence/R07/report-concurrency.md",
     "treatment": "unchanged",
-    "source_sha256": "3a37308e19e5489193dca5a3269c883cccbfb43050aadaf3be7760af5c531ea0"
+    "source_sha256": "82709b32fa2493ba56c42ac6c74b61a2a63c2c26ebdc54261f1d6e85b0ab3c19"
+  },
+  {
+    "source": "evidence/R07/time-config-binding.md",
+    "public_path": "evidence/R07/time-config-binding.md",
+    "treatment": "unchanged",
+    "source_sha256": "354354a3a852a5d7cda5d652ab3f1ec77944033971cc8f69d83dde917468d45c"
   },
   {
     "source": "evidence/发布/2026-10-27.md",
@@ -886,6 +892,18 @@
     "public_path": "evidence/R05/r02-probe-attempt5.py",
     "treatment": "unchanged",
     "source_sha256": "bebd418f53e027db69fc9888dfc4bf01fc162aab71394832e1e2572c6d9cd774"
+  },
+  {
+    "source": "evidence/R07/time-config-source-manifest.json",
+    "public_path": "evidence/R07/time-config-source-manifest.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "44afa926d60ce4510c71443001244b30e955eb92e09101997eb50f507550c222"
+  },
+  {
+    "source": "evidence/发布/B04-time-metrics-2026-10-27-remote.json",
+    "public_path": "evidence/发布/B04-time-metrics-2026-10-27-remote.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "fc0b99dfeb375301c9f77321d2dfcb6a530922b36fd43d2f0d74da4bfddb2cd6"
   },
   {
     "source": "evidence/B04/time-metrics/closeout-check.json",
