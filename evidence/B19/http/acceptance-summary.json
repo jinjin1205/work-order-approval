@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-27",
+  "scope": "B19 real HTTP against a retained synthetic test-site copy; no product code change",
+  "upstream_commit": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+  "patch_sha256": "9dc8ad795d4c7d4ac84130dfad522e4f0abbeb587e3215653f7bf9ff9c5635a2",
+  "runtime_source_files_match": 14,
+  "requests_recorded": 38,
+  "requests_matching_planned_status": 37,
+  "initial_fixture_precondition_mismatch": 1,
+  "fixture_correction": "Timer initially stopped at native material-transfer validation; continued on another existing no-material task of the same unapproved order. No business guard relaxed.",
+  "completed_assertions": {
+    "six_real_actor_identities": true,
+    "generic_approval_bypasses_denied": true,
+    "native_bulk_sync_http_200_did_not_approve": true,
+    "pending_task_timer_direct_and_indirect_stock_denied": true,
+    "denials_business_facts_unchanged": true,
+    "only_native_seen_flag_changed": true,
+    "two_stage_approval_return_resubmit_cross_team_self_approval_and_stale_page": true,
+    "approval_creates_only_three_pending_tasks_no_execution_facts": true,
+    "authorized_timer_and_stock_submit": true,
+    "stock_quantity_moves_100_0_to_99_1": true,
+    "original_test_site_eleven_tables_unchanged": true,
+    "original_test_site_workflow_count_zero": true
+  },
+  "limits": [
+    "Native bulk exercised the below-20 synchronous rejection/rollback path; no successful bulk approval or queue claim",
+    "Source preservation covers eleven recorded business tables, not every database table",
+    "Dedicated HTTP copy retains workflow and synthetic data; development/customer workflow not activated",
+    "Approved-basis changes, attachments, complete audit reconstruction, Chinese UI/mobile and notification remain unfinished",
+    "G1 quantities, G2 original reporting and minimal roles, G3 full concurrency remain open"
+  ],
+  "local_evidence_sha256": {
+    "fixture-http.json": "c7955bb153437191fc8f63e901863951ea275b9af2d6f0f586261f355ea35359",
+    "denied-http.json": "89c701c23570cbe1b9c7fad29b2e40e2b8ebaf83831d16233c4b43db8dc468b3",
+    "denied-tail-http.json": "38b9a4abb8cca93daa2807b8b9d71add6af354b5b6468e0d1f6e293f0af7e36d",
+    "approval-http.json": "684a240c3dcd5c520ed551f7e483afa4e2015ebd2b09ae97723148e45dea7999",
+    "execute-http.json": "540b066c55aeffac45792d261cdee1b2406a15f732b75ad3857c2a1263c39173",
+    "before.json": "922a479eb2f11ee0b20d08e3174cedbb14f8dee699af56b14cf10d54cfb94898",
+    "after-deny.json": "00e478f211d31ad2482889ba9a02ca5839bfc50ebc391e0727c35c886c7203ea",
+    "after-approval.json": "d492f2bbd0cfe7024f900a3e7c00e4c01671c460eb57f2f70f865f039ed1e076",
+    "after-execution.json": "6d382e75e94eb655adc836d6f398e8de4d3e642fcf8317672fd82c1674bd2e97",
+    "source-before.log": "5367b4bd588955306b8fb3ac28c72c5d6a13e226b69575c7a9f8231538a03eff",
+    "source-after.log": "de1dcae16b8810c316d4dfe775de7fbb077ba72acaedd57218bd9d1676921a12",
+    "source-web.json": "5a2b0759161ec132207167e7c58c5b747b5713b7d51ae6fe725d9a929c83367c"
+  }
+}

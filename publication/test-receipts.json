@@ -98,7 +98,7 @@
       "seconds": "110.727",
       "result": "OK",
       "executed_on": "2026-10-27",
-      "group": "B19 batch-save and history current",
+      "group": "B19 batch-save and history previous batch",
       "source_patch_sha256": "9dc8ad795d4c7d4ac84130dfad522e4f0abbeb587e3215653f7bf9ff9c5635a2"
     },
     {
@@ -108,7 +108,7 @@
       "seconds": "7.185",
       "result": "OK",
       "executed_on": "2026-10-27",
-      "group": "B19 batch-save and history current",
+      "group": "B19 batch-save and history previous batch",
       "source_patch_sha256": "9dc8ad795d4c7d4ac84130dfad522e4f0abbeb587e3215653f7bf9ff9c5635a2"
     }
   ],

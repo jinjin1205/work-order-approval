@@ -1,5 +1,7 @@
 # B01 独立中文开发环境
 
+**2026-10-27续接提示：**当前已进入B19局部验证，固定底座不变。HTTP测试另用 `xgd-b19-http.localhost` 合成副本和本机18088，原开发/测试站点不激活审批；本批完成后专用Web已停，副本与证据保留，不重复建库。准备/运行入口及失败修正见[B19 HTTP记录](../evidence/B19/http/run-record.md)。当前源码清单为 `checks/b19-history-source-manifest.json`，以下B01/B02/B10命令与状态保留为对应阶段记录，不能当成最新源码清单。
+
 仅用于本机开发与合成验收，不是客户生产部署包。固定ERPNext15.124.1/Frappe15.124.0，源码维护分支`codex/xgd-maintenance`。B01阶段未改业务代码；当前已进入B02辅助读取与B10单位子项，Frappe仍保持原版。
 
 - 开发网页：`http://127.0.0.1:18086`，站点`xgd-dev.localhost`。

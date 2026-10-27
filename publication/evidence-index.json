@@ -1182,6 +1182,186 @@
     "reason": "local raw execution evidence; not uploaded"
   },
   {
+    "path": "evidence/B19/http/acceptance-summary.json",
+    "original_sha256": "3266b8b951079043d9dd436a2bdf4795e7ce1c9cd77c68d89c5fdece73e5f3aa",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B19/http/after-approval-stderr.log",
+    "original_sha256": "6dd7f7099d837d6c43b0e3efd3a02dcbd4013ff8202fb7eeaeddfe1d2e7fc178",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/http/after-approval.json",
+    "original_sha256": "d492f2bbd0cfe7024f900a3e7c00e4c01671c460eb57f2f70f865f039ed1e076",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/http/after-deny-stderr.log",
+    "original_sha256": "46558afdbd4b4f230f4ad37b0d635aeabda0a0f37d8414f7c2d5df7e3b9efcdb",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/http/after-deny.json",
+    "original_sha256": "00e478f211d31ad2482889ba9a02ca5839bfc50ebc391e0727c35c886c7203ea",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/http/after-execution-stderr.log",
+    "original_sha256": "fd638a8f00347b9b117af600cf4b1eb1cda326c63479b0d07504dd0b5f7ad04c",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/http/after-execution.json",
+    "original_sha256": "6d382e75e94eb655adc836d6f398e8de4d3e642fcf8317672fd82c1674bd2e97",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/http/after-partial-deny-detailed-stderr.log",
+    "original_sha256": "a1095311ca44717fa94b057239ede38f317db86e6e20005601a40007849d4856",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/http/after-partial-deny-detailed.json",
+    "original_sha256": "00e478f211d31ad2482889ba9a02ca5839bfc50ebc391e0727c35c886c7203ea",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/http/after-partial-deny-stderr.log",
+    "original_sha256": "221fbc1bd2033dfcc0cb460ae7c8e91cb97649ce89723fe4f9fff7f4f21db1c7",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/http/after-partial-deny.json",
+    "original_sha256": "5b13593cbfdfa10f0d92c173069c49b9dd1850b998c0fd89718074a007d29f65",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/http/approval-http.json",
+    "original_sha256": "684a240c3dcd5c520ed551f7e483afa4e2015ebd2b09ae97723148e45dea7999",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/http/before-stderr.log",
+    "original_sha256": "a4a2b3502ca2926fe087a54970ae7b1ebf8c7eca40de00965224872c4fc53268",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/http/before.json",
+    "original_sha256": "922a479eb2f11ee0b20d08e3174cedbb14f8dee699af56b14cf10d54cfb94898",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/http/clone-fixed.log",
+    "original_sha256": "2fce3cd9c9789fdeee000620f034ba18f1ccef11c504eac871e35dcd362187e7",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/http/clone.log",
+    "original_sha256": "e1a4a22f940b471ffd72c179b06f4062d7e6b557d33fef721ac003b674150ae4",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/http/copy-after-setup-error.log",
+    "original_sha256": "406feae56da7ddfafa16c8eb205cfab2635bec306cf3356141c1ec349e594c2c",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/http/denied-http.json",
+    "original_sha256": "89c701c23570cbe1b9c7fad29b2e40e2b8ebaf83831d16233c4b43db8dc468b3",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/http/denied-tail-http.json",
+    "original_sha256": "38b9a4abb8cca93daa2807b8b9d71add6af354b5b6468e0d1f6e293f0af7e36d",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/http/document-check.json",
+    "original_sha256": "73d7ee42e63a7bb523b27af3ecaf5455db4fff80867672fc6d8793f46de4b5b9",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B19/http/execute-http.json",
+    "original_sha256": "540b066c55aeffac45792d261cdee1b2406a15f732b75ad3857c2a1263c39173",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/http/fixture-http.json",
+    "original_sha256": "c7955bb153437191fc8f63e901863951ea275b9af2d6f0f586261f355ea35359",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/http/review.md",
+    "original_sha256": "2ab3ab000ebfe9c288f12ecb1e3afeb871d431a3f3f861804bc81b726d2baec0",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B19/http/run-record.md",
+    "original_sha256": "29ed1597986aa3dc3d221ba56c952f2e13f7e87cb4d514443740df402dbce693",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B19/http/server.log",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/http/setup-fixed.log",
+    "original_sha256": "37797b29d311fe2e90515a96057f2c7aba6cd72974973f75e8a707a52d523cb6",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/http/setup.log",
+    "original_sha256": "d7932e28a76b41026d31eed6f5b346b4616bcd3a380e344ad25c0e1b627c4eae",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/http/source-after.log",
+    "original_sha256": "de1dcae16b8810c316d4dfe775de7fbb077ba72acaedd57218bd9d1676921a12",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/http/source-before.log",
+    "original_sha256": "5367b4bd588955306b8fb3ac28c72c5d6a13e226b69575c7a9f8231538a03eff",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/http/source-web.json",
+    "original_sha256": "5a2b0759161ec132207167e7c58c5b747b5713b7d51ae6fe725d9a929c83367c",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
     "path": "evidence/B19/locking-results.log",
     "original_sha256": "8692bb85ac6b6516a5eef97793fd2e5ba6568ab21af217694384ae835e643526",
     "published": false,
@@ -1909,7 +2089,7 @@
   },
   {
     "path": "evidence/R07/approval-binding.md",
-    "original_sha256": "bc085f6c550e9e70538125633dbbd0d7559f0183944db01d8204c7cbcb6297f9",
+    "original_sha256": "dbcf843a643027cfdd1053367cb341e8f3280afb3af60801d6ad61718e9eb559",
     "published": true,
     "reason": "public copy"
   },
@@ -1921,7 +2101,7 @@
   },
   {
     "path": "evidence/R07/card-binding.md",
-    "original_sha256": "335c216e842b6165d1c65d1c0669b958321d637b0837635335c698a2c9b9952e",
+    "original_sha256": "4daf94166176be66102fe6e75d32585a4b2038a413eba687ebf07eb51d843bb5",
     "published": true,
     "reason": "public copy"
   },
@@ -1978,5 +2158,11 @@
     "original_sha256": "fa85c9e35b0c11d958ef88a97157e40341e6ee50e2f9aaa99e087e18f74e7757",
     "published": true,
     "reason": "public copy"
+  },
+  {
+    "path": "evidence/发布/B19-history-2026-10-27-remote.json",
+    "original_sha256": "52de709ce3b12a95d1e272f1274dd28b6b0e39dd43de76099faff57fe32567bc",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
   }
 ]
