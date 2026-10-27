@@ -1969,7 +1969,7 @@
   },
   {
     "path": "evidence/B08/implementation/run-record.md",
-    "original_sha256": "c552fe2f586a4ba37febcdcfd97b5582ac2934923597b4606b266fcb42740a16",
+    "original_sha256": "d399219b77834c98cdf466d957468ec57b306b630f2b22ae1b264cc96b9aa0e6",
     "published": true,
     "reason": "public copy"
   },
@@ -4580,6 +4580,12 @@
   {
     "path": "evidence/发布/B04-time-metrics-2026-10-27-remote.json",
     "original_sha256": "fc0b99dfeb375301c9f77321d2dfcb6a530922b36fd43d2f0d74da4bfddb2cd6",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/发布/B08-2026-10-27-519759e-remote.json",
+    "original_sha256": "4de2be84634c5cdd60e2c217b26fec11a30eee6153a2db76ebfa39f1b561224a",
     "published": true,
     "reason": "public copy"
   },

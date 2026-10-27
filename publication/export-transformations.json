@@ -243,7 +243,7 @@
     "source": "docs/任务卡/02-生产与物料闭环.md",
     "public_path": "docs/任务卡/02-生产与物料闭环.md",
     "treatment": "personal paths/runtime identifiers removed",
-    "source_sha256": "f48cffc75c0e8600e63d86487bae0876a0784de1a54fa8d54c85d9775916392c"
+    "source_sha256": "32a9bb13dc7c1eaa73f6a388812e77ad30ac0e273ca6f2c034b5a6be47047c7d"
   },
   {
     "source": "docs/任务卡/03-AI与交付.md",
@@ -261,7 +261,7 @@
     "source": "docs/开发TODO.md",
     "public_path": "docs/开发TODO.md",
     "treatment": "unchanged",
-    "source_sha256": "cf5ced108cb020938ef848f86fd1413267557b87c50dbeec0b99a9cb6c7970b5"
+    "source_sha256": "a48070b93b5378836f2f15efa96caaa679d13e3dd7a116665bec3599a914f6e4"
   },
   {
     "source": "docs/验收样例.md",
@@ -315,7 +315,7 @@
     "source": "evidence/B08/implementation/run-record.md",
     "public_path": "evidence/B08/implementation/run-record.md",
     "treatment": "unchanged",
-    "source_sha256": "c552fe2f586a4ba37febcdcfd97b5582ac2934923597b4606b266fcb42740a16"
+    "source_sha256": "d399219b77834c98cdf466d957468ec57b306b630f2b22ae1b264cc96b9aa0e6"
   },
   {
     "source": "evidence/B08/native-fact/run-record.md",
@@ -1120,6 +1120,12 @@
     "public_path": "evidence/R05/r02-probe-attempt5.py",
     "treatment": "unchanged",
     "source_sha256": "bebd418f53e027db69fc9888dfc4bf01fc162aab71394832e1e2572c6d9cd774"
+  },
+  {
+    "source": "evidence/发布/B08-2026-10-27-519759e-remote.json",
+    "public_path": "evidence/发布/B08-2026-10-27-519759e-remote.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "4de2be84634c5cdd60e2c217b26fec11a30eee6153a2db76ebfa39f1b561224a"
   },
   {
     "source": "evidence/B08/implementation/acceptance-summary.json",
