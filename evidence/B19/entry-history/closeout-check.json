@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-27",
+  "upstream_commit": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+  "previous_publication_commit": "da8e70567be6c87c6782e9c6a96fdfbbb351e71f",
+  "patch_sha256": "9dc8ad795d4c7d4ac84130dfad522e4f0abbeb587e3215653f7bf9ff9c5635a2",
+  "checked_source_files": 14,
+  "source_matches": true,
+  "old_business_tables_unchanged": 11,
+  "persisted_test_workflows": 0,
+  "old_approval_fields_empty": true,
+  "tests": {
+    "fixed-results.log": {
+      "count": 14,
+      "seconds": 110.727,
+      "result": "OK",
+      "log_sha256": "ccc346afcb3f466a750fdba8cc296fc4a686a70d2fb50e886345c60f37722ccf"
+    },
+    "approval-regression.log": {
+      "count": 1,
+      "seconds": 7.185,
+      "result": "OK",
+      "log_sha256": "16391023dea15f8e79a6f19b63874b1fd22edede99e28db0fa27b0b8861ce73a"
+    }
+  },
+  "real_http_verified": false,
+  "internal_commit_bulk_workflow_verified": false,
+  "attachments_verified": false,
+  "business_acceptance": false,
+  "G1_G2_G3": "not passed"
+}

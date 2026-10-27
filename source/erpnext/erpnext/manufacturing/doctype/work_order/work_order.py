@@ -106,6 +106,33 @@ def check_production_execution(work_order, *, require_team=False, material_retur
 	return order
 
 
+def protect_production_approval_history(doc, method):
+	"""Keep native audit rows and their parent once this production order has entered approval."""
+	if method == "validate" and doc.is_new():
+		return
+
+	link_fields = {
+		"Comment": ("reference_doctype", "reference_name"),
+		"Version": ("ref_doctype", "docname"),
+	}.get(doc.doctype)
+	orders = set()
+	# Use the stored reference as well: changing the parent must not detach protected history.
+	for record in (doc.get_doc_before_save(), doc):
+		if not record:
+			continue
+		if doc.doctype == "Work Order":
+			orders.add(record.name)
+		elif record.get(link_fields[0]) == "Work Order" and record.get(link_fields[1]):
+			orders.add(record.get(link_fields[1]))
+
+	for name in orders:
+		order = frappe.get_doc("Work Order", name)
+		if order.get("approval_requested_by") and frappe.db.exists("Comment", {
+			"reference_doctype": "Work Order", "reference_name": name, "comment_type": "Workflow",
+		}):
+			frappe.throw("工单已进入审批，原单及历史记录不能改写、删除或改挂；请追加说明并保留原记录", frappe.PermissionError)
+
+
 @frappe.whitelist()
 def apply_production_approval(work_order: str, action: str, expected_modified: str, reason: str | None = None):
 	"""Bind a viewed revision and three separate actors to the native Workflow transaction."""

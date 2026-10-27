@@ -1,4 +1,4 @@
-"""Restore pinned upstream source plus the exact six published modifications."""
+"""Restore pinned upstream source plus the exact published modifications."""
 import hashlib
 import json
 import subprocess
@@ -28,4 +28,4 @@ for name, hashes in lock["files"].items():
         raise SystemExit("公开修改文件哈希不一致：" + name)
 for name in lock["files"]:
     (destination / name).write_bytes((root / "source/erpnext" / name).read_bytes())
-print("完整维护源码已准备：固定上游提交 + 6个已验证修改文件；未启动服务。")
+print(f"完整维护源码已准备：固定上游提交 + {len(lock['files'])}个已验证修改文件；未启动服务。")

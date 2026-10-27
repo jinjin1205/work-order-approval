@@ -1,0 +1,17 @@
+{
+  "verified_at": "2026-10-27T12:03:21.070268+08:00",
+  "repository": "https://github.com/jinjin1205/work-order-approval",
+  "branch": "main",
+  "verified_commit": "da8e70567be6c87c6782e9c6a96fdfbbb351e71f",
+  "method": "Fresh GitHub clone; HEAD equals pushed commit; every published file hash and exact six current source files compared",
+  "tracked_files": 124,
+  "content_hashes_verified": 123,
+  "manifest_self_verified_via_git_commit": true,
+  "source_files_exact": 6,
+  "patch_sha256": "491dfd65b6115962465172835b85e24e5eea20167c74b8546bb110299f5d7dfd",
+  "missing_or_extra_files": 0,
+  "hash_mismatches": 0,
+  "publication_checkout_clean": true,
+  "scope": "B19 approval core and execution gates, task cards, allowlisted scripts and sanitized evidence; no raw runtime data or credentials exported; not customer acceptance or CI",
+  "next": "B19 actual HTTP/batch entries, then approved-basis change and history protection within existing card; G1/G2/G3 remain open"
+}

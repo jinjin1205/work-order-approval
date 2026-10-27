@@ -337,6 +337,151 @@ class TestWorkOrderApproval(FrappeTestCase):
 		self.assertEqual(self.order.qty, 10)
 
 
+class TestWorkOrderApprovalHistory(FrappeTestCase):
+	"""Native batch-save and history APIs, within the existing rollback fixture."""
+
+	def setUp(self):
+		from frappe.permissions import add_permission, update_permission_property
+
+		self.fixture = TestWorkOrderApproval("test_00_fixture_runnable")
+		self.addCleanup(self.fixture.doCleanups)
+		self.fixture.setUp()
+		frappe.set_user("Administrator")
+		for dt in ("Version", "Work Order", "Comment"):
+			add_permission(dt, self.fixture.roles[0], ptype="read")
+			for permission in ("write", "delete"):
+				update_permission_property(dt, self.fixture.roles[0], 0, permission, 1)
+		update_permission_property("Comment", self.fixture.roles[0], 0, "create", 1)
+		# Document._save disables Version by default while in_test; exercise real audit creation.
+		in_test = frappe.flags.in_test
+		try:
+			frappe.flags.in_test = False
+			self.fixture.ready_for_review()
+		finally:
+			frappe.flags.in_test = in_test
+		self.order = self.fixture.order
+		self.comment = frappe.get_last_doc("Comment", filters={
+			"reference_doctype": "Work Order", "reference_name": self.order.name, "comment_type": "Comment"})
+		self.version = frappe.get_last_doc("Version", filters={"ref_doctype": "Work Order", "docname": self.order.name})
+		frappe.set_user(self.fixture.users["operator"])
+
+	def test_00_history_fixture_runnable(self):
+		self.assertIn("审批动作：送审", self.comment.content)
+		self.assertIn("workflow_state", self.version.data)
+		self.assertEqual(self.order.workflow_state, "待审核")
+		self.assertTrue(frappe.has_permission("Comment", "write", doc=self.comment))
+		self.assertTrue(frappe.has_permission("Version", "write", doc=self.version))
+
+	def test_batch_update_cannot_approve(self):
+		from frappe.client import bulk_update
+
+		frappe.set_user(self.fixture.users["reviewer"])
+		result = bulk_update(frappe.as_json([{"doctype": "Work Order", "docname": self.order.name,
+			"workflow_state": "待签批", "approval_reviewed_by": frappe.session.user}]))
+		self.assertEqual(len(result["failed_docs"]), 1)
+		self.order.reload()
+		self.assertEqual(self.order.workflow_state, "待审核")
+		self.assertFalse(self.order.approval_reviewed_by)
+
+	def test_batch_update_cannot_modify_pending_basis(self):
+		from frappe.client import bulk_update
+
+		result = bulk_update(frappe.as_json([{"doctype": "Work Order", "docname": self.order.name, "qty": 99}]))
+		self.assertEqual(len(result["failed_docs"]), 1)
+		self.order.reload()
+		self.assertEqual(self.order.qty, 10)
+
+	def test_batch_update_allows_withdrawn_draft(self):
+		from frappe.client import bulk_update
+
+		self.fixture.act("operator", "撤回", reason="调整计划")
+		result = bulk_update(frappe.as_json([{"doctype": "Work Order", "docname": self.order.name, "qty": 11}]))
+		self.assertEqual(result["failed_docs"], [])
+		self.order.reload()
+		self.assertEqual(self.order.qty, 11)
+
+	def test_approval_comment_cannot_be_rewritten(self):
+		original = self.comment.content
+		self.comment.content = "替换原审批意见"
+		with self.assertRaises(frappe.PermissionError):
+			self.comment.save()
+		self.comment.reload()
+		self.assertEqual(self.comment.content, original)
+
+	def test_approval_comment_cannot_be_deleted(self):
+		with self.assertRaises(frappe.PermissionError):
+			frappe.delete_doc("Comment", self.comment.name)
+		self.assertTrue(frappe.db.exists("Comment", self.comment.name))
+
+	def test_native_comment_editor_cannot_rewrite_approval(self):
+		from frappe.desk.form.utils import update_comment
+
+		original = self.comment.content
+		with self.assertRaises(frappe.PermissionError):
+			update_comment(self.comment.name, "替换原审批意见")
+		self.comment.reload()
+		self.assertEqual(self.comment.content, original)
+
+	def test_approval_comment_cannot_be_detached(self):
+		self.comment.reference_doctype = None
+		self.comment.reference_name = None
+		with self.assertRaises(frappe.PermissionError):
+			self.comment.save()
+		self.comment.reload()
+		self.assertEqual(self.comment.reference_name, self.order.name)
+
+	def test_approval_version_cannot_be_rewritten(self):
+		original = self.version.data
+		self.version.data = "{}"
+		with self.assertRaises(frappe.PermissionError):
+			self.version.save()
+		self.version.reload()
+		self.assertEqual(self.version.data, original)
+
+	def test_approval_version_cannot_be_deleted(self):
+		with self.assertRaises(frappe.PermissionError):
+			frappe.delete_doc("Version", self.version.name)
+		self.assertTrue(frappe.db.exists("Version", self.version.name))
+
+	def test_approval_version_cannot_be_detached(self):
+		self.version.ref_doctype = "Item"
+		self.version.docname = self.order.production_item
+		with self.assertRaises(frappe.PermissionError):
+			self.version.save()
+		self.version.reload()
+		self.assertEqual(self.version.docname, self.order.name)
+
+	def test_withdrawn_order_with_history_cannot_be_deleted(self):
+		self.fixture.act("operator", "撤回", reason="调整计划")
+		with self.assertRaises(frappe.PermissionError):
+			frappe.delete_doc("Work Order", self.order.name)
+		self.assertTrue(frappe.db.exists("Work Order", self.order.name))
+
+	def test_append_comment_and_unrelated_comments_still_work(self):
+		note = self.order.add_comment("Comment", "补充说明不覆盖原记录")
+		self.assertTrue(frappe.db.exists("Comment", note.name))
+		unrelated = frappe.get_doc({"doctype": "Comment", "comment_type": "Comment", "content": "普通评论"}).insert()
+		unrelated.content = "普通评论修改"
+		unrelated.save()
+		frappe.delete_doc("Comment", unrelated.name)
+		self.assertFalse(frappe.db.exists("Comment", unrelated.name))
+
+	def test_unrelated_versions_and_unsent_draft_keep_native_permissions(self):
+		frappe.set_user("Administrator")
+		unrelated = frappe.get_doc({"doctype": "Version", "ref_doctype": "Item",
+			"docname": self.order.production_item, "data": '{"changed": []}'}).insert()
+		frappe.set_user(self.fixture.users["operator"])
+		unrelated.data = '{"added": []}'
+		unrelated.save()
+		frappe.delete_doc("Version", unrelated.name)
+		self.assertFalse(frappe.db.exists("Version", unrelated.name))
+		draft = make_wo_order_test_record(**self.fixture.order_args)
+		draft.production_team = self.fixture.teams[0]
+		draft.insert()
+		frappe.delete_doc("Work Order", draft.name)
+		self.assertFalse(frappe.db.exists("Work Order", draft.name))
+
+
 def make_approval_execution_fixture(test_case, *, stock=False):
 	"""Reuse B19 setup, adding genuine pre-activation tasks and stock in the same rollback."""
 	fixture = TestWorkOrderApproval()
