@@ -31,7 +31,7 @@ def save_private(name, value):
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("action", choices=("clone", "setup", "source-check", "copy-check", "snapshot"))
+parser.add_argument("action", choices=("clone", "setup", "source-check", "copy-check", "snapshot", "ui-setup"))
 parser.add_argument("--reuse-backup", action="store_true", help="Resume only after inspecting a failed clone before target creation")
 args = parser.parse_args()
 os.umask(0o077)
@@ -143,6 +143,58 @@ else:
                 frappe.db.commit()
                 print(json.dumps({"target": TARGET, "fixture_committed": True, "actors": len(users),
                     "pending_order": fixture.order.workflow_state, "source_site_untouched": True}))
+            elif args.action == "ui-setup":
+                assert not (PRIVATE / "ui-access.json").exists(), "Chinese fixture already exists; do not repeat preparation"
+                from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
+                from frappe.permissions import update_permission_property
+                from frappe.utils.password import update_password
+                import secrets
+
+                fixture = json.loads((PRIVATE / "fixture.json").read_text())
+                save_private("ui-before.json", snapshot())
+                create_custom_fields({"Work Order": [dict(fieldname="previous_work_order", label="剩余需求来源工单",
+                    fieldtype="Link", options="Work Order", no_copy=1)]}, update=False)
+                workflow = frappe.get_doc("Workflow", "生产工单两级审批")
+                assert workflow.is_active and workflow.document_type == "Work Order"
+                for action in ("终止", "取消修订"):
+                    if not frappe.db.exists("Workflow Action Master", action):
+                        frappe.get_doc({"doctype": "Workflow Action Master", "workflow_action_name": action}).insert()
+                if not frappe.db.exists("Workflow State", "已取消"):
+                    frappe.get_doc({"doctype": "Workflow State", "workflow_state_name": "已取消"}).insert()
+                if not any(row.state == "已取消" for row in workflow.states):
+                    workflow.append("states", dict(state="已取消", doc_status="2", allow_edit="生产工单签批", send_email=0))
+                expected = [(state, "终止", "终止", "生产工单发起", 1)
+                    for state in ("草稿", "待审核", "待签批", "退回")]
+                expected.append(("已批准", "取消修订", "已取消", "生产工单签批", 0))
+                for state, action, target, role, own in expected:
+                    if not any(row.state == state and row.action == action for row in workflow.transitions):
+                        workflow.append("transitions", dict(state=state, action=action, next_state=target,
+                            allowed=role, allow_self_approval=own))
+                workflow.save()
+                update_permission_property("Work Order", "生产工单签批", 0, "cancel", 1)
+                access = {"site": TARGET, "base_url": fixture["base_url"], "users": {}}
+                labels = dict(operator="操作工", reviewer="班组长", director="生产厂长", warehouse="线边仓管", other="其他班组长", outsider="无权账号")
+                for role, credentials in fixture["users"].items():
+                    password = secrets.token_urlsafe(24)
+                    user = frappe.get_doc("User", credentials["email"])
+                    user.first_name = labels[role]
+                    user.language = "zh"
+                    user.save()
+                    update_password(user.name, password, logout_all_sessions=False)
+                    access["users"][role] = {"email": user.name, "password": password}
+                frappe.set_user(fixture["users"]["operator"]["email"])
+                template = frappe.get_doc("Work Order", fixture["order"])
+                created = []
+                for _ in range(2):
+                    draft = frappe.copy_doc(template, ignore_no_copy=False)
+                    draft.insert()
+                    assert draft.docstatus == 0 and draft.workflow_state == "草稿"
+                    created.append(draft.name)
+                access["draft_orders"] = created
+                frappe.db.commit()
+                save_private("ui-access.json", access)
+                print(json.dumps({"target": TARGET, "draft_orders_created": len(created), "actors": len(access["users"]),
+                    "workflow_updated_only_in_retained_synthetic_copy": True, "credentials_printed": False}))
             else:
                 fixture = json.loads((PRIVATE / "fixture.json").read_text())
                 result = {"order": frappe.get_doc("Work Order", fixture["order"]).as_dict(),

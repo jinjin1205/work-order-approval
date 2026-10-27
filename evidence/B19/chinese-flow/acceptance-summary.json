@@ -1,0 +1,65 @@
+{
+  "date": "2026-10-27",
+  "patch_sha256": "a0e334eee289144d99f35c4907e426227cecc5879e9a99cfa03f58790e0899dd",
+  "runtime_source_match": 14,
+  "browser": "Chinese PC native Work Order form, ordinary operator/reviewer/director",
+  "browser_verified": [
+    "send",
+    "review",
+    "final approval",
+    "three action records",
+    "no self-approval menu",
+    "reviewer cannot final-sign menu"
+  ],
+  "http_batches": [
+    {
+      "local_evidence": "http-actions.json",
+      "requests": 18,
+      "scenario_passed": true,
+      "status_expectations_met": 18,
+      "sha256": "471c5dbba343d1a2ac2c9c5261479adac15054caa5192e880e54b2ace14c113e"
+    },
+    {
+      "local_evidence": "http-stop.json",
+      "requests": 7,
+      "scenario_passed": false,
+      "status_expectations_met": 6,
+      "sha256": "b0417cc11a472b01fbb5c36a84155e6df3340c51d2dcf561ca027576d25ce979"
+    },
+    {
+      "local_evidence": "http-stop-tail.json",
+      "requests": 25,
+      "scenario_passed": true,
+      "status_expectations_met": 25,
+      "sha256": "c60f0c61aa26aca4703799dd804b36c08691e4228706d80f3277904571d297dc"
+    }
+  ],
+  "menu_boundary_tests": 6,
+  "menu_tests_limit": "In-memory UI callbacks, not real HTTP or full concurrency",
+  "demo_readback": {
+    "approval_state": "已批准",
+    "execution_state": "Not Started",
+    "draft_tasks": 3,
+    "time_logs": 0,
+    "stock_entries": 0,
+    "three_action_records_present": true
+  },
+  "retained_database_rows_match": {
+    "Work Order": 6,
+    "Job Card": 3,
+    "Stock Entry": 1
+  },
+  "original_test_business_tables_unchanged": 11,
+  "development_customer_workflow_enabled": false,
+  "card_complete": false,
+  "pending": [
+    "full page actions and new form",
+    "narrow viewport and real devices",
+    "remaining-demand new order HTTP",
+    "attachment/basis reconstruction",
+    "remaining permission combinations",
+    "full concurrency",
+    "external notification",
+    "full quantity and original reporting gates"
+  ]
+}

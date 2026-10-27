@@ -814,6 +814,93 @@ class TestWorkOrderApprovalChanges(FrappeTestCase):
 		self.assertEqual(frappe.db.get_value("Stock Entry", entries[1].name, "docstatus"), 2)
 
 
+class TestWorkOrderRequiredQuantity(FrappeTestCase):
+	"""Final demand, saved values and native stock consumers share one result."""
+
+	def setUp(self):
+		frappe.set_user("Administrator")
+		self.addCleanup(self.clean_fixture)
+		self.assertFalse(frappe.db.exists("Workflow", {"document_type": "Work Order"}))
+
+	def clean_fixture(self):
+		frappe.db.rollback()
+		frappe.clear_cache()
+
+	def make_quantity_order(self, raw_qty, planned=3, parent_qty=1):
+		from frappe.utils.nestedset import get_root_of
+		import erpnext
+
+		prefix = "B04-" + frappe.generate_hash(length=8)
+		company = erpnext.get_default_company()
+		warehouses = [frappe.get_doc({"doctype": "Warehouse", "company": company,
+			"warehouse_name": prefix + suffix}).insert().name for suffix in ("-原料", "-在制", "-成品")]
+		unit = frappe.get_doc({"doctype": "UOM", "uom_name": prefix, "must_be_whole_number": 0}).insert().name
+		raw = make_item(prefix + "-RM", {"item_group": get_root_of("Item Group"), "is_stock_item": 1,
+			"stock_uom": unit, "valuation_method": "Moving Average"})
+		finished = make_item(prefix + "-FG", {"item_group": get_root_of("Item Group"), "is_stock_item": 1, "stock_uom": "Nos"})
+		bom = make_bom(item=finished.name, company=company,
+			currency=frappe.get_cached_value("Company", company, "default_currency"),
+			quantity=parent_qty, raw_materials=[raw.name], rm_qty=raw_qty, rate=2,
+			source_warehouse=warehouses[0], with_operations=False)
+		order = make_wo_order_test_record(item=finished.name, bom_no=bom.name, qty=planned,
+			company=company, stock_uom="Nos", source_warehouse=warehouses[0],
+			wip_warehouse=warehouses[1], fg_warehouse=warehouses[2], do_not_save=True)
+		return order, raw, bom
+
+	@change_settings("System Settings", {"float_precision": 6})
+	def test_quantity_fixture_runnable(self):
+		order, raw, bom = self.make_quantity_order(0.5, planned=10)
+		order.insert()
+		order.reload()
+		self.assertEqual(order.required_items[0].required_qty, 5)
+		self.assertEqual(bom.docstatus, 1)
+		self.assertEqual(order.required_items[0].item_code, raw.name)
+
+	@change_settings("System Settings", {"float_precision": 6})
+	def test_required_qty_q05_rounds_at_final_boundary(self):
+		order, raw, bom = self.make_quantity_order(0.000050)
+		bom.reload()
+		self.assertEqual(bom.items[0].qty, 0.000050)
+		self.assertEqual(bom.items[0].stock_qty, 0.000050)
+		self.assertEqual(order.required_items[0].required_qty, 0.0002)
+		order.insert().submit()
+		order.reload()
+		self.assertEqual(frappe.db.get_value("Work Order Item", order.required_items[0].name, "required_qty"), 0.0002)
+		test_stock_entry.make_stock_entry(item_code=raw.name, company=order.company,
+			target=order.source_warehouse, qty=1, basic_rate=2)
+		entry = frappe.get_doc(make_stock_entry(order.name, "Material Transfer for Manufacture", 3))
+		self.assertEqual(entry.items[0].qty, 0.0002)
+		entry.insert().submit()
+		entry.reload()
+		order.reload()
+		self.assertEqual(entry.items[0].transfer_qty, 0.0002)
+		self.assertEqual(order.required_items[0].required_qty, 0.0002)
+		self.assertEqual(order.required_items[0].transferred_qty, 0.0002)
+		self.assertEqual(frappe.db.get_value("Bin", {"item_code": raw.name, "warehouse": order.wip_warehouse}, "actual_qty"), 0.0002)
+
+	@change_settings("System Settings", {"float_precision": 6, "rounding_method": "Banker's Rounding"})
+	def test_required_qty_reset_uses_commercial_final_rounding(self):
+		order, _, _ = self.make_quantity_order(0.000050)
+		order.qty = 5
+		order.set_required_items(reset_only_qty=True)
+		self.assertEqual(order.required_items[0].required_qty, 0.0003)
+		order.insert()
+		order.reload()
+		self.assertEqual(order.required_items[0].required_qty, 0.0003)
+
+	@change_settings("System Settings", {"float_precision": 6})
+	def test_reference_quantities_and_parent_base(self):
+		for raw_qty, planned, parent_qty, expected in (
+			(0.5495, 100, 1, 54.95), (0.083333, 100, 1, 8.3333),
+			(0.000167, 100, 1, 0.0167), (0.083333, 100, 2, 4.1667),
+		):
+			with self.subTest(raw_qty=raw_qty, parent_qty=parent_qty):
+				order, _, _ = self.make_quantity_order(raw_qty, planned, parent_qty)
+				order.insert()
+				order.reload()
+				self.assertEqual(order.required_items[0].required_qty, expected)
+
+
 class TestWorkOrderStockUnits(FrappeTestCase):
 	"""Real stock documents exercise consumption totals and cancel recalculation."""
 

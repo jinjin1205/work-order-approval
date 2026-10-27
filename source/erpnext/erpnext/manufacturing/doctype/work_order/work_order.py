@@ -1463,6 +1463,9 @@ class WorkOrder(Document):
 			item_dict = get_bom_items_as_dict(
 				self.bom_no, self.company, qty=self.qty, fetch_exploded=self.use_multi_level_bom
 			)
+			# Round only the final demand; retain the BOM's original and intermediate quantities.
+			for item in item_dict.values():
+				item.qty = flt(item.qty, 4, rounding_method="Commercial Rounding")
 
 			if reset_only_qty:
 				for d in self.get("required_items"):

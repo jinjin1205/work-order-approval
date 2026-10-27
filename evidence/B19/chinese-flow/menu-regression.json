@@ -1,0 +1,5 @@
+{
+  "tests": 6,
+  "passed": true,
+  "scope": "UI async/view boundaries only; not HTTP or business acceptance"
+}

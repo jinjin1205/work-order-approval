@@ -1,0 +1,11 @@
+{
+  "date": "2026-10-27",
+  "source_patch_sha256": "6c393bf46829ea5f888ee98ae44a41254c7eafe3c55f04fde9991e720cf27508",
+  "tests": 4,
+  "related_unit_tests": 2,
+  "source_files_match": 14,
+  "original_business_tables_unchanged": 11,
+  "workflow_count": 0,
+  "card_complete": false,
+  "scope": "Final demand rounding only; full G1/G2/G3 retained"
+}

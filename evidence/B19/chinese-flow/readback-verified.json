@@ -1,0 +1,19 @@
+{
+  "retained_http_database_fields_match": {
+    "Work Order": 6,
+    "Job Card": 3,
+    "Stock Entry": 1
+  },
+  "retained_legacy_tasks_match": 3,
+  "demo": {
+    "approval_state": "已批准",
+    "execution_state": "Not Started",
+    "draft_tasks": 3,
+    "time_logs": 0,
+    "stock_entries": 0,
+    "three_action_records_present": true
+  },
+  "second_draft_terminated_with_reason": true,
+  "read_only": true,
+  "limit": "Specific retained rows and demo facts; not all-table immutability or business acceptance"
+}

@@ -1,0 +1,12 @@
+{
+  "cards": 34,
+  "duplicate_ids": 0,
+  "completed_preparation_cards": 7,
+  "partial_cards": 6,
+  "not_started_cards": 21,
+  "B19_remaining_items": 6,
+  "B04_does_not_wait_for_B19": true,
+  "G1_G2_G3_retained": true,
+  "old_evidence_not_rerun": true,
+  "scope": "Current card status and evidence consistency only"
+}

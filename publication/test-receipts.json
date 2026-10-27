@@ -118,7 +118,7 @@
       "seconds": "224.690",
       "result": "OK",
       "executed_on": "2026-10-27",
-      "group": "B19 approved changes current",
+      "group": "B19 approved changes historical",
       "source_patch_sha256": "a6478acc8c02c08b2b2775c273f802a45c0871196c51e5e12c160766f718d25d"
     },
     {
@@ -128,7 +128,7 @@
       "seconds": "113.063",
       "result": "OK",
       "executed_on": "2026-10-27",
-      "group": "B19 approved changes current",
+      "group": "B19 approved changes historical",
       "source_patch_sha256": "a6478acc8c02c08b2b2775c273f802a45c0871196c51e5e12c160766f718d25d"
     },
     {
@@ -138,7 +138,7 @@
       "seconds": "29.453",
       "result": "OK",
       "executed_on": "2026-10-27",
-      "group": "B19 approved changes current",
+      "group": "B19 approved changes historical",
       "source_patch_sha256": "a6478acc8c02c08b2b2775c273f802a45c0871196c51e5e12c160766f718d25d"
     },
     {
@@ -148,8 +148,28 @@
       "seconds": "1.538",
       "result": "OK",
       "executed_on": "2026-10-27",
-      "group": "B19 approved changes current",
+      "group": "B19 approved changes historical",
       "source_patch_sha256": "a6478acc8c02c08b2b2775c273f802a45c0871196c51e5e12c160766f718d25d"
+    },
+    {
+      "local_log": "evidence/B04/fixed-results.log",
+      "sha256": "f445f99c73df0ce8b5b4d9ddf2cb2075719d4e43ea67eb6985ca4bb16a72bd4f",
+      "tests": 4,
+      "seconds": "4.571",
+      "result": "OK",
+      "executed_on": "2026-10-27",
+      "group": "B04 final demand",
+      "source_patch_sha256": "6c393bf46829ea5f888ee98ae44a41254c7eafe3c55f04fde9991e720cf27508"
+    },
+    {
+      "local_log": "evidence/B04/unit-regression.log",
+      "sha256": "9905b3885fd34993fe87e44abdde363430e65596ca72677a597a20a92e612efc",
+      "tests": 2,
+      "seconds": "5.267",
+      "result": "OK",
+      "executed_on": "2026-10-27",
+      "group": "B04 final demand",
+      "source_patch_sha256": "6c393bf46829ea5f888ee98ae44a41254c7eafe3c55f04fde9991e720cf27508"
     }
   ],
   "http_B02_historical": {
@@ -161,5 +181,5 @@
     "verified_after_all_requests": true,
     "publication_note": "Only assertions/counts retained; runtime business_state and raw responses remain local."
   },
-  "current_patch_sha256": "a6478acc8c02c08b2b2775c273f802a45c0871196c51e5e12c160766f718d25d"
+  "current_patch_sha256": "a0e334eee289144d99f35c4907e426227cecc5879e9a99cfa03f58790e0899dd"
 }

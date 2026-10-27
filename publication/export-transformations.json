@@ -21,13 +21,19 @@
     "source": ".development/repos/erpnext/erpnext/manufacturing/doctype/work_order/test_work_order.py",
     "public_path": "source/erpnext/erpnext/manufacturing/doctype/work_order/test_work_order.py",
     "treatment": "unchanged",
-    "source_sha256": "38984c635496ecd54d479a1dd26a0af243c250e64306381d22c67fbb79db3366"
+    "source_sha256": "30905c7904d03d78e45e1c087d7a95a28e5e22ca84ebee70b8a9c7f5566db814"
+  },
+  {
+    "source": ".development/repos/erpnext/erpnext/manufacturing/doctype/work_order/work_order.js",
+    "public_path": "source/erpnext/erpnext/manufacturing/doctype/work_order/work_order.js",
+    "treatment": "unchanged",
+    "source_sha256": "6a88eb9dbe27d2ccfe90de3e89a8621cc3012bed4899cfbca6c5956f0d3394bc"
   },
   {
     "source": ".development/repos/erpnext/erpnext/manufacturing/doctype/work_order/work_order.py",
     "public_path": "source/erpnext/erpnext/manufacturing/doctype/work_order/work_order.py",
     "treatment": "unchanged",
-    "source_sha256": "a72959ff8772acbf6db2900d3c5f39b232243d65d5f407b614c89b7c1516b9a0"
+    "source_sha256": "45a298ccfd2e7535db32a7cddad63de5854371bb0055093dab76519ef43bacc4"
   },
   {
     "source": ".development/repos/erpnext/erpnext/stock/doctype/stock_entry/stock_entry.py",
@@ -84,6 +90,18 @@
     "source_sha256": "a6478acc8c02c08b2b2775c273f802a45c0871196c51e5e12c160766f718d25d"
   },
   {
+    "source": "evidence/B04/combined-implementation.patch",
+    "public_path": "evidence/B04/combined-implementation.patch",
+    "treatment": "unchanged",
+    "source_sha256": "6c393bf46829ea5f888ee98ae44a41254c7eafe3c55f04fde9991e720cf27508"
+  },
+  {
+    "source": "evidence/B19/chinese-flow/combined-implementation.patch",
+    "public_path": "evidence/B19/chinese-flow/combined-implementation.patch",
+    "treatment": "unchanged",
+    "source_sha256": "a0e334eee289144d99f35c4907e426227cecc5879e9a99cfa03f58790e0899dd"
+  },
+  {
     "source": "AGENTS.md",
     "public_path": "AGENTS.md",
     "treatment": "unchanged",
@@ -99,7 +117,7 @@
     "source": "docs/任务卡/02-生产与物料闭环.md",
     "public_path": "docs/任务卡/02-生产与物料闭环.md",
     "treatment": "personal paths/runtime identifiers removed",
-    "source_sha256": "aa3b931c0930792473940a125f2dcf85cff836b56449b02d69edd1d989af2e5f"
+    "source_sha256": "27b74a08441957200a86f9d9f6b4135cf8a324c76450530cb60aacb0085ddb8b"
   },
   {
     "source": "docs/任务卡/03-AI与交付.md",
@@ -117,7 +135,7 @@
     "source": "docs/开发TODO.md",
     "public_path": "docs/开发TODO.md",
     "treatment": "unchanged",
-    "source_sha256": "bc0c9dee29147238bcc2a506b7bda95816de60274376cc3ebe00b6a197c5a14c"
+    "source_sha256": "f8806c952685348c6f9030b9e26811a6f37e3ccbbb5beb8f9756e39dfe75ba7f"
   },
   {
     "source": "docs/验收样例.md",
@@ -138,6 +156,12 @@
     "source_sha256": "6f9eb36dc77874aff67d6b7a52b50b54806f3ab28df9af160ceeab3802f87331"
   },
   {
+    "source": "evidence/B04/run-record.md",
+    "public_path": "evidence/B04/run-record.md",
+    "treatment": "unchanged",
+    "source_sha256": "cf7a510bcd4f170623f5ca111cda8bbde0e69a711430ea57dd2d22d73ab15a7e"
+  },
+  {
     "source": "evidence/B10/run-record.md",
     "public_path": "evidence/B10/run-record.md",
     "treatment": "unchanged",
@@ -154,6 +178,12 @@
     "public_path": "evidence/B19/approved-changes/run-record.md",
     "treatment": "unchanged",
     "source_sha256": "abdf5bce5d369a496aa1f38ad5062fc993e2ee43c86fc143cb385034edfe033c"
+  },
+  {
+    "source": "evidence/B19/chinese-flow/run-record.md",
+    "public_path": "evidence/B19/chinese-flow/run-record.md",
+    "treatment": "unchanged",
+    "source_sha256": "cd314d06fd2ed92c68395507e26914d8984f15db18f41907edaebadcc173c371"
   },
   {
     "source": "evidence/B19/entry-history/review.md",
@@ -423,13 +453,13 @@
     "source": ".development/checks/b19_http.py",
     "public_path": ".development/checks/b19_http.py",
     "treatment": "unchanged",
-    "source_sha256": "3cdb5eb61812867f4640f01c3ae739be35d3f46af92ea6123c8c87372fd410c2"
+    "source_sha256": "5331da322f9c06875ca2211423549f36dac1a4abb1b37a637cda08f5a74b0862"
   },
   {
     "source": ".development/checks/b19_http_site.py",
     "public_path": ".development/checks/b19_http_site.py",
     "treatment": "unchanged",
-    "source_sha256": "dfeabe52776a4f6055ad91f868f48e9803d3c390f6fd389a0d3ca39668cdf907"
+    "source_sha256": "50b36d37bd1d0c947eea664555bc50fbdd87a8bcf69eb4bfe34f1297538ffb5d"
   },
   {
     "source": ".development/checks/b19_http_summary.py",
@@ -448,6 +478,18 @@
     "public_path": ".development/checks/b19_status_regression.py",
     "treatment": "unchanged",
     "source_sha256": "9db96b446ba2ecebbdc6308b7d2555cd1bf7ca469b3f8e774cde8ccffd3fc2eb"
+  },
+  {
+    "source": ".development/checks/b19_ui_readback.py",
+    "public_path": ".development/checks/b19_ui_readback.py",
+    "treatment": "unchanged",
+    "source_sha256": "bf8d598833200f7d69a5a92d10706c02fd42eb1740b7f9d6bc67b16ff8cc83d6"
+  },
+  {
+    "source": ".development/checks/b19_ui_scope_read.py",
+    "public_path": ".development/checks/b19_ui_scope_read.py",
+    "treatment": "unchanged",
+    "source_sha256": "918a29896939e28c42047c926d5db3c0ee9adbc180ba5d0bfe671db83818a57c"
   },
   {
     "source": ".development/checks/check_source.py",
@@ -486,10 +528,22 @@
     "source_sha256": "538ab77705419fb3075f3cedc51adb78152d22356434fc088105f72ec531ec48"
   },
   {
+    "source": ".development/checks/b19_ui_menu_test.mjs",
+    "public_path": ".development/checks/b19_ui_menu_test.mjs",
+    "treatment": "unchanged",
+    "source_sha256": "4720f6c89c63c7541cdc438167a39ddb887c8c032b25c6967eaeafb6be7724e5"
+  },
+  {
     "source": ".development/checks/b02-b10-source-manifest.json",
     "public_path": ".development/checks/b02-b10-source-manifest.json",
     "treatment": "unchanged",
     "source_sha256": "c9001a2942892d616632f126c38d92a3f3bcdd6cbbb31d7d90720050e31172ea"
+  },
+  {
+    "source": ".development/checks/b04-source-manifest.json",
+    "public_path": ".development/checks/b04-source-manifest.json",
+    "treatment": "unchanged",
+    "source_sha256": "0253371e27e53c2c8be318fe215b346ecdfd7184754d64a95022416f22668955"
   },
   {
     "source": ".development/checks/b19-changes-source-manifest.json",
@@ -514,6 +568,12 @@
     "public_path": ".development/checks/b19-source-manifest.json",
     "treatment": "unchanged",
     "source_sha256": "d0e12873379a284a15e27a61d69c6e8796d4382c237ac12b66bc0cd52d34c2da"
+  },
+  {
+    "source": ".development/checks/b19-ui-source-manifest.json",
+    "public_path": ".development/checks/b19-ui-source-manifest.json",
+    "treatment": "unchanged",
+    "source_sha256": "6fe8a2b288ab0be2b61c8eea8c33e613f07c25baba1bc2af4c3fb1be847e9651"
   },
   {
     "source": ".development/checks/source-manifest.json",
@@ -832,6 +892,60 @@
     "public_path": "evidence/发布/B19-2026-10-27-remote.json",
     "treatment": "allowlisted metadata; personal paths removed",
     "source_sha256": "fa85c9e35b0c11d958ef88a97157e40341e6ee50e2f9aaa99e087e18f74e7757"
+  },
+  {
+    "source": "evidence/B04/source-manifest.json",
+    "public_path": "evidence/B04/source-manifest.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "0253371e27e53c2c8be318fe215b346ecdfd7184754d64a95022416f22668955"
+  },
+  {
+    "source": "evidence/B04/source-final.json",
+    "public_path": "evidence/B04/source-final.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "8a449ba0398f5cca896493bd54d87788ac97d60c7721114fdd7b872e7bb83c5e"
+  },
+  {
+    "source": "evidence/B04/closeout-check.json",
+    "public_path": "evidence/B04/closeout-check.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "5e43e1a28c357a26eee647e5bdc4fc844407d1a295f22899b98d5dd4aacf430b"
+  },
+  {
+    "source": "evidence/B19/chinese-flow/source-manifest.json",
+    "public_path": "evidence/B19/chinese-flow/source-manifest.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "6fe8a2b288ab0be2b61c8eea8c33e613f07c25baba1bc2af4c3fb1be847e9651"
+  },
+  {
+    "source": "evidence/B19/chinese-flow/source-web.json",
+    "public_path": "evidence/B19/chinese-flow/source-web.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "9f0748ad28c0f364c919ee15d46c27bae91b2e6ea430ad8c2bf0a8d8368304c7"
+  },
+  {
+    "source": "evidence/B19/chinese-flow/menu-regression.json",
+    "public_path": "evidence/B19/chinese-flow/menu-regression.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "881dbc099d7f25c68bad7098e5c375246972eafab5402b6d1b1c0877c8c0d948"
+  },
+  {
+    "source": "evidence/B19/chinese-flow/acceptance-summary.json",
+    "public_path": "evidence/B19/chinese-flow/acceptance-summary.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "6b22ced3d5e74c069010663aca7d5d92fe2ac2a905e950dbb3615c2f5e627368"
+  },
+  {
+    "source": "evidence/B19/chinese-flow/readback-verified.json",
+    "public_path": "evidence/B19/chinese-flow/readback-verified.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "00a471bbd427afc9eec69b4d19c0dea3276a7def8aa70778c2bb0b4d3f94cc23"
+  },
+  {
+    "source": "evidence/B19/chinese-flow/document-check.json",
+    "public_path": "evidence/B19/chinese-flow/document-check.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "acc76664d57fc8a513589cddb3f6eb3c92876a458f7e82253646fd08dc167b2e"
   },
   {
     "source": "evidence/B02/acceptance-http-summary.json",

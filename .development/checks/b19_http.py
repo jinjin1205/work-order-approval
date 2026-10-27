@@ -7,7 +7,7 @@ from pathlib import Path
 from urllib.parse import quote, urlencode
 
 parser = argparse.ArgumentParser()
-parser.add_argument("phase", choices=("fixture", "deny", "deny-tail", "approval", "execute"))
+parser.add_argument("phase", choices=("fixture", "deny", "deny-tail", "approval", "execute", "ui-actions", "ui-stop", "ui-stop-tail"))
 parser.add_argument("--output", required=True)
 args = parser.parse_args()
 fixture = json.loads(Path(".development/private/b19-http/fixture.json").read_text())
@@ -68,6 +68,23 @@ def cards():
     return request("operator", "GET", "/api/resource/Job%20Card?" + query, label="read-own-tasks")["data"]
 
 
+def new_ui_order(label, amended_from=None):
+    access = json.loads(Path(".development/private/b19-http/ui-access.json").read_text())
+    template = request("operator", "GET", "/api/resource/Work%20Order/" + quote(access["draft_orders"][0], safe=""), label="read-ui-approved")["data"]
+    fields = ("production_item", "bom_no", "company", "qty", "source_warehouse", "wip_warehouse", "fg_warehouse",
+        "scrap_warehouse", "production_team", "planned_start_date", "use_multi_level_bom", "transfer_material_against", "skip_transfer", "from_wip_warehouse")
+    new = {key: template.get(key) for key in fields}
+    new["doctype"] = "Work Order"
+    if amended_from:
+        new["amended_from"] = amended_from
+    # Only BOM-defined fields; no execution totals or scheduling from the approved order.
+    new["operations"] = [{key: row.get(key) for key in ("operation", "bom", "workstation", "time_in_mins", "description", "sequence_id")}
+        for row in template["operations"]]
+    new["required_items"] = [{key: row.get(key) for key in ("item_code", "source_warehouse", "required_qty", "stock_uom", "rate", "operation", "include_item_in_manufacturing")}
+        for row in template["required_items"]]
+    return request("operator", "POST", "/api/resource/Work%20Order", new, label=label)["data"]
+
+
 with Path(args.output).open("x") as output:
     try:
         if args.phase == "fixture":
@@ -117,6 +134,83 @@ with Path(args.output).open("x") as output:
             assert order["workflow_state"] == "已批准" and order["docstatus"] == 1 and order["status"] == "Not Started"
             tasks = cards()
             assert len(tasks) == 3 and all(t["docstatus"] == 0 and t["total_completed_qty"] == 0 and t["total_time_in_mins"] == 0 for t in tasks)
+        elif args.phase == "ui-actions":
+            access = json.loads(Path(".development/private/b19-http/ui-access.json").read_text())
+            fixture["order"] = access["draft_orders"][1]
+            order_path = "/api/resource/Work%20Order/" + quote(fixture["order"], safe="")
+            order = read_order("second-ui-draft")
+            assert order["workflow_state"] == "草稿"
+            order = act("operator", "送审", order)
+            stale = dict(order)
+            order = act("reviewer", "退回", order, reason="请核对计划数量")
+            assert order["workflow_state"] == "退回"
+            order = request("operator", "PUT", order_path, {"qty": 12}, label="returned-quantity-edit")["data"]
+            order = act("operator", "送审", order)
+            act("reviewer", "审核通过", stale, status=417, exception="TimestampMismatchError")
+            act("operator", "终止", order, status=417, exception="ValidationError")
+            order = act("operator", "终止", order, reason="合成样例需求取消")
+            assert order["workflow_state"] == "终止" and order["docstatus"] == 0
+            # Preserve the browser-approved demonstration. Create one new order using native insert.
+            order = new_ui_order("new-cancellation-fixture")
+            fixture["order"] = order["name"]
+            report["cancel_order"] = order["name"]
+            order_path = "/api/resource/Work%20Order/" + quote(fixture["order"], safe="")
+            order = act("operator", "送审", order)
+            order = act("reviewer", "审核通过", order)
+            order = act("director", "签批通过", order)
+            assert order["status"] == "Not Started" and all(t["total_time_in_mins"] == 0 for t in cards())
+            act("operator", "取消修订", order, status=403, exception="PermissionError", reason="无权取消")
+            act("director", "取消修订", order, status=417, exception="ValidationError")
+            old_approved = dict(order)
+            order = act("director", "取消修订", order, reason="合成样例计划调整")
+            assert order["workflow_state"] == "已取消" and order["docstatus"] == 2
+            act("director", "取消修订", old_approved, status=417, exception="TimestampMismatchError", reason="旧页面重提")
+        elif args.phase in ("ui-stop", "ui-stop-tail"):
+            amended_from = None
+            if args.phase == "ui-stop-tail":
+                # Resume the recorded fixture failure through authorized cancellation/amendment, not a DB edit.
+                previous = json.loads(Path("evidence/B19/chinese-flow/http-stop.json").read_text())
+                assert not previous["passed"] and previous["requests"][-1]["response"]["exc_type"] == "MandatoryError"
+                fixture["order"] = previous["stop_order"]
+                order_path = "/api/resource/Work%20Order/" + quote(fixture["order"], safe="")
+                old = read_order("failed-fixture-before-amendment")
+                assert old["status"] == "Not Started" and old["material_transferred_for_manufacturing"] == 0
+                old = act("director", "取消修订", old, reason="样例漏复制参与生产字段，取消后修订")
+                amended_from = old["name"]
+            order = new_ui_order("new-stop-fixture", amended_from=amended_from)
+            fixture["order"] = order["name"]
+            report["stop_order"] = order["name"]
+            order_path = "/api/resource/Work%20Order/" + quote(fixture["order"], safe="")
+            order = act("operator", "送审", order)
+            order = act("reviewer", "审核通过", order)
+            order = act("director", "签批通过", order)
+            transfer = call("warehouse", WORK_ORDER + "make_stock_entry", {"work_order_id": order["name"],
+                "purpose": "Material Transfer for Manufacture", "qty": 1}, "new-transfer-draft")["message"]
+            transfer = call("warehouse", "frappe.client.submit", {"doc": transfer}, "new-transfer-submit")["message"]
+            task = cards()[0]
+            call("operator", JOB_CARD + "make_time_log", {"args": {"job_card_id": task["name"],
+                "start_time": started_local, "status": "Work In Progress", "employees": []}}, "new-timer")
+            timer_path = "/api/resource/Job%20Card/" + quote(task["name"], safe="")
+            original_logs = request("operator", "GET", timer_path, label="timer-before-stop")["data"]["time_logs"]
+            order = read_order("before-stop")
+            act("director", "取消修订", order, status=403, exception="PermissionError", reason="已有事实不可取消")
+            act("operator", "停止执行", order, status=403, exception="PermissionError", reason="无权停止")
+            act("director", "停止执行", order, status=417, exception="ValidationError")
+            order = act("director", "停止执行", order, reason="合成样例停止新增执行")
+            assert order["status"] == "Stopped" and order["docstatus"] == 1
+            assert request("operator", "GET", timer_path, label="timer-after-stop")["data"]["time_logs"] == original_logs
+            call("operator", JOB_CARD + "make_time_log", {"args": {"job_card_id": task["name"],
+                "start_time": started_local, "status": "Work In Progress", "employees": []}}, "stopped-timer-denied", 403, "PermissionError")
+            blocked = dict(transfer)
+            for key in ("name", "creation", "modified", "owner", "modified_by", "docstatus"):
+                blocked.pop(key, None)
+            call("warehouse", "frappe.client.submit", {"doc": blocked}, "stopped-transfer-denied", 403, "PermissionError")
+            returned = call("warehouse", WORK_ORDER + "make_stock_return_entry", {"work_order": order["name"]}, "stopped-return-draft")["message"]
+            returned = call("warehouse", "frappe.client.submit", {"doc": returned}, "stopped-return-submit")["message"]
+            assert returned["docstatus"] == 1 and returned["is_return"] == 1
+            call("warehouse", "frappe.client.cancel", {"doctype": "Stock Entry", "name": returned["name"]}, "cancel-stopped-return")
+            assert read_order("after-return-cancel")["status"] == "Stopped"
+            assert request("operator", "GET", timer_path, label="timer-after-cleanup")["data"]["time_logs"] == original_logs
         else:
             order = read_order()
             assert order["workflow_state"] == "已批准" and order["docstatus"] == 1

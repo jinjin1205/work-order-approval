@@ -612,6 +612,96 @@
     "reason": "public copy"
   },
   {
+    "path": "evidence/B04/build-fixed.log",
+    "original_sha256": "1544f56269c148899e13e3b3ef5d883bce65a7c3f64aadee245bcea403295d17",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/build-red.log",
+    "original_sha256": "e4c837c0a6752462e50ad4c6857027419a758922b85509d45fbe13cda79a0d62",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/closeout-check.json",
+    "original_sha256": "5e43e1a28c357a26eee647e5bdc4fc844407d1a295f22899b98d5dd4aacf430b",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B04/combined-implementation.patch",
+    "original_sha256": "6c393bf46829ea5f888ee98ae44a41254c7eafe3c55f04fde9991e720cf27508",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B04/data-after.json",
+    "original_sha256": "7644963e87e58ea7caf00d1631df593bb143a672117b454e418a54257b86463a",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/data-before.json",
+    "original_sha256": "7644963e87e58ea7caf00d1631df593bb143a672117b454e418a54257b86463a",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/fixed-results.log",
+    "original_sha256": "f445f99c73df0ce8b5b4d9ddf2cb2075719d4e43ea67eb6985ca4bb16a72bd4f",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/fixture.log",
+    "original_sha256": "c3aef75b149059c6abc770dc4a3f08c3d79b7de6c5e04265c7198ac7662cbbca",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/red-results.log",
+    "original_sha256": "9dce9c1ae004babcefbde60416c1768e1a809c8da15c3beb4b548cb6df3fed69",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/run-record.md",
+    "original_sha256": "cf7a510bcd4f170623f5ca111cda8bbde0e69a711430ea57dd2d22d73ab15a7e",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B04/source-final.json",
+    "original_sha256": "8a449ba0398f5cca896493bd54d87788ac97d60c7721114fdd7b872e7bb83c5e",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B04/source-manifest.json",
+    "original_sha256": "0253371e27e53c2c8be318fe215b346ecdfd7184754d64a95022416f22668955",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B04/source-red-manifest.json",
+    "original_sha256": "9797b2896a706de094b30dc31a333139df2350d568bc01f68a83e0ade53b6adf",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/source-red.json",
+    "original_sha256": "bcb115b4488ceaf6f11e51fb5557314cb4b6f7e2180e2062bad418719a775e84",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/unit-regression.log",
+    "original_sha256": "9905b3885fd34993fe87e44abdde363430e65596ca72677a597a20a92e612efc",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
     "path": "evidence/B10/acceptance-bench-source-stderr.log",
     "original_sha256": "1d5602ee42b7eae7b96b1a9cf1991d5d7a09fb1871b1036db59b34c7719adb15",
     "published": false,
@@ -1052,6 +1142,246 @@
   {
     "path": "evidence/B19/build-review-red.log",
     "original_sha256": "bd1f18ee598b821dba37c70e2de630952c74168d00ab5e5e38b8a38ebb973dba",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/acceptance-summary.json",
+    "original_sha256": "6b22ced3d5e74c069010663aca7d5d92fe2ac2a905e950dbb3615c2f5e627368",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/approval-history.png",
+    "original_sha256": "6b7137dc81eba55f8f398b39738fa698f66b7114e4b726b25d48e006351a3f6f",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/approval-history.txt",
+    "original_sha256": "1b488b6fe5b4de6cf4ba56edfea178986164ed25cf634a54e11ebccfe783055f",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/build-fixed.log",
+    "original_sha256": "6a0ba397fd5a0c9a8528f1f430980850ec315f9300b24e1def615112de0b0381",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/build-review-fixed.log",
+    "original_sha256": "bb645c9f74fb3b5567c5f3b18263c751409d581aafe5e2000ceec459af4dde6d",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/build.log",
+    "original_sha256": "a5a332130ccb0522c8f74f6e9a168e2a78179dfc6404dd2d7c364c03ac641276",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/combined-implementation.patch",
+    "original_sha256": "a0e334eee289144d99f35c4907e426227cecc5879e9a99cfa03f58790e0899dd",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/director-approved.png",
+    "original_sha256": "9783bc46eacb2bbde43c89f65f9cead7dcda2c579bf9cb1cb0c220723bf4e745",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/director-approved.txt",
+    "original_sha256": "821be0242e2f764daa7f91ca46b227e3729a40236bccd775adbbeb251ff51060",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/document-check.json",
+    "original_sha256": "acc76664d57fc8a513589cddb3f6eb3c92876a458f7e82253646fd08dc167b2e",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/http-actions.json",
+    "original_sha256": "471c5dbba343d1a2ac2c9c5261479adac15054caa5192e880e54b2ace14c113e",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/http-stop-tail.json",
+    "original_sha256": "c60f0c61aa26aca4703799dd804b36c08691e4228706d80f3277904571d297dc",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/http-stop.json",
+    "original_sha256": "b0417cc11a472b01fbb5c36a84155e6df3340c51d2dcf561ca027576d25ce979",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/menu-regression.json",
+    "original_sha256": "881dbc099d7f25c68bad7098e5c375246972eafab5402b6d1b1c0877c8c0d948",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/native-submit-red.png",
+    "original_sha256": "1c00969ec203cb109d848d4fcf20b11494187dd2d8fb2feca896844f7d8f4fc6",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/native-submit-red.txt",
+    "original_sha256": "6704209a2f503c230c4ec6d744e465c4a4f8f80f4a203536eab395ec5f771c1b",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/operator-sent.txt",
+    "original_sha256": "19f1203313b63ce33f41ac2fdf3e8c9b1f5b39213da8ef4d01e90a9142cfbb6e",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/original-test-readback-stderr.log",
+    "original_sha256": "b124840c2cd4e2464bd5b65a4a92b678a0476aecb98569b6ad1f35ddd68f28e1",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/original-test-readback.json",
+    "original_sha256": "7644963e87e58ea7caf00d1631df593bb143a672117b454e418a54257b86463a",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/readback-diagnosis-stderr.log",
+    "original_sha256": "ce0b9f5c60f535c069d6f6b8b3d92d353a5b96450921fbf73aeb38401d09b60c",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/readback-diagnosis.json",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/readback-final-stderr.log",
+    "original_sha256": "1722e7f3117f69845f3199a7e88aebb1d691cb665824486297bda5de568499fe",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/readback-final.json",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/readback-stderr.log",
+    "original_sha256": "8e166400085eed60bd029a9f22165b70c7c5551236c40a83e385e149ed2b4d60",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/readback-verified-stderr.log",
+    "original_sha256": "7838f347a4b19eaa084d771bc0515bc197679969540c0dd8f94f5779df4e9185",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/readback-verified.json",
+    "original_sha256": "00a471bbd427afc9eec69b4d19c0dea3276a7def8aa70778c2bb0b4d3f94cc23",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/readback.json",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/reviewer-approved.txt",
+    "original_sha256": "9345fabcc88756158f2da0629d5febdcc9a2b83fd17f1714c146d1b8f4d871a8",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/reviewer-basis.txt",
+    "original_sha256": "879e49c4475ae9344fa7c3335d50d1fddd42345e167018362cbebf76bcf0b852",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/reviewer-no-self-sign.txt",
+    "original_sha256": "05bf843ca77ffed4129b687655ab34875968f01ab8ef9b86f1a486fc13efcc4a",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/run-record.md",
+    "original_sha256": "cd314d06fd2ed92c68395507e26914d8984f15db18f41907edaebadcc173c371",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/self-approval-menu.txt",
+    "original_sha256": "336f909d9bd04fbe06eb4f5ddf47440591a85a25017016371d2000169ae452b9",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/setup.log",
+    "original_sha256": "ee3a916f1abe93d167b81c13ec4d943d991268b671abeeec9ae93983876f93d0",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/site-scope.jsonl",
+    "original_sha256": "28cf071f6f5a5467294de8da3915c287592c7c1d35c08422a01e20745383ba82",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/source-manifest.json",
+    "original_sha256": "6fe8a2b288ab0be2b61c8eea8c33e613f07c25baba1bc2af4c3fb1be847e9651",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/source-web.json",
+    "original_sha256": "9f0748ad28c0f364c919ee15d46c27bae91b2e6ea430ad8c2bf0a8d8368304c7",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/web-final-start.log",
+    "original_sha256": "ab67716962e33428026b188f0a4eb85364dee294d9cf01cd2d9b4b2c61a9ca44",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/web-fixed-start.log",
+    "original_sha256": "438486a9d00271b819e7310643e0ce4c1958aac4f9bd5504d3bb530e6ff29bf9",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/web-reviewed-start.log",
+    "original_sha256": "d2a0e5089cb59b7d20fd28d4494b129043c4208a8fe1b8bba2b3750326f331e7",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B19/chinese-flow/web-start.log",
+    "original_sha256": "4d4e6811e1d9f0edd2fe01338d3185b5e4a7525e680cd941b680a0f34a5cb34a",
     "published": false,
     "reason": "local raw execution evidence; not uploaded"
   },
@@ -2410,6 +2740,12 @@
     "original_sha256": "fa85c9e35b0c11d958ef88a97157e40341e6ee50e2f9aaa99e087e18f74e7757",
     "published": true,
     "reason": "public copy"
+  },
+  {
+    "path": "evidence/发布/B19-changes-2026-10-27-remote.json",
+    "original_sha256": "9b254b854d2daeb09c67e0f0bebdada1ee02e127a9f7111ab4a4c81dfb6e506a",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
   },
   {
     "path": "evidence/发布/B19-history-2026-10-27-remote.json",
