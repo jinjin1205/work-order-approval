@@ -1,0 +1,418 @@
+{
+  "checked_at": "2026-10-27T10:53:44.242269+08:00",
+  "evidence_level": "static_source_identity_and_document_consistency_only",
+  "upstream_commits": {
+    "erpnext": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+    "frappe": "f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab",
+    "t3rik": "8a40bfe241178c00394cc8011b6bfee1b3a12655",
+    "OpenMes": "b952915bddb2120737f10a730a1e45b1d162c47e",
+    "qcadoo": "94fd649003287b73a46e3ad1340eb3b4ddbb5f30",
+    "kuaigeyun": "32c46b01c1881863f4ced2db9412a4a9a68b7902"
+  },
+  "inputs": "Fixed commit trees/files via GitHub connector; existing local snapshots and maintenance checkout; explicit user C10/C11 answers. No customer business data.",
+  "commands": [
+    "git -C .development/repos/erpnext rev-parse HEAD",
+    "git -C .development/repos/erpnext diff --binary",
+    "rg/sed/nl bounded source reads",
+    "Python Git blob SHA1/SHA256 checks, AST checks, 34-card and Markdown path consistency checks"
+  ],
+  "expected": "Exact fixed-tree identities, unchanged product diff, existing source entries, proposed API/test explicitly absent, 34 unique cards and valid local links",
+  "actual": {
+    "fetched_sources_blob_matches": 18,
+    "existing_frappe_blob_matches": 5,
+    "erpnext_file_hashes_recorded": 12,
+    "product_patch_sha256": "221937fbf2f011d04012aa6e0a602a982d65edb5e9a72b7b53f40060322ec5d3",
+    "six_published_modified_sources_unchanged": true,
+    "unique_task_cards": 34,
+    "todo_rows": 34,
+    "local_links_checked": 142,
+    "missing_local_paths": 0,
+    "proposed_api_and_test_absent": true,
+    "workflow_state_version_observations_checked_statically": true
+  },
+  "not_executed": [
+    "Approval product changes",
+    "Workflow or role activation",
+    "Docker/service/database/business API operations",
+    "Business or concurrency tests",
+    "Real phone operations",
+    "External notifications",
+    "Customer migration/deployment",
+    "Git commit/push of this turn"
+  ],
+  "limits": [
+    "Static gaps are not executed exploit proofs",
+    "Existing native tests were read, not run",
+    "C11 customer channel/account/reachable URL and waste inventory details remain scoped follow-up inputs",
+    "G1/G2/G3 remain unpassed",
+    "No claim of total source audit, license compatibility audit, cost percentage or delivery acceptance"
+  ],
+  "files": [
+    {
+      "key": "f-workflow",
+      "path": "frappe/workflow/doctype/workflow/workflow.py",
+      "local": ".evaluation/r07-approval-sources/frappe/frappe/workflow/doctype/workflow/workflow.py",
+      "url": "https://github.com/frappe/frappe/blob/f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab/frappe/workflow/doctype/workflow/workflow.py",
+      "commit": "f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab",
+      "git_blob_sha1": "79a9fb9c42995ac1ca66340125eba0ed417cd57b",
+      "sha256": "2e395f1d26fd8adeab7bc1190bdfea17d4331681de765911ebe12cd04aea3677",
+      "lines": 136,
+      "source_level": "fixed_commit_source_read_not_runtime"
+    },
+    {
+      "key": "f-action",
+      "path": "frappe/workflow/doctype/workflow_action/workflow_action.py",
+      "local": ".evaluation/r07-approval-sources/frappe/frappe/workflow/doctype/workflow_action/workflow_action.py",
+      "url": "https://github.com/frappe/frappe/blob/f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab/frappe/workflow/doctype/workflow_action/workflow_action.py",
+      "commit": "f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab",
+      "git_blob_sha1": "4ce29f3853d76a5c313285b681132a1988332e81",
+      "sha256": "4db7f3aa30aa23e183e859ce6068f75cf00da28b60db3a71a9c44224a32f4ec9",
+      "lines": 538,
+      "source_level": "fixed_commit_source_read_not_runtime"
+    },
+    {
+      "key": "f-ui",
+      "path": "frappe/public/js/frappe/form/workflow.js",
+      "local": ".evaluation/r07-approval-sources/frappe/frappe/public/js/frappe/form/workflow.js",
+      "url": "https://github.com/frappe/frappe/blob/f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab/frappe/public/js/frappe/form/workflow.js",
+      "commit": "f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab",
+      "git_blob_sha1": "a4eaafb873662fbc02959165c3d962516dea2ade",
+      "sha256": "a3aa720d0c4e8c3b85e43f951e2c37f86cbba6d8f9b8872d2b8025a1a7751076",
+      "lines": 159,
+      "source_level": "fixed_commit_source_read_not_runtime"
+    },
+    {
+      "key": "f-test",
+      "path": "frappe/workflow/doctype/workflow/test_workflow.py",
+      "local": ".evaluation/r07-approval-sources/frappe/frappe/workflow/doctype/workflow/test_workflow.py",
+      "url": "https://github.com/frappe/frappe/blob/f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab/frappe/workflow/doctype/workflow/test_workflow.py",
+      "commit": "f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab",
+      "git_blob_sha1": "473e0691227e9135e6544fc4a4b3b486054435f5",
+      "sha256": "2dfc86d0c269adac4fcce1f64a917684de263898cbebf72d00d6e8bcd48c8a71",
+      "lines": 349,
+      "source_level": "fixed_commit_source_read_not_runtime"
+    },
+    {
+      "key": "f-config",
+      "path": "frappe/workflow/doctype/workflow/workflow.json",
+      "local": ".evaluation/r07-approval-sources/frappe/frappe/workflow/doctype/workflow/workflow.json",
+      "url": "https://github.com/frappe/frappe/blob/f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab/frappe/workflow/doctype/workflow/workflow.json",
+      "commit": "f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab",
+      "repo": "frappe/frappe",
+      "git_blob_sha1": "435a2f56ad516a4c81eb17b04015ccc488b53810",
+      "sha256": "b7547f5a88bffa5b7a2f751821f7a8414eae80c2bcbdb4056dad8991256e813f",
+      "lines": 129,
+      "source_level": "fixed_commit_source_read_not_runtime"
+    },
+    {
+      "key": "f-version",
+      "path": "frappe/core/doctype/version/version.py",
+      "local": ".evaluation/r07-approval-sources/frappe/frappe/core/doctype/version/version.py",
+      "url": "https://github.com/frappe/frappe/blob/f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab/frappe/core/doctype/version/version.py",
+      "commit": "f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab",
+      "repo": "frappe/frappe",
+      "git_blob_sha1": "07c37e39306ce9fe49807463adb85c8dc52f36ba",
+      "sha256": "addaf1e942ac88c43e40dec6e8c3a9d024f8dcf3162d908ba0c4b6cd3df63b8b",
+      "lines": 234,
+      "source_level": "fixed_commit_source_read_not_runtime"
+    },
+    {
+      "key": "f-comment",
+      "path": "frappe/core/doctype/comment/comment.py",
+      "local": ".evaluation/r07-approval-sources/frappe/frappe/core/doctype/comment/comment.py",
+      "url": "https://github.com/frappe/frappe/blob/f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab/frappe/core/doctype/comment/comment.py",
+      "commit": "f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab",
+      "repo": "frappe/frappe",
+      "git_blob_sha1": "38494a26bf475a6463b2219c1cce9c380f3301ac",
+      "sha256": "01f9bb9d02a71722e0f75ce2d5586dec44e84f1dc87749986db128c1fb078614",
+      "lines": 290,
+      "source_level": "fixed_commit_source_read_not_runtime"
+    },
+    {
+      "key": "t-order",
+      "path": "t3rik-mes/src/main/java/com/t3rik/mes/pro/controller/ProWorkorderController.java",
+      "local": ".evaluation/r07-approval-sources/t3rik-erp/t3rik-mes/src/main/java/com/t3rik/mes/pro/controller/ProWorkorderController.java",
+      "url": "https://github.com/WangSanPing/t3rik-erp/blob/8a40bfe241178c00394cc8011b6bfee1b3a12655/t3rik-mes/src/main/java/com/t3rik/mes/pro/controller/ProWorkorderController.java",
+      "commit": "8a40bfe241178c00394cc8011b6bfee1b3a12655",
+      "repo": "WangSanPing/t3rik-erp",
+      "git_blob_sha1": "3ef10fb9554206948e40dbe89043b1636fcb4a49",
+      "sha256": "38065db89d7be6f057d334bd0475fe4bc639a203c3a6a307dae0823371409a82",
+      "lines": 280,
+      "source_level": "fixed_commit_source_read_not_runtime"
+    },
+    {
+      "key": "o-change",
+      "path": "backend/app/Services/WorkOrder/ChangeRequestService.php",
+      "local": ".evaluation/r07-approval-sources/OpenMes/backend/app/Services/WorkOrder/ChangeRequestService.php",
+      "url": "https://github.com/Mes-Open/OpenMes/blob/b952915bddb2120737f10a730a1e45b1d162c47e/backend/app/Services/WorkOrder/ChangeRequestService.php",
+      "commit": "b952915bddb2120737f10a730a1e45b1d162c47e",
+      "repo": "Mes-Open/OpenMes",
+      "git_blob_sha1": "28a97c2fb9ee249993cf8f66b4401909b160db00",
+      "sha256": "23c958f9d1e8e47bafb7cb15cdfb71f2dfc2890d0b25e3fb0138fba14a273fba",
+      "lines": 731,
+      "source_level": "fixed_commit_source_read_not_runtime"
+    },
+    {
+      "key": "q-state",
+      "path": "mes-plugins/mes-plugins-orders/src/main/resources/orders/model/orderStateChange.xml",
+      "local": ".evaluation/r07-approval-sources/mes/mes-plugins/mes-plugins-orders/src/main/resources/orders/model/orderStateChange.xml",
+      "url": "https://github.com/qcadoo/mes/blob/94fd649003287b73a46e3ad1340eb3b4ddbb5f30/mes-plugins/mes-plugins-orders/src/main/resources/orders/model/orderStateChange.xml",
+      "commit": "94fd649003287b73a46e3ad1340eb3b4ddbb5f30",
+      "repo": "qcadoo/mes",
+      "git_blob_sha1": "d4574130900151d33d14c4ddf9995537525feaab",
+      "sha256": "7475d153db7e9293c331fa27487f1352aa2ede4974b804a97d48d3394aed7ab5",
+      "lines": 69,
+      "source_level": "fixed_commit_source_read_not_runtime"
+    },
+    {
+      "key": "q-enum",
+      "path": "mes-plugins/mes-plugins-orders/src/main/java/com/qcadoo/mes/orders/states/constants/OrderState.java",
+      "local": ".evaluation/r07-approval-sources/mes/mes-plugins/mes-plugins-orders/src/main/java/com/qcadoo/mes/orders/states/constants/OrderState.java",
+      "url": "https://github.com/qcadoo/mes/blob/94fd649003287b73a46e3ad1340eb3b4ddbb5f30/mes-plugins/mes-plugins-orders/src/main/java/com/qcadoo/mes/orders/states/constants/OrderState.java",
+      "commit": "94fd649003287b73a46e3ad1340eb3b4ddbb5f30",
+      "repo": "qcadoo/mes",
+      "git_blob_sha1": "16c4911c1d81046d5d010bc8a4edafb42a9f6cde",
+      "sha256": "e9bf1844fa49377ff085f5388c1fd9d1d64cfdcc832930bba791a423a2f5656f",
+      "lines": 115,
+      "source_level": "fixed_commit_source_read_not_runtime"
+    },
+    {
+      "key": "q-readme",
+      "path": "README.md",
+      "local": ".evaluation/r07-approval-sources/mes/README.md",
+      "url": "https://github.com/qcadoo/mes/blob/94fd649003287b73a46e3ad1340eb3b4ddbb5f30/README.md",
+      "commit": "94fd649003287b73a46e3ad1340eb3b4ddbb5f30",
+      "repo": "qcadoo/mes",
+      "git_blob_sha1": "9ad5f23623b78aed55427c03962dd9d221c58309",
+      "sha256": "2cbc3366ab8e00a42aa1c19dcb71d34210f9c9e594daa0815a65c2916b1d51fe",
+      "lines": 32,
+      "source_level": "fixed_commit_source_read_not_runtime"
+    },
+    {
+      "key": "k-policy",
+      "path": "riveredge-backend/src/apps/kuaizhizao/services/document_action_policy/work_order.py",
+      "local": ".evaluation/r07-approval-sources/kuaigeyun-mes/riveredge-backend/src/apps/kuaizhizao/services/document_action_policy/work_order.py",
+      "url": "https://github.com/kuaigeyun/kuaigeyun-mes/blob/32c46b01c1881863f4ced2db9412a4a9a68b7902/riveredge-backend/src/apps/kuaizhizao/services/document_action_policy/work_order.py",
+      "commit": "32c46b01c1881863f4ced2db9412a4a9a68b7902",
+      "repo": "kuaigeyun/kuaigeyun-mes",
+      "git_blob_sha1": "8669225892d4cc553584cc716b4fc1ee51554eb2",
+      "sha256": "a414e14b6af0fdab170a69869ccc90d114ffe67838977657534a925292f09500",
+      "lines": 296,
+      "source_level": "fixed_commit_source_read_not_runtime"
+    },
+    {
+      "key": "k-readme",
+      "path": "README.md",
+      "local": ".evaluation/r07-approval-sources/kuaigeyun-mes/README.md",
+      "url": "https://github.com/kuaigeyun/kuaigeyun-mes/blob/32c46b01c1881863f4ced2db9412a4a9a68b7902/README.md",
+      "commit": "32c46b01c1881863f4ced2db9412a4a9a68b7902",
+      "repo": "kuaigeyun/kuaigeyun-mes",
+      "git_blob_sha1": "c0fee2a70a17b9e8d523ff246c55bf6cebf58d5e",
+      "sha256": "8de22b1bd37cac37de79ec521e71e29a6be7227319de6593ac5fdd338e683a0e",
+      "lines": 261,
+      "source_level": "fixed_commit_source_read_not_runtime"
+    },
+    {
+      "key": "f-fixtures",
+      "repo": "frappe/frappe",
+      "commit": "f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab",
+      "path": "frappe/utils/fixtures.py",
+      "tree": "frappeTree",
+      "local": ".evaluation/r07-approval-sources/frappe/frappe/utils/fixtures.py",
+      "url": "https://github.com/frappe/frappe/blob/f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab/frappe/utils/fixtures.py",
+      "git_blob_sha1": "fcf99fa398f6477a9e2700b61c67d656b8429dd0",
+      "sha256": "0434efcce38d9653cec5ecab031ff242c2d114e67e6604482c6ac846d18a988a",
+      "lines": 87,
+      "source_level": "fixed_commit_source_read_not_runtime"
+    },
+    {
+      "key": "k-license",
+      "repo": "kuaigeyun/kuaigeyun-mes",
+      "commit": "32c46b01c1881863f4ced2db9412a4a9a68b7902",
+      "path": "LICENSE",
+      "tree": "k-tree",
+      "local": ".evaluation/r07-approval-sources/kuaigeyun-mes/LICENSE",
+      "url": "https://github.com/kuaigeyun/kuaigeyun-mes/blob/32c46b01c1881863f4ced2db9412a4a9a68b7902/LICENSE",
+      "git_blob_sha1": "d51b4f400715f0e4a7538e3fd2330590d4979f6f",
+      "sha256": "461c2099c001bb4a0ecade78ce5810d3fcea46f6269a806b8348eb123265c94f",
+      "lines": 211,
+      "source_level": "fixed_commit_source_read_not_runtime"
+    },
+    {
+      "key": "f-webhook",
+      "repo": "frappe/frappe",
+      "path": "frappe/integrations/doctype/webhook/webhook.py",
+      "commit": "f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab",
+      "url": "https://github.com/frappe/frappe/blob/f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab/frappe/integrations/doctype/webhook/webhook.py",
+      "local": ".evaluation/r07-approval-sources/frappe/frappe/integrations/doctype/webhook/webhook.py",
+      "git_blob_sha1": "f0350daa800569d0bbf612212695711778088c39",
+      "sha256": "592af0ddd826321677a98d69cb882b0db677815a4f47800c9505a064b3fb1a1d",
+      "lines": 265,
+      "source_level": "fixed_commit_source_read_not_runtime"
+    },
+    {
+      "key": "f-webhook-config",
+      "repo": "frappe/frappe",
+      "path": "frappe/integrations/doctype/webhook/webhook.json",
+      "commit": "f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab",
+      "url": "https://github.com/frappe/frappe/blob/f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab/frappe/integrations/doctype/webhook/webhook.json",
+      "local": ".evaluation/r07-approval-sources/frappe/frappe/integrations/doctype/webhook/webhook.json",
+      "git_blob_sha1": "fffd4e62384d1463972b1afd7961379523453c09",
+      "sha256": "a77db9dbfdaaf7579c8bc4896605861a750e980576d719e2788d9d0354a4fb0d",
+      "lines": 253,
+      "source_level": "fixed_commit_source_read_not_runtime"
+    },
+    {
+      "repo": "frappe/frappe",
+      "commit": "f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab",
+      "path": "frappe/model/workflow.py",
+      "local": ".evaluation/r07-sources/frappe/model/workflow.py",
+      "git_blob_sha1": "2ad8ad0bb5d0cdf7426b3ce0dd1a1eaa197973ef",
+      "sha256": "22f82d3ac294d2c428681b064f2a4c7f53d5f8438aeaec43142a2a4976c13038",
+      "source_level": "existing_readonly_snapshot_matched_fixed_tree"
+    },
+    {
+      "repo": "frappe/frappe",
+      "commit": "f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab",
+      "path": "frappe/model/document.py",
+      "local": ".evaluation/r07-sources/frappe/model/document.py",
+      "git_blob_sha1": "971abd386544893872b36c905893539d471940e6",
+      "sha256": "173e9c5eb9d4c9fd86569903df71d78f787705af281639f05be05fee6a549aca",
+      "source_level": "existing_readonly_snapshot_matched_fixed_tree"
+    },
+    {
+      "repo": "frappe/frappe",
+      "commit": "f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab",
+      "path": "frappe/permissions.py",
+      "local": ".evaluation/r07-sources/frappe/permissions.py",
+      "git_blob_sha1": "ebcbf8dca697a4d0071a3a9ef8272e40b0cc10b9",
+      "sha256": "efe6de57546d7c59a4c2ebe44fde123bdcdbfd83bbd7ec4bb889c562ecedc73a",
+      "source_level": "existing_readonly_snapshot_matched_fixed_tree"
+    },
+    {
+      "repo": "frappe/frappe",
+      "commit": "f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab",
+      "path": "frappe/hooks.py",
+      "local": ".evaluation/r07-sources/frappe/hooks.py",
+      "git_blob_sha1": "54eb08440136d16077e4c562606ff66ac59ed45e",
+      "sha256": "168e2178d7588a99709efdc35f84db9aa15e1903eda9c2ded7dd674628b4ce34",
+      "source_level": "existing_readonly_snapshot_matched_fixed_tree"
+    },
+    {
+      "repo": "frappe/frappe",
+      "commit": "f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab",
+      "path": "frappe/model/delete_doc.py",
+      "local": ".evaluation/r07-sources/frappe/model/delete_doc.py",
+      "git_blob_sha1": "bf515ccf265baf9d2da3f7fc06e977ec1d7e20be",
+      "sha256": "aab518348eddbeca8fdebffc08807502d0c9103d35093248a76096ca6a93d64d",
+      "source_level": "existing_readonly_snapshot_matched_fixed_tree"
+    },
+    {
+      "repo": "frappe/erpnext",
+      "commit": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+      "path": "erpnext/manufacturing/doctype/work_order/work_order.py",
+      "local": ".development/repos/erpnext/erpnext/manufacturing/doctype/work_order/work_order.py",
+      "sha256": "496edb0645ebebba33e94b80f9b1771f3e7818e057fca318fc0cf7b0393bfb7a",
+      "source_level": "maintenance_checkout_with_existing_B02_B10_patch"
+    },
+    {
+      "repo": "frappe/erpnext",
+      "commit": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+      "path": "erpnext/manufacturing/doctype/work_order/work_order.json",
+      "local": ".development/repos/erpnext/erpnext/manufacturing/doctype/work_order/work_order.json",
+      "sha256": "a01750b9260cdb0a8ad89e280b9e95d215d38b5026b9461b970687e1e5b241fc",
+      "source_level": "maintenance_checkout_with_existing_B02_B10_patch"
+    },
+    {
+      "repo": "frappe/erpnext",
+      "commit": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+      "path": "erpnext/manufacturing/doctype/work_order/work_order.js",
+      "local": ".development/repos/erpnext/erpnext/manufacturing/doctype/work_order/work_order.js",
+      "sha256": "680f5c40b12430b1a511aeb7a981d06612309ee632c681b65793befc5b07d6a8",
+      "source_level": "maintenance_checkout_with_existing_B02_B10_patch"
+    },
+    {
+      "repo": "frappe/erpnext",
+      "commit": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+      "path": "erpnext/manufacturing/doctype/work_order/test_work_order.py",
+      "local": ".development/repos/erpnext/erpnext/manufacturing/doctype/work_order/test_work_order.py",
+      "sha256": "6c108a751e5150d7e42675dfa2378aec4a0f1db66deaed27dacbda00cce016ea",
+      "source_level": "maintenance_checkout_with_existing_B02_B10_patch"
+    },
+    {
+      "repo": "frappe/erpnext",
+      "commit": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+      "path": "erpnext/manufacturing/doctype/job_card/job_card.py",
+      "local": ".development/repos/erpnext/erpnext/manufacturing/doctype/job_card/job_card.py",
+      "sha256": "952979d835ec902462bc71c98847f867e1fbadd43c97c30ccb249ad7eb982620",
+      "source_level": "maintenance_checkout_with_existing_B02_B10_patch"
+    },
+    {
+      "repo": "frappe/erpnext",
+      "commit": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+      "path": "erpnext/manufacturing/doctype/job_card/test_job_card.py",
+      "local": ".development/repos/erpnext/erpnext/manufacturing/doctype/job_card/test_job_card.py",
+      "sha256": "abcb9d1b79f7991f3df9cf9a993734728438ef2d998a5dbb8b5b8986ffd67125",
+      "source_level": "maintenance_checkout_with_existing_B02_B10_patch"
+    },
+    {
+      "repo": "frappe/erpnext",
+      "commit": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+      "path": "erpnext/stock/doctype/stock_entry/stock_entry.py",
+      "local": ".development/repos/erpnext/erpnext/stock/doctype/stock_entry/stock_entry.py",
+      "sha256": "859abda827612fc99ea136d62056bff6e360649f6b7c458e2be211352d94a2a0",
+      "source_level": "maintenance_checkout_with_existing_B02_B10_patch"
+    },
+    {
+      "repo": "frappe/erpnext",
+      "commit": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+      "path": "erpnext/stock/doctype/stock_entry/test_stock_entry.py",
+      "local": ".development/repos/erpnext/erpnext/stock/doctype/stock_entry/test_stock_entry.py",
+      "sha256": "10555b4e6e7276e7680f1b3a6f33925ecf79f3374215caccdad41050bd72d166",
+      "source_level": "maintenance_checkout_with_existing_B02_B10_patch"
+    },
+    {
+      "repo": "frappe/erpnext",
+      "commit": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+      "path": "erpnext/hooks.py",
+      "local": ".development/repos/erpnext/erpnext/hooks.py",
+      "sha256": "e9d55d583820c5411a2133754362e2bf0b8f24ca48bf236ae27460af7fdf66bc",
+      "source_level": "maintenance_checkout_with_existing_B02_B10_patch"
+    },
+    {
+      "repo": "frappe/erpnext",
+      "commit": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+      "path": "erpnext/setup/doctype/department/department.json",
+      "local": ".development/repos/erpnext/erpnext/setup/doctype/department/department.json",
+      "sha256": "4f39a9895de8641e3b19b49248547182f2b7f9e74e3796b7b525f718ad1adc45",
+      "source_level": "maintenance_checkout_with_existing_B02_B10_patch"
+    },
+    {
+      "repo": "frappe/erpnext",
+      "commit": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+      "path": "erpnext/setup/doctype/department/department.py",
+      "local": ".development/repos/erpnext/erpnext/setup/doctype/department/department.py",
+      "sha256": "1dd8dc5b5111a465bc2a6b79bef79194cbe1abd5bafa056379d2449099d01da1",
+      "source_level": "maintenance_checkout_with_existing_B02_B10_patch"
+    },
+    {
+      "repo": "frappe/erpnext",
+      "commit": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+      "path": "erpnext/setup/doctype/employee/employee.json",
+      "local": ".development/repos/erpnext/erpnext/setup/doctype/employee/employee.json",
+      "sha256": "a590444f7c5ec8a0d6b22c4b24704ad22f0f45cbdebadc2be58512acfc8dcd63",
+      "source_level": "maintenance_checkout_with_existing_B02_B10_patch"
+    }
+  ],
+  "document_hashes": {
+    "AGENTS.md": "ae3940a21a5ce1923b8ca9dcd39199103e8e0e885bbad4b24576eb80934fc438",
+    "docs/验收样例.md": "67b261077e3925379d542da6307afd31c1ed177b3a55b1a5a8f596f8fbc0f53f",
+    "docs/开发TODO.md": "38bc64ba372ab1aae7451296cef034259c519ae3e2b3d01ec5919eb3c32962d8",
+    "docs/决策与范围.md": "e03d1d48074a5730873506a091c75c32adb94f7295efa7f36997b8c2e40cb692",
+    "docs/任务卡/02-生产与物料闭环.md": "eb59eba14cd285365332653f1c59e59ca2c9253d50de33732890174322cb04d1",
+    "docs/任务卡/01-复用核验与选型.md": "2e36776c8a3debd0dd860aa251661224c223b9d6fdcdee48582d2bd11d6c8695",
+    "docs/任务卡/03-AI与交付.md": "de44277a9618a3ab08578b99c75f3924022e08e1f43dd9e0e512fd2554fab7ba",
+    "evidence/R07/card-binding.md": "7749065f28ff33be556ac6770fe0a9291047b6e5f74947713172ecde1065b8ef",
+    "evidence/R07/approval-binding.md": "e77c2512605c1ec786a1bd5259841aeeec3fcd2b5c812b751a21284230ccf447"
+  }
+}

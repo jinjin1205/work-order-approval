@@ -72,6 +72,135 @@ def stock_entry_row(item_code, qty, **kwargs):
 	}
 
 
+class TestStockExecutionApproval(FrappeTestCase):
+	def setUp(self):
+		from erpnext.manufacturing.doctype.work_order.test_work_order import make_approval_execution_fixture
+		self.f = make_approval_execution_fixture(self, stock=True)
+
+	def approve(self):
+		self.f.act("operator", "送审")
+		self.f.act("reviewer", "审核通过")
+		with change_settings("Manufacturing Settings", {"disable_capacity_planning": 1}):
+			self.f.act("director", "签批通过")
+		frappe.set_user(self.f.users["warehouse"])
+
+	def transfer(self, order=None, job_card=None):
+		doc = make_stock_entry(item_code=self.f.raw, company=self.f.company,
+			source=self.f.order_args["source_warehouse"], target=self.f.wip, qty=1,
+			purpose="Material Transfer for Manufacture", do_not_save=True)
+		doc.work_order = order.name if order else None
+		doc.fg_completed_qty = 1
+		if job_card:
+			doc.job_card = job_card.name
+			doc.items[0].job_card_item = job_card.items[0].name
+		return doc
+
+	def test_stock_execution_fixture_runnable(self):
+		self.assertTrue(frappe.has_permission("Stock Entry", "submit"))
+		self.assertEqual(frappe.db.get_value("Bin", {"item_code": self.f.raw, "warehouse": self.f.order_args["source_warehouse"]}, "actual_qty"), 100)
+		self.assertEqual(len(self.f.legacy_card.items), 1)
+
+	def assert_no_posting(self, doc):
+		self.assertFalse(frappe.db.exists("Stock Ledger Entry", {"voucher_type": "Stock Entry", "voucher_no": doc.name}))
+		self.assertNotEqual(frappe.db.get_value("Stock Entry", doc.name, "docstatus"), 1)
+
+	def test_pending_stock_submit_denied(self):
+		doc = self.transfer(self.f.order)
+		doc.insert()
+		# Model the native request rollback; a late exception is not a committed stock fact.
+		frappe.db.savepoint("b19_pending_submit")
+		try:
+			with self.assertRaises((frappe.PermissionError, frappe.ValidationError)):
+				doc.submit()
+		finally:
+			frappe.db.rollback(save_point="b19_pending_submit")
+		self.assert_no_posting(doc)
+
+	def test_unapproved_submitted_order_stock_denied(self):
+		doc = self.transfer(self.f.legacy_order)
+		doc.insert()
+		with self.assertRaises(frappe.PermissionError):
+			doc.submit()
+		self.assert_no_posting(doc)
+
+	def test_job_card_only_stock_submit_denied(self):
+		doc = self.transfer(job_card=self.f.legacy_card)
+		doc.insert()
+		self.assertEqual(doc.work_order, self.f.legacy_order.name)
+		with self.assertRaises(frappe.PermissionError):
+			doc.submit()
+		self.assert_no_posting(doc)
+
+	def test_approved_stock_transfer_allowed(self):
+		self.approve()
+		doc = self.transfer(self.f.order).insert().submit()
+		self.assertEqual(doc.docstatus, 1)
+		self.assertEqual(frappe.db.get_value("Bin", {"item_code": self.f.raw, "warehouse": self.f.wip}, "actual_qty"), 1)
+
+	def test_mismatched_job_card_cannot_borrow_approved_order(self):
+		self.approve()
+		doc = self.transfer(self.f.order, self.f.legacy_card)
+		with self.assertRaises((frappe.PermissionError, frappe.ValidationError)):
+			doc.insert().submit()
+		self.assert_no_posting(doc)
+
+	def test_disabled_workflow_stock_submit_denied(self):
+		self.approve()
+		doc = self.transfer(self.f.order).insert()
+		frappe.set_user("Administrator")
+		self.f.workflow.is_active = 0
+		self.f.workflow.save()
+		frappe.set_user(self.f.users["warehouse"])
+		with self.assertRaises(frappe.PermissionError):
+			doc.submit()
+		self.assert_no_posting(doc)
+
+	def test_approved_transfer_cancellation_preserved(self):
+		self.approve()
+		doc = self.transfer(self.f.order).insert().submit()
+		frappe.set_user("Administrator")
+		self.f.workflow.is_active = 0
+		self.f.workflow.save()
+		frappe.set_user(self.f.users["warehouse"])
+		doc.cancel()
+		self.assertEqual(doc.docstatus, 2)
+		self.assertEqual(frappe.db.get_value("Bin", {"item_code": self.f.raw, "warehouse": self.f.wip}, "actual_qty"), 0)
+
+	def test_approved_material_return_preserved(self):
+		from erpnext.manufacturing.doctype.work_order.work_order import make_stock_return_entry
+		self.approve()
+		self.transfer(self.f.order).insert().submit()
+		frappe.set_user("Administrator")
+		self.f.workflow.is_active = 0
+		self.f.workflow.save()
+		frappe.set_user(self.f.users["warehouse"])
+		returned = make_stock_return_entry(self.f.order.name)
+		returned.company = self.f.company
+		returned.items[0].cost_center = frappe.get_cached_value("Company", self.f.company, "cost_center")
+		returned.submit()
+		self.assertEqual(returned.docstatus, 1)
+		self.assertEqual(frappe.db.get_value("Bin", {"item_code": self.f.raw, "warehouse": self.f.wip}, "actual_qty"), 0)
+
+
+	def test_return_flag_cannot_disguise_new_material_issue(self):
+		self.approve()
+		frappe.set_user("Administrator")
+		self.f.workflow.is_active = 0
+		self.f.workflow.save()
+		frappe.set_user(self.f.users["warehouse"])
+		doc = self.transfer(self.f.order)
+		doc.is_return = 1
+		with self.assertRaises((frappe.PermissionError, frappe.ValidationError)):
+			doc.insert().submit()
+		self.assert_no_posting(doc)
+
+	def test_manufacturing_transfer_without_order_denied(self):
+		doc = self.transfer()
+		with self.assertRaises((frappe.PermissionError, frappe.ValidationError)):
+			doc.insert().submit()
+		self.assert_no_posting(doc)
+
+
 class TestStockEntry(FrappeTestCase):
 	def tearDown(self):
 		frappe.db.rollback()

@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-27",
+  "site": "xgd-test.localhost",
+  "commit": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+  "frappe_version": "15.124.0",
+  "source_files_match": true,
+  "checked_source_files": 13,
+  "changed_since_B02_B10": [
+    "erpnext/manufacturing/doctype/work_order/work_order.py",
+    "erpnext/manufacturing/doctype/work_order/test_work_order.py"
+  ],
+  "business_tables_unchanged": 11,
+  "persisted_workflows": 0,
+  "old_order_approval_fields_empty": true,
+  "patch_sha256": "982b8a633e0596d0d8ebf7f5f3bc8d7018310ed910d2a90aec2e6710e3af9c20",
+  "b19_only_patch_sha256": "346f9be21e3967f8a9ab7406f230ff944149d32967fdc7e1529a7c99c7b20eb6",
+  "tests": {
+    "fixture": {
+      "count": 1,
+      "seconds": 6.167,
+      "result": "PASS",
+      "log_sha256": "98164f40ff1f51ee7b4eb6b23ed9648e153e62f6a3e02376987f3757b3e56bcd"
+    },
+    "native": {
+      "count": 9,
+      "seconds": 57.24,
+      "result": "FAIL",
+      "log_sha256": "2c30ad974b95b6125bc25315f59809744cc22e50bd94328f364342493f46ab92"
+    },
+    "review_red": {
+      "count": 1,
+      "seconds": 6.941,
+      "result": "FAIL",
+      "log_sha256": "1465989956ff27b6642f0e97714a9bfff2bd9a3631058e62c52e704c4e2d9e85"
+    },
+    "B19_final": {
+      "count": 17,
+      "seconds": 105.647,
+      "result": "PASS",
+      "log_sha256": "ba37d5106336f433b71638bc9f2381844ff405d8f56299541d71ef3f7fc84bbc"
+    },
+    "unit_regression": {
+      "count": 2,
+      "seconds": 5.265,
+      "result": "PASS",
+      "log_sha256": "6c631118e04a392c8c7be5a1d578a7043365db1be5d15aeb1afa2e8b701b1540"
+    }
+  }
+}

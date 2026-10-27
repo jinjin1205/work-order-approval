@@ -139,13 +139,13 @@ class JobCard(Document):
 		self.set_wip_warehouse()
 
 	def validate(self):
+		self.validate_work_order()
 		self.validate_time_logs()
 		self.set_status()
 		self.validate_operation_id()
 		self.validate_sequence_id()
 		self.set_sub_operations()
 		self.update_sub_operation_status()
-		self.validate_work_order()
 
 	def on_update(self):
 		self.validate_job_card_qty()
@@ -1095,6 +1095,20 @@ class JobCard(Document):
 				)
 
 	def validate_work_order(self):
+		from erpnext.manufacturing.doctype.work_order.work_order import check_production_execution
+
+		before = self.get_doc_before_save()
+		if before and before.work_order and before.work_order != self.work_order:
+			if check_production_execution(before.work_order, require_team=True):
+				frappe.throw("审批工单的任务不能改挂到其他工单", frappe.PermissionError)
+
+		if self.work_order:
+			context = getattr(frappe.local, "production_approval_context", None)
+			approval_creating_task = (
+				self.is_new() and self.docstatus == 0 and not self.time_logs
+				and context and context.name == self.work_order and context.action == "签批通过"
+			)
+			check_production_execution(self.work_order, require_team=not approval_creating_task)
 		if self.is_work_order_closed():
 			frappe.throw(_("You can't make any changes to Job Card since Work Order is closed."))
 

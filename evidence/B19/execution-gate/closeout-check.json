@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-27",
+  "commit": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+  "patch_sha256": "491dfd65b6115962465172835b85e24e5eea20167c74b8546bb110299f5d7dfd",
+  "checked_source_files": 13,
+  "source_matches": true,
+  "old_business_tables_unchanged": 11,
+  "persisted_test_workflows": 0,
+  "old_approval_fields_empty": true,
+  "business_acceptance": false,
+  "G1_G2_G3": "not passed",
+  "tests": {
+    "job_gate": {
+      "count": 10,
+      "seconds": 84.881,
+      "result": "OK",
+      "local_log": "evidence/B19/execution-gate/job-fixed-first.log",
+      "log_sha256": "f60a07b0902a64facebac0b132348525b4662401ec6d1f5e2fa90a5e64be470c"
+    },
+    "stock_gate": {
+      "count": 11,
+      "seconds": 134.118,
+      "result": "OK",
+      "local_log": "evidence/B19/execution-gate/stock-fixed-first.log",
+      "log_sha256": "9283093a712393fd00ec907ea8ccdd9cb720567200edce8ca6eb63ad6384ae23"
+    },
+    "work_order_units": {
+      "count": 2,
+      "seconds": 5.677,
+      "result": "OK",
+      "local_log": "evidence/B19/execution-gate/units-work-order.log",
+      "log_sha256": "a3f161c35114189207259e36012afbd8abbe485b36de065d47ed01d07275307e"
+    },
+    "stock_entry_units": {
+      "count": 3,
+      "seconds": 1.416,
+      "result": "OK",
+      "local_log": "evidence/B19/execution-gate/units-stock-entry.log",
+      "log_sha256": "8288f49f591dcd22a163558e46067a38c1e46a7a7af7aa8eea663ac3bf30e84c"
+    }
+  }
+}

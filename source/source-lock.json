@@ -4,31 +4,31 @@
   "version": "15.124.1",
   "frappe_version": "15.124.0",
   "frappe_commit": "f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab",
-  "patch_sha256": "221937fbf2f011d04012aa6e0a602a982d65edb5e9a72b7b53f40060322ec5d3",
+  "patch_sha256": "491dfd65b6115962465172835b85e24e5eea20167c74b8546bb110299f5d7dfd",
   "files": {
     "erpnext/manufacturing/doctype/job_card/job_card.py": {
       "base_sha256": "5d7f77cea9046aaca47ae81e19ebb9766a78a06823dfdf6d392dbab869ba9779",
-      "modified_sha256": "952979d835ec902462bc71c98847f867e1fbadd43c97c30ccb249ad7eb982620"
+      "modified_sha256": "709bdd3e79a1e7b2ce69898b7f9879e082d8145f563473d1725195ff227dec3a"
     },
     "erpnext/manufacturing/doctype/job_card/test_job_card.py": {
       "base_sha256": "2947cbe40ebc044332a8a5802568c2ee1d782a8609cb6e35848b9a844dd84020",
-      "modified_sha256": "abcb9d1b79f7991f3df9cf9a993734728438ef2d998a5dbb8b5b8986ffd67125"
+      "modified_sha256": "461f8b0ea3dbf9ec5fc228d4793f6c79766599b07867ed800d9d03ae15636f4f"
     },
     "erpnext/manufacturing/doctype/work_order/test_work_order.py": {
       "base_sha256": "7fee421acd6c7616c621a648d129df834ec09fbb62e7a814a556975961a82285",
-      "modified_sha256": "6c108a751e5150d7e42675dfa2378aec4a0f1db66deaed27dacbda00cce016ea"
+      "modified_sha256": "4c2d0424ec41fac30d8bb50bc125974988ea2986a67a1b2db2f914f12f143191"
     },
     "erpnext/manufacturing/doctype/work_order/work_order.py": {
       "base_sha256": "4592b2f82a9045c74dbfdb8ea1d82dbd5c39bedd1d4bb6d6c21158af63c9d546",
-      "modified_sha256": "496edb0645ebebba33e94b80f9b1771f3e7818e057fca318fc0cf7b0393bfb7a"
+      "modified_sha256": "768eb2f35aaa1ffa78a452592560c09f7e07b0ff894f867bbb5e67f30dca7032"
     },
     "erpnext/stock/doctype/stock_entry/stock_entry.py": {
       "base_sha256": "d3b32c0f711e12bc2dcab7367d13ab36252a6a67e3e14219a11ee9f003eae19d",
-      "modified_sha256": "859abda827612fc99ea136d62056bff6e360649f6b7c458e2be211352d94a2a0"
+      "modified_sha256": "552494e7a6c1423e85181bd537996d1a1269ca8f94b641ebbc1b4c233f2139a0"
     },
     "erpnext/stock/doctype/stock_entry/test_stock_entry.py": {
       "base_sha256": "aa89dfe1a05bf9110ebdafae03cc88dd2d392a629b71b08496af76fcfcad6238",
-      "modified_sha256": "10555b4e6e7276e7680f1b3a6f33925ecf79f3374215caccdad41050bd72d166"
+      "modified_sha256": "09f0e195a7ffe8a886fb59436818709a3157e8ce23fcff304e9e04b3036a6285"
     }
   }
 }

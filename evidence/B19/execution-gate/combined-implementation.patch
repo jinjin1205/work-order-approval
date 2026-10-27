@@ -1,0 +1,1447 @@
+diff --git a/erpnext/manufacturing/doctype/job_card/job_card.py b/erpnext/manufacturing/doctype/job_card/job_card.py
+index cd8c77d..994fdfc 100644
+--- a/erpnext/manufacturing/doctype/job_card/job_card.py
++++ b/erpnext/manufacturing/doctype/job_card/job_card.py
+@@ -139,13 +139,13 @@ class JobCard(Document):
+ 		self.set_wip_warehouse()
+ 
+ 	def validate(self):
++		self.validate_work_order()
+ 		self.validate_time_logs()
+ 		self.set_status()
+ 		self.validate_operation_id()
+ 		self.validate_sequence_id()
+ 		self.set_sub_operations()
+ 		self.update_sub_operation_status()
+-		self.validate_work_order()
+ 
+ 	def on_update(self):
+ 		self.validate_job_card_qty()
+@@ -1095,6 +1095,20 @@ class JobCard(Document):
+ 				)
+ 
+ 	def validate_work_order(self):
++		from erpnext.manufacturing.doctype.work_order.work_order import check_production_execution
++
++		before = self.get_doc_before_save()
++		if before and before.work_order and before.work_order != self.work_order:
++			if check_production_execution(before.work_order, require_team=True):
++				frappe.throw("审批工单的任务不能改挂到其他工单", frappe.PermissionError)
++
++		if self.work_order:
++			context = getattr(frappe.local, "production_approval_context", None)
++			approval_creating_task = (
++				self.is_new() and self.docstatus == 0 and not self.time_logs
++				and context and context.name == self.work_order and context.action == "签批通过"
++			)
++			check_production_execution(self.work_order, require_team=not approval_creating_task)
+ 		if self.is_work_order_closed():
+ 			frappe.throw(_("You can't make any changes to Job Card since Work Order is closed."))
+ 
+@@ -1128,6 +1142,7 @@ def make_time_log(args):
+ @frappe.whitelist()
+ def get_operation_details(work_order, operation):
+ 	if work_order and operation:
++		frappe.get_doc("Work Order", work_order).check_permission("read")
+ 		return frappe.get_all(
+ 			"Work Order Operation",
+ 			fields=["name", "idx"],
+@@ -1136,10 +1151,14 @@ def get_operation_details(work_order, operation):
+ 
+ 
+ @frappe.whitelist()
+-def get_operations(doctype, txt, searchfield, start, page_len, filters):
+-	if not filters.get("work_order"):
++def get_operations(doctype, txt, searchfield, start, page_len, filters=None):
++	filters = frappe.parse_json(filters)
++	if filters is not None and not isinstance(filters, dict):
++		frappe.throw(_("工单筛选条件必须是对象。"))
++	if not filters or not filters.get("work_order"):
+ 		frappe.msgprint(_("Please select a Work Order first."))
+ 		return []
++	frappe.get_doc("Work Order", filters["work_order"]).check_permission("read")
+ 	args = {"parent": filters.get("work_order")}
+ 	if txt:
+ 		args["operation"] = ("like", f"%{txt}%")
+@@ -1264,7 +1283,17 @@ def get_job_details(start: str, end: str, filters: str | None = None):
+ 
+ 	from frappe.desk.reportview import get_filters_cond
+ 
++	frappe.has_permission("Job Card", "read", throw=True)
+ 	conditions = get_filters_cond("Job Card", filters, [])
++	# List access can grant select without read; confirm actual document reads.
++	readable_names = [
++		card.name
++		for card in frappe.get_list("Job Card", fields=["name"], limit_page_length=0)
++		if frappe.has_permission("Job Card", "read", doc=card.name)
++	]
++	if not readable_names:
++		return []
++	conditions += get_filters_cond("Job Card", {"name": ["in", readable_names]}, [])
+ 
+ 	job_cards = frappe.db.sql(
+ 		f""" SELECT `tabJob Card`.name, `tabJob Card`.work_order,
+diff --git a/erpnext/manufacturing/doctype/job_card/test_job_card.py b/erpnext/manufacturing/doctype/job_card/test_job_card.py
+index a432418..900261e 100644
+--- a/erpnext/manufacturing/doctype/job_card/test_job_card.py
++++ b/erpnext/manufacturing/doctype/job_card/test_job_card.py
+@@ -14,12 +14,16 @@ from erpnext.manufacturing.doctype.job_card.job_card import (
+ 	JobCardOverTransferError,
+ 	OperationMismatchError,
+ 	OverlapError,
++	get_job_details,
++	get_operation_details,
++	get_operations,
+ 	make_corrective_job_card,
+ 	make_material_request,
+ )
+ from erpnext.manufacturing.doctype.job_card.job_card import (
+ 	make_stock_entry as make_stock_entry_from_jc,
+ )
++from erpnext.manufacturing.doctype.production_plan.test_production_plan import make_bom
+ from erpnext.manufacturing.doctype.work_order.test_work_order import make_wo_order_test_record
+ from erpnext.manufacturing.doctype.work_order.work_order import WorkOrder, make_job_card
+ from erpnext.manufacturing.doctype.workstation.test_workstation import make_workstation
+@@ -27,6 +31,333 @@ from erpnext.stock.doctype.item.test_item import create_item
+ from erpnext.stock.doctype.stock_entry.stock_entry_utils import make_stock_entry
+ 
+ 
++class TestJobCardExecutionApproval(FrappeTestCase):
++	def setUp(self):
++		from erpnext.manufacturing.doctype.work_order.test_work_order import make_approval_execution_fixture
++		self.f = make_approval_execution_fixture(self)
++
++	def approve(self):
++		self.f.act("operator", "送审")
++		self.f.act("reviewer", "审核通过")
++		with change_settings("Manufacturing Settings", {"disable_capacity_planning": 1}):
++			self.f.act("director", "签批通过")
++		return frappe.get_doc("Job Card", {"work_order": self.f.order.name, "operation": self.f.operations[0]})
++
++	def start(self, card):
++		from erpnext.manufacturing.doctype.job_card.job_card import make_time_log
++		make_time_log({"job_card_id": card.name, "start_time": now(), "status": "Work In Progress", "employees": []})
++
++	def test_execution_fixture_runnable(self):
++		self.f.legacy_order.reload()
++		self.assertEqual(self.f.legacy_order.workflow_state, "存量待核")
++		self.assertEqual(self.f.legacy_card.docstatus, 0)
++		self.assertFalse(self.f.legacy_card.time_logs)
++		self.assertEqual(self.f.order.workflow_state, "草稿")
++
++	def test_pending_manual_job_card_denied(self):
++		from erpnext.manufacturing.doctype.work_order.work_order import create_job_card
++		order = self.f.order
++		card = create_job_card(order, order.operations[0].as_dict())
++		card.for_quantity = 1
++		with self.assertRaises(frappe.PermissionError):
++			card.insert()
++		self.assertFalse(frappe.db.exists("Job Card", {"work_order": order.name}))
++
++	def test_pending_make_job_card_denied(self):
++		order = self.f.order
++		row = order.operations[0].as_dict()
++		row.update(qty=1, pending_qty=10)
++		with self.assertRaises(frappe.PermissionError):
++			make_job_card(order.name, [row])
++		self.assertFalse(frappe.db.exists("Job Card", {"work_order": order.name}))
++
++	def test_unapproved_legacy_timer_denied(self):
++		with self.assertRaises(frappe.PermissionError):
++			self.start(self.f.legacy_card)
++		self.f.legacy_card.reload()
++		self.assertFalse(self.f.legacy_card.time_logs)
++
++	def test_unapproved_legacy_report_denied(self):
++		card = self.f.legacy_card
++		card.append("time_logs", {"from_time": add_to_date(now(), minutes=-1), "to_time": now(), "completed_qty": card.for_quantity})
++		with self.assertRaises(frappe.PermissionError):
++			card.submit()
++		card.reload()
++		self.assertEqual(card.docstatus, 0)
++		self.assertFalse(card.time_logs)
++
++	def test_approved_task_and_timer_allowed(self):
++		card = self.approve()
++		frappe.set_user(self.f.users["operator"])
++		self.start(card)
++		card.reload()
++		self.assertEqual(len(card.time_logs), 1)
++		self.assertEqual(card.docstatus, 0)
++		self.assertEqual(card.total_completed_qty, 0)
++
++	def test_cross_team_timer_denied(self):
++		card = self.approve()
++		frappe.set_user(self.f.users["other"])
++		with self.assertRaises(frappe.PermissionError):
++			self.start(card)
++		card.reload()
++		self.assertFalse(card.time_logs)
++
++	def test_disabled_workflow_timer_denied(self):
++		card = self.approve()
++		frappe.set_user("Administrator")
++		self.f.workflow.is_active = 0
++		self.f.workflow.save()
++		frappe.set_user(self.f.users["operator"])
++		with self.assertRaises(frappe.PermissionError):
++			self.start(card)
++		card.reload()
++		self.assertFalse(card.time_logs)
++
++	def test_clearing_work_order_cannot_detach_task(self):
++		card = self.approve()
++		frappe.set_user(self.f.users["operator"])
++		card.work_order = None
++		with self.assertRaises((frappe.PermissionError, frappe.MandatoryError)):
++			card.save()
++		card.reload()
++		self.assertEqual(card.work_order, self.f.order.name)
++
++
++	def test_task_cannot_borrow_another_approved_order(self):
++		self.approve()
++		frappe.set_user(self.f.users["operator"])
++		card = self.f.legacy_card
++		card.work_order = self.f.order.name
++		with self.assertRaises((frappe.PermissionError, frappe.ValidationError)):
++			card.save()
++		card.reload()
++		self.assertEqual(card.work_order, self.f.legacy_order.name)
++
++
++class TestJobCardReadPermissions(FrappeTestCase):
++	"""Helper reads must obey the same native object grants as document reads."""
++
++	def setUp(self):
++		from frappe.permissions import add_permission, add_user_permission
++
++		import erpnext
++
++		frappe.set_user("Administrator")
++		self.prefix = "B02-" + random_string(8)
++		company = erpnext.get_default_company()
++		warehouse = (
++			frappe.get_doc({"doctype": "Warehouse", "warehouse_name": self.prefix, "company": company})
++			.insert()
++			.name
++		)
++		raw = create_item(self.prefix + "-RM", company=company, warehouse=warehouse)
++		finished = create_item(self.prefix + "-FG", company=company, warehouse=warehouse)
++		bom = make_bom(
++			item=finished.name,
++			company=company,
++			currency=frappe.get_cached_value("Company", company, "default_currency"),
++			raw_materials=[raw.name],
++			rm_qty=1,
++			with_operations=False,
++		)
++		workstation = make_workstation(workstation_name=self.prefix).name
++		self.operations = [
++			frappe.get_doc({"doctype": "Operation", "__newname": self.prefix + suffix}).insert().name
++			for suffix in ("-下料", "-检验")
++		]
++		self.orders = []
++		self.cards = []
++		for index in range(2):
++			order = make_wo_order_test_record(
++				item=finished.name,
++				bom_no=bom.name,
++				qty=10,
++				company=company,
++				stock_uom="Nos",
++				source_warehouse=warehouse,
++				wip_warehouse=warehouse,
++				fg_warehouse=warehouse,
++				do_not_save=True,
++			)
++			for operation in self.operations:
++				order.append(
++					"operations", {"operation": operation, "workstation": workstation, "time_in_mins": 1}
++				)
++			order.insert()
++			self.orders.append(order)
++			card = frappe.get_doc(
++				{
++					"doctype": "Job Card",
++					"work_order": order.name,
++					"company": company,
++					"workstation": workstation,
++					"wip_warehouse": warehouse,
++					"operation": self.operations[0],
++					"operation_id": order.operations[0].name,
++					"for_quantity": 1,
++					"remarks": self.prefix + ("-可见" if index == 0 else "-受限"),
++					"time_logs": [
++						{
++							"from_time": f"2026-10-{20 + index} 08:00:00",
++							"to_time": f"2026-10-{20 + index} 08:01:00",
++						}
++					],
++				}
++			).insert()
++			self.cards.append(card)
++		self.role = (
++			frappe.get_doc({"doctype": "Role", "role_name": self.prefix, "desk_access": 1}).insert().name
++		)
++		for doctype in ("Work Order", "Job Card"):
++			add_permission(doctype, self.role, ptype="read")
++		self.reader = frappe.get_doc(
++			{
++				"doctype": "User",
++				"email": self.prefix.lower() + "@example.invalid",
++				"first_name": "权限验证员",
++				"send_welcome_email": 0,
++				"language": "zh",
++				"roles": [{"role": self.role}],
++			}
++		).insert()
++		self.outsider = frappe.get_doc(
++			{
++				"doctype": "User",
++				"email": self.prefix.lower() + "-outside@example.invalid",
++				"first_name": "无权限对照",
++				"send_welcome_email": 0,
++				"language": "zh",
++			}
++		).insert()
++		add_user_permission("Work Order", self.orders[0].name, self.reader.name)
++		frappe.set_user(self.reader.name)
++
++	def tearDown(self):
++		frappe.set_user("Administrator")
++		frappe.db.rollback()
++		frappe.clear_cache()
++
++	def test_read_fixture_and_authorized_helpers(self):
++		self.orders[0].check_permission("read")
++		with self.assertRaises(frappe.PermissionError):
++			self.orders[1].check_permission("read")
++		self.assertFalse(frappe.has_permission("Stock Entry", "create"))
++		self.assertEqual(
++			get_operation_details(self.orders[0].name, self.operations[0]),
++			[{"name": self.orders[0].operations[0].name, "idx": 1}],
++		)
++		self.assertEqual(
++			[
++				row[0]
++				for row in get_operations(
++					"Operation", "检验", "name", 0, 1, {"work_order": self.orders[0].name}
++				)
++			],
++			[self.operations[1]],
++		)
++		self.assertEqual(
++			[
++				row[0]
++				for row in get_operations("Operation", "", "name", 1, 1, {"work_order": self.orders[0].name})
++			],
++			[self.operations[1]],
++		)
++
++	def test_operation_helpers_reject_other_work_order(self):
++		with self.assertRaises(frappe.PermissionError):
++			get_operation_details(self.orders[1].name, self.operations[0])
++		with self.assertRaises(frappe.PermissionError):
++			get_operations("Operation", "", "name", 0, 20, {"work_order": self.orders[1].name})
++
++	def test_helpers_reject_user_without_business_role(self):
++		frappe.set_user(self.outsider.name)
++		with self.assertRaises(frappe.PermissionError):
++			get_operation_details(self.orders[0].name, self.operations[0])
++		with self.assertRaises(frappe.PermissionError):
++			get_operations("Operation", "", "name", 0, 20, {"work_order": self.orders[0].name})
++		with self.assertRaises(frappe.PermissionError):
++			get_job_details("2026-10-19", "2026-10-22")
++
++	def test_calendar_contains_only_readable_cards(self):
++		events = get_job_details("2026-10-19", "2026-10-22")
++		self.assertEqual({event["name"] for event in events}, {self.cards[0].name})
++		self.assertEqual(str(events[0]["from_time"]), "2026-10-20 08:00:00")
++		self.assertEqual(str(events[0]["to_time"]), "2026-10-20 08:01:00")
++		self.assertIn(self.orders[0].name, events[0]["subject"])
++		self.assertEqual(
++			get_job_details("2026-10-19", "2026-10-22", frappe.as_json({"name": self.cards[1].name})), []
++		)
++
++	def test_helpers_recheck_removed_role(self):
++		frappe.set_user("Administrator")
++		self.reader.set("roles", [])
++		self.reader.save()
++		frappe.set_user(self.reader.name)
++		with self.assertRaises(frappe.PermissionError):
++			get_operation_details(self.orders[0].name, self.operations[0])
++		with self.assertRaises(frappe.PermissionError):
++			get_job_details("2026-10-19", "2026-10-22")
++
++	def test_calendar_requires_read_not_select_and_honors_shared_read(self):
++		from frappe.permissions import update_permission_property
++
++		frappe.set_user("Administrator")
++		update_permission_property("Job Card", self.role, 0, "read", 0)
++		update_permission_property("Job Card", self.role, 0, "select", 1)
++		frappe.set_user(self.reader.name)
++		self.assertTrue(frappe.only_has_select_perm("Job Card"))
++		with self.assertRaises(frappe.PermissionError):
++			get_job_details("2026-10-19", "2026-10-22")
++
++		frappe.set_user("Administrator")
++		frappe.share.add("Job Card", self.cards[0].name, user=self.reader.name, read=1)
++		for permission in frappe.get_all("User Permission", filters={"user": self.reader.name}, pluck="name"):
++			frappe.delete_doc("User Permission", permission)
++		frappe.set_user(self.reader.name)
++		self.assertTrue(frappe.has_permission("Job Card", "read"))
++		self.assertFalse(frappe.has_permission("Job Card", "read", doc=self.cards[1].name))
++		events = get_job_details("2026-10-19", "2026-10-22")
++		self.assertEqual({event["name"] for event in events}, {self.cards[0].name})
++
++	def test_calendar_preserves_exclusion_filters(self):
++		events = get_job_details("2026-10-19", "2026-10-22", frappe.as_json({"status": "!Completed"}))
++		self.assertEqual({event["name"] for event in events}, {self.cards[0].name})
++		self.assertEqual(
++			get_job_details("2026-10-19", "2026-10-22", frappe.as_json({"status": "!Work In Progress"})), []
++		)
++		events = get_job_details(
++			"2026-10-19", "2026-10-22", frappe.as_json({"work_order": ["like", self.orders[0].name + "%"]})
++		)
++		self.assertEqual({event["name"] for event in events}, {self.cards[0].name})
++
++	def test_operation_search_without_parent_has_no_results(self):
++		self.assertEqual(get_operations("Operation", "", "name", 0, 20), [])
++		self.assertEqual(get_operations("Operation", "", "name", 0, 20, None), [])
++		self.assertEqual(get_operations("Operation", "", "name", 0, 20, {}), [])
++
++	def test_calendar_preserves_literal_percent_filters(self):
++		frappe.set_user("Administrator")
++		self.cards[0].remarks = "进度100% '备注'"
++		self.cards[0].save()
++		frappe.set_user(self.reader.name)
++		events = get_job_details(
++			"2026-10-19", "2026-10-22", frappe.as_json({"remarks": self.cards[0].remarks})
++		)
++		self.assertEqual({event["name"] for event in events}, {self.cards[0].name})
++		self.assertEqual(
++			get_job_details(
++				"2026-10-19", "2026-10-22", frappe.as_json({"remarks": "!" + self.cards[0].remarks})
++			),
++			[],
++		)
++
++	def test_operation_search_rejects_malformed_filters(self):
++		for filters in (["work_order"], '["work_order"]', 7):
++			with self.subTest(filters=filters), self.assertRaises(frappe.ValidationError):
++				get_operations("Operation", "", "name", 0, 20, filters)
++
++
+ class TestJobCard(FrappeTestCase):
+ 	def setUp(self):
+ 		make_bom_for_jc_tests()
+diff --git a/erpnext/manufacturing/doctype/work_order/test_work_order.py b/erpnext/manufacturing/doctype/work_order/test_work_order.py
+index ffe9378..cdfec84 100644
+--- a/erpnext/manufacturing/doctype/work_order/test_work_order.py
++++ b/erpnext/manufacturing/doctype/work_order/test_work_order.py
+@@ -49,6 +49,516 @@ from erpnext.stock.utils import get_bin
+ test_dependencies = ["BOM"]
+ 
+ 
++class TestWorkOrderApproval(FrappeTestCase):
++	"""Isolated real Workflow, users and Work Orders; no mocked business writes."""
++
++	def setUp(self, *, before_workflow=None):
++		from frappe.permissions import add_permission, add_user_permission, update_permission_property
++		from erpnext.manufacturing.doctype.workstation.test_workstation import make_workstation
++		import erpnext
++
++		frappe.set_user("Administrator")
++		self.addCleanup(self.clean_fixture)
++		self.assertTrue(frappe.get_meta("Work Order").has_field("production_team"))
++		self.assertFalse(frappe.db.exists("Workflow", {"document_type": "Work Order"}))
++		self.prefix = "B19-" + frappe.generate_hash(length=8)
++		self.company = erpnext.get_default_company()
++		self.roles = ["生产工单发起", "生产工单审核", "生产工单签批"]
++		for role in self.roles:
++			if not frappe.db.exists("Role", role):
++				frappe.get_doc({"doctype": "Role", "role_name": role, "desk_access": 1}).insert()
++			add_permission("Item", role, ptype="read")
++			for dt in ("Work Order", "Job Card"):
++				add_permission(dt, role, ptype="read")
++				for ptype in ("create", "write", "submit"):
++					update_permission_property(dt, role, 0, ptype, 1)
++		self.teams = [frappe.get_doc({"doctype": "Department", "department_name": self.prefix + suffix,
++			"company": self.company}).insert().name for suffix in ("-甲班", "-乙班")]
++		self.users = {}
++		for key, roles, team in [("operator", [self.roles[0]], 0), ("reviewer", [self.roles[1]], 0),
++			("director", [self.roles[2]], None), ("other", [self.roles[1]], 1), ("outsider", [], None)]:
++			user = frappe.get_doc({"doctype": "User", "email": self.prefix.lower() + "-" + key + "@example.invalid",
++				"first_name": key, "language": "zh", "send_welcome_email": 0,
++				"roles": [{"role": role} for role in roles]}).insert()
++			self.users[key] = user.name
++			if roles:
++				add_user_permission("Company", self.company, user.name)
++			if team is not None:
++				add_user_permission("Department", self.teams[team], user.name, applicable_for="Work Order")
++		warehouse = frappe.get_doc({"doctype": "Warehouse", "warehouse_name": self.prefix, "company": self.company}).insert().name
++		raw = create_item(self.prefix + "-RM", company=self.company, warehouse=warehouse)
++		finished = create_item(self.prefix + "-FG", company=self.company, warehouse=warehouse)
++		bom = make_bom(item=finished.name, company=self.company,
++			currency=frappe.get_cached_value("Company", self.company, "default_currency"),
++			raw_materials=[raw.name], rm_qty=1, with_operations=False)
++		self.order_args = dict(item=finished.name, bom_no=bom.name, qty=10, company=self.company,
++			stock_uom="Nos", source_warehouse=warehouse, wip_warehouse=warehouse, fg_warehouse=warehouse, do_not_save=True)
++		self.workstation = make_workstation(workstation_name=self.prefix).name
++		self.operations = [frappe.get_doc({"doctype": "Operation", "__newname": self.prefix + suffix}).insert().name
++			for suffix in ("-下料", "-加工", "-检验")]
++		# Create old draft/submitted records before enabling Workflow. They must never become approved.
++		self.old_draft = make_wo_order_test_record(**self.order_args).insert()
++		self.old_submitted = make_wo_order_test_record(**self.order_args).insert().submit()
++		if before_workflow:
++			before_workflow(self)
++		self.workflow = self.make_workflow()
++		frappe.set_user(self.users["operator"])
++		self.order = make_wo_order_test_record(**self.order_args)
++		self.order.production_team = self.teams[0]
++		for operation in self.operations:
++			self.order.append("operations", {"operation": operation, "workstation": self.workstation, "time_in_mins": 1})
++		self.order.insert()
++
++	def clean_fixture(self):
++		frappe.set_user("Administrator")
++		frappe.db.rollback()
++		frappe.clear_cache()
++
++	def make_workflow(self):
++		states = [("草稿", 0, self.roles[0]), ("待审核", 0, self.roles[1]),
++			("待签批", 0, self.roles[2]), ("退回", 0, self.roles[0]),
++			("终止", 0, self.roles[0]), ("存量待核", 1, "System Manager"), ("已批准", 1, self.roles[2])]
++		transitions = [("草稿", "送审", "待审核", 0), ("退回", "送审", "待审核", 0),
++			("待审核", "审核通过", "待签批", 1), ("待签批", "签批通过", "已批准", 2),
++			("待审核", "退回", "退回", 1), ("待签批", "退回", "退回", 2),
++			("待审核", "撤回", "草稿", 0), ("待签批", "撤回", "草稿", 0)]
++		for state, _, _ in states:
++			if not frappe.db.exists("Workflow State", state):
++				frappe.get_doc({"doctype": "Workflow State", "workflow_state_name": state}).insert()
++		for action in {row[1] for row in transitions}:
++			if not frappe.db.exists("Workflow Action Master", action):
++				frappe.get_doc({"doctype": "Workflow Action Master", "workflow_action_name": action}).insert()
++		return frappe.get_doc({"doctype": "Workflow", "workflow_name": "生产工单两级审批", "document_type": "Work Order",
++			"workflow_state_field": "workflow_state", "is_active": 1, "override_status": 1, "send_email_alert": 0,
++			"states": [{"state": s, "doc_status": str(d), "allow_edit": r, "send_email": 0} for s,d,r in states],
++			"transitions": [{"state": s, "action": a, "next_state": n, "allowed": self.roles[r],
++				"allow_self_approval": int(r == 0)} for s,a,n,r in transitions]}).insert()
++
++	def act(self, user, action, version=None, reason=None):
++		from erpnext.manufacturing.doctype.work_order.work_order import apply_production_approval
++		frappe.set_user(self.users[user])
++		result = apply_production_approval(self.order.name, action, str(version or self.order.modified), reason)
++		self.order.reload()
++		return result
++
++	def ready_for_review(self):
++		self.act("operator", "送审")
++
++	def test_00_fixture_runnable(self):
++		self.assertEqual(self.order.docstatus, 0)
++		self.assertEqual(self.order.workflow_state, "草稿")
++		self.assertEqual(len(self.order.operations), 3)
++		self.assertEqual(self.order.owner, self.users["operator"])
++		self.assertFalse(frappe.db.exists("Job Card", {"work_order": self.order.name}))
++
++	def test_normal_two_stage_workflow(self):
++		self.ready_for_review()
++		self.assertEqual(self.order.docstatus, 0)
++		self.act("reviewer", "审核通过")
++		self.assertEqual(self.order.docstatus, 0)
++		with change_settings("Manufacturing Settings", {"disable_capacity_planning": 1}):
++			self.act("director", "签批通过")
++		self.assertEqual(self.order.workflow_state, "已批准")
++		self.assertEqual(self.order.approval_requested_by, self.users["operator"])
++		self.assertEqual(self.order.approval_reviewed_by, self.users["reviewer"])
++		comments = frappe.get_all("Comment", filters={"reference_doctype": "Work Order", "reference_name": self.order.name, "comment_type": "Comment"}, fields=["owner", "content", "creation"])
++		approval_comments = [c for c in comments if "依据版本" in c.content]
++		self.assertEqual({c.owner for c in approval_comments}, {self.users[k] for k in ("operator", "reviewer", "director")})
++		self.assertTrue(all(c.creation for c in approval_comments))
++		self.assertEqual(self.order.docstatus, 1)
++		self.assertEqual(self.order.status, "Not Started")
++		cards = frappe.get_all("Job Card", filters={"work_order": self.order.name}, fields=["name", "docstatus", "total_completed_qty"])
++		self.assertEqual(len(cards), 3)
++		self.assertTrue(all(c.docstatus == 0 and c.total_completed_qty == 0 for c in cards))
++		self.assertFalse(frappe.db.exists("Stock Entry", {"work_order": self.order.name}))
++		self.assertGreaterEqual(frappe.db.count("Comment", {"reference_doctype": "Work Order", "reference_name": self.order.name, "comment_type": "Workflow"}), 3)
++
++	def test_cross_team_and_no_role_denied(self):
++		self.ready_for_review()
++		for user in ("other", "outsider"):
++			with self.subTest(user=user), self.assertRaises(frappe.PermissionError):
++				self.act(user, "审核通过")
++		self.order.reload()
++		self.assertEqual(self.order.workflow_state, "待审核")
++
++	def test_creator_self_approval_denied(self):
++		frappe.set_user("Administrator")
++		frappe.get_doc("User", self.users["operator"]).add_roles(self.roles[1])
++		self.ready_for_review()
++		with self.assertRaises((frappe.PermissionError, frappe.ValidationError)):
++			self.act("operator", "审核通过")
++
++	def test_reviewer_cannot_also_sign(self):
++		frappe.set_user("Administrator")
++		frappe.get_doc("User", self.users["reviewer"]).add_roles(self.roles[2])
++		self.ready_for_review()
++		self.act("reviewer", "审核通过")
++		with self.assertRaises(frappe.PermissionError):
++			self.act("reviewer", "签批通过")
++
++	def test_direct_submit_denied(self):
++		self.ready_for_review()
++		frappe.set_user(self.users["director"])
++		with self.assertRaises(frappe.PermissionError):
++			self.order.submit()
++		self.assertFalse(frappe.db.exists("Job Card", {"work_order": self.order.name}))
++
++	def test_direct_save_self_approval_denied(self):
++		frappe.set_user("Administrator")
++		frappe.get_doc("User", self.users["operator"]).add_roles(self.roles[1])
++		self.ready_for_review()
++		frappe.set_user(self.users["operator"])
++		self.order.workflow_state = "待签批"
++		with self.assertRaises(frappe.PermissionError):
++			self.order.save()
++
++	def test_stale_page_after_resubmit_denied(self):
++		self.ready_for_review()
++		old_version = self.order.modified
++		self.act("reviewer", "退回", reason="修改计划数量")
++		frappe.set_user(self.users["operator"])
++		self.order.qty = 11
++		self.order.save()
++		self.act("operator", "送审")
++		with self.assertRaises(frappe.TimestampMismatchError):
++			self.act("reviewer", "审核通过", version=old_version)
++		self.order.reload()
++		self.assertEqual(self.order.workflow_state, "待审核")
++
++	def test_old_orders_not_backfilled_as_approved(self):
++		frappe.set_user("Administrator")
++		self.workflow.save()
++		self.old_draft.reload()
++		self.old_submitted.reload()
++		self.assertEqual(self.old_draft.docstatus, 0)
++		self.assertEqual(self.old_submitted.docstatus, 1)
++		self.assertNotEqual(self.old_draft.workflow_state, "已批准")
++		self.assertEqual(self.old_submitted.workflow_state, "存量待核")
++		self.assertEqual(frappe.db.count("Workflow", {"document_type": "Work Order"}), 1)
++
++
++	def test_native_action_cannot_bypass_business_entry(self):
++		from frappe.model.workflow import apply_workflow
++		self.ready_for_review()
++		frappe.set_user(self.users["reviewer"])
++		with self.assertRaises(frappe.PermissionError):
++			apply_workflow(self.order.as_dict(), "审核通过")
++		self.order.reload()
++		self.assertEqual(self.order.workflow_state, "待审核")
++		self.assertFalse(self.order.approval_reviewed_by)
++
++	def test_pending_basis_and_forged_actor_are_rejected(self):
++		self.ready_for_review()
++		for user, field, value in [("reviewer", "qty", 99), ("operator", "approval_reviewed_by", self.users["reviewer"])]:
++			frappe.set_user(self.users[user])
++			self.order.reload()
++			self.order.set(field, value)
++			self.order.flags.production_approval_context = {"action": "审核通过"}
++			with self.subTest(field=field), self.assertRaises(frappe.PermissionError):
++				self.order.save()
++		self.order.reload()
++		self.assertEqual(self.order.qty, 10)
++		self.assertFalse(self.order.approval_reviewed_by)
++
++	def test_revoked_role_and_company_scope_denied(self):
++		from frappe.permissions import remove_user_permission
++		self.ready_for_review()
++		frappe.set_user("Administrator")
++		frappe.get_doc("User", self.users["reviewer"]).remove_roles(self.roles[1])
++		with self.assertRaises(frappe.PermissionError):
++			self.act("reviewer", "审核通过")
++		frappe.set_user("Administrator")
++		frappe.get_doc("User", self.users["reviewer"]).add_roles(self.roles[1])
++		remove_user_permission("Company", self.company, self.users["reviewer"])
++		with self.assertRaises(frappe.PermissionError):
++			self.act("reviewer", "审核通过")
++		self.order.reload()
++		self.assertEqual(self.order.workflow_state, "待审核")
++
++	def test_return_requires_reason_and_reruns_review(self):
++		self.ready_for_review()
++		self.act("reviewer", "审核通过")
++		with self.assertRaises(frappe.ValidationError):
++			self.act("director", "退回")
++		self.order.reload()
++		self.assertEqual(self.order.workflow_state, "待签批")
++		self.act("director", "退回", reason="数量需要调整")
++		self.assertFalse(self.order.approval_reviewed_by)
++		frappe.set_user(self.users["operator"])
++		self.order.qty = 11
++		self.order.save()
++		self.act("operator", "送审")
++		self.assertEqual(self.order.workflow_state, "待审核")
++		with self.assertRaises(frappe.PermissionError):
++			self.act("director", "签批通过")
++
++	def test_old_draft_is_not_a_new_approval_request(self):
++		from erpnext.manufacturing.doctype.work_order.work_order import apply_production_approval
++		frappe.set_user("Administrator")
++		self.old_draft.reload()
++		with self.assertRaises(frappe.PermissionError):
++			apply_production_approval(self.old_draft.name, "送审", str(self.old_draft.modified))
++		self.old_draft.approval_requested_by = self.users["operator"]
++		with self.assertRaises(frappe.PermissionError):
++			self.old_draft.save()
++
++	def test_new_order_cannot_claim_approval(self):
++		frappe.set_user(self.users["operator"])
++		doc = make_wo_order_test_record(**self.order_args)
++		doc.production_team = self.teams[0]
++		doc.approval_reviewed_by = self.users["reviewer"]
++		with self.assertRaises(frappe.PermissionError):
++			doc.insert()
++
++	def test_review_and_withdrawal_clear_previous_reviewer(self):
++		self.ready_for_review()
++		self.act("reviewer", "审核通过")
++		self.assertEqual(self.order.approval_reviewed_by, self.users["reviewer"])
++		self.act("operator", "撤回", reason="调整计划")
++		self.assertEqual(self.order.workflow_state, "草稿")
++		self.assertFalse(self.order.approval_reviewed_by)
++		self.act("operator", "送审")
++		self.assertEqual(self.order.workflow_state, "待审核")
++
++
++	def test_disabled_workflow_cannot_be_bypassed_by_clearing_actor(self):
++		self.ready_for_review()
++		frappe.set_user("Administrator")
++		self.workflow.is_active = 0
++		self.workflow.save()
++		frappe.set_user(self.users["reviewer"])
++		self.order.approval_requested_by = None
++		self.order.workflow_state = None
++		self.order.qty = 99
++		with self.assertRaises(frappe.PermissionError):
++			self.order.save()
++		self.order.reload()
++		self.assertEqual(self.order.approval_requested_by, self.users["operator"])
++		self.assertEqual(self.order.qty, 10)
++
++
++def make_approval_execution_fixture(test_case, *, stock=False):
++	"""Reuse B19 setup, adding genuine pre-activation tasks and stock in the same rollback."""
++	fixture = TestWorkOrderApproval()
++	test_case.addCleanup(fixture.doCleanups)
++
++	def seed_before_workflow(f):
++		f.wip = frappe.get_doc({"doctype": "Warehouse", "warehouse_name": f.prefix + "-线边在制", "company": f.company}).insert().name
++		f.order_args["wip_warehouse"] = f.wip
++		f.legacy_order = make_wo_order_test_record(**f.order_args)
++		f.legacy_order.production_team = f.teams[0]
++		for operation in f.operations:
++			f.legacy_order.append("operations", {"operation": operation, "workstation": f.workstation, "time_in_mins": 1})
++		with change_settings("Manufacturing Settings", {"disable_capacity_planning": 1}):
++			f.legacy_order.insert().submit()
++		f.legacy_card = frappe.get_doc("Job Card", {"work_order": f.legacy_order.name, "operation": f.operations[0]})
++		if stock:
++			f.raw = f.legacy_order.required_items[0].item_code
++			f.legacy_card.append("items", {"item_code": f.raw, "source_warehouse": f.order_args["source_warehouse"], "uom": "Nos", "required_qty": 10})
++			f.legacy_card.save()
++			test_stock_entry.make_stock_entry(item_code=f.raw, company=f.company, target=f.order_args["source_warehouse"], qty=100, basic_rate=2)
++
++	fixture.setUp(before_workflow=seed_before_workflow)
++	if stock:
++		from frappe.permissions import add_permission, add_user_permission, update_permission_property
++		frappe.set_user("Administrator")
++		role = frappe.get_doc({"doctype": "Role", "role_name": fixture.prefix + "-仓管", "desk_access": 1}).insert().name
++		for dt in ("Stock Entry", "Work Order", "Job Card", "Item", "Warehouse"):
++			add_permission(dt, role, ptype="read")
++		for ptype in ("create", "write", "submit", "cancel"):
++			update_permission_property("Stock Entry", role, 0, ptype, 1)
++		user = frappe.get_doc({"doctype": "User", "email": fixture.prefix.lower() + "-warehouse@example.invalid", "first_name": "线边仓管", "language": "zh", "send_welcome_email": 0, "roles": [{"role": role}]}).insert()
++		fixture.users["warehouse"] = user.name
++		add_user_permission("Company", fixture.company, user.name)
++		for warehouse in (fixture.order_args["source_warehouse"], fixture.wip):
++			add_user_permission("Warehouse", warehouse, user.name)
++		frappe.set_user(user.name)
++	return fixture
++
++
++class TestWorkOrderStockUnits(FrappeTestCase):
++	"""Real stock documents exercise consumption totals and cancel recalculation."""
++
++	def setUp(self):
++		frappe.set_user("Administrator")
++
++	def tearDown(self):
++		frappe.local.future_sle = {}
++		frappe.db.rollback()
++		frappe.clear_cache()
++
++	def make_stock_uom_fixture(self):
++		from frappe.utils.nestedset import get_root_of
++
++		import erpnext
++
++		prefix = "B10-" + frappe.generate_hash(length=8)
++		company = erpnext.get_default_company()
++		warehouses = [
++			frappe.get_doc({"doctype": "Warehouse", "company": company, "warehouse_name": prefix + suffix})
++			.insert()
++			.name
++			for suffix in ("-原料", "-在制", "-成品")
++		]
++		kg, gram = prefix + "-kg", prefix + "-g"
++		for unit in (kg, gram):
++			frappe.get_doc({"doctype": "UOM", "uom_name": unit, "must_be_whole_number": 0}).insert()
++		raw = make_item(
++			prefix + "-RM",
++			{
++				"item_group": get_root_of("Item Group"),
++				"is_stock_item": 1,
++				"stock_uom": kg,
++				"valuation_method": "Moving Average",
++			},
++			uoms=[{"uom": kg, "conversion_factor": 1}, {"uom": gram, "conversion_factor": 0.001}],
++		)
++		finished = make_item(
++			prefix + "-FG", {"item_group": get_root_of("Item Group"), "is_stock_item": 1, "stock_uom": "Nos"}
++		)
++		bom = make_bom(
++			item=finished.name,
++			company=company,
++			currency=frappe.get_cached_value("Company", company, "default_currency"),
++			quantity=1,
++			raw_materials=[raw.name],
++			rm_qty=0.001,
++			rate=2,
++			source_warehouse=warehouses[0],
++			with_operations=False,
++		)
++		test_stock_entry.make_stock_entry(
++			item_code=raw.name, company=company, target=warehouses[0], qty=1, basic_rate=2
++		)
++		order = make_wo_order_test_record(
++			item=finished.name,
++			bom_no=bom.name,
++			qty=1,
++			company=company,
++			stock_uom="Nos",
++			source_warehouse=warehouses[0],
++			wip_warehouse=warehouses[1],
++			fg_warehouse=warehouses[2],
++		)
++		transfer = frappe.get_doc(make_stock_entry(order.name, "Material Transfer for Manufacture", 1))
++		transfer.submit()
++		returned = make_stock_return_entry(order.name)
++		returned.company = company
++		returned.items[0].cost_center = frappe.get_cached_value("Company", company, "cost_center")
++		returned.items[0].qty = 0.0004
++		returned.submit()
++		order.reload()
++		self.assertEqual(order.required_items[0].transferred_qty, 0.001)
++		self.assertEqual(order.required_items[0].returned_qty, 0.0004)
++		self.assertEqual(
++			frappe.db.get_value("Bin", {"item_code": raw.name, "warehouse": warehouses[1]}, "actual_qty"),
++			0.0006,
++		)
++		return frappe._dict(order=order, raw=raw.name, kg=kg, gram=gram, warehouses=warehouses)
++
++	def consumption_draft(self, order, raw, qty, uom, factor):
++		doc = frappe.new_doc("Stock Entry")
++		doc.update(
++			{
++				"company": order.company,
++				"purpose": "Material Consumption for Manufacture",
++				"work_order": order.name,
++				"from_bom": 1,
++				"bom_no": order.bom_no,
++				"fg_completed_qty": order.qty,
++				"from_warehouse": order.wip_warehouse,
++			}
++		)
++		doc.set_stock_entry_type()
++		doc.append(
++			"items",
++			{
++				"item_code": raw,
++				"s_warehouse": order.wip_warehouse,
++				"qty": qty,
++				"uom": uom,
++				"conversion_factor": factor,
++			},
++		)
++		return doc
++
++	@change_settings("System Settings", {"float_precision": 6})
++	@change_settings(
++		"Manufacturing Settings",
++		{
++			"material_consumption": 1,
++			"disable_capacity_planning": 1,
++			"backflush_raw_materials_based_on": "Material Transferred for Manufacture",
++		},
++	)
++	def test_consumed_qty_uses_stock_uom(self):
++		fixture = self.make_stock_uom_fixture()
++		consumption = self.consumption_draft(fixture.order, fixture.raw, 0.5, fixture.gram, 0.001)
++		consumption.submit()
++		consumption.reload()
++		fixture.order.reload()
++		self.assertEqual(consumption.items[0].qty, 0.5)
++		self.assertEqual(consumption.items[0].uom, fixture.gram)
++		self.assertEqual(consumption.items[0].transfer_qty, 0.0005)
++		self.assertEqual(fixture.order.required_items[0].consumed_qty, 0.0005)
++		self.assertEqual(
++			frappe.db.get_value(
++				"Bin", {"item_code": fixture.raw, "warehouse": fixture.warehouses[1]}, "actual_qty"
++			),
++			0.0001,
++		)
++		consumption.cancel()
++		fixture.order.reload()
++		self.assertEqual(fixture.order.required_items[0].consumed_qty, 0)
++		self.assertEqual(
++			frappe.db.get_value(
++				"Bin", {"item_code": fixture.raw, "warehouse": fixture.warehouses[1]}, "actual_qty"
++			),
++			0.0006,
++		)
++		self.assertEqual(frappe.db.get_value("Stock Entry", consumption.name, "docstatus"), 2)
++		self.assertEqual(frappe.db.get_value("Stock Entry Detail", consumption.items[0].name, "qty"), 0.5)
++
++	@change_settings("System Settings", {"float_precision": 6})
++	@change_settings(
++		"Manufacturing Settings",
++		{
++			"material_consumption": 1,
++			"disable_capacity_planning": 1,
++			"backflush_raw_materials_based_on": "Material Transferred for Manufacture",
++		},
++	)
++	def test_consumed_qty_keeps_order_and_document_status_filters(self):
++		fixture = self.make_stock_uom_fixture()
++		order = fixture.order
++		other = make_wo_order_test_record(
++			item=order.production_item,
++			bom_no=order.bom_no,
++			qty=1,
++			company=order.company,
++			stock_uom="Nos",
++			source_warehouse=order.source_warehouse,
++			wip_warehouse=order.wip_warehouse,
++			fg_warehouse=order.fg_warehouse,
++		)
++		frappe.get_doc(make_stock_entry(other.name, "Material Transfer for Manufacture", 1)).submit()
++		self.consumption_draft(other, fixture.raw, 0.0002, fixture.kg, 1).submit()
++		draft = self.consumption_draft(order, fixture.raw, 0.0003, fixture.kg, 1).insert()
++		order.update_consumed_qty_for_required_items()
++		order.reload()
++		self.assertEqual(order.required_items[0].consumed_qty, 0)
++		draft.submit()
++		order.reload()
++		self.assertEqual(order.required_items[0].consumed_qty, 0.0003)
++		other.reload()
++		self.assertEqual(other.required_items[0].consumed_qty, 0.0002)
++		draft.cancel()
++		order.reload()
++		self.assertEqual(order.required_items[0].consumed_qty, 0)
++		other.reload()
++		self.assertEqual(other.required_items[0].consumed_qty, 0.0002)
++
++
+ class TestWorkOrder(FrappeTestCase):
+ 	def setUp(self):
+ 		self.warehouse = "_Test Warehouse 2 - _TC"
+diff --git a/erpnext/manufacturing/doctype/work_order/work_order.py b/erpnext/manufacturing/doctype/work_order/work_order.py
+index 808777b..df1742e 100644
+--- a/erpnext/manufacturing/doctype/work_order/work_order.py
++++ b/erpnext/manufacturing/doctype/work_order/work_order.py
+@@ -64,6 +64,104 @@ class SerialNoQtyError(frappe.ValidationError):
+ 	pass
+ 
+ 
++PRODUCTION_APPROVAL_WORKFLOW = "生产工单两级审批"
++
++
++def _check_production_approval_scope(doc, *, team_required):
++	from frappe.core.doctype.user_permission.user_permission import get_user_permissions
++
++	permissions = get_user_permissions()
++	for doctype, value in (("Company", doc.company), ("Department", doc.get("production_team"))):
++		if doctype == "Department" and not team_required:
++			continue
++		if not value or not any(
++			p.doc == value and p.applicable_for in (None, "", "Work Order")
++			for p in permissions.get(doctype, [])
++		):
++			frappe.throw("没有此公司或班组的工单审批授权", frappe.PermissionError)
++
++
++def check_production_execution(work_order, *, require_team=False, material_return=False):
++	"""Read the actual parent and reuse the approval policy; no new quantity or lock framework."""
++	from frappe.model.workflow import get_workflow_name
++
++	order = frappe.get_doc("Work Order", work_order)
++	if not order.get("approval_requested_by") and not frappe.db.exists("Workflow", PRODUCTION_APPROVAL_WORKFLOW):
++		return None
++
++	order.check_permission("read")
++	_check_production_approval_scope(order, team_required=require_team)
++	if (
++		order.docstatus != 1
++		or order.get("workflow_state") != "已批准"
++		or not order.get("approval_requested_by")
++		or not order.get("approval_reviewed_by")
++	):
++		frappe.throw("工单尚未完成审核和签批，不能新增执行记录", frappe.PermissionError)
++	if not material_return:
++		if get_workflow_name("Work Order") != PRODUCTION_APPROVAL_WORKFLOW:
++			frappe.throw("生产工单审批流程未启用，不能新增执行记录", frappe.PermissionError)
++		if order.status in ("Stopped", "Closed"):
++			frappe.throw("工单已停止或关闭，不能新增执行记录", frappe.PermissionError)
++	return order
++
++
++@frappe.whitelist()
++def apply_production_approval(work_order: str, action: str, expected_modified: str, reason: str | None = None):
++	"""Bind a viewed revision and three separate actors to the native Workflow transaction."""
++	from html import escape
++
++	from frappe.model.workflow import apply_workflow, get_transitions, get_workflow_name
++
++	if get_workflow_name("Work Order") != PRODUCTION_APPROVAL_WORKFLOW:
++		frappe.throw("生产工单审批流程未启用", frappe.PermissionError)
++	if not expected_modified:
++		frappe.throw("请刷新工单并查看最新依据后再处理", frappe.TimestampMismatchError)
++
++	doc = frappe.get_doc("Work Order", work_order)
++	doc.check_permission("write")
++	# One existing work-order lock; full stock/report lock ordering remains a separate gate.
++	doc = frappe.get_doc("Work Order", work_order, for_update=True)
++	doc.check_permission("write")
++	if get_datetime(doc.modified) != get_datetime(expected_modified):
++		frappe.throw("工单已变化，请刷新并查看最新依据后再处理", frappe.TimestampMismatchError)
++	if not doc.get("approval_requested_by"):
++		frappe.throw("存量工单尚未确认审批依据，不能作为新单送审", frappe.PermissionError)
++
++	transition = next((t for t in get_transitions(doc) if t.action == action), None)
++	if not transition:
++		frappe.throw("当前岗位或状态不允许此审批动作", frappe.PermissionError)
++	_check_production_approval_scope(doc, team_required=transition.allowed != "生产工单签批")
++	user = frappe.session.user
++	if action in ("送审", "撤回", "终止"):
++		if user != doc.approval_requested_by:
++			frappe.throw("只能由发起人处理此申请", frappe.PermissionError)
++	elif user == doc.approval_requested_by:
++		frappe.throw("发起人不能审核或签批自己的工单", frappe.PermissionError)
++	if action == "签批通过" and (not doc.approval_reviewed_by or user == doc.approval_reviewed_by):
++		frappe.throw("审核人与最终签批人必须为不同账号", frappe.PermissionError)
++	reason = (reason or "").strip()
++	if action in ("退回", "撤回", "终止") and not reason:
++		frappe.throw("请填写退回、撤回或终止的原因")
++
++	viewed_modified, previous_state = str(doc.modified), doc.workflow_state
++	previous_context = getattr(frappe.local, "production_approval_context", None)
++	frappe.local.production_approval_context = frappe._dict(
++		name=doc.name, state=doc.workflow_state, next_state=transition.next_state,
++		action=action, user=user, reason=reason,
++	)
++	try:
++		result = apply_workflow(doc, action)
++		result.add_comment("Comment", "审批动作：{0}；依据版本：{1}；{2} → {3}；原因：{4}".format(
++			escape(action), escape(viewed_modified), escape(previous_state),
++			escape(result.workflow_state), escape(reason or "无"),
++		))
++		return result
++	finally:
++		# Request-local authority never comes from a client Document.flags value.
++		frappe.local.production_approval_context = previous_context
++
++
+ class WorkOrder(Document):
+ 	# begin: auto-generated types
+ 	# This code is auto-generated. Do not modify anything in this block.
+@@ -148,6 +246,7 @@ class WorkOrder(Document):
+ 		self.set_onload("overproduction_percentage", ms.overproduction_percentage_for_work_order)
+ 
+ 	def validate(self):
++		self.validate_production_approval()
+ 		self.validate_production_item()
+ 		if self.bom_no:
+ 			validate_bom_no(self.production_item, self.bom_no)
+@@ -177,6 +276,48 @@ class WorkOrder(Document):
+ 
+ 		self.validate_operations_sequence()
+ 
++	def validate_production_approval(self):
++		from frappe.model.workflow import get_workflow_name
++
++		active = get_workflow_name("Work Order") == PRODUCTION_APPROVAL_WORKFLOW
++		before = self.get_doc_before_save()
++		was_approval_order = before and before.get("approval_requested_by")
++		if not active and not (was_approval_order or self.get("approval_requested_by")):
++			return
++		if not active:
++			frappe.throw("生产工单审批流程未启用，不能修改审批工单", frappe.PermissionError)
++		user = frappe.session.user
++		if self.is_new():
++			if "生产工单发起" not in frappe.get_roles():
++				frappe.throw("只有已授权的操作工可以发起工单", frappe.PermissionError)
++			_check_production_approval_scope(self, team_required=True)
++			team = frappe.get_cached_value("Department", self.production_team, ["company", "is_group", "disabled"], as_dict=True)
++			if not team or team.company != self.company or team.is_group or team.disabled:
++				frappe.throw("请选择本公司有效的执行班组")
++			if any(self.get(f) for f in ("approval_requested_by", "approval_reviewed_by", "approval_note")) or self.get("workflow_state") not in (None, "", "草稿") or self.docstatus != 0:
++				frappe.throw("不能在创建工单时指定审批结果或处理人", frappe.PermissionError)
++			self.approval_requested_by = user
++			self.workflow_state = "草稿"
++			return
++
++		if not before.get("approval_requested_by"):
++			frappe.throw("存量工单尚未确认审批依据，不能作为新单处理", frappe.PermissionError)
++		context = getattr(frappe.local, "production_approval_context", None)
++		if context and context.name == self.name and context.user == user and context.state == before.workflow_state and context.next_state == self.workflow_state:
++			self.approval_note = context.reason
++			if context.action == "审核通过":
++				self.approval_reviewed_by = user
++			elif context.action in ("送审", "退回", "撤回", "终止"):
++				self.approval_reviewed_by = None
++			return
++
++		protected = ("workflow_state", "approval_requested_by", "approval_reviewed_by", "approval_note", "docstatus")
++		if any(self.get(f) != before.get(f) for f in protected):
++			frappe.throw("请通过工单审批动作处理，不能直接改审批字段或提交", frappe.PermissionError)
++		if before.workflow_state not in ("草稿", "退回") or user != before.approval_requested_by:
++			frappe.throw("送审后的依据已冻结，请退回或撤回后由发起人修改", frappe.PermissionError)
++		_check_production_approval_scope(self, team_required=True)
++
+ 	def validate_dates(self):
+ 		if self.planned_start_date and self.planned_end_date:
+ 			if get_datetime(self.planned_end_date) < get_datetime(self.planned_start_date):
+@@ -1389,7 +1530,7 @@ class WorkOrder(Document):
+ 			consumed_qty = frappe.db.sql(
+ 				"""
+ 				SELECT
+-					SUM(detail.qty)
++					SUM(detail.transfer_qty)
+ 				FROM
+ 					`tabStock Entry` entry,
+ 					`tabStock Entry Detail` detail
+diff --git a/erpnext/stock/doctype/stock_entry/stock_entry.py b/erpnext/stock/doctype/stock_entry/stock_entry.py
+index fed639c..7e4189e 100644
+--- a/erpnext/stock/doctype/stock_entry/stock_entry.py
++++ b/erpnext/stock/doctype/stock_entry/stock_entry.py
+@@ -240,6 +240,7 @@ class StockEntry(StockController):
+ 			)
+ 
+ 	def validate(self):
++		self.validate_production_execution()
+ 		self.pro_doc = frappe._dict()
+ 		if self.work_order:
+ 			self.pro_doc = frappe.get_doc("Work Order", self.work_order)
+@@ -303,6 +304,49 @@ class StockEntry(StockController):
+ 		self.validate_same_source_target_warehouse_during_material_transfer()
+ 		self.validate_raw_materials_exists()
+ 
++	def validate_production_execution(self):
++		if self.docstatus != 1:
++			return
++
++		from erpnext.manufacturing.doctype.work_order.work_order import (
++			PRODUCTION_APPROVAL_WORKFLOW,
++			check_production_execution,
++		)
++
++		work_order = self.work_order
++		if self.job_card:
++			card = frappe.get_doc("Job Card", self.job_card)
++			card.check_permission("read")
++			if work_order and work_order != card.work_order:
++				frappe.throw("库存单的任务与工单不一致，不能过账", frappe.PermissionError)
++			work_order = card.work_order
++
++		if not work_order:
++			if self.purpose in (*WORK_ORDER_ALTERNATIVE_ITEM_PURPOSES, "Disassemble") and frappe.db.exists("Workflow", PRODUCTION_APPROVAL_WORKFLOW):
++				frappe.throw("生产库存单必须关联已批准的工单", frappe.PermissionError)
++			return
++
++		is_return = bool(self.is_return and self.purpose == "Material Transfer for Manufacture")
++		order = check_production_execution(work_order, material_return=is_return)
++		if not (order and is_return):
++			return
++
++		# A return is the reverse route of a real issue, not a client-supplied bypass flag.
++		entry = frappe.qb.DocType("Stock Entry")
++		detail = frappe.qb.DocType("Stock Entry Detail")
++		routes = (
++			frappe.qb.from_(entry).join(detail).on(detail.parent == entry.name)
++			.select(detail.item_code, detail.t_warehouse, detail.s_warehouse)
++			.where(
++				(entry.work_order == order.name) & (entry.docstatus == 1)
++				& (entry.purpose == "Material Transfer for Manufacture") & (entry.is_return == 0)
++			)
++		).run()
++		routes = {tuple(row) for row in routes}
++		for row in self.items:
++			if (row.item_code, row.s_warehouse or self.from_warehouse, row.t_warehouse or self.to_warehouse) not in routes:
++				frappe.throw("退料必须对应本工单已生效领料的物料和反向仓库，不能用退料标记新增投料", frappe.PermissionError)
++
+ 	def validate_finished_good_serial_batch_for_work_order(self):
+ 		if not (
+ 			self.work_order
+@@ -1284,12 +1328,12 @@ class StockEntry(StockController):
+ 			if key not in pending_by_item:
+ 				continue
+ 
+-			transfer_by_item[key] = transfer_by_item.get(key, 0.0) + flt(item.qty)
++			transfer_by_item[key] = transfer_by_item.get(key, 0.0) + flt(item.transfer_qty)
+ 			first_row_by_item.setdefault(key, item)
+ 
+ 		for key, transfer_qty in transfer_by_item.items():
+ 			item = first_row_by_item[key]
+-			precision = item.precision("qty")
++			precision = item.precision("transfer_qty")
+ 			transfer_qty = flt(transfer_qty, precision)
+ 			pending_qty = max(0.0, flt(pending_by_item[key], precision))
+ 			if transfer_qty > pending_qty:
+@@ -1300,7 +1344,7 @@ class StockEntry(StockController):
+ 					).format(
+ 						item.idx,
+ 						transfer_qty,
+-						item.uom,
++						item.stock_uom,
+ 						frappe.bold(item.item_code),
+ 						pending_qty,
+ 					),
+diff --git a/erpnext/stock/doctype/stock_entry/test_stock_entry.py b/erpnext/stock/doctype/stock_entry/test_stock_entry.py
+index 31ca720..ae9a5a1 100644
+--- a/erpnext/stock/doctype/stock_entry/test_stock_entry.py
++++ b/erpnext/stock/doctype/stock_entry/test_stock_entry.py
+@@ -72,6 +72,135 @@ def stock_entry_row(item_code, qty, **kwargs):
+ 	}
+ 
+ 
++class TestStockExecutionApproval(FrappeTestCase):
++	def setUp(self):
++		from erpnext.manufacturing.doctype.work_order.test_work_order import make_approval_execution_fixture
++		self.f = make_approval_execution_fixture(self, stock=True)
++
++	def approve(self):
++		self.f.act("operator", "送审")
++		self.f.act("reviewer", "审核通过")
++		with change_settings("Manufacturing Settings", {"disable_capacity_planning": 1}):
++			self.f.act("director", "签批通过")
++		frappe.set_user(self.f.users["warehouse"])
++
++	def transfer(self, order=None, job_card=None):
++		doc = make_stock_entry(item_code=self.f.raw, company=self.f.company,
++			source=self.f.order_args["source_warehouse"], target=self.f.wip, qty=1,
++			purpose="Material Transfer for Manufacture", do_not_save=True)
++		doc.work_order = order.name if order else None
++		doc.fg_completed_qty = 1
++		if job_card:
++			doc.job_card = job_card.name
++			doc.items[0].job_card_item = job_card.items[0].name
++		return doc
++
++	def test_stock_execution_fixture_runnable(self):
++		self.assertTrue(frappe.has_permission("Stock Entry", "submit"))
++		self.assertEqual(frappe.db.get_value("Bin", {"item_code": self.f.raw, "warehouse": self.f.order_args["source_warehouse"]}, "actual_qty"), 100)
++		self.assertEqual(len(self.f.legacy_card.items), 1)
++
++	def assert_no_posting(self, doc):
++		self.assertFalse(frappe.db.exists("Stock Ledger Entry", {"voucher_type": "Stock Entry", "voucher_no": doc.name}))
++		self.assertNotEqual(frappe.db.get_value("Stock Entry", doc.name, "docstatus"), 1)
++
++	def test_pending_stock_submit_denied(self):
++		doc = self.transfer(self.f.order)
++		doc.insert()
++		# Model the native request rollback; a late exception is not a committed stock fact.
++		frappe.db.savepoint("b19_pending_submit")
++		try:
++			with self.assertRaises((frappe.PermissionError, frappe.ValidationError)):
++				doc.submit()
++		finally:
++			frappe.db.rollback(save_point="b19_pending_submit")
++		self.assert_no_posting(doc)
++
++	def test_unapproved_submitted_order_stock_denied(self):
++		doc = self.transfer(self.f.legacy_order)
++		doc.insert()
++		with self.assertRaises(frappe.PermissionError):
++			doc.submit()
++		self.assert_no_posting(doc)
++
++	def test_job_card_only_stock_submit_denied(self):
++		doc = self.transfer(job_card=self.f.legacy_card)
++		doc.insert()
++		self.assertEqual(doc.work_order, self.f.legacy_order.name)
++		with self.assertRaises(frappe.PermissionError):
++			doc.submit()
++		self.assert_no_posting(doc)
++
++	def test_approved_stock_transfer_allowed(self):
++		self.approve()
++		doc = self.transfer(self.f.order).insert().submit()
++		self.assertEqual(doc.docstatus, 1)
++		self.assertEqual(frappe.db.get_value("Bin", {"item_code": self.f.raw, "warehouse": self.f.wip}, "actual_qty"), 1)
++
++	def test_mismatched_job_card_cannot_borrow_approved_order(self):
++		self.approve()
++		doc = self.transfer(self.f.order, self.f.legacy_card)
++		with self.assertRaises((frappe.PermissionError, frappe.ValidationError)):
++			doc.insert().submit()
++		self.assert_no_posting(doc)
++
++	def test_disabled_workflow_stock_submit_denied(self):
++		self.approve()
++		doc = self.transfer(self.f.order).insert()
++		frappe.set_user("Administrator")
++		self.f.workflow.is_active = 0
++		self.f.workflow.save()
++		frappe.set_user(self.f.users["warehouse"])
++		with self.assertRaises(frappe.PermissionError):
++			doc.submit()
++		self.assert_no_posting(doc)
++
++	def test_approved_transfer_cancellation_preserved(self):
++		self.approve()
++		doc = self.transfer(self.f.order).insert().submit()
++		frappe.set_user("Administrator")
++		self.f.workflow.is_active = 0
++		self.f.workflow.save()
++		frappe.set_user(self.f.users["warehouse"])
++		doc.cancel()
++		self.assertEqual(doc.docstatus, 2)
++		self.assertEqual(frappe.db.get_value("Bin", {"item_code": self.f.raw, "warehouse": self.f.wip}, "actual_qty"), 0)
++
++	def test_approved_material_return_preserved(self):
++		from erpnext.manufacturing.doctype.work_order.work_order import make_stock_return_entry
++		self.approve()
++		self.transfer(self.f.order).insert().submit()
++		frappe.set_user("Administrator")
++		self.f.workflow.is_active = 0
++		self.f.workflow.save()
++		frappe.set_user(self.f.users["warehouse"])
++		returned = make_stock_return_entry(self.f.order.name)
++		returned.company = self.f.company
++		returned.items[0].cost_center = frappe.get_cached_value("Company", self.f.company, "cost_center")
++		returned.submit()
++		self.assertEqual(returned.docstatus, 1)
++		self.assertEqual(frappe.db.get_value("Bin", {"item_code": self.f.raw, "warehouse": self.f.wip}, "actual_qty"), 0)
++
++
++	def test_return_flag_cannot_disguise_new_material_issue(self):
++		self.approve()
++		frappe.set_user("Administrator")
++		self.f.workflow.is_active = 0
++		self.f.workflow.save()
++		frappe.set_user(self.f.users["warehouse"])
++		doc = self.transfer(self.f.order)
++		doc.is_return = 1
++		with self.assertRaises((frappe.PermissionError, frappe.ValidationError)):
++			doc.insert().submit()
++		self.assert_no_posting(doc)
++
++	def test_manufacturing_transfer_without_order_denied(self):
++		doc = self.transfer()
++		with self.assertRaises((frappe.PermissionError, frappe.ValidationError)):
++			doc.insert().submit()
++		self.assert_no_posting(doc)
++
++
+ class TestStockEntry(FrappeTestCase):
+ 	def tearDown(self):
+ 		frappe.db.rollback()
+@@ -1598,16 +1727,86 @@ class TestStockEntry(FrappeTestCase):
+ 				"s_warehouse": "_Test Warehouse - _TC",
+ 				"qty": 0.001,
+ 				"uom": "Nos",
++				"stock_uom": "Nos",
++				"conversion_factor": 1,
+ 			},
+ 		)
+ 
++		stock_entry.set_transfer_qty()
+ 		stock_entry.pro_doc = work_order
+ 		stock_entry._validate_no_excess_transfer()
+ 
+ 		stock_entry.items[0].qty = 0.002
++		stock_entry.set_transfer_qty()
+ 		with self.assertRaises(frappe.ValidationError):
+ 			stock_entry._validate_no_excess_transfer()
+ 
++	@change_settings("System Settings", {"float_precision": 6})
++	@change_settings("Manufacturing Settings", {"backflush_raw_materials_based_on": "BOM"})
++	def test_transfer_limit_uses_stock_uom(self):
++		# Expected amounts are independent constants in the work order's stock unit.
++		cases = [
++			("kg", 0.5, [(500, "g", 0.001)], False),
++			("kg", 0.5, [(600, "g", 0.001)], True),
++			("g", 500, [(0.6, "kg", 1000)], True),
++			("g", 500, [(0.5, "kg", 1000)], False),
++			("kg", 0.5, [(0.2, "kg", 1), (300, "g", 0.001)], False),
++			("kg", 0.5, [(0.2, "kg", 1), (400, "g", 0.001)], True),
++			("kg", 0.5, [(0.5, "kg", 1)], False),
++			("kg", 0.5, [(0.6, "kg", 1)], True),
++		]
++		for stock_uom, pending, rows, reject in cases:
++			with self.subTest(stock_uom=stock_uom, rows=rows):
++				order = frappe.new_doc("Work Order")
++				order.append("required_items", {"item_code": "B10-原料", "required_qty": pending})
++				entry = frappe.new_doc("Stock Entry")
++				entry.pro_doc = order
++				for qty, uom, factor in rows:
++					entry.append(
++						"items",
++						{
++							"item_code": "B10-原料",
++							"s_warehouse": "B10-原料仓",
++							"qty": qty,
++							"uom": uom,
++							"stock_uom": stock_uom,
++							"conversion_factor": factor,
++						},
++					)
++				entry.set_transfer_qty()
++				if reject:
++					with self.assertRaises(frappe.ValidationError):
++						entry._validate_no_excess_transfer()
++				else:
++					entry._validate_no_excess_transfer()
++
++	@change_settings("Manufacturing Settings", {"backflush_raw_materials_based_on": "BOM"})
++	def test_transfer_limit_uses_stock_quantity_precision(self):
++		from frappe.custom.doctype.property_setter.property_setter import make_property_setter
++
++		self.addCleanup(frappe.clear_cache)
++		make_property_setter("Stock Entry Detail", "qty", "precision", "3", "Int")
++		make_property_setter("Stock Entry Detail", "transfer_qty", "precision", "6", "Int")
++		order = frappe.new_doc("Work Order")
++		order.append("required_items", {"item_code": "B10-原料", "required_qty": 0.0005})
++		entry = frappe.new_doc("Stock Entry")
++		entry.pro_doc = order
++		entry.append(
++			"items",
++			{
++				"item_code": "B10-原料",
++				"s_warehouse": "B10-原料仓",
++				"qty": 0.6,
++				"uom": "g",
++				"stock_uom": "kg",
++				"conversion_factor": 0.001,
++			},
++		)
++		entry.set_transfer_qty()
++		self.assertEqual(entry.items[0].transfer_qty, 0.0006)
++		with self.assertRaises(frappe.ValidationError):
++			entry._validate_no_excess_transfer()
++
+ 	@change_settings("Manufacturing Settings", {"material_consumption": 1})
+ 	def test_work_order_manufacture_with_material_consumption(self):
+ 		from erpnext.manufacturing.doctype.work_order.work_order import (

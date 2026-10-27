@@ -240,6 +240,7 @@ class StockEntry(StockController):
 			)
 
 	def validate(self):
+		self.validate_production_execution()
 		self.pro_doc = frappe._dict()
 		if self.work_order:
 			self.pro_doc = frappe.get_doc("Work Order", self.work_order)
@@ -302,6 +303,49 @@ class StockEntry(StockController):
 
 		self.validate_same_source_target_warehouse_during_material_transfer()
 		self.validate_raw_materials_exists()
+
+	def validate_production_execution(self):
+		if self.docstatus != 1:
+			return
+
+		from erpnext.manufacturing.doctype.work_order.work_order import (
+			PRODUCTION_APPROVAL_WORKFLOW,
+			check_production_execution,
+		)
+
+		work_order = self.work_order
+		if self.job_card:
+			card = frappe.get_doc("Job Card", self.job_card)
+			card.check_permission("read")
+			if work_order and work_order != card.work_order:
+				frappe.throw("库存单的任务与工单不一致，不能过账", frappe.PermissionError)
+			work_order = card.work_order
+
+		if not work_order:
+			if self.purpose in (*WORK_ORDER_ALTERNATIVE_ITEM_PURPOSES, "Disassemble") and frappe.db.exists("Workflow", PRODUCTION_APPROVAL_WORKFLOW):
+				frappe.throw("生产库存单必须关联已批准的工单", frappe.PermissionError)
+			return
+
+		is_return = bool(self.is_return and self.purpose == "Material Transfer for Manufacture")
+		order = check_production_execution(work_order, material_return=is_return)
+		if not (order and is_return):
+			return
+
+		# A return is the reverse route of a real issue, not a client-supplied bypass flag.
+		entry = frappe.qb.DocType("Stock Entry")
+		detail = frappe.qb.DocType("Stock Entry Detail")
+		routes = (
+			frappe.qb.from_(entry).join(detail).on(detail.parent == entry.name)
+			.select(detail.item_code, detail.t_warehouse, detail.s_warehouse)
+			.where(
+				(entry.work_order == order.name) & (entry.docstatus == 1)
+				& (entry.purpose == "Material Transfer for Manufacture") & (entry.is_return == 0)
+			)
+		).run()
+		routes = {tuple(row) for row in routes}
+		for row in self.items:
+			if (row.item_code, row.s_warehouse or self.from_warehouse, row.t_warehouse or self.to_warehouse) not in routes:
+				frappe.throw("退料必须对应本工单已生效领料的物料和反向仓库，不能用退料标记新增投料", frappe.PermissionError)
 
 	def validate_finished_good_serial_batch_for_work_order(self):
 		if not (

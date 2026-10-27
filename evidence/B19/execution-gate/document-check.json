@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-27",
+  "scope": "Current task cards and execution-gate evidence links; no application tests rerun",
+  "document_files": 10,
+  "local_links_checked": 151,
+  "broken_links": [],
+  "unique_task_cards": 34,
+  "completed": 7,
+  "partial": 5,
+  "not_started_or_conditional": 22,
+  "unclosed_total": 27,
+  "document_sha256": {
+    "AGENTS.md": "138fe4c42c4924733cf70c361051346b342c3390edffea25366214d6625cdd2d",
+    "docs/任务卡/01-复用核验与选型.md": "b767f4d9c7f625d352783f8d7bddf2db4e22bb29f12f82736e695cb416818eb0",
+    "docs/任务卡/02-生产与物料闭环.md": "be650bf919a979f0e944218f6d2de1ecb02e752d6a1614ab6cabbf382ed721b6",
+    "docs/任务卡/03-AI与交付.md": "de44277a9618a3ab08578b99c75f3924022e08e1f43dd9e0e512fd2554fab7ba",
+    "docs/决策与范围.md": "c2a8c40e9b82499045c15123260f21a6d9543b54f196effc5d808f70a0c780ec",
+    "docs/开发TODO.md": "b5a7e4a55d2b62c751b6b853c37d0e7fcbc2e95816718ad11eabb55fc04b0c63",
+    "docs/验收样例.md": "67b261077e3925379d542da6307afd31c1ed177b3a55b1a5a8f596f8fbc0f53f",
+    "evidence/R07/card-binding.md": "d55ff8b0f1796343d8712a16652656c7ce12271515b4a7b6730e07a79b5f8af7",
+    "evidence/B19/execution-gate/run-record.md": "00aa12b96e47228acd4c7e4fc2dde3b5a7e8bcc0666c058ea4e7b9a8e923ea2b",
+    "evidence/B19/execution-gate/review.md": "689db775520f31a4aa3a6f80f19245792cb3a132c0a3ee408e696a34e84338bf"
+  }
+}

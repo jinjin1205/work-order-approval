@@ -31,6 +31,110 @@ from erpnext.stock.doctype.item.test_item import create_item
 from erpnext.stock.doctype.stock_entry.stock_entry_utils import make_stock_entry
 
 
+class TestJobCardExecutionApproval(FrappeTestCase):
+	def setUp(self):
+		from erpnext.manufacturing.doctype.work_order.test_work_order import make_approval_execution_fixture
+		self.f = make_approval_execution_fixture(self)
+
+	def approve(self):
+		self.f.act("operator", "送审")
+		self.f.act("reviewer", "审核通过")
+		with change_settings("Manufacturing Settings", {"disable_capacity_planning": 1}):
+			self.f.act("director", "签批通过")
+		return frappe.get_doc("Job Card", {"work_order": self.f.order.name, "operation": self.f.operations[0]})
+
+	def start(self, card):
+		from erpnext.manufacturing.doctype.job_card.job_card import make_time_log
+		make_time_log({"job_card_id": card.name, "start_time": now(), "status": "Work In Progress", "employees": []})
+
+	def test_execution_fixture_runnable(self):
+		self.f.legacy_order.reload()
+		self.assertEqual(self.f.legacy_order.workflow_state, "存量待核")
+		self.assertEqual(self.f.legacy_card.docstatus, 0)
+		self.assertFalse(self.f.legacy_card.time_logs)
+		self.assertEqual(self.f.order.workflow_state, "草稿")
+
+	def test_pending_manual_job_card_denied(self):
+		from erpnext.manufacturing.doctype.work_order.work_order import create_job_card
+		order = self.f.order
+		card = create_job_card(order, order.operations[0].as_dict())
+		card.for_quantity = 1
+		with self.assertRaises(frappe.PermissionError):
+			card.insert()
+		self.assertFalse(frappe.db.exists("Job Card", {"work_order": order.name}))
+
+	def test_pending_make_job_card_denied(self):
+		order = self.f.order
+		row = order.operations[0].as_dict()
+		row.update(qty=1, pending_qty=10)
+		with self.assertRaises(frappe.PermissionError):
+			make_job_card(order.name, [row])
+		self.assertFalse(frappe.db.exists("Job Card", {"work_order": order.name}))
+
+	def test_unapproved_legacy_timer_denied(self):
+		with self.assertRaises(frappe.PermissionError):
+			self.start(self.f.legacy_card)
+		self.f.legacy_card.reload()
+		self.assertFalse(self.f.legacy_card.time_logs)
+
+	def test_unapproved_legacy_report_denied(self):
+		card = self.f.legacy_card
+		card.append("time_logs", {"from_time": add_to_date(now(), minutes=-1), "to_time": now(), "completed_qty": card.for_quantity})
+		with self.assertRaises(frappe.PermissionError):
+			card.submit()
+		card.reload()
+		self.assertEqual(card.docstatus, 0)
+		self.assertFalse(card.time_logs)
+
+	def test_approved_task_and_timer_allowed(self):
+		card = self.approve()
+		frappe.set_user(self.f.users["operator"])
+		self.start(card)
+		card.reload()
+		self.assertEqual(len(card.time_logs), 1)
+		self.assertEqual(card.docstatus, 0)
+		self.assertEqual(card.total_completed_qty, 0)
+
+	def test_cross_team_timer_denied(self):
+		card = self.approve()
+		frappe.set_user(self.f.users["other"])
+		with self.assertRaises(frappe.PermissionError):
+			self.start(card)
+		card.reload()
+		self.assertFalse(card.time_logs)
+
+	def test_disabled_workflow_timer_denied(self):
+		card = self.approve()
+		frappe.set_user("Administrator")
+		self.f.workflow.is_active = 0
+		self.f.workflow.save()
+		frappe.set_user(self.f.users["operator"])
+		with self.assertRaises(frappe.PermissionError):
+			self.start(card)
+		card.reload()
+		self.assertFalse(card.time_logs)
+
+	def test_clearing_work_order_cannot_detach_task(self):
+		card = self.approve()
+		frappe.set_user(self.f.users["operator"])
+		card.work_order = None
+		with self.assertRaises((frappe.PermissionError, frappe.MandatoryError)):
+			card.save()
+		card.reload()
+		self.assertEqual(card.work_order, self.f.order.name)
+
+
+	def test_task_cannot_borrow_another_approved_order(self):
+		self.approve()
+		frappe.set_user(self.f.users["operator"])
+		card = self.f.legacy_card
+		card.work_order = self.f.order.name
+		with self.assertRaises((frappe.PermissionError, frappe.ValidationError)):
+			card.save()
+		card.reload()
+		self.assertEqual(card.work_order, self.f.legacy_order.name)
+
+
 class TestJobCardReadPermissions(FrappeTestCase):
 	"""Helper reads must obey the same native object grants as document reads."""
 

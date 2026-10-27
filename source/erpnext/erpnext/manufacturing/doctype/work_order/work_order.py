@@ -64,6 +64,104 @@ class SerialNoQtyError(frappe.ValidationError):
 	pass
 
 
+PRODUCTION_APPROVAL_WORKFLOW = "生产工单两级审批"
+
+
+def _check_production_approval_scope(doc, *, team_required):
+	from frappe.core.doctype.user_permission.user_permission import get_user_permissions
+
+	permissions = get_user_permissions()
+	for doctype, value in (("Company", doc.company), ("Department", doc.get("production_team"))):
+		if doctype == "Department" and not team_required:
+			continue
+		if not value or not any(
+			p.doc == value and p.applicable_for in (None, "", "Work Order")
+			for p in permissions.get(doctype, [])
+		):
+			frappe.throw("没有此公司或班组的工单审批授权", frappe.PermissionError)
+
+
+def check_production_execution(work_order, *, require_team=False, material_return=False):
+	"""Read the actual parent and reuse the approval policy; no new quantity or lock framework."""
+	from frappe.model.workflow import get_workflow_name
+
+	order = frappe.get_doc("Work Order", work_order)
+	if not order.get("approval_requested_by") and not frappe.db.exists("Workflow", PRODUCTION_APPROVAL_WORKFLOW):
+		return None
+
+	order.check_permission("read")
+	_check_production_approval_scope(order, team_required=require_team)
+	if (
+		order.docstatus != 1
+		or order.get("workflow_state") != "已批准"
+		or not order.get("approval_requested_by")
+		or not order.get("approval_reviewed_by")
+	):
+		frappe.throw("工单尚未完成审核和签批，不能新增执行记录", frappe.PermissionError)
+	if not material_return:
+		if get_workflow_name("Work Order") != PRODUCTION_APPROVAL_WORKFLOW:
+			frappe.throw("生产工单审批流程未启用，不能新增执行记录", frappe.PermissionError)
+		if order.status in ("Stopped", "Closed"):
+			frappe.throw("工单已停止或关闭，不能新增执行记录", frappe.PermissionError)
+	return order
+
+
+@frappe.whitelist()
+def apply_production_approval(work_order: str, action: str, expected_modified: str, reason: str | None = None):
+	"""Bind a viewed revision and three separate actors to the native Workflow transaction."""
+	from html import escape
+
+	from frappe.model.workflow import apply_workflow, get_transitions, get_workflow_name
+
+	if get_workflow_name("Work Order") != PRODUCTION_APPROVAL_WORKFLOW:
+		frappe.throw("生产工单审批流程未启用", frappe.PermissionError)
+	if not expected_modified:
+		frappe.throw("请刷新工单并查看最新依据后再处理", frappe.TimestampMismatchError)
+
+	doc = frappe.get_doc("Work Order", work_order)
+	doc.check_permission("write")
+	# One existing work-order lock; full stock/report lock ordering remains a separate gate.
+	doc = frappe.get_doc("Work Order", work_order, for_update=True)
+	doc.check_permission("write")
+	if get_datetime(doc.modified) != get_datetime(expected_modified):
+		frappe.throw("工单已变化，请刷新并查看最新依据后再处理", frappe.TimestampMismatchError)
+	if not doc.get("approval_requested_by"):
+		frappe.throw("存量工单尚未确认审批依据，不能作为新单送审", frappe.PermissionError)
+
+	transition = next((t for t in get_transitions(doc) if t.action == action), None)
+	if not transition:
+		frappe.throw("当前岗位或状态不允许此审批动作", frappe.PermissionError)
+	_check_production_approval_scope(doc, team_required=transition.allowed != "生产工单签批")
+	user = frappe.session.user
+	if action in ("送审", "撤回", "终止"):
+		if user != doc.approval_requested_by:
+			frappe.throw("只能由发起人处理此申请", frappe.PermissionError)
+	elif user == doc.approval_requested_by:
+		frappe.throw("发起人不能审核或签批自己的工单", frappe.PermissionError)
+	if action == "签批通过" and (not doc.approval_reviewed_by or user == doc.approval_reviewed_by):
+		frappe.throw("审核人与最终签批人必须为不同账号", frappe.PermissionError)
+	reason = (reason or "").strip()
+	if action in ("退回", "撤回", "终止") and not reason:
+		frappe.throw("请填写退回、撤回或终止的原因")
+
+	viewed_modified, previous_state = str(doc.modified), doc.workflow_state
+	previous_context = getattr(frappe.local, "production_approval_context", None)
+	frappe.local.production_approval_context = frappe._dict(
+		name=doc.name, state=doc.workflow_state, next_state=transition.next_state,
+		action=action, user=user, reason=reason,
+	)
+	try:
+		result = apply_workflow(doc, action)
+		result.add_comment("Comment", "审批动作：{0}；依据版本：{1}；{2} → {3}；原因：{4}".format(
+			escape(action), escape(viewed_modified), escape(previous_state),
+			escape(result.workflow_state), escape(reason or "无"),
+		))
+		return result
+	finally:
+		# Request-local authority never comes from a client Document.flags value.
+		frappe.local.production_approval_context = previous_context
+
+
 class WorkOrder(Document):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
@@ -148,6 +246,7 @@ class WorkOrder(Document):
 		self.set_onload("overproduction_percentage", ms.overproduction_percentage_for_work_order)
 
 	def validate(self):
+		self.validate_production_approval()
 		self.validate_production_item()
 		if self.bom_no:
 			validate_bom_no(self.production_item, self.bom_no)
@@ -176,6 +275,48 @@ class WorkOrder(Document):
 			self.set_required_items(reset_only_qty=len(self.get("required_items")))
 
 		self.validate_operations_sequence()
+
+	def validate_production_approval(self):
+		from frappe.model.workflow import get_workflow_name
+
+		active = get_workflow_name("Work Order") == PRODUCTION_APPROVAL_WORKFLOW
+		before = self.get_doc_before_save()
+		was_approval_order = before and before.get("approval_requested_by")
+		if not active and not (was_approval_order or self.get("approval_requested_by")):
+			return
+		if not active:
+			frappe.throw("生产工单审批流程未启用，不能修改审批工单", frappe.PermissionError)
+		user = frappe.session.user
+		if self.is_new():
+			if "生产工单发起" not in frappe.get_roles():
+				frappe.throw("只有已授权的操作工可以发起工单", frappe.PermissionError)
+			_check_production_approval_scope(self, team_required=True)
+			team = frappe.get_cached_value("Department", self.production_team, ["company", "is_group", "disabled"], as_dict=True)
+			if not team or team.company != self.company or team.is_group or team.disabled:
+				frappe.throw("请选择本公司有效的执行班组")
+			if any(self.get(f) for f in ("approval_requested_by", "approval_reviewed_by", "approval_note")) or self.get("workflow_state") not in (None, "", "草稿") or self.docstatus != 0:
+				frappe.throw("不能在创建工单时指定审批结果或处理人", frappe.PermissionError)
+			self.approval_requested_by = user
+			self.workflow_state = "草稿"
+			return
+
+		if not before.get("approval_requested_by"):
+			frappe.throw("存量工单尚未确认审批依据，不能作为新单处理", frappe.PermissionError)
+		context = getattr(frappe.local, "production_approval_context", None)
+		if context and context.name == self.name and context.user == user and context.state == before.workflow_state and context.next_state == self.workflow_state:
+			self.approval_note = context.reason
+			if context.action == "审核通过":
+				self.approval_reviewed_by = user
+			elif context.action in ("送审", "退回", "撤回", "终止"):
+				self.approval_reviewed_by = None
+			return
+
+		protected = ("workflow_state", "approval_requested_by", "approval_reviewed_by", "approval_note", "docstatus")
+		if any(self.get(f) != before.get(f) for f in protected):
+			frappe.throw("请通过工单审批动作处理，不能直接改审批字段或提交", frappe.PermissionError)
+		if before.workflow_state not in ("草稿", "退回") or user != before.approval_requested_by:
+			frappe.throw("送审后的依据已冻结，请退回或撤回后由发起人修改", frappe.PermissionError)
+		_check_production_approval_scope(self, team_required=True)
 
 	def validate_dates(self):
 		if self.planned_start_date and self.planned_end_date:

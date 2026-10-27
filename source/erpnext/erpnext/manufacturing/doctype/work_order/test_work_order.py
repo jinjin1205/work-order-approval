@@ -49,6 +49,333 @@ from erpnext.stock.utils import get_bin
 test_dependencies = ["BOM"]
 
 
+class TestWorkOrderApproval(FrappeTestCase):
+	"""Isolated real Workflow, users and Work Orders; no mocked business writes."""
+
+	def setUp(self, *, before_workflow=None):
+		from frappe.permissions import add_permission, add_user_permission, update_permission_property
+		from erpnext.manufacturing.doctype.workstation.test_workstation import make_workstation
+		import erpnext
+
+		frappe.set_user("Administrator")
+		self.addCleanup(self.clean_fixture)
+		self.assertTrue(frappe.get_meta("Work Order").has_field("production_team"))
+		self.assertFalse(frappe.db.exists("Workflow", {"document_type": "Work Order"}))
+		self.prefix = "B19-" + frappe.generate_hash(length=8)
+		self.company = erpnext.get_default_company()
+		self.roles = ["生产工单发起", "生产工单审核", "生产工单签批"]
+		for role in self.roles:
+			if not frappe.db.exists("Role", role):
+				frappe.get_doc({"doctype": "Role", "role_name": role, "desk_access": 1}).insert()
+			add_permission("Item", role, ptype="read")
+			for dt in ("Work Order", "Job Card"):
+				add_permission(dt, role, ptype="read")
+				for ptype in ("create", "write", "submit"):
+					update_permission_property(dt, role, 0, ptype, 1)
+		self.teams = [frappe.get_doc({"doctype": "Department", "department_name": self.prefix + suffix,
+			"company": self.company}).insert().name for suffix in ("-甲班", "-乙班")]
+		self.users = {}
+		for key, roles, team in [("operator", [self.roles[0]], 0), ("reviewer", [self.roles[1]], 0),
+			("director", [self.roles[2]], None), ("other", [self.roles[1]], 1), ("outsider", [], None)]:
+			user = frappe.get_doc({"doctype": "User", "email": self.prefix.lower() + "-" + key + "@example.invalid",
+				"first_name": key, "language": "zh", "send_welcome_email": 0,
+				"roles": [{"role": role} for role in roles]}).insert()
+			self.users[key] = user.name
+			if roles:
+				add_user_permission("Company", self.company, user.name)
+			if team is not None:
+				add_user_permission("Department", self.teams[team], user.name, applicable_for="Work Order")
+		warehouse = frappe.get_doc({"doctype": "Warehouse", "warehouse_name": self.prefix, "company": self.company}).insert().name
+		raw = create_item(self.prefix + "-RM", company=self.company, warehouse=warehouse)
+		finished = create_item(self.prefix + "-FG", company=self.company, warehouse=warehouse)
+		bom = make_bom(item=finished.name, company=self.company,
+			currency=frappe.get_cached_value("Company", self.company, "default_currency"),
+			raw_materials=[raw.name], rm_qty=1, with_operations=False)
+		self.order_args = dict(item=finished.name, bom_no=bom.name, qty=10, company=self.company,
+			stock_uom="Nos", source_warehouse=warehouse, wip_warehouse=warehouse, fg_warehouse=warehouse, do_not_save=True)
+		self.workstation = make_workstation(workstation_name=self.prefix).name
+		self.operations = [frappe.get_doc({"doctype": "Operation", "__newname": self.prefix + suffix}).insert().name
+			for suffix in ("-下料", "-加工", "-检验")]
+		# Create old draft/submitted records before enabling Workflow. They must never become approved.
+		self.old_draft = make_wo_order_test_record(**self.order_args).insert()
+		self.old_submitted = make_wo_order_test_record(**self.order_args).insert().submit()
+		if before_workflow:
+			before_workflow(self)
+		self.workflow = self.make_workflow()
+		frappe.set_user(self.users["operator"])
+		self.order = make_wo_order_test_record(**self.order_args)
+		self.order.production_team = self.teams[0]
+		for operation in self.operations:
+			self.order.append("operations", {"operation": operation, "workstation": self.workstation, "time_in_mins": 1})
+		self.order.insert()
+
+	def clean_fixture(self):
+		frappe.set_user("Administrator")
+		frappe.db.rollback()
+		frappe.clear_cache()
+
+	def make_workflow(self):
+		states = [("草稿", 0, self.roles[0]), ("待审核", 0, self.roles[1]),
+			("待签批", 0, self.roles[2]), ("退回", 0, self.roles[0]),
+			("终止", 0, self.roles[0]), ("存量待核", 1, "System Manager"), ("已批准", 1, self.roles[2])]
+		transitions = [("草稿", "送审", "待审核", 0), ("退回", "送审", "待审核", 0),
+			("待审核", "审核通过", "待签批", 1), ("待签批", "签批通过", "已批准", 2),
+			("待审核", "退回", "退回", 1), ("待签批", "退回", "退回", 2),
+			("待审核", "撤回", "草稿", 0), ("待签批", "撤回", "草稿", 0)]
+		for state, _, _ in states:
+			if not frappe.db.exists("Workflow State", state):
+				frappe.get_doc({"doctype": "Workflow State", "workflow_state_name": state}).insert()
+		for action in {row[1] for row in transitions}:
+			if not frappe.db.exists("Workflow Action Master", action):
+				frappe.get_doc({"doctype": "Workflow Action Master", "workflow_action_name": action}).insert()
+		return frappe.get_doc({"doctype": "Workflow", "workflow_name": "生产工单两级审批", "document_type": "Work Order",
+			"workflow_state_field": "workflow_state", "is_active": 1, "override_status": 1, "send_email_alert": 0,
+			"states": [{"state": s, "doc_status": str(d), "allow_edit": r, "send_email": 0} for s,d,r in states],
+			"transitions": [{"state": s, "action": a, "next_state": n, "allowed": self.roles[r],
+				"allow_self_approval": int(r == 0)} for s,a,n,r in transitions]}).insert()
+
+	def act(self, user, action, version=None, reason=None):
+		from erpnext.manufacturing.doctype.work_order.work_order import apply_production_approval
+		frappe.set_user(self.users[user])
+		result = apply_production_approval(self.order.name, action, str(version or self.order.modified), reason)
+		self.order.reload()
+		return result
+
+	def ready_for_review(self):
+		self.act("operator", "送审")
+
+	def test_00_fixture_runnable(self):
+		self.assertEqual(self.order.docstatus, 0)
+		self.assertEqual(self.order.workflow_state, "草稿")
+		self.assertEqual(len(self.order.operations), 3)
+		self.assertEqual(self.order.owner, self.users["operator"])
+		self.assertFalse(frappe.db.exists("Job Card", {"work_order": self.order.name}))
+
+	def test_normal_two_stage_workflow(self):
+		self.ready_for_review()
+		self.assertEqual(self.order.docstatus, 0)
+		self.act("reviewer", "审核通过")
+		self.assertEqual(self.order.docstatus, 0)
+		with change_settings("Manufacturing Settings", {"disable_capacity_planning": 1}):
+			self.act("director", "签批通过")
+		self.assertEqual(self.order.workflow_state, "已批准")
+		self.assertEqual(self.order.approval_requested_by, self.users["operator"])
+		self.assertEqual(self.order.approval_reviewed_by, self.users["reviewer"])
+		comments = frappe.get_all("Comment", filters={"reference_doctype": "Work Order", "reference_name": self.order.name, "comment_type": "Comment"}, fields=["owner", "content", "creation"])
+		approval_comments = [c for c in comments if "依据版本" in c.content]
+		self.assertEqual({c.owner for c in approval_comments}, {self.users[k] for k in ("operator", "reviewer", "director")})
+		self.assertTrue(all(c.creation for c in approval_comments))
+		self.assertEqual(self.order.docstatus, 1)
+		self.assertEqual(self.order.status, "Not Started")
+		cards = frappe.get_all("Job Card", filters={"work_order": self.order.name}, fields=["name", "docstatus", "total_completed_qty"])
+		self.assertEqual(len(cards), 3)
+		self.assertTrue(all(c.docstatus == 0 and c.total_completed_qty == 0 for c in cards))
+		self.assertFalse(frappe.db.exists("Stock Entry", {"work_order": self.order.name}))
+		self.assertGreaterEqual(frappe.db.count("Comment", {"reference_doctype": "Work Order", "reference_name": self.order.name, "comment_type": "Workflow"}), 3)
+
+	def test_cross_team_and_no_role_denied(self):
+		self.ready_for_review()
+		for user in ("other", "outsider"):
+			with self.subTest(user=user), self.assertRaises(frappe.PermissionError):
+				self.act(user, "审核通过")
+		self.order.reload()
+		self.assertEqual(self.order.workflow_state, "待审核")
+
+	def test_creator_self_approval_denied(self):
+		frappe.set_user("Administrator")
+		frappe.get_doc("User", self.users["operator"]).add_roles(self.roles[1])
+		self.ready_for_review()
+		with self.assertRaises((frappe.PermissionError, frappe.ValidationError)):
+			self.act("operator", "审核通过")
+
+	def test_reviewer_cannot_also_sign(self):
+		frappe.set_user("Administrator")
+		frappe.get_doc("User", self.users["reviewer"]).add_roles(self.roles[2])
+		self.ready_for_review()
+		self.act("reviewer", "审核通过")
+		with self.assertRaises(frappe.PermissionError):
+			self.act("reviewer", "签批通过")
+
+	def test_direct_submit_denied(self):
+		self.ready_for_review()
+		frappe.set_user(self.users["director"])
+		with self.assertRaises(frappe.PermissionError):
+			self.order.submit()
+		self.assertFalse(frappe.db.exists("Job Card", {"work_order": self.order.name}))
+
+	def test_direct_save_self_approval_denied(self):
+		frappe.set_user("Administrator")
+		frappe.get_doc("User", self.users["operator"]).add_roles(self.roles[1])
+		self.ready_for_review()
+		frappe.set_user(self.users["operator"])
+		self.order.workflow_state = "待签批"
+		with self.assertRaises(frappe.PermissionError):
+			self.order.save()
+
+	def test_stale_page_after_resubmit_denied(self):
+		self.ready_for_review()
+		old_version = self.order.modified
+		self.act("reviewer", "退回", reason="修改计划数量")
+		frappe.set_user(self.users["operator"])
+		self.order.qty = 11
+		self.order.save()
+		self.act("operator", "送审")
+		with self.assertRaises(frappe.TimestampMismatchError):
+			self.act("reviewer", "审核通过", version=old_version)
+		self.order.reload()
+		self.assertEqual(self.order.workflow_state, "待审核")
+
+	def test_old_orders_not_backfilled_as_approved(self):
+		frappe.set_user("Administrator")
+		self.workflow.save()
+		self.old_draft.reload()
+		self.old_submitted.reload()
+		self.assertEqual(self.old_draft.docstatus, 0)
+		self.assertEqual(self.old_submitted.docstatus, 1)
+		self.assertNotEqual(self.old_draft.workflow_state, "已批准")
+		self.assertEqual(self.old_submitted.workflow_state, "存量待核")
+		self.assertEqual(frappe.db.count("Workflow", {"document_type": "Work Order"}), 1)
+
+
+	def test_native_action_cannot_bypass_business_entry(self):
+		from frappe.model.workflow import apply_workflow
+		self.ready_for_review()
+		frappe.set_user(self.users["reviewer"])
+		with self.assertRaises(frappe.PermissionError):
+			apply_workflow(self.order.as_dict(), "审核通过")
+		self.order.reload()
+		self.assertEqual(self.order.workflow_state, "待审核")
+		self.assertFalse(self.order.approval_reviewed_by)
+
+	def test_pending_basis_and_forged_actor_are_rejected(self):
+		self.ready_for_review()
+		for user, field, value in [("reviewer", "qty", 99), ("operator", "approval_reviewed_by", self.users["reviewer"])]:
+			frappe.set_user(self.users[user])
+			self.order.reload()
+			self.order.set(field, value)
+			self.order.flags.production_approval_context = {"action": "审核通过"}
+			with self.subTest(field=field), self.assertRaises(frappe.PermissionError):
+				self.order.save()
+		self.order.reload()
+		self.assertEqual(self.order.qty, 10)
+		self.assertFalse(self.order.approval_reviewed_by)
+
+	def test_revoked_role_and_company_scope_denied(self):
+		from frappe.permissions import remove_user_permission
+		self.ready_for_review()
+		frappe.set_user("Administrator")
+		frappe.get_doc("User", self.users["reviewer"]).remove_roles(self.roles[1])
+		with self.assertRaises(frappe.PermissionError):
+			self.act("reviewer", "审核通过")
+		frappe.set_user("Administrator")
+		frappe.get_doc("User", self.users["reviewer"]).add_roles(self.roles[1])
+		remove_user_permission("Company", self.company, self.users["reviewer"])
+		with self.assertRaises(frappe.PermissionError):
+			self.act("reviewer", "审核通过")
+		self.order.reload()
+		self.assertEqual(self.order.workflow_state, "待审核")
+
+	def test_return_requires_reason_and_reruns_review(self):
+		self.ready_for_review()
+		self.act("reviewer", "审核通过")
+		with self.assertRaises(frappe.ValidationError):
+			self.act("director", "退回")
+		self.order.reload()
+		self.assertEqual(self.order.workflow_state, "待签批")
+		self.act("director", "退回", reason="数量需要调整")
+		self.assertFalse(self.order.approval_reviewed_by)
+		frappe.set_user(self.users["operator"])
+		self.order.qty = 11
+		self.order.save()
+		self.act("operator", "送审")
+		self.assertEqual(self.order.workflow_state, "待审核")
+		with self.assertRaises(frappe.PermissionError):
+			self.act("director", "签批通过")
+
+	def test_old_draft_is_not_a_new_approval_request(self):
+		from erpnext.manufacturing.doctype.work_order.work_order import apply_production_approval
+		frappe.set_user("Administrator")
+		self.old_draft.reload()
+		with self.assertRaises(frappe.PermissionError):
+			apply_production_approval(self.old_draft.name, "送审", str(self.old_draft.modified))
+		self.old_draft.approval_requested_by = self.users["operator"]
+		with self.assertRaises(frappe.PermissionError):
+			self.old_draft.save()
+
+	def test_new_order_cannot_claim_approval(self):
+		frappe.set_user(self.users["operator"])
+		doc = make_wo_order_test_record(**self.order_args)
+		doc.production_team = self.teams[0]
+		doc.approval_reviewed_by = self.users["reviewer"]
+		with self.assertRaises(frappe.PermissionError):
+			doc.insert()
+
+	def test_review_and_withdrawal_clear_previous_reviewer(self):
+		self.ready_for_review()
+		self.act("reviewer", "审核通过")
+		self.assertEqual(self.order.approval_reviewed_by, self.users["reviewer"])
+		self.act("operator", "撤回", reason="调整计划")
+		self.assertEqual(self.order.workflow_state, "草稿")
+		self.assertFalse(self.order.approval_reviewed_by)
+		self.act("operator", "送审")
+		self.assertEqual(self.order.workflow_state, "待审核")
+
+
+	def test_disabled_workflow_cannot_be_bypassed_by_clearing_actor(self):
+		self.ready_for_review()
+		frappe.set_user("Administrator")
+		self.workflow.is_active = 0
+		self.workflow.save()
+		frappe.set_user(self.users["reviewer"])
+		self.order.approval_requested_by = None
+		self.order.workflow_state = None
+		self.order.qty = 99
+		with self.assertRaises(frappe.PermissionError):
+			self.order.save()
+		self.order.reload()
+		self.assertEqual(self.order.approval_requested_by, self.users["operator"])
+		self.assertEqual(self.order.qty, 10)
+
+
+def make_approval_execution_fixture(test_case, *, stock=False):
+	"""Reuse B19 setup, adding genuine pre-activation tasks and stock in the same rollback."""
+	fixture = TestWorkOrderApproval()
+	test_case.addCleanup(fixture.doCleanups)
+
+	def seed_before_workflow(f):
+		f.wip = frappe.get_doc({"doctype": "Warehouse", "warehouse_name": f.prefix + "-线边在制", "company": f.company}).insert().name
+		f.order_args["wip_warehouse"] = f.wip
+		f.legacy_order = make_wo_order_test_record(**f.order_args)
+		f.legacy_order.production_team = f.teams[0]
+		for operation in f.operations:
+			f.legacy_order.append("operations", {"operation": operation, "workstation": f.workstation, "time_in_mins": 1})
+		with change_settings("Manufacturing Settings", {"disable_capacity_planning": 1}):
+			f.legacy_order.insert().submit()
+		f.legacy_card = frappe.get_doc("Job Card", {"work_order": f.legacy_order.name, "operation": f.operations[0]})
+		if stock:
+			f.raw = f.legacy_order.required_items[0].item_code
+			f.legacy_card.append("items", {"item_code": f.raw, "source_warehouse": f.order_args["source_warehouse"], "uom": "Nos", "required_qty": 10})
+			f.legacy_card.save()
+			test_stock_entry.make_stock_entry(item_code=f.raw, company=f.company, target=f.order_args["source_warehouse"], qty=100, basic_rate=2)
+
+	fixture.setUp(before_workflow=seed_before_workflow)
+	if stock:
+		from frappe.permissions import add_permission, add_user_permission, update_permission_property
+		frappe.set_user("Administrator")
+		role = frappe.get_doc({"doctype": "Role", "role_name": fixture.prefix + "-仓管", "desk_access": 1}).insert().name
+		for dt in ("Stock Entry", "Work Order", "Job Card", "Item", "Warehouse"):
+			add_permission(dt, role, ptype="read")
+		for ptype in ("create", "write", "submit", "cancel"):
+			update_permission_property("Stock Entry", role, 0, ptype, 1)
+		user = frappe.get_doc({"doctype": "User", "email": fixture.prefix.lower() + "-warehouse@example.invalid", "first_name": "线边仓管", "language": "zh", "send_welcome_email": 0, "roles": [{"role": role}]}).insert()
+		fixture.users["warehouse"] = user.name
+		add_user_permission("Company", fixture.company, user.name)
+		for warehouse in (fixture.order_args["source_warehouse"], fixture.wip):
+			add_user_permission("Warehouse", warehouse, user.name)
+		frappe.set_user(user.name)
+	return fixture
+
+
 class TestWorkOrderStockUnits(FrappeTestCase):
 	"""Real stock documents exercise consumption totals and cancel recalculation."""
 

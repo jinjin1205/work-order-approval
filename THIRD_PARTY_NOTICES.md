@@ -5,7 +5,7 @@
 ## 实际包含的第三方源码
 
 - 上游：[frappe/erpnext](https://github.com/frappe/erpnext)，v15.124.1，提交`4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e`。
-- `source/erpnext/`内6个文件来自该版本，在原文件上修改辅助读取权限、库存单位汇总/限额及其测试。保留原版权头；上游GPL文本原样附于[license.txt](source/erpnext/license.txt)。修改日期2026-10-26，差异见本仓补丁与文件哈希。
+- `source/erpnext/`内6个文件来自该版本，在原文件上局部修改辅助读取权限、库存单位汇总/限额、B19审批核心与任务/库存执行门槛及其测试。保留原版权头；上游GPL文本原样附于[license.txt](source/erpnext/license.txt)。修改日期2026-10-26至2026-10-27，差异见本仓补丁与文件哈希。
 - 未修改文件按锁定上游SHA获取。运行依赖Frappe v15.124.0；本归档不复制Frappe源码，也不宣称已完成全部容器/依赖许可证兼容核验。
 
 ## 要持续核对的参考产品

@@ -3,37 +3,37 @@
     "source": ".development/repos/erpnext/erpnext/manufacturing/doctype/job_card/job_card.py",
     "public_path": "source/erpnext/erpnext/manufacturing/doctype/job_card/job_card.py",
     "treatment": "unchanged",
-    "source_sha256": "952979d835ec902462bc71c98847f867e1fbadd43c97c30ccb249ad7eb982620"
+    "source_sha256": "709bdd3e79a1e7b2ce69898b7f9879e082d8145f563473d1725195ff227dec3a"
   },
   {
     "source": ".development/repos/erpnext/erpnext/manufacturing/doctype/job_card/test_job_card.py",
     "public_path": "source/erpnext/erpnext/manufacturing/doctype/job_card/test_job_card.py",
     "treatment": "unchanged",
-    "source_sha256": "abcb9d1b79f7991f3df9cf9a993734728438ef2d998a5dbb8b5b8986ffd67125"
+    "source_sha256": "461f8b0ea3dbf9ec5fc228d4793f6c79766599b07867ed800d9d03ae15636f4f"
   },
   {
     "source": ".development/repos/erpnext/erpnext/manufacturing/doctype/work_order/test_work_order.py",
     "public_path": "source/erpnext/erpnext/manufacturing/doctype/work_order/test_work_order.py",
     "treatment": "unchanged",
-    "source_sha256": "6c108a751e5150d7e42675dfa2378aec4a0f1db66deaed27dacbda00cce016ea"
+    "source_sha256": "4c2d0424ec41fac30d8bb50bc125974988ea2986a67a1b2db2f914f12f143191"
   },
   {
     "source": ".development/repos/erpnext/erpnext/manufacturing/doctype/work_order/work_order.py",
     "public_path": "source/erpnext/erpnext/manufacturing/doctype/work_order/work_order.py",
     "treatment": "unchanged",
-    "source_sha256": "496edb0645ebebba33e94b80f9b1771f3e7818e057fca318fc0cf7b0393bfb7a"
+    "source_sha256": "768eb2f35aaa1ffa78a452592560c09f7e07b0ff894f867bbb5e67f30dca7032"
   },
   {
     "source": ".development/repos/erpnext/erpnext/stock/doctype/stock_entry/stock_entry.py",
     "public_path": "source/erpnext/erpnext/stock/doctype/stock_entry/stock_entry.py",
     "treatment": "unchanged",
-    "source_sha256": "859abda827612fc99ea136d62056bff6e360649f6b7c458e2be211352d94a2a0"
+    "source_sha256": "552494e7a6c1423e85181bd537996d1a1269ca8f94b641ebbc1b4c233f2139a0"
   },
   {
     "source": ".development/repos/erpnext/erpnext/stock/doctype/stock_entry/test_stock_entry.py",
     "public_path": "source/erpnext/erpnext/stock/doctype/stock_entry/test_stock_entry.py",
     "treatment": "unchanged",
-    "source_sha256": "10555b4e6e7276e7680f1b3a6f33925ecf79f3374215caccdad41050bd72d166"
+    "source_sha256": "09f0e195a7ffe8a886fb59436818709a3157e8ce23fcff304e9e04b3036a6285"
   },
   {
     "source": ".development/repos/erpnext/license.txt",
@@ -48,46 +48,64 @@
     "source_sha256": "221937fbf2f011d04012aa6e0a602a982d65edb5e9a72b7b53f40060322ec5d3"
   },
   {
+    "source": "evidence/B19/combined-implementation.patch",
+    "public_path": "evidence/B19/combined-implementation.patch",
+    "treatment": "unchanged",
+    "source_sha256": "982b8a633e0596d0d8ebf7f5f3bc8d7018310ed910d2a90aec2e6710e3af9c20"
+  },
+  {
+    "source": "evidence/B19/b19-only.patch",
+    "public_path": "evidence/B19/b19-only.patch",
+    "treatment": "unchanged",
+    "source_sha256": "346f9be21e3967f8a9ab7406f230ff944149d32967fdc7e1529a7c99c7b20eb6"
+  },
+  {
+    "source": "evidence/B19/execution-gate/combined-implementation.patch",
+    "public_path": "evidence/B19/execution-gate/combined-implementation.patch",
+    "treatment": "unchanged",
+    "source_sha256": "491dfd65b6115962465172835b85e24e5eea20167c74b8546bb110299f5d7dfd"
+  },
+  {
     "source": "AGENTS.md",
     "public_path": "AGENTS.md",
     "treatment": "unchanged",
-    "source_sha256": "58b283d4eb9288e739e83ea8f079167a424cc2512897ef69111f2907d00a3010"
+    "source_sha256": "138fe4c42c4924733cf70c361051346b342c3390edffea25366214d6625cdd2d"
   },
   {
     "source": "docs/任务卡/01-复用核验与选型.md",
     "public_path": "docs/任务卡/01-复用核验与选型.md",
     "treatment": "unchanged",
-    "source_sha256": "8a815e4959a7111424e340486d74941e3c4fa188cc720b28e85efd3b169d54e0"
+    "source_sha256": "b767f4d9c7f625d352783f8d7bddf2db4e22bb29f12f82736e695cb416818eb0"
   },
   {
     "source": "docs/任务卡/02-生产与物料闭环.md",
     "public_path": "docs/任务卡/02-生产与物料闭环.md",
     "treatment": "personal paths/runtime identifiers removed",
-    "source_sha256": "a38fd52ed4812203409a291cebf01454878b0c56d6d2183544bd9cececdb9ac7"
+    "source_sha256": "be650bf919a979f0e944218f6d2de1ecb02e752d6a1614ab6cabbf382ed721b6"
   },
   {
     "source": "docs/任务卡/03-AI与交付.md",
     "public_path": "docs/任务卡/03-AI与交付.md",
     "treatment": "unchanged",
-    "source_sha256": "0e5e2fdf017698adeab1ecbe67a7ae272aacf7321557c17972731caa15f1855b"
+    "source_sha256": "de44277a9618a3ab08578b99c75f3924022e08e1f43dd9e0e512fd2554fab7ba"
   },
   {
     "source": "docs/决策与范围.md",
     "public_path": "docs/决策与范围.md",
     "treatment": "personal paths/runtime identifiers removed",
-    "source_sha256": "a2d959b7bb9791367af7039b6ee6ac6469dcf14106619e8b7afcc940a98006bd"
+    "source_sha256": "c2a8c40e9b82499045c15123260f21a6d9543b54f196effc5d808f70a0c780ec"
   },
   {
     "source": "docs/开发TODO.md",
     "public_path": "docs/开发TODO.md",
     "treatment": "unchanged",
-    "source_sha256": "b9cbe216ef222791d09f0d653479332f2fd95c5d0e32f07228e58be22f452170"
+    "source_sha256": "b5a7e4a55d2b62c751b6b853c37d0e7fcbc2e95816718ad11eabb55fc04b0c63"
   },
   {
     "source": "docs/验收样例.md",
     "public_path": "docs/验收样例.md",
     "treatment": "unchanged",
-    "source_sha256": "c1d1b1acd17f00c3355968d385a11031554b731592140c5b76a22d3a1618ec67"
+    "source_sha256": "67b261077e3925379d542da6307afd31c1ed177b3a55b1a5a8f596f8fbc0f53f"
   },
   {
     "source": "evidence/B01/run-record.md",
@@ -106,6 +124,30 @@
     "public_path": "evidence/B10/run-record.md",
     "treatment": "unchanged",
     "source_sha256": "096f8106fb93445d6fc2e448f034b821c5f4e1a9c60dfc9349110fc170ccf985"
+  },
+  {
+    "source": "evidence/B19/execution-gate/review.md",
+    "public_path": "evidence/B19/execution-gate/review.md",
+    "treatment": "unchanged",
+    "source_sha256": "689db775520f31a4aa3a6f80f19245792cb3a132c0a3ee408e696a34e84338bf"
+  },
+  {
+    "source": "evidence/B19/execution-gate/run-record.md",
+    "public_path": "evidence/B19/execution-gate/run-record.md",
+    "treatment": "unchanged",
+    "source_sha256": "00aa12b96e47228acd4c7e4fc2dde3b5a7e8bcc0666c058ea4e7b9a8e923ea2b"
+  },
+  {
+    "source": "evidence/B19/review.md",
+    "public_path": "evidence/B19/review.md",
+    "treatment": "unchanged",
+    "source_sha256": "55b2ff72a2d36f164af0c6dce40df3316a4e834a43760ad433271fbf8effc08d"
+  },
+  {
+    "source": "evidence/B19/run-record.md",
+    "public_path": "evidence/B19/run-record.md",
+    "treatment": "unchanged",
+    "source_sha256": "f53d568900c9905e77a79bb1d90c5d0ce04dd4b59909cbf4366f8d40cbe9a79a"
   },
   {
     "source": "evidence/R00/source-register.md",
@@ -246,10 +288,16 @@
     "source_sha256": "6183f19309294bf93ab6374790d35be5f7b5d7bae8ec20b72b9057bc984a667b"
   },
   {
+    "source": "evidence/R07/approval-binding.md",
+    "public_path": "evidence/R07/approval-binding.md",
+    "treatment": "unchanged",
+    "source_sha256": "bc085f6c550e9e70538125633dbbd0d7559f0183944db01d8204c7cbcb6297f9"
+  },
+  {
     "source": "evidence/R07/card-binding.md",
     "public_path": "evidence/R07/card-binding.md",
     "treatment": "unchanged",
-    "source_sha256": "45417a6661c478eda1130ae9e602c0246bbd508cb8b03ca64cd8ff758bd16b06"
+    "source_sha256": "d55ff8b0f1796343d8712a16652656c7ce12271515b4a7b6730e07a79b5f8af7"
   },
   {
     "source": "evidence/R07/chinese-interface.md",
@@ -318,6 +366,12 @@
     "source_sha256": "45d1c330a6f6b4c8880e94aa755e65c8441b0d4316356ae07ca49b47331df59b"
   },
   {
+    "source": ".development/checks/b19_prepare.py",
+    "public_path": ".development/checks/b19_prepare.py",
+    "treatment": "unchanged",
+    "source_sha256": "eb0f6594c5df31bf2e507b0c86c827e3f00188f45794fd158ac0b4aa1159b90c"
+  },
+  {
     "source": ".development/checks/check_source.py",
     "public_path": ".development/checks/check_source.py",
     "treatment": "unchanged",
@@ -358,6 +412,18 @@
     "public_path": ".development/checks/b02-b10-source-manifest.json",
     "treatment": "unchanged",
     "source_sha256": "c9001a2942892d616632f126c38d92a3f3bcdd6cbbb31d7d90720050e31172ea"
+  },
+  {
+    "source": ".development/checks/b19-execution-source-manifest.json",
+    "public_path": ".development/checks/b19-execution-source-manifest.json",
+    "treatment": "unchanged",
+    "source_sha256": "997a9a4c300eb7faa5f1c0586245f0f24d93db34d8f229d1c755e374c2316cc3"
+  },
+  {
+    "source": ".development/checks/b19-source-manifest.json",
+    "public_path": ".development/checks/b19-source-manifest.json",
+    "treatment": "unchanged",
+    "source_sha256": "d0e12873379a284a15e27a61d69c6e8796d4382c237ac12b66bc0cd52d34c2da"
   },
   {
     "source": ".development/checks/source-manifest.json",
@@ -556,6 +622,54 @@
     "public_path": "evidence/B10/acceptance-bench-source.json",
     "treatment": "allowlisted metadata; personal paths removed",
     "source_sha256": "f1cc2d66b1c331ca03f92fc443183e69e79029be1714fa74ad6bd5b4527a2298"
+  },
+  {
+    "source": "evidence/R07/approval-source-check.json",
+    "public_path": "evidence/R07/approval-source-check.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "8409b08a8554c95d5ea7e6a9b6a3b5f5114d2ea7517abee76c1a663baa2c820e"
+  },
+  {
+    "source": "evidence/B19/closeout-check.json",
+    "public_path": "evidence/B19/closeout-check.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "f4043843a3c770536030f4e77a3454ce764e6562eecba1ceb2f74de365629816"
+  },
+  {
+    "source": "evidence/B19/source-manifest.json",
+    "public_path": "evidence/B19/source-manifest.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "d0e12873379a284a15e27a61d69c6e8796d4382c237ac12b66bc0cd52d34c2da"
+  },
+  {
+    "source": "evidence/B19/document-check.json",
+    "public_path": "evidence/B19/document-check.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "6d077f94651845a76bbe70f2f74da677d48d59cb0316045a586c1be727c31df2"
+  },
+  {
+    "source": "evidence/B19/execution-gate/closeout-check.json",
+    "public_path": "evidence/B19/execution-gate/closeout-check.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "7b36859dfb0aa554186d1616023872b13094176074c048d647443d932b9ecc7a"
+  },
+  {
+    "source": "evidence/B19/execution-gate/source-manifest.json",
+    "public_path": "evidence/B19/execution-gate/source-manifest.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "997a9a4c300eb7faa5f1c0586245f0f24d93db34d8f229d1c755e374c2316cc3"
+  },
+  {
+    "source": "evidence/B19/execution-gate/source-final.json",
+    "public_path": "evidence/B19/execution-gate/source-final.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "49f7a7494fbd6123dbe9595f27601870e5ae2be56d2c03da9adbc6d360ba7605"
+  },
+  {
+    "source": "evidence/B19/execution-gate/document-check.json",
+    "public_path": "evidence/B19/execution-gate/document-check.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "a49a3eccc6d7ede0abcf188a9b183f041895b711e98c06c8f6fe072a646911e8"
   },
   {
     "source": "evidence/B02/acceptance-http-summary.json",

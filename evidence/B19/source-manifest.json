@@ -1,0 +1,21 @@
+{
+  "commit": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+  "files": {
+    "erpnext/__init__.py": "9d0a5c9dc7c34307e474956b4500fbec3d06b56e73d12d00c918896bc381aea0",
+    "erpnext/manufacturing/doctype/work_order/work_order.py": "1b91bef7eef1fd592978091b00619f9ce00879a8592cad8264b002fc0b104dc8",
+    "erpnext/manufacturing/doctype/job_card/job_card.py": "952979d835ec902462bc71c98847f867e1fbadd43c97c30ccb249ad7eb982620",
+    "erpnext/stock/doctype/stock_entry/stock_entry.py": "859abda827612fc99ea136d62056bff6e360649f6b7c458e2be211352d94a2a0",
+    "erpnext/manufacturing/doctype/work_order/work_order.js": "680f5c40b12430b1a511aeb7a981d06612309ee632c681b65793befc5b07d6a8",
+    "erpnext/manufacturing/doctype/job_card/job_card.js": "6c9849f71ae8e027afb267a5761d31c60d9e716bfd084f587b514ccc3e4bb1ef",
+    "erpnext/stock/doctype/stock_entry/stock_entry.js": "b53510c9ac622929424b3ae287f7c2e4f0fdd3b7478f77fee9332cc4ef6a2a05",
+    "erpnext/locale/zh.po": "641c68d2c299f49f922b41d81e180b1bd4a29505de943e31c1719046b0e03774",
+    "pyproject.toml": "dff83cc5d78a124c9846f08a88b9e43f950cfb9daf156d8818fdae687e2c46c4",
+    "package.json": "3204ec7a1ee5a635fbbd197c2da3e34c428b104e49e5b3c36b65499eb4d2c1ef",
+    "erpnext/manufacturing/doctype/job_card/test_job_card.py": "abcb9d1b79f7991f3df9cf9a993734728438ef2d998a5dbb8b5b8986ffd67125",
+    "erpnext/manufacturing/doctype/work_order/test_work_order.py": "8356fe5fd442b85ad0bed859d8d27b5ac1ffc10533de7477fc40b92696ac4897",
+    "erpnext/stock/doctype/stock_entry/test_stock_entry.py": "10555b4e6e7276e7680f1b3a6f33925ecf79f3374215caccdad41050bd72d166"
+  },
+  "patch_sha256": "982b8a633e0596d0d8ebf7f5f3bc8d7018310ed910d2a90aec2e6710e3af9c20",
+  "branch": "codex/xgd-maintenance",
+  "scope": "B02 three read helpers and B10 two stock-unit functions plus tests; uncommitted working tree patch"
+}

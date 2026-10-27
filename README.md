@@ -9,11 +9,12 @@
 - 唯一开工入口：[开发TODO](docs/开发TODO.md)。先看[决策与范围](docs/决策与范围.md)、[任务卡](docs/任务卡/02-生产与物料闭环.md)与[开发约定](AGENTS.md)。
 - 2026-10-26已完成限定子项：B01独立中文环境、B02三个辅助读取接口、B10实耗/领料上限单位。B02/B10整卡仍部分完成，G1数量、G2逐笔报工事实/岗位回写、G3并发未通过。
 - 保存的历史结果：B02 10项、B10 2＋3项定向测试和16次HTTP请求符合预期；[结果摘要](publication/test-receipts.json)。发布时未重新运行这些业务测试，没有客户验收或远程CI通过结论。
-- 2026-10-27新增审批目标已更新任务卡；审批尚未实现。下一步先核原生审批能力、真实入口和与原生产状态/权限的衔接，再决定最小配置/改造。没有自动重启B04或开始审批开发。
+- 2026-10-27：B19审批核心上一批17项通过；本批任务/计时10项、库存准入11项及相关单位回归2＋3项通过，见[执行门槛证据](evidence/B19/execution-gate/run-record.md)。不同批次与源码哈希分开记录，不累计为全量通过。B19整卡仍部分完成，审批配置仍在隔离测试事务内，开发/客户站点未启用。
+- 下一步继续B19实际HTTP/批量入口、批准后变更和记录保护的已绑定子项。用户已授权每30分钟在当前聊天续接；已完成且条件未变的项不重复，不逐节点等待确认。
 
 ## 代码保存方式
 
-[source/source-lock.json](source/source-lock.json)固定ERPNext v15.124.1的完整上游提交。`source/erpnext/`保存本轮**6个完整修改文件**及上游许可证；[差异补丁](evidence/B10/combined-implementation.patch)同时保留。Frappe v15.124.0保持原版，没有把本机213MB源码目录、Git缓存或容器镜像重复上传。
+[source/source-lock.json](source/source-lock.json)固定ERPNext v15.124.1的完整上游提交。`source/erpnext/`保存截至本批的**6个完整修改文件**及上游许可证；[当前差异补丁](evidence/B19/execution-gate/combined-implementation.patch)同时保留。Frappe v15.124.0保持原版，没有把本机213MB源码目录、Git缓存或容器镜像重复上传。
 
 在一份新克隆中准备完整维护源码（需要Git、Python 3、网络；不启动数据库或写业务数据）：
 
