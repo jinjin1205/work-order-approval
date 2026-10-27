@@ -1,0 +1,17 @@
+{
+  "checked_at": "2026-10-27T06:47:17.700113+00:00",
+  "repository": "https://github.com/jinjin1205/work-order-approval",
+  "branch": "main",
+  "commit": "608970cc3193666dcb637dad503825a263411c5f",
+  "verification": "Fresh independent clone from remote, exact tracked-file set and hashes compared using NUL-separated Git paths",
+  "tracked_files": 170,
+  "sha256_entries_verified": 169,
+  "missing_or_extra_files": 0,
+  "hash_mismatches": 0,
+  "full_modified_source_files_identical_to_maintenance": 8,
+  "current_patch_identical": true,
+  "publication_and_verification_checkouts_clean": true,
+  "credential_and_raw_runtime_exclusion_check_passed": true,
+  "business_tests_rerun_for_publication": false,
+  "limits": "Public allowlisted archive only; local credentials, screenshots, logs and raw synthetic records intentionally excluded. Not business/customer acceptance."
+}

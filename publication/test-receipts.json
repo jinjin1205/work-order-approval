@@ -170,6 +170,16 @@
       "executed_on": "2026-10-27",
       "group": "B04 final demand",
       "source_patch_sha256": "6c393bf46829ea5f888ee98ae44a41254c7eafe3c55f04fde9991e720cf27508"
+    },
+    {
+      "local_log": "evidence/B04/precision-loss/delivery-tests.log",
+      "sha256": "5caa31228407a146a9369968c4157213903585961b4fc9d9294d12a4cc233673",
+      "tests": 8,
+      "seconds": "6.304",
+      "result": "OK",
+      "executed_on": "2026-10-27",
+      "group": "B04 precision and material loss",
+      "source_patch_sha256": "ac2baec0af1bc8d046d39fb349ce21c10faad8a018f4cb0adf745c2aeb4ff5fe"
     }
   ],
   "http_B02_historical": {
@@ -181,5 +191,5 @@
     "verified_after_all_requests": true,
     "publication_note": "Only assertions/counts retained; runtime business_state and raw responses remain local."
   },
-  "current_patch_sha256": "a0e334eee289144d99f35c4907e426227cecc5879e9a99cfa03f58790e0899dd"
+  "current_patch_sha256": "ac2baec0af1bc8d046d39fb349ce21c10faad8a018f4cb0adf745c2aeb4ff5fe"
 }

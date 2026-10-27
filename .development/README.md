@@ -1,5 +1,14 @@
 # B01 独立中文开发环境
 
+**2026-10-27 B04最新补充：**本地`xgd-dev.localhost`和`xgd-test.localhost`已通过原生System Settings保存Float默认6位，中文与原舍入方式不变。只影响没有显式字段精度的原生Float；Currency仍按原规则，既有库存事实不重算。原3位配置的入库0.123456→0.123已复现，6位后该样例正确；多层BOM和材料损耗的原生失败已由本批局部源码修补，隔离8项通过；仍不能视为完整精度验收。`xgd-b19-http.localhost`本批未改配置或重跑。本批最终源码为`checks/b04-precision-delivery-source-manifest.json`共21文件，运行对应已修改源码镜像，见[数量证据](../evidence/B04/precision-loss/run-record.md)。BOM行新字段仅在测试站导入；开发站/18088专用站尚未迁新字段或重启到本批源码，勿直接把新镜像当旧网页运行版本。以下旧状态按对应日期阅读。
+
+原生精度配置使用现有脚本，默认只读；限定上述两个本地站点，不能用作客户部署工具：
+
+```sh
+docker compose -f .development/compose.json run --rm --no-deps -T bench env/bin/python /b01/configure_quantity_precision.py xgd-test.localhost
+# 需要应用到新建且已完成B01的本地站时，显式加 --apply；现有已配置站点不必反复保存。
+```
+
 **2026-10-27续接提示：**当前已进入B19局部验证，固定底座不变。HTTP测试另用 `xgd-b19-http.localhost` 合成副本和本机18088，原开发/测试站点不激活审批；本批完成后专用Web已停，副本与证据保留，不重复建库。准备/运行入口及失败修正见[B19 HTTP记录](../evidence/B19/http/run-record.md)。批准后变更本批使用原隔离测试站点，证据见[B19变更记录](../evidence/B19/approved-changes/run-record.md)。当前源码清单为 `checks/b19-changes-source-manifest.json`，以下B01/B02/B10命令与状态保留为对应阶段记录，不能当成最新源码清单。
 
 仅用于本机开发与合成验收，不是客户生产部署包。固定ERPNext15.124.1/Frappe15.124.0，源码维护分支`codex/xgd-maintenance`。B01阶段未改业务代码；当前已进入B02辅助读取与B10单位子项，Frappe仍保持原版。
@@ -70,3 +79,14 @@ docker compose -f .development/compose.json run --rm --no-deps -T -e CI=1 bench 
 **B01原全量fixture基线：未通过，历史结果保留。**六类基础分类名称差异已在测试库适配，最新一次`--doctype`仍在依赖装载阶段报`DocType Payment Gateway not found`；没有仓库权限通过结论。不为单项基线安装额外业务模块。B02/B10已自行建立最小真实fixture；使用`--module`搭配`--skip-test-records --skip-before-tests`仅跳过自动递归装载，保留原生业务入口与校验。不同时传`--case`与`--test`（当前runner组合会报错）。具体命令、通过范围与限制分别见[B02记录](../evidence/B02/run-record.md)、[B10记录](../evidence/B10/run-record.md)，不据此宣称全量上游基线通过。
 
 HTTP证据只用独立测试站点的B02合成账号；凭据位于`private/`、0600、忽略提交和构建。仅源码变化需要复测时，可对同一fixture执行`setup_b02_http.py restore`后重新验证并`revoke`，不重建站点或客户数据；临时18087服务验完即停。
+
+
+### B04新字段运行前置
+
+本批测试站已执行一次原生元数据导入，后续不重复建站/全量装依赖。对开发站启用本批新源码前，须在已绑定的本地联调任务中执行同一`reload-doc`，核对字段与源码后再启动；客户站另走交付验收。当前只记录测试站实际命令：
+
+```sh
+docker compose -f .development/compose.json run --rm --no-deps -T bench bench --site xgd-test.localhost reload-doc manufacturing doctype bom_item
+```
+
+原生BOM未保存成本预览尚未联调；最终保存值的损耗已在限定测试验收。完整G1、中文页面、客户端兼容及客户部署均不由本批8项代替。

@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-27",
+  "source_patch_sha256": "ac2baec0af1bc8d046d39fb349ce21c10faad8a018f4cb0adf745c2aeb4ff5fe",
+  "upstream": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+  "runtime_files_matched": 21,
+  "final_targeted_tests": {
+    "count": 8,
+    "seconds": "6.304",
+    "result": "OK",
+    "log_sha256": "5caa31228407a146a9369968c4157213903585961b4fc9d9294d12a4cc233673"
+  },
+  "prior_failures": {
+    "initial_six_case_run": "6 failures / 0 errors",
+    "review_counterexamples": "2 failures / 0 errors"
+  },
+  "verified_outputs": {
+    "six_place_stock": "0.123456",
+    "multilevel_required_and_issued": "13.9166",
+    "material_loss_q03_required_and_issued": "27.5",
+    "two_level_loss": "6.05",
+    "irregular_uom_stock": "0.0012",
+    "submitted_loss_after_rejected_cost_write": "10"
+  },
+  "preservation": {
+    "unchanged_business_tables": 10,
+    "original_audit_rows_unchanged": 34,
+    "new_native_precision_setting_audit_rows": 1,
+    "approval_workflow_count": 0
+  },
+  "configuration": {
+    "development_float_default": 6,
+    "test_float_default": 6,
+    "new_material_loss_metadata": "isolated test site only"
+  },
+  "limits": [
+    "No Q05 rerun",
+    "Controlled Administrator tests, not HTTP role or customer acceptance",
+    "BOM unsaved cost preview not updated or browser-tested",
+    "G1 whole quantity scope, G2 original reporting and G3 concurrency remain open",
+    "No Frappe, existing DB number type or inventory valuation changes"
+  ]
+}

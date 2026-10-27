@@ -660,6 +660,396 @@
     "reason": "local raw execution evidence; not uploaded"
   },
   {
+    "path": "evidence/B04/precision-loss/acceptance-summary.json",
+    "original_sha256": "99563efed24acfb76c687fab1be730bc165e584214ead7dbf05c2ea1625086ca",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B04/precision-loss/build-delivery.log",
+    "original_sha256": "6f01fec570aa7eda0b2d058dae60413f0a685ce158b346e23c76df252988eea0",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/build-final.log",
+    "original_sha256": "81c339d17b99a5cb1988fc774fb261e4ef9945ed6bf9c7674b7adb021bd3c6db",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/build-fixed.log",
+    "original_sha256": "125d745d4b3d7dd86d068e4593de3b1a2ae320cb2ea7794e535dad2d1849cdf0",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/build-freeze.log",
+    "original_sha256": "a1809292b97326909f241652e57efd78aafd6835931ed299c04e2540a524a5e3",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/build-red.log",
+    "original_sha256": "041ae19745b0e9c4bc6640a38d272e886de7b906c2dc85b9a248af5a2809253e",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/build-review-fixed.log",
+    "original_sha256": "2cff9e9f5f78462b00b2f3ffea0bf004d510532303df07e828aabead2fff76c5",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/build-review-red.log",
+    "original_sha256": "8a2899c77e0191e10b61b98614d8e0e62666f5eaa188dceeb01b8fd1bd2e60bf",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/combined-implementation.patch",
+    "original_sha256": "ac2baec0af1bc8d046d39fb349ce21c10faad8a018f4cb0adf745c2aeb4ff5fe",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B04/precision-loss/config-audit-stderr.log",
+    "original_sha256": "5d8109a7cb6c7495104ddd898ee1bc2761900591725231eb2e67536137d55741",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/config-audit.json",
+    "original_sha256": "fa4c65165eee8ddb03257c7ca50825045ce7c52dda1349d9b9b46948a453fb5b",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/config-dev-stderr.log",
+    "original_sha256": "6c270cf30ee8df70c0d8be5f355b3a0e8bc988a0c3b682b5c28f10ee6a48bb12",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/config-dev.json",
+    "original_sha256": "b1b161b4601ccc42257d2b67700a5da27e511b18372a2581a273952d2b2892e4",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/config-test-stderr.log",
+    "original_sha256": "27875e498af1ae77f36d19afdd1fc1d499d360b4248930946a2e1678f7c67102",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/config-test.json",
+    "original_sha256": "65a21990d8828420c4b488bccc2cc62613f79b24a26e39e4017d492c72eb8421",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/data-accepted-stderr.log",
+    "original_sha256": "dd8a7b8d6823808da8d3104f3532d2cfd53bb6639b3766d610faba61e0818acb",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/data-accepted.json",
+    "original_sha256": "dbe4f209cd1f8e5bc03627bcb0c0d47b330ad8523af5fa91862c8c65d1703801",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/data-after-stderr.log",
+    "original_sha256": "32c4577e83897411605289522839638f4c4ebb8fdeab3b65afed53f731128eb9",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/data-after.json",
+    "original_sha256": "dbe4f209cd1f8e5bc03627bcb0c0d47b330ad8523af5fa91862c8c65d1703801",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/data-before-stderr.log",
+    "original_sha256": "19d48f6f8928f493c4e8d88cda80e64ee771d81dbc867ca46d71cd9371b6ec01",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/data-before.json",
+    "original_sha256": "7644963e87e58ea7caf00d1631df593bb143a672117b454e418a54257b86463a",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/data-delivery-stderr.log",
+    "original_sha256": "1e397d9f26b7a9f33517cb14c4801a8a833b48371bf7e63a87743c5de7381e6d",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/data-delivery.json",
+    "original_sha256": "dbe4f209cd1f8e5bc03627bcb0c0d47b330ad8523af5fa91862c8c65d1703801",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/data-final-stderr.log",
+    "original_sha256": "ae4c8e368b1e0b4db87c654c0c1c577138001e95dcd6dbef37a5b316ef35b343",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/data-final.json",
+    "original_sha256": "dbe4f209cd1f8e5bc03627bcb0c0d47b330ad8523af5fa91862c8c65d1703801",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/delivery-tests.log",
+    "original_sha256": "5caa31228407a146a9369968c4157213903585961b4fc9d9294d12a4cc233673",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/final-tests.log",
+    "original_sha256": "bac5e978abfc8cde1d9bf734723ab8ac55d274d757356c20a9c7afc1a7ea583b",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/fixed-tests.log",
+    "original_sha256": "0d7f5360691319ea24ee52bdb6f6decfb197a7ba8899c66b62ae4b7a2a570bde",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/freeze-tests.log",
+    "original_sha256": "6dcf023b52ab710f64cf2f130c81e414e9972ee08d415c83b81c8f0eebf216f3",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/native-default-stderr.log",
+    "original_sha256": "c237d426a4dbe19efd1add254ce2f7be7c99260ef5bdc4687ea41b692c627eef",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/native-default.log",
+    "original_sha256": "71c7f9a7bfdf0735ec4bb646a3ab712b3b0428d9f00b2c77fb0790f4456f3c27",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/native-probe-stderr.log",
+    "original_sha256": "d3d1bb588f5ae21ead4997901be28ac4fab0f1bd8ae93f137fcb1ee9eb9a8ba4",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/native-probe.log",
+    "original_sha256": "2858c8cb765bf7e1f3902670abf16fe6c3d1e8ca9ed157b0c4e850739aa2e3e0",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/native-six-stderr.log",
+    "original_sha256": "a982f11be74d215f5e7c7f14f970d4a25319a56e16b60cc9c487654f4b1a4444",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/native-six.log",
+    "original_sha256": "c6af00d578ecb4941275c926d7c13ed310362ef75448caf712b1e0646f0dff26",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/red-implementation.patch",
+    "original_sha256": "f8c33da10b775a66927ffe0be7c981164dbd06b381727b59504419cd4902415b",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/red-tests.log",
+    "original_sha256": "f6e536384e6ca945e716b44e8f530657f2013d3deb4b28cb33b95b01149a7e60",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/reload-bom-item.log",
+    "original_sha256": "7876b861e894dfc55bd5ea3287ed8912a9e9c2f6758958fcc9277c51fdf508bd",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/review-fixed-tests.log",
+    "original_sha256": "c030e28611eaebbc226b549c1bc73bec670a8d369a55008a2a012d901d446925",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/review-red-tests.log",
+    "original_sha256": "e25120e15030a70ab5e5fefeed6b33636a57c0ef092d09fa30544e8fdb67d08b",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/run-record.md",
+    "original_sha256": "df5398f3c25a7dfb757175584f7e40eddb8d3e480b54293fee95cc8b6398a4cf",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B04/precision-loss/source-accepted-manifest.json",
+    "original_sha256": "e65ba15c23804e0fa31ad040d84653173481881c274fd1a1e5371bd8a4f2bf1b",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/source-accepted-runtime-stderr.log",
+    "original_sha256": "80951769841bd3ba5e489a8bdc467f31ea9fca346e24e6f618114cfae17ff166",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/source-accepted-runtime.json",
+    "original_sha256": "e61e9c4aa256230dcf51dc98ce92d0ac4b81012102341a5840f5656c3c4fd1f5",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/source-delivery-manifest.json",
+    "original_sha256": "f4d64e476e1607d63bf16a10793b8972592f4529260d72c2145203f77ad54345",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B04/precision-loss/source-delivery-runtime-stderr.log",
+    "original_sha256": "3b19c5d2488c404c5cfb6c3d4904dc507b588eb82b52e46df5242cb8db1a9b9b",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/source-delivery-runtime.json",
+    "original_sha256": "53645722a7d0d68719884c1d7e2840f572bf426425bd22435e08d32bd1b0d5c5",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B04/precision-loss/source-final-manifest.json",
+    "original_sha256": "9a92773e8953cd2ce2e3ca5a5b0692839642bf2125ea8d50fc7e1b3c3e5add15",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/source-fixed-manifest.json",
+    "original_sha256": "4f988c8b529eb167144d16bed745ae8cedb5fabfd397ad1a107b5091b40889db",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/source-fixed-runtime-stderr.log",
+    "original_sha256": "b0872acf4ab8403bf5dfec9ac15814377fe51873815a9ed926d4f67a2e1deef5",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/source-fixed-runtime.json",
+    "original_sha256": "e7f169e81762b0bf7b8f203ed472db2bf9dc213d798b9d188551d60294c987c9",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/source-freeze-manifest.json",
+    "original_sha256": "1ac292133fe71016a65723f5b64e8e7e31c08545db4dab062bda54e0c88585c1",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/source-freeze-runtime-stderr.log",
+    "original_sha256": "93010c92d1316c1bec64506441536b4187c90df9abc344750f30447f454fc723",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/source-freeze-runtime.json",
+    "original_sha256": "70fde6206ef590cd6c696d75f8c25dcd0b8ebf75abb59a848268aa49090237fa",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/source-manifest.json",
+    "original_sha256": "77cd44509af238b826ebca72f57fa1bf7c18336969914da5e2cdeca04606e9e7",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/source-red-manifest.json",
+    "original_sha256": "5d265cb35cb6144bb554f84033d4033ea0446f445756d6177bad6be874660dc8",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/source-red-runtime-stderr.log",
+    "original_sha256": "927efabd9509166d591d52b5187978224c7f717d99652d3767655bb8905018c6",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/source-red-runtime.json",
+    "original_sha256": "1c73379bfced8973c69ba949b763dd60022a616564a8e7dee50ab1a9f22ef842",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/source-review-red-manifest.json",
+    "original_sha256": "cbe2abe9688ce82a19b075438b8ea16895493ad43fa8e8ee9ce8789104280ebc",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/source-review-red-runtime-stderr.log",
+    "original_sha256": "304ab0fcc294deda7daab43b9cd30d134c74c9b767df05806eb4a413eba49ea6",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/source-review-red-runtime.json",
+    "original_sha256": "020064f56cb64e62662233b19ba5b41e1c3658c0c6aadde4ff9ae8d0e680e45c",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/source-runtime-stderr.log",
+    "original_sha256": "9f0c2f2597c0ed5d01ef00546612d5e4d3f11dab7dbba18c9d138eaf109a7c00",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/source-runtime.json",
+    "original_sha256": "447fe30ead01a23de9cffe2aa8c8c83cfda7e42ef6231d5a1870874567b0eecb",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/stock-configured-stderr.log",
+    "original_sha256": "aa776484771b79c274a19737b3acf16f0935b37797cb497093cb2ecb9bc1b8c6",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/precision-loss/stock-configured.log",
+    "original_sha256": "856479ac3261101cf830fe75220391f8b5ae9b8662f8bbaad45c9ab4742867d3",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
     "path": "evidence/B04/red-results.log",
     "original_sha256": "9dce9c1ae004babcefbde60416c1768e1a809c8da15c3beb4b548cb6df3fed69",
     "published": false,
@@ -2707,7 +3097,7 @@
   },
   {
     "path": "evidence/R07/quantity-return.md",
-    "original_sha256": "eecbc38ca4ecd44da3978a334ece2ab05219b4c06b6a84baaf0cd03c2a7e5ab8",
+    "original_sha256": "6db408430b911d304a4e45a338ed4cf09312b30ba4fd49a2cb6f856d503470d3",
     "published": true,
     "reason": "public copy"
   },
@@ -2732,6 +3122,12 @@
   {
     "path": "evidence/发布/2026-10-27.md",
     "original_sha256": "7767723c87d434eca6ce6430e41d148de02d4d31ca68579486cdd12059bf9d75",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/发布/B04-B19-ui-2026-10-27-remote.json",
+    "original_sha256": "5de69034f0249f1dfa15abd56adf892d8ba9a6c1bc18a77eb984ee94344e86fc",
     "published": true,
     "reason": "public copy"
   },

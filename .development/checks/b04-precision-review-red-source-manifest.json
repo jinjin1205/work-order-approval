@@ -1,0 +1,29 @@
+{
+  "commit": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+  "files": {
+    "erpnext/__init__.py": "9d0a5c9dc7c34307e474956b4500fbec3d06b56e73d12d00c918896bc381aea0",
+    "erpnext/manufacturing/doctype/work_order/work_order.py": "a72959ff8772acbf6db2900d3c5f39b232243d65d5f407b614c89b7c1516b9a0",
+    "erpnext/manufacturing/doctype/job_card/job_card.py": "709bdd3e79a1e7b2ce69898b7f9879e082d8145f563473d1725195ff227dec3a",
+    "erpnext/stock/doctype/stock_entry/stock_entry.py": "9589a27b63ddbc7568913e5281f22df875b7c4d26d8b893c5729a0f4a3fe7fc9",
+    "erpnext/manufacturing/doctype/work_order/work_order.js": "6a88eb9dbe27d2ccfe90de3e89a8621cc3012bed4899cfbca6c5956f0d3394bc",
+    "erpnext/manufacturing/doctype/job_card/job_card.js": "6c9849f71ae8e027afb267a5761d31c60d9e716bfd084f587b514ccc3e4bb1ef",
+    "erpnext/stock/doctype/stock_entry/stock_entry.js": "b53510c9ac622929424b3ae287f7c2e4f0fdd3b7478f77fee9332cc4ef6a2a05",
+    "erpnext/locale/zh.po": "641c68d2c299f49f922b41d81e180b1bd4a29505de943e31c1719046b0e03774",
+    "pyproject.toml": "dff83cc5d78a124c9846f08a88b9e43f950cfb9daf156d8818fdae687e2c46c4",
+    "package.json": "3204ec7a1ee5a635fbbd197c2da3e34c428b104e49e5b3c36b65499eb4d2c1ef",
+    "erpnext/manufacturing/doctype/job_card/test_job_card.py": "461f8b0ea3dbf9ec5fc228d4793f6c79766599b07867ed800d9d03ae15636f4f",
+    "erpnext/manufacturing/doctype/work_order/test_work_order.py": "30905c7904d03d78e45e1c087d7a95a28e5e22ca84ebee70b8a9c7f5566db814",
+    "erpnext/stock/doctype/stock_entry/test_stock_entry.py": "09f0e195a7ffe8a886fb59436818709a3157e8ce23fcff304e9e04b3036a6285",
+    "erpnext/hooks.py": "daf07bd8adb0c735d8458bcced833ef84eb13c601ac259319014ab8466370fd3",
+    "erpnext/manufacturing/doctype/bom/bom.py": "bcb0f65011618e38e3bc035781163eea767e97b20bd9fbdd7e02b3037436d5e7",
+    "erpnext/manufacturing/doctype/bom/bom.json": "f80193ca83df1425a5102492505e4feb0f6eae2b4c6fdd3f87d743fa7b356df9",
+    "erpnext/manufacturing/doctype/bom_item/bom_item.json": "26a81fa6aa41e87317374845084ddd5d56af1f7ebd93b6b62154349ecaa4cdb8",
+    "erpnext/manufacturing/doctype/bom_explosion_item/bom_explosion_item.json": "327b076322bce7b366ac5d26d0993bf7aeadad9a927f5817e40b439cadbb50cc",
+    "erpnext/stock/doctype/stock_entry_detail/stock_entry_detail.json": "4ca85e72b102366c799ba22d3d833e064ea4a65937ff79352bfdaf9fc69209a3",
+    "erpnext/stock/doctype/stock_ledger_entry/stock_ledger_entry.json": "2e2c9870ad603bfab72f38ee12facdbb30a3775d95e5eb3e3fdcbaf1517dd540",
+    "erpnext/manufacturing/doctype/bom/test_bom.py": "1ebf7fb56707a099f1868f85404c6eae8dcc92beb157181021290f84811ec1ef"
+  },
+  "patch_sha256": "0f893772c6077ef41c918ed072134e90744c0a4198f1b8ceab12e9b62ac86b4c",
+  "branch": "codex/xgd-maintenance",
+  "scope": "Two concrete reviewer counterexamples, before repairs"
+}
