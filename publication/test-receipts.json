@@ -2,6 +2,16 @@
   "scope": "Separate executed batches tied to their own source patches; no cumulative full-suite result; publication itself does not rerun tests",
   "tests": [
     {
+      "local_log": "evidence/B14/review-fixed-tests.log",
+      "sha256": "c3d08e90be0c162141b40556bf2a6bf879cebd919bd0209cb63e84f8d17f0792",
+      "tests": 15,
+      "seconds": "35.193",
+      "result": "OK",
+      "executed_on": "2026-10-27",
+      "group": "B14 configuration and boundaries",
+      "source_patch_sha256": "a08b8eb7e2ec509982b817527c840bd2cbdc252e1d1a121e425077605fcbab1f"
+    },
+    {
       "local_log": "evidence/B02/acceptance-tests.log",
       "sha256": "527a28edb5fd35148a1be672be2d0987a3614c8277745b968dc6d7b02950ee0e",
       "tests": 10,
@@ -211,5 +221,5 @@
     "verified_after_all_requests": true,
     "publication_note": "Only assertions/counts retained; runtime business_state and raw responses remain local."
   },
-  "current_patch_sha256": "fc68d4af7ab3c74ed84ca898bffebe36b24c5c66041b272ec851e241754214e3"
+  "current_patch_sha256": "a08b8eb7e2ec509982b817527c840bd2cbdc252e1d1a121e425077605fcbab1f"
 }

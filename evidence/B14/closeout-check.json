@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-27",
+  "patch_sha256": "a08b8eb7e2ec509982b817527c840bd2cbdc252e1d1a121e425077605fcbab1f",
+  "final_targeted_tests": 15,
+  "elapsed_seconds": 35.193,
+  "listed_runtime_files": 29,
+  "web_files_match": true,
+  "actual_child_write_http_denials": 3,
+  "http_parent_and_child_unchanged": true,
+  "chinese_pc_saved_reloaded_and_version_visible": true,
+  "old_business_tables_unchanged": 11,
+  "only_new_configuration_audit_and_fixture_user_share_excluded": true,
+  "G1_G2_G3_closed": false,
+  "B14_full_card_complete": false,
+  "B08_confirmation_or_snapshot_implemented": false,
+  "limits": [
+    "isolated test site only",
+    "not full HTTP permission matrix",
+    "no customer acceptance",
+    "no mobile or full concurrency acceptance"
+  ]
+}

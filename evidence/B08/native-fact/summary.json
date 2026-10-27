@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-27",
+  "source_patch_sha256": "672bc2ac44e1c72358e332f3cbb55c5cbfb4ef5578778fc29c54432178cc2619",
+  "fixture_runnable": true,
+  "plan_quantity": 10,
+  "native_plan_cards": 3,
+  "first_separate_fact_rejected": true,
+  "native_plan_good": 1,
+  "native_plan_loss": 9,
+  "expected_explicit_bad": 0,
+  "minimum_operator_parent_write_verified": false,
+  "confirmation_snapshot_implemented": false,
+  "F_RPT_01_passed": false,
+  "transaction_rolled_back": true
+}

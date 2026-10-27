@@ -1,0 +1,37 @@
+{
+ "doctype": "DocType",
+ "name": "Production Time Period",
+ "module": "Manufacturing",
+ "engine": "InnoDB",
+ "field_order": [
+  "period_type",
+  "start_time",
+  "end_time"
+ ],
+ "fields": [
+  {
+   "fieldname": "period_type",
+   "fieldtype": "Select",
+   "label": "时段类型",
+   "options": "Rest\nOvertime",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "start_time",
+   "fieldtype": "Time",
+   "label": "开始时刻",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "end_time",
+   "fieldtype": "Time",
+   "label": "结束时刻",
+   "reqd": 1,
+   "in_list_view": 1
+  }
+ ],
+ "istable": 1,
+ "permissions": []
+}

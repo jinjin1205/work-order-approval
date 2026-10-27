@@ -1,0 +1,74 @@
+{
+ "doctype": "DocType",
+ "name": "Production Time Rule",
+ "module": "Manufacturing",
+ "engine": "InnoDB",
+ "field_order": [
+  "rule_name",
+  "company",
+  "enabled",
+  "priority",
+  "operation",
+  "periods"
+ ],
+ "fields": [
+  {
+   "fieldname": "rule_name",
+   "fieldtype": "Data",
+   "label": "规则名称",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "公司",
+   "options": "Company",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "启用",
+   "default": "1",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "priority",
+   "fieldtype": "Int",
+   "label": "优先级",
+   "default": "0",
+   "reqd": 1,
+   "in_list_view": 1,
+   "description": "数值越小越先匹配；同值按单据编号排序。"
+  },
+  {
+   "fieldname": "operation",
+   "fieldtype": "Link",
+   "label": "适用工序",
+   "options": "Operation",
+   "description": "留空表示本公司全部工序。"
+  },
+  {
+   "fieldname": "periods",
+   "fieldtype": "Table",
+   "label": "休息与可加班时段",
+   "options": "Production Time Period",
+   "reqd": 1,
+   "description": "使用24小时制，精确到分钟；结束早于开始表示跨零点。"
+  }
+ ],
+ "autoname": "format:PTR-{#####}",
+ "title_field": "rule_name",
+ "track_changes": 1,
+ "permissions": [
+  {
+   "role": "生产配置管理员",
+   "read": 1,
+   "create": 1,
+   "write": 1,
+   "delete": 1
+  }
+ ]
+}

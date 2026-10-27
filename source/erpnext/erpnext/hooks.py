@@ -682,3 +682,11 @@ fields_for_group_similar_items = ["qty", "amount"]
 # ------------
 # List of apps whose translatable strings should be excluded from this app's translations.
 ignore_translatable_strings_from = ["frappe"]
+
+# Production time-rule maintenance stays within explicit company assignments.
+has_permission = {
+	"Production Time Rule": "erpnext.manufacturing.doctype.production_time_rule.production_time_rule.has_permission",
+}
+permission_query_conditions = {
+	"Production Time Rule": "erpnext.manufacturing.doctype.production_time_rule.production_time_rule.get_permission_query_conditions",
+}
