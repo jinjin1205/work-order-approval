@@ -110,6 +110,46 @@
       "executed_on": "2026-10-27",
       "group": "B19 batch-save and history previous batch",
       "source_patch_sha256": "9dc8ad795d4c7d4ac84130dfad522e4f0abbeb587e3215653f7bf9ff9c5635a2"
+    },
+    {
+      "local_log": "evidence/B19/approved-changes/final-results.log",
+      "sha256": "3768fcf56a653115267dafdac4a75f30473a7789966097409fbd3bcab0eaeeb8",
+      "tests": 18,
+      "seconds": "224.690",
+      "result": "OK",
+      "executed_on": "2026-10-27",
+      "group": "B19 approved changes current",
+      "source_patch_sha256": "a6478acc8c02c08b2b2775c273f802a45c0871196c51e5e12c160766f718d25d"
+    },
+    {
+      "local_log": "evidence/B19/approved-changes/approval-regression.log",
+      "sha256": "bd9234f12ccbcc004d016cfb77e22520a49e0ed18d52d98d8c7c3c3ae02e0603",
+      "tests": 17,
+      "seconds": "113.063",
+      "result": "OK",
+      "executed_on": "2026-10-27",
+      "group": "B19 approved changes current",
+      "source_patch_sha256": "a6478acc8c02c08b2b2775c273f802a45c0871196c51e5e12c160766f718d25d"
+    },
+    {
+      "local_log": "evidence/B19/approved-changes/stock-regression.log",
+      "sha256": "680097b4caf416e418cf6a021ed1af51ef2615b8bf5dac0385b116d11256984b",
+      "tests": 3,
+      "seconds": "29.453",
+      "result": "OK",
+      "executed_on": "2026-10-27",
+      "group": "B19 approved changes current",
+      "source_patch_sha256": "a6478acc8c02c08b2b2775c273f802a45c0871196c51e5e12c160766f718d25d"
+    },
+    {
+      "local_log": "evidence/B19/approved-changes/status-regression.log",
+      "sha256": "5a2dc204e74254ee656df99b65bf7fdb2d649c3237f09b320965827922139b46",
+      "tests": 4,
+      "seconds": "1.538",
+      "result": "OK",
+      "executed_on": "2026-10-27",
+      "group": "B19 approved changes current",
+      "source_patch_sha256": "a6478acc8c02c08b2b2775c273f802a45c0871196c51e5e12c160766f718d25d"
     }
   ],
   "http_B02_historical": {
@@ -121,5 +161,5 @@
     "verified_after_all_requests": true,
     "publication_note": "Only assertions/counts retained; runtime business_state and raw responses remain local."
   },
-  "current_patch_sha256": "9dc8ad795d4c7d4ac84130dfad522e4f0abbeb587e3215653f7bf9ff9c5635a2"
+  "current_patch_sha256": "a6478acc8c02c08b2b2775c273f802a45c0871196c51e5e12c160766f718d25d"
 }

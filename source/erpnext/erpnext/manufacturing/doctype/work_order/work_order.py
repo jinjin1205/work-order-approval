@@ -106,6 +106,16 @@ def check_production_execution(work_order, *, require_team=False, material_retur
 	return order
 
 
+def _has_production_execution(work_order):
+	"""A reversal does not erase the original execution history."""
+	cards = frappe.get_all("Job Card", filters={"work_order": work_order}, pluck="name")
+	if cards and (frappe.db.exists("Job Card", {"name": ["in", cards], "docstatus": [">", 0]})
+		or frappe.db.exists("Job Card Time Log", {"parent": ["in", cards]})):
+		return True
+	return bool(frappe.get_all("Stock Entry", filters={"docstatus": [">", 0]},
+		or_filters={"work_order": work_order, **({"job_card": ["in", cards]} if cards else {})}, limit=1))
+
+
 def protect_production_approval_history(doc, method):
 	"""Keep native audit rows and their parent once this production order has entered approval."""
 	if method == "validate" and doc.is_new():
@@ -155,30 +165,42 @@ def apply_production_approval(work_order: str, action: str, expected_modified: s
 	if not doc.get("approval_requested_by"):
 		frappe.throw("存量工单尚未确认审批依据，不能作为新单送审", frappe.PermissionError)
 
-	transition = next((t for t in get_transitions(doc) if t.action == action), None)
-	if not transition:
-		frappe.throw("当前岗位或状态不允许此审批动作", frappe.PermissionError)
-	_check_production_approval_scope(doc, team_required=transition.allowed != "生产工单签批")
+	stopping = action == "停止执行"
+	if stopping:
+		if "生产工单签批" not in frappe.get_roles() or doc.docstatus != 1 or doc.workflow_state != "已批准" or doc.status in ("Stopped", "Closed"):
+			frappe.throw("仅生产厂长可停止已批准且尚未停止的工单", frappe.PermissionError)
+		_check_production_approval_scope(doc, team_required=False)
+		next_state = doc.workflow_state
+	else:
+		transition = next((t for t in get_transitions(doc) if t.action == action), None)
+		if not transition:
+			frappe.throw("当前岗位或状态不允许此审批动作", frappe.PermissionError)
+		_check_production_approval_scope(doc, team_required=transition.allowed != "生产工单签批")
+		next_state = transition.next_state
 	user = frappe.session.user
 	if action in ("送审", "撤回", "终止"):
 		if user != doc.approval_requested_by:
 			frappe.throw("只能由发起人处理此申请", frappe.PermissionError)
-	elif user == doc.approval_requested_by:
+	elif action in ("审核通过", "签批通过", "退回") and user == doc.approval_requested_by:
 		frappe.throw("发起人不能审核或签批自己的工单", frappe.PermissionError)
 	if action == "签批通过" and (not doc.approval_reviewed_by or user == doc.approval_reviewed_by):
 		frappe.throw("审核人与最终签批人必须为不同账号", frappe.PermissionError)
 	reason = (reason or "").strip()
-	if action in ("退回", "撤回", "终止") and not reason:
-		frappe.throw("请填写退回、撤回或终止的原因")
+	if action in ("退回", "撤回", "终止", "取消修订", "停止执行") and not reason:
+		frappe.throw("请填写本次退回、撤回、终止、取消或停止的原因")
 
 	viewed_modified, previous_state = str(doc.modified), doc.workflow_state
 	previous_context = getattr(frappe.local, "production_approval_context", None)
 	frappe.local.production_approval_context = frappe._dict(
-		name=doc.name, state=doc.workflow_state, next_state=transition.next_state,
+		name=doc.name, state=doc.workflow_state, next_state=next_state,
 		action=action, user=user, reason=reason,
 	)
 	try:
-		result = apply_workflow(doc, action)
+		if stopping:
+			stop_unstop(doc.name, "Stopped")
+			result = doc.reload()
+		else:
+			result = apply_workflow(doc, action)
 		result.add_comment("Comment", "审批动作：{0}；依据版本：{1}；{2} → {3}；原因：{4}".format(
 			escape(action), escape(viewed_modified), escape(previous_state),
 			escape(result.workflow_state), escape(reason or "无"),
@@ -318,6 +340,23 @@ class WorkOrder(Document):
 			if "生产工单发起" not in frappe.get_roles():
 				frappe.throw("只有已授权的操作工可以发起工单", frappe.PermissionError)
 			_check_production_approval_scope(self, team_required=True)
+		if self.is_new() or any(self.get(f) != before.get(f) for f in ("amended_from", "previous_work_order", "company")):
+			references = [self.get(f) for f in ("amended_from", "previous_work_order") if self.get(f)]
+			if len(references) > 1:
+				frappe.throw("取消修订和剩余需求关联不能同时指定")
+			if references:
+				previous = frappe.get_doc("Work Order", references[0])
+				previous.check_permission("read")
+				_check_production_approval_scope(previous, team_required=True)
+				if not previous.get("approval_requested_by") or previous.company != self.company:
+					frappe.throw("只能关联本公司已确认审批依据的原工单", frappe.PermissionError)
+				if self.get("previous_work_order") and (
+					previous.docstatus != 1 or previous.status != "Stopped" or not _has_production_execution(previous.name)
+				):
+					frappe.throw("剩余需求只能关联已有执行历史且已停止的原工单", frappe.PermissionError)
+				if not self.is_new() and self.get("amended_from") and previous.docstatus != 2:
+					frappe.throw("只有已取消工单可以作为取消修订来源", frappe.PermissionError)
+		if self.is_new():
 			team = frappe.get_cached_value("Department", self.production_team, ["company", "is_group", "disabled"], as_dict=True)
 			if not team or team.company != self.company or team.is_group or team.disabled:
 				frappe.throw("请选择本公司有效的执行班组")
@@ -344,6 +383,14 @@ class WorkOrder(Document):
 		if before.workflow_state not in ("草稿", "退回") or user != before.approval_requested_by:
 			frappe.throw("送审后的依据已冻结，请退回或撤回后由发起人修改", frappe.PermissionError)
 		_check_production_approval_scope(self, team_required=True)
+
+	def before_update_after_submit(self):
+		self.validate_production_approval()
+
+	def before_cancel(self):
+		self.validate_production_approval()
+		if self.get("approval_requested_by") and _has_production_execution(self.name):
+			frappe.throw("工单已有领料、计时或报工历史，不能取消修订；请停止执行并关联新单", frappe.PermissionError)
 
 	def validate_dates(self):
 		if self.planned_start_date and self.planned_end_date:
@@ -619,7 +666,7 @@ class WorkOrder(Document):
 		else:
 			status = "Cancelled"
 
-		if self.skip_transfer and self.produced_qty:
+		if self.skip_transfer and self.produced_qty and status not in ("Stopped", "Closed"):
 			precision = frappe.get_precision("Work Order", "produced_qty")
 			total_qty = flt(self.produced_qty, precision) + flt(self.process_loss_qty, precision)
 			if flt(self.qty, precision) > flt(total_qty, precision):
@@ -1898,6 +1945,11 @@ def stop_unstop(work_order, status):
 	# a caller restricted to one company stop another company's orders
 	pro_order = frappe.get_doc("Work Order", work_order)
 	pro_order.check_permission("write")
+	if pro_order.get("approval_requested_by"):
+		context = getattr(frappe.local, "production_approval_context", None)
+		if not (context and context.name == pro_order.name and context.action == "停止执行"
+			and context.user == frappe.session.user and status == "Stopped"):
+			frappe.throw("审批工单必须由厂长通过带版本和原因的停止动作处理，不能直接停止或恢复", frappe.PermissionError)
 
 	if pro_order.status == "Closed":
 		frappe.throw(_("Closed Work Order can not be stopped or Re-opened"))
@@ -1951,6 +2003,10 @@ def close_work_order(work_order, status):
 	# doctype level above, record level here — see stop_unstop()
 	work_order = frappe.get_doc("Work Order", work_order)
 	work_order.check_permission("write")
+	if work_order.get("approval_requested_by"):
+		if status != "Closed" or "生产工单签批" not in frappe.get_roles():
+			frappe.throw("审批工单不能通过结束接口恢复执行，仅厂长可结束", frappe.PermissionError)
+		_check_production_approval_scope(work_order, team_required=False)
 	if work_order.get("operations"):
 		job_cards = frappe.get_list(
 			"Job Card",

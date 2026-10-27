@@ -2332,7 +2332,10 @@ class StockEntry(StockController):
 			if flt(pro_doc.docstatus) != 1:
 				msg = f"Work Order {self.work_order} must be submitted"
 
-			if pro_doc.status == "Stopped":
+			approval_correction = pro_doc.get("approval_requested_by") and (
+				self.docstatus == 2 or (self.docstatus == 1 and self.is_return and self.purpose == "Material Transfer for Manufacture")
+			)
+			if pro_doc.status == "Stopped" and not approval_correction:
 				msg = f"Transaction not allowed against stopped Work Order {self.work_order}"
 
 			if msg:

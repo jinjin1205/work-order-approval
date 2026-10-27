@@ -117,11 +117,14 @@ class TestWorkOrderApproval(FrappeTestCase):
 	def make_workflow(self):
 		states = [("草稿", 0, self.roles[0]), ("待审核", 0, self.roles[1]),
 			("待签批", 0, self.roles[2]), ("退回", 0, self.roles[0]),
-			("终止", 0, self.roles[0]), ("存量待核", 1, "System Manager"), ("已批准", 1, self.roles[2])]
+			("终止", 0, self.roles[0]), ("存量待核", 1, "System Manager"), ("已批准", 1, self.roles[2]),
+			("已取消", 2, self.roles[2])]
 		transitions = [("草稿", "送审", "待审核", 0), ("退回", "送审", "待审核", 0),
 			("待审核", "审核通过", "待签批", 1), ("待签批", "签批通过", "已批准", 2),
 			("待审核", "退回", "退回", 1), ("待签批", "退回", "退回", 2),
-			("待审核", "撤回", "草稿", 0), ("待签批", "撤回", "草稿", 0)]
+			("待审核", "撤回", "草稿", 0), ("待签批", "撤回", "草稿", 0),
+			("已批准", "取消修订", "已取消", 2)]
+		transitions.extend((state, "终止", "终止", 0) for state in ("草稿", "待审核", "待签批", "退回"))
 		for state, _, _ in states:
 			if not frappe.db.exists("Workflow State", state):
 				frappe.get_doc({"doctype": "Workflow State", "workflow_state_name": state}).insert()
@@ -519,6 +522,296 @@ def make_approval_execution_fixture(test_case, *, stock=False):
 			add_user_permission("Warehouse", warehouse, user.name)
 		frappe.set_user(user.name)
 	return fixture
+
+
+class TestWorkOrderApprovalChanges(FrappeTestCase):
+	"""Approved basis and stopped execution; reuse the real rollback fixture."""
+
+	def setUp(self):
+		self.f = make_approval_execution_fixture(self, stock=True)
+		from frappe.permissions import update_permission_property
+		frappe.set_user("Administrator")
+		update_permission_property("Work Order", self.f.roles[2], 0, "cancel", 1)
+
+	def approve(self):
+		self.f.act("operator", "送审")
+		self.f.act("reviewer", "审核通过")
+		with change_settings("Manufacturing Settings", {"disable_capacity_planning": 1}):
+			self.f.act("director", "签批通过")
+
+	def issue(self):
+		case = test_stock_entry.TestStockExecutionApproval()
+		case.f = self.f
+		frappe.set_user(self.f.users["warehouse"])
+		entry = case.transfer(self.f.order).insert().submit()
+		self.f.order.reload()
+		return entry
+
+	def stop(self):
+		self.f.act("director", "停止执行", reason="剩余需求变更，停止原单新增执行")
+		self.f.order.reload()
+		self.assertEqual(self.f.order.status, "Stopped")
+
+	def copy_request(self):
+		# Native copy_doc deliberately retains docstatus in tests; use its real request behavior.
+		in_test = frappe.flags.in_test
+		frappe.flags.in_test = False
+		try:
+			return frappe.copy_doc(self.f.order, ignore_no_copy=False)
+		finally:
+			frappe.flags.in_test = in_test
+
+	def test_00_change_fixture_runnable(self):
+		self.approve()
+		self.assertEqual(self.f.order.workflow_state, "已批准")
+		self.assertEqual(frappe.db.count("Job Card", {"work_order": self.f.order.name}), 3)
+		self.assertFalse(frappe.db.exists("Stock Entry", {"work_order": self.f.order.name}))
+
+	def test_approved_plan_date_cannot_be_changed(self):
+		self.approve()
+		old_date = self.f.order.planned_start_date
+		self.f.order.planned_start_date = add_days(old_date, 1)
+		with self.assertRaises(frappe.PermissionError):
+			self.f.order.save()
+		self.f.order.reload()
+		self.assertEqual(self.f.order.planned_start_date, old_date)
+
+	def test_initiator_can_terminate_pending_request_with_reason(self):
+		self.f.act("operator", "送审")
+		self.f.act("operator", "终止", reason="该生产需求取消")
+		self.assertEqual(self.f.order.workflow_state, "终止")
+		self.assertEqual(self.f.order.docstatus, 0)
+		self.assertFalse(frappe.db.exists("Job Card", {"work_order": self.f.order.name}))
+		self.assertTrue(frappe.db.exists("Comment", {"reference_doctype": "Work Order",
+			"reference_name": self.f.order.name, "comment_type": "Workflow"}))
+
+	def test_stopped_order_cannot_resume_via_native_endpoint(self):
+		self.approve()
+		self.issue()
+		self.stop()
+		frappe.set_user(self.f.users["operator"])
+		with self.assertRaises(frappe.PermissionError):
+			stop_unstop(self.f.order.name, "Not Started")
+		self.f.order.reload()
+		self.assertEqual(self.f.order.status, "Stopped")
+
+	def test_stopped_order_preserves_material_return(self):
+		self.approve()
+		self.issue()
+		self.stop()
+		frappe.set_user(self.f.users["warehouse"])
+		returned = make_stock_return_entry(self.f.order.name)
+		returned.company = self.f.company
+		returned.items[0].cost_center = frappe.get_cached_value("Company", self.f.company, "cost_center")
+		returned.submit()
+		self.assertEqual(returned.docstatus, 1)
+		self.assertEqual(frappe.db.get_value("Bin", {"item_code": self.f.raw, "warehouse": self.f.wip}, "actual_qty"), 0)
+		self.f.order.reload()
+		self.assertEqual(self.f.order.status, "Stopped")
+
+	def test_stopped_order_preserves_stock_cancellation(self):
+		self.approve()
+		entry = self.issue()
+		self.stop()
+		frappe.set_user(self.f.users["warehouse"])
+		entry.cancel()
+		self.assertEqual(entry.docstatus, 2)
+		self.assertTrue(frappe.db.exists("Stock Entry", entry.name))
+		self.assertEqual(frappe.db.get_value("Bin", {"item_code": self.f.raw, "warehouse": self.f.wip}, "actual_qty"), 0)
+		self.f.order.reload()
+		self.assertEqual(self.f.order.status, "Stopped")
+
+	def test_approved_without_facts_can_cancel_and_amend(self):
+		self.approve()
+		self.f.act("director", "取消修订", reason="计划日期调整后重新审批")
+		self.assertEqual(self.f.order.docstatus, 2)
+		frappe.set_user(self.f.users["operator"])
+		amended = self.copy_request()
+		amended.amended_from = self.f.order.name
+		amended.planned_start_date = add_days(self.f.order.planned_start_date, 1)
+		amended.insert()
+		self.assertEqual(amended.workflow_state, "草稿")
+		self.assertEqual(amended.docstatus, 0)
+		self.assertFalse(amended.approval_reviewed_by)
+		self.assertEqual(amended.approval_requested_by, self.f.users["operator"])
+		self.assertTrue(frappe.db.exists("Work Order", self.f.order.name))
+		self.f.order = amended
+		with self.assertRaises(frappe.PermissionError):
+			self.f.act("director", "签批通过")
+		self.approve()
+		self.assertEqual(self.f.order.workflow_state, "已批准")
+
+	def test_close_endpoint_cannot_resume_stopped_order(self):
+		self.approve()
+		self.issue()
+		self.stop()
+		frappe.set_user(self.f.users["director"])
+		with self.assertRaises(frappe.PermissionError):
+			close_work_order(self.f.order.name, "Not Started")
+		self.f.order.reload()
+		self.assertEqual(self.f.order.status, "Stopped")
+
+	def test_terminate_requires_owner_reason_and_cannot_reopen(self):
+		self.f.act("operator", "送审")
+		with self.assertRaises(frappe.PermissionError):
+			self.f.act("reviewer", "终止", reason="不得代办")
+		with self.assertRaises(frappe.ValidationError):
+			self.f.act("operator", "终止", reason=" ")
+		self.f.act("operator", "终止", reason="需求取消")
+		with self.assertRaises(frappe.PermissionError):
+			self.f.act("operator", "送审")
+		self.f.order.qty = 11
+		with self.assertRaises(frappe.PermissionError):
+			self.f.order.save()
+
+	def test_stop_requires_director_reason_and_viewed_version(self):
+		self.approve()
+		for role in ("operator", "reviewer", "other"):
+			with self.subTest(role=role), self.assertRaises(frappe.PermissionError):
+				self.f.act(role, "停止执行", reason="无权停止")
+		with self.assertRaises(frappe.ValidationError):
+			self.f.act("director", "停止执行", reason=" ")
+		with self.assertRaises(frappe.TimestampMismatchError):
+			self.f.act("director", "停止执行", version="2000-01-01", reason="旧页面")
+		self.stop()
+		self.assertTrue(frappe.db.exists("Comment", {"reference_doctype": "Work Order",
+			"reference_name": self.f.order.name, "content": ["like", "%停止执行%"]}))
+
+	def test_direct_cancel_and_stop_cannot_skip_controlled_action(self):
+		self.approve()
+		with self.assertRaises(frappe.PermissionError):
+			self.f.order.cancel()
+		self.f.order.reload()
+		with self.assertRaises(frappe.PermissionError):
+			stop_unstop(self.f.order.name, "Stopped")
+		self.f.order.reload()
+		self.assertEqual(self.f.order.docstatus, 1)
+		self.assertEqual(self.f.order.status, "Not Started")
+
+	def test_stock_history_prevents_cancel_even_after_reversal(self):
+		self.approve()
+		entry = self.issue()
+		for reversed_entry in (False, True):
+			if reversed_entry:
+				frappe.set_user(self.f.users["warehouse"])
+				entry.cancel()
+				self.f.order.reload()
+			with self.subTest(reversed=reversed_entry), self.assertRaises(frappe.PermissionError):
+				self.f.act("director", "取消修订", reason="有领料历史不能取消原单")
+			self.f.order.reload()
+			self.assertEqual(self.f.order.docstatus, 1)
+
+	def test_timer_history_prevents_work_order_cancellation(self):
+		from erpnext.manufacturing.doctype.job_card.job_card import make_time_log
+		self.approve()
+		card = frappe.get_doc("Job Card", {"work_order": self.f.order.name, "operation": self.f.operations[0]})
+		frappe.set_user(self.f.users["operator"])
+		make_time_log({"job_card_id": card.name, "start_time": now(), "status": "Work In Progress", "employees": []})
+		self.f.order.reload()
+		with self.assertRaises(frappe.PermissionError):
+			self.f.act("director", "取消修订", reason="已有计时不能取消原单")
+		self.f.order.reload()
+		self.assertEqual(self.f.order.docstatus, 1)
+		card.reload()
+		self.assertEqual(len(card.time_logs), 1)
+
+	def test_stopped_order_denies_new_stock_and_timer(self):
+		from erpnext.manufacturing.doctype.job_card.job_card import make_time_log
+		self.approve()
+		self.issue()
+		self.stop()
+		case = test_stock_entry.TestStockExecutionApproval()
+		case.f = self.f
+		frappe.set_user(self.f.users["warehouse"])
+		with self.assertRaises(frappe.PermissionError):
+			case.transfer(self.f.order).insert().submit()
+		card = frappe.get_doc("Job Card", {"work_order": self.f.order.name, "operation": self.f.operations[0]})
+		frappe.set_user(self.f.users["operator"])
+		with self.assertRaises(frappe.PermissionError):
+			make_time_log({"job_card_id": card.name, "start_time": now(), "status": "Work In Progress", "employees": []})
+		card.reload()
+		self.assertFalse(card.time_logs)
+		self.assertEqual(frappe.db.get_value("Bin", {"item_code": self.f.raw, "warehouse": self.f.wip}, "actual_qty"), 1)
+
+	def test_remaining_demand_is_new_linked_request_without_inherited_approval(self):
+		self.approve()
+		self.issue()
+		self.stop()
+		frappe.set_user(self.f.users["operator"])
+		new = self.copy_request()
+		new.previous_work_order = self.f.order.name
+		new.qty = 6
+		new.insert()
+		new.reload()
+		self.assertEqual(new.workflow_state, "草稿")
+		self.assertEqual(new.docstatus, 0)
+		self.assertEqual(new.previous_work_order, self.f.order.name)
+		self.assertFalse(new.amended_from)
+		self.assertFalse(new.approval_reviewed_by)
+		self.assertFalse(frappe.db.exists("Job Card", {"work_order": new.name}))
+		self.f.order.reload()
+		self.assertEqual(self.f.order.qty, 10)
+		self.assertEqual(self.f.order.status, "Stopped")
+		self.f.order = new
+		with self.assertRaises(frappe.PermissionError):
+			self.f.act("director", "签批通过")
+		self.approve()
+		self.assertEqual(self.f.order.workflow_state, "已批准")
+
+	def test_new_request_cannot_link_an_unstopped_or_unreadable_order(self):
+		self.approve()
+		self.issue()
+		frappe.set_user(self.f.users["operator"])
+		new = self.copy_request()
+		new.previous_work_order = self.f.order.name
+		with self.assertRaises(frappe.PermissionError):
+			new.insert()
+		self.stop()
+		frappe.set_user("Administrator")
+		frappe.get_doc("User", self.f.users["other"]).add_roles(self.f.roles[0])
+		frappe.set_user(self.f.users["other"])
+		new = make_wo_order_test_record(**self.f.order_args)
+		new.production_team = self.f.teams[1]
+		new.previous_work_order = self.f.order.name
+		with self.assertRaises(frappe.PermissionError):
+			new.insert()
+
+
+	def test_draft_cannot_repoint_remaining_demand_to_unstopped_source(self):
+		self.approve()
+		self.issue()
+		frappe.set_user(self.f.users["operator"])
+		draft = make_wo_order_test_record(**self.f.order_args)
+		draft.production_team = self.f.teams[0]
+		draft.insert()
+		draft.previous_work_order = self.f.order.name
+		with self.assertRaises(frappe.PermissionError):
+			draft.save()
+		draft.reload()
+		self.assertFalse(draft.previous_work_order)
+
+	def test_cancel_partial_manufacture_keeps_approval_order_stopped(self):
+		frappe.set_user(self.f.users["operator"])
+		self.f.order.skip_transfer = 1
+		self.f.order.set("operations", [])
+		self.f.order.save()
+		self.approve()
+		frappe.set_user(self.f.users["warehouse"])
+		entries = []
+		for _ in range(2):
+			entry = frappe.get_doc(make_stock_entry(self.f.order.name, "Manufacture", 2))
+			entry.insert().submit()
+			entries.append(entry)
+		self.f.order.reload()
+		self.assertEqual(self.f.order.produced_qty, 4)
+		self.stop()
+		frappe.set_user(self.f.users["warehouse"])
+		entries[-1].cancel()
+		self.f.order.reload()
+		self.assertEqual(self.f.order.produced_qty, 2)
+		self.assertEqual(self.f.order.status, "Stopped")
+		self.assertEqual(frappe.db.get_value("Stock Entry", entries[0].name, "docstatus"), 1)
+		self.assertEqual(frappe.db.get_value("Stock Entry", entries[1].name, "docstatus"), 2)
 
 
 class TestWorkOrderStockUnits(FrappeTestCase):

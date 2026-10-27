@@ -19,6 +19,7 @@ try:
         dict(fieldname='approval_requested_by', label='发起人', fieldtype='Link', options='User', read_only=1, no_copy=1),
         dict(fieldname='approval_reviewed_by', label='审核人', fieldtype='Link', options='User', read_only=1, no_copy=1),
         dict(fieldname='approval_note', label='审批原因', fieldtype='Small Text', read_only=1, no_copy=1),
+        dict(fieldname='previous_work_order', label='剩余需求来源工单', fieldtype='Link', options='Work Order', no_copy=1),
     ]
     def snapshot():
         result = {}

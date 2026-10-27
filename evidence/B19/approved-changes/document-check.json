@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-27",
+  "document_files": 11,
+  "links_checked": 166,
+  "broken_links": [],
+  "unique_task_cards": 34,
+  "completed": 7,
+  "partial": 5,
+  "not_started_or_conditional": 22,
+  "unclosed_total": 27,
+  "document_sha256": {
+    "AGENTS.md": "138fe4c42c4924733cf70c361051346b342c3390edffea25366214d6625cdd2d",
+    "docs/任务卡/01-复用核验与选型.md": "3d00a36306352ae592d2e026f1dbe34ce9fadf972b1a502b24bade328df6ae14",
+    "docs/任务卡/02-生产与物料闭环.md": "aa3b931c0930792473940a125f2dcf85cff836b56449b02d69edd1d989af2e5f",
+    "docs/任务卡/03-AI与交付.md": "de44277a9618a3ab08578b99c75f3924022e08e1f43dd9e0e512fd2554fab7ba",
+    "docs/决策与范围.md": "e473337981ebb495221e6cbe8f8c90310bd0c6f00a12bb6e7a0cb14bbd5f6e31",
+    "docs/开发TODO.md": "bc0c9dee29147238bcc2a506b7bda95816de60274376cc3ebe00b6a197c5a14c",
+    "docs/验收样例.md": "67b261077e3925379d542da6307afd31c1ed177b3a55b1a5a8f596f8fbc0f53f",
+    "evidence/R07/card-binding.md": "c654d10d8237ca519c82aade0b9b6d260cf7ca947c635e2834ff6bd5382962ec",
+    "evidence/R07/approval-binding.md": "2a288411d61e9029f1a70e6c94776987adbaa936ba5b2c4496818c3b190bd10a",
+    "evidence/B19/approved-changes/run-record.md": "abdf5bce5d369a496aa1f38ad5062fc993e2ee43c86fc143cb385034edfe033c",
+    "evidence/B19/approved-changes/review.md": "f0e0f7042777b8c5fa15b69630c9ac8c6e399d3bbe7bf2a1a2ae945fab153af1"
+  }
+}

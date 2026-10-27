@@ -101,3 +101,9 @@ docker compose -f .development/compose.json run --rm --no-deps -T -e CI=1 bench 
 ### 2026-10-27 HTTP样例运行补充绑定
 
 真实HTTP/内部commit批量审批采用原测试库的专用本地副本`xgd-b19-http.localhost`，复用原生BackupGenerator与_new_site(source_sql)，固定新库且拒绝已有目标，原库数据不覆盖；不是客户/开发站点启用。实际命令与限制统一记录于[HTTP证据](../B19/http/run-record.md)，准备脚本`.development/checks/b19_http_site.py`及HTTP客户端脚本只属于测试设施，不新增产品服务。没有合适最小样例时停止对应HTTP项，不mock事务。
+
+### 2026-10-27 V04/V07变更与停止补充绑定
+
+用户已确认批准后取消修订/停止仅生产厂长，必须原因；批准前终止由发起人。实际入口沿WorkOrder.before_update_after_submit/before_cancel、apply_production_approval、原stop_unstop/close_work_order，以及StockEntry.update_work_order。补原生Workflow终止/取消转换，停止动作通过同一工单专用入口校验版本/岗位/原因后调用原生状态更新；原生恢复旁路拒绝。新增的previous_work_order仅采用第5节已有字段方案，通过b19_prepare仅在隔离测试站点准备，仍未成为客户部署配置。
+
+V07的无事实含无任何已生效库存（包括已取消记录）、无计时/已提交报工历史；纯待执行任务不冒充事实。取消沿amended_from；有事实则保留原单并停止，剩余需求通过previous_work_order新建再审批。来源新增/改挂/公司改变均核源对象权限与合法状态；不自动计算剩余数量、不改数量算法。停止后的真实退料和库存取消按原入口处理；结束参数不得恢复执行，完整结束差额/计时收尾仍归B05/G2。用例、实测结果及限制见[本批记录](../B19/approved-changes/run-record.md)，运行结果不由本绑定提前保证。

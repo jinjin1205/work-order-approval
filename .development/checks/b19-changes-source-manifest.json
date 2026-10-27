@@ -1,0 +1,22 @@
+{
+  "commit": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+  "files": {
+    "erpnext/__init__.py": "9d0a5c9dc7c34307e474956b4500fbec3d06b56e73d12d00c918896bc381aea0",
+    "erpnext/manufacturing/doctype/work_order/work_order.py": "a72959ff8772acbf6db2900d3c5f39b232243d65d5f407b614c89b7c1516b9a0",
+    "erpnext/manufacturing/doctype/job_card/job_card.py": "709bdd3e79a1e7b2ce69898b7f9879e082d8145f563473d1725195ff227dec3a",
+    "erpnext/stock/doctype/stock_entry/stock_entry.py": "9589a27b63ddbc7568913e5281f22df875b7c4d26d8b893c5729a0f4a3fe7fc9",
+    "erpnext/manufacturing/doctype/work_order/work_order.js": "680f5c40b12430b1a511aeb7a981d06612309ee632c681b65793befc5b07d6a8",
+    "erpnext/manufacturing/doctype/job_card/job_card.js": "6c9849f71ae8e027afb267a5761d31c60d9e716bfd084f587b514ccc3e4bb1ef",
+    "erpnext/stock/doctype/stock_entry/stock_entry.js": "b53510c9ac622929424b3ae287f7c2e4f0fdd3b7478f77fee9332cc4ef6a2a05",
+    "erpnext/locale/zh.po": "641c68d2c299f49f922b41d81e180b1bd4a29505de943e31c1719046b0e03774",
+    "pyproject.toml": "dff83cc5d78a124c9846f08a88b9e43f950cfb9daf156d8818fdae687e2c46c4",
+    "package.json": "3204ec7a1ee5a635fbbd197c2da3e34c428b104e49e5b3c36b65499eb4d2c1ef",
+    "erpnext/manufacturing/doctype/job_card/test_job_card.py": "461f8b0ea3dbf9ec5fc228d4793f6c79766599b07867ed800d9d03ae15636f4f",
+    "erpnext/manufacturing/doctype/work_order/test_work_order.py": "38984c635496ecd54d479a1dd26a0af243c250e64306381d22c67fbb79db3366",
+    "erpnext/stock/doctype/stock_entry/test_stock_entry.py": "09f0e195a7ffe8a886fb59436818709a3157e8ce23fcff304e9e04b3036a6285",
+    "erpnext/hooks.py": "daf07bd8adb0c735d8458bcced833ef84eb13c601ac259319014ab8466370fd3"
+  },
+  "patch_sha256": "a6478acc8c02c08b2b2775c273f802a45c0871196c51e5e12c160766f718d25d",
+  "branch": "codex/xgd-maintenance",
+  "scope": "B19 approved changes final candidate including stopped partial-manufacture cancellation; 18 tests plus related regressions"
+}

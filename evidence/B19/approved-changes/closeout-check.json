@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-27",
+  "upstream_commit": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+  "previous_publication_commit": "f8a4fb3268dc49dd9d595843369e843b282345e6",
+  "patch_sha256": "a6478acc8c02c08b2b2775c273f802a45c0871196c51e5e12c160766f718d25d",
+  "checked_source_files": 14,
+  "source_matches": true,
+  "old_business_tables_unchanged": 11,
+  "persisted_test_workflows": 0,
+  "old_approval_fields_empty": true,
+  "tests": {
+    "final-results.log": {
+      "count": 18,
+      "seconds": 224.69,
+      "result": "OK",
+      "log_sha256": "3768fcf56a653115267dafdac4a75f30473a7789966097409fbd3bcab0eaeeb8"
+    },
+    "approval-regression.log": {
+      "count": 17,
+      "seconds": 113.063,
+      "result": "OK",
+      "log_sha256": "bd9234f12ccbcc004d016cfb77e22520a49e0ed18d52d98d8c7c3c3ae02e0603"
+    },
+    "stock-regression.log": {
+      "count": 3,
+      "seconds": 29.453,
+      "result": "OK",
+      "log_sha256": "680097b4caf416e418cf6a021ed1af51ef2615b8bf5dac0385b116d11256984b"
+    },
+    "status-regression.log": {
+      "count": 4,
+      "seconds": 1.538,
+      "result": "OK",
+      "log_sha256": "5a2dc204e74254ee656df99b65bf7fdb2d649c3237f09b320965827922139b46"
+    }
+  },
+  "upstream_status_test": {
+    "result": "ERROR in setUp before assertion",
+    "reason": "Missing Item Group: Products",
+    "log_sha256": "3a4966b8f621718ac3a88559b6554481e9689da36bfc953d979c8c641d829645",
+    "replacement": "Four direct state-calculation tests, no saved documents or mocks; not an upstream class pass"
+  },
+  "real_http_new_actions_verified": false,
+  "attachments_verified": false,
+  "active_timer_settlement_verified": false,
+  "business_acceptance": false,
+  "G1_G2_G3": "not passed"
+}
