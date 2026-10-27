@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-27",
+  "repository": "https://github.com/jinjin1205/work-order-approval",
+  "branch": "main",
+  "commit": "eb57f81a8adb9ba34a35a8cca8c34b5c557ba9c1",
+  "remote_ref_matches": true,
+  "fresh_clone_head_matches": true,
+  "tracked_files": 238,
+  "manifest_file_hashes_verified": 237,
+  "modified_or_new_sources_verified": 20,
+  "patch_sha256": "a08b8eb7e2ec509982b817527c840bd2cbdc252e1d1a121e425077605fcbab1f",
+  "public_worktree_clean": true,
+  "runtime_secrets_and_test_records_excluded": true,
+  "limitation": "remote save verified, not full product acceptance; G1/G2/G3 remain open"
+}

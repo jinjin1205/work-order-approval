@@ -213,7 +213,7 @@
     "source": "docs/任务卡/02-生产与物料闭环.md",
     "public_path": "docs/任务卡/02-生产与物料闭环.md",
     "treatment": "personal paths/runtime identifiers removed",
-    "source_sha256": "32304b2e56a939e6b9b57801ea1ba51f448fcc09b682d9125c30f9473175f550"
+    "source_sha256": "2dd9ee3fc4a9a953f8a0ac254fe2add6263b45f33cc604a3a3f10602c483af80"
   },
   {
     "source": "docs/任务卡/03-AI与交付.md",
@@ -231,7 +231,7 @@
     "source": "docs/开发TODO.md",
     "public_path": "docs/开发TODO.md",
     "treatment": "unchanged",
-    "source_sha256": "745428d2df2468fc67bdc62afdecb38866df5e24ed89d530fd403a9e9bc5c97c"
+    "source_sha256": "2856062b1cd743dee90f51ebe85cdacbca6fd071770bc7923b35fd9ba394bf64"
   },
   {
     "source": "docs/验收样例.md",
@@ -279,7 +279,7 @@
     "source": "evidence/B08/native-fact/run-record.md",
     "public_path": "evidence/B08/native-fact/run-record.md",
     "treatment": "unchanged",
-    "source_sha256": "7bbca3a92b134a6f6493dd430fcc21e683bbe25a7b6dd6818a72f557f7cb2099"
+    "source_sha256": "58f3fa582677795482b29e66a439047d12eb261456eff413f4bd183c53738190"
   },
   {
     "source": "evidence/B10/run-record.md",
@@ -537,7 +537,7 @@
     "source": "evidence/R07/report-concurrency.md",
     "public_path": "evidence/R07/report-concurrency.md",
     "treatment": "unchanged",
-    "source_sha256": "82709b32fa2493ba56c42ac6c74b61a2a63c2c26ebdc54261f1d6e85b0ab3c19"
+    "source_sha256": "a5aa132d5ccb248541164e661eae71e6a6635adddac89cdab8372f64c5f5d208"
   },
   {
     "source": "evidence/R07/time-config-binding.md",
@@ -1018,6 +1018,12 @@
     "public_path": "evidence/R05/r02-probe-attempt5.py",
     "treatment": "unchanged",
     "source_sha256": "bebd418f53e027db69fc9888dfc4bf01fc162aab71394832e1e2572c6d9cd774"
+  },
+  {
+    "source": "evidence/发布/B14-2026-10-27-remote.json",
+    "public_path": "evidence/发布/B14-2026-10-27-remote.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "a74b586d804f21c21dc5b4ab8cfa399cb82ffae337bba6af28fd1542fe1c624c"
   },
   {
     "source": "evidence/B14/closeout-check.json",

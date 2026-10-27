@@ -1603,7 +1603,7 @@
   },
   {
     "path": "evidence/B08/native-fact/run-record.md",
-    "original_sha256": "7bbca3a92b134a6f6493dd430fcc21e683bbe25a7b6dd6818a72f557f7cb2099",
+    "original_sha256": "58f3fa582677795482b29e66a439047d12eb261456eff413f4bd183c53738190",
     "published": true,
     "reason": "public copy"
   },
@@ -4063,7 +4063,7 @@
   },
   {
     "path": "evidence/R07/report-concurrency.md",
-    "original_sha256": "82709b32fa2493ba56c42ac6c74b61a2a63c2c26ebdc54261f1d6e85b0ab3c19",
+    "original_sha256": "a5aa132d5ccb248541164e661eae71e6a6635adddac89cdab8372f64c5f5d208",
     "published": true,
     "reason": "public copy"
   },
@@ -4118,6 +4118,12 @@
   {
     "path": "evidence/发布/B04-time-metrics-2026-10-27-remote.json",
     "original_sha256": "fc0b99dfeb375301c9f77321d2dfcb6a530922b36fd43d2f0d74da4bfddb2cd6",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/发布/B14-2026-10-27-remote.json",
+    "original_sha256": "a74b586d804f21c21dc5b4ab8cfa399cb82ffae337bba6af28fd1542fe1c624c",
     "published": true,
     "reason": "public copy"
   },
