@@ -190,6 +190,16 @@
       "executed_on": "2026-10-27",
       "group": "B04 input/save and Chinese BOM PC",
       "source_patch_sha256": "e56d3bb7914ef123ac13fe8d21fceb433a6ebfd7e5d844e19cfa74581a867e85"
+    },
+    {
+      "local_log": "evidence/B04/time-metrics/final-tests.log",
+      "sha256": "3ee4384f871ec760f8421483ee5a70031e75453058245b0e4def5c2be950becb",
+      "tests": 12,
+      "seconds": "1.854",
+      "result": "OK",
+      "executed_on": "2026-10-27",
+      "group": "B04 time and metrics calculation layer",
+      "source_patch_sha256": "fc68d4af7ab3c74ed84ca898bffebe36b24c5c66041b272ec851e241754214e3"
     }
   ],
   "http_B02_historical": {
@@ -201,5 +211,5 @@
     "verified_after_all_requests": true,
     "publication_note": "Only assertions/counts retained; runtime business_state and raw responses remain local."
   },
-  "current_patch_sha256": "e56d3bb7914ef123ac13fe8d21fceb433a6ebfd7e5d844e19cfa74581a867e85"
+  "current_patch_sha256": "fc68d4af7ab3c74ed84ca898bffebe36b24c5c66041b272ec851e241754214e3"
 }

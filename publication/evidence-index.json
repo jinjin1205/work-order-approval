@@ -1410,6 +1410,180 @@
     "reason": "local raw execution evidence; not uploaded"
   },
   {
+    "path": "evidence/B04/time-metrics/baseline-runtime.json",
+    "original_sha256": "cac210927a1bf856e674af98bb2cf7be43ac1a77bef324e516d052c30728e051",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/time-metrics/build-final.log",
+    "original_sha256": "167cc6b3bda3de66b1da6d76fe7be33a4ea3d4bb5146a61168b484819af19078",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/time-metrics/build-green.log",
+    "original_sha256": "215ba02824929b5e13fe0ea2efcd846382a90c1e160517e7556bdcd49cdaefc4",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/time-metrics/build-red.log",
+    "original_sha256": "c1115c14547f9f13b3883975491041cd13577fed4e37d275626991e96a2116da",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/time-metrics/build-review-red.log",
+    "original_sha256": "0f201520948d5da6fd8ebd28affa2a05cd056b0af2850586d7d90367337bef55",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/time-metrics/closeout-check.json",
+    "original_sha256": "565554f231e74315070fb052cf5b2df077784a84680ba8557878861ab515f650",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B04/time-metrics/data-after.json",
+    "original_sha256": "dbe4f209cd1f8e5bc03627bcb0c0d47b330ad8523af5fa91862c8c65d1703801",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/time-metrics/data-after.stderr.log",
+    "original_sha256": "c444efa3f47af3c17ad8d61b6e56c7abfb8c32aebf2f196434982dec69275a0a",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/time-metrics/data-before-stderr.log",
+    "original_sha256": "a9165dcb187f6c0ec56fa02c39fe925f678af51eee1f61f5a11482f98c1998d3",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/time-metrics/data-before.json",
+    "original_sha256": "dbe4f209cd1f8e5bc03627bcb0c0d47b330ad8523af5fa91862c8c65d1703801",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/time-metrics/final-runtime.json",
+    "original_sha256": "3330e59893b9c28c3070984447c13fa0a9dea05faaa7d6ef8878f63d6852ae80",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/time-metrics/final-runtime.stderr.log",
+    "original_sha256": "40ccaa6883d2eb5ba178a1727100031ddf256f738ec7f120bb1de70ffd6884cc",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/time-metrics/final-tests.log",
+    "original_sha256": "3ee4384f871ec760f8421483ee5a70031e75453058245b0e4def5c2be950becb",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/time-metrics/green-runtime-stderr.log",
+    "original_sha256": "fa2d535f39aed597b17095673ea1534511ec3f5abf35c17b5f1e497cfacb7f46",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/time-metrics/green-runtime.json",
+    "original_sha256": "94535d37083eef706c197f4408ea18c1a609420ad875274528500bd59929d0b7",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/time-metrics/green-tests.log",
+    "original_sha256": "fdb5379f020750a508e79d336f4de694e3ee88ef1971df1ac29eafa0962514fe",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/time-metrics/implementation.patch",
+    "original_sha256": "fc68d4af7ab3c74ed84ca898bffebe36b24c5c66041b272ec851e241754214e3",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B04/time-metrics/native-probe-stderr.log",
+    "original_sha256": "d6cf672d3ae6afef47989ba5fe8fc559c55ccc142a04789a1508a71a145acd85",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/time-metrics/native-probe.jsonl",
+    "original_sha256": "5507f21f32bf823c9f45632d0cd89c50254cac3168c1064120cede15ec0e3544",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/time-metrics/red-implementation.patch",
+    "original_sha256": "fd824af7417c25dcd3403d2bb7f49fd2eb0bfcd8b089c42944ade752461d6e9c",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/time-metrics/red-runtime-stderr.log",
+    "original_sha256": "c462123d23b03a29fc2743ad9768d97ebce481913d26928e31be6ba682505bf0",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/time-metrics/red-runtime.json",
+    "original_sha256": "6a08d216a08b454e578292d9f0f2adb5833a6276709140665f7953e1765e3ee3",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/time-metrics/red-tests.log",
+    "original_sha256": "85ab598da4f3b200d468ba3d4551321cbfb86102f9f35a691e01c9d328398181",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/time-metrics/review-red-implementation.patch",
+    "original_sha256": "9fdfad5ad8945c67096a8317e1a7438e1b547b8c98068268c6365c1a7ff920a7",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/time-metrics/review-red-runtime.json",
+    "original_sha256": "2a8d17c950a037aa09f70c783d63104e37bab5be64c5df124ee961d96d83fd0e",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/time-metrics/review-red-runtime.stderr.log",
+    "original_sha256": "cbedee1e849ed1bb530046fd982421560785cd70fdbef353a7e1652fd38993d7",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/time-metrics/review-red-tests.log",
+    "original_sha256": "df43f44a41a8fb7ae31b4535f9abc5aadc965f2527b0914185117abf31069b4f",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B04/time-metrics/run-record.md",
+    "original_sha256": "c26f3020f183f70550a56e09947b5f081dbafb153638e026b18de21dc47812a8",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B04/time-metrics/source-manifest.json",
+    "original_sha256": "b83f3812106b9475312cb760879501adee89d471831bb3b7936efd0b7c26f93f",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
     "path": "evidence/B04/unit-regression.log",
     "original_sha256": "9905b3885fd34993fe87e44abdde363430e65596ca72677a597a20a92e612efc",
     "published": false,
@@ -3421,7 +3595,7 @@
   },
   {
     "path": "evidence/R07/quantity-return.md",
-    "original_sha256": "ad6841a07954dad6aeee35b8fff3b32a073a6757611c4b51f08b58e08d6c597f",
+    "original_sha256": "a7547a2b7e64f1f4af62452f221f6b64d949b7cf380551c8c8a987e522ce92ca",
     "published": true,
     "reason": "public copy"
   },
@@ -3454,6 +3628,12 @@
     "original_sha256": "5de69034f0249f1dfa15abd56adf892d8ba9a6c1bc18a77eb984ee94344e86fc",
     "published": true,
     "reason": "public copy"
+  },
+  {
+    "path": "evidence/发布/B04-input-ui-2026-10-27-remote.json",
+    "original_sha256": "2dadc55a75e5968c00a8ffce68a61eafdbf541ab18ea0c349dcd39ff25145808",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
   },
   {
     "path": "evidence/发布/B04-precision-2026-10-27-remote.json",

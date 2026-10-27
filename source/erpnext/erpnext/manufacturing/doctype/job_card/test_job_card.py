@@ -1637,3 +1637,179 @@ def make_bom_for_jc_tests():
 	bom.items[0].uom = "_Test UOM 1"
 	bom.items[0].conversion_factor = 5
 	bom.insert()
+
+
+class TestProductionTimeMetrics(FrappeTestCase):
+	"""B04 calculation contracts; not confirmation, payroll or workflow acceptance."""
+
+	def setUp(self):
+		frappe.set_user("Administrator")
+		self.addCleanup(frappe.db.rollback)
+
+	def calculator(self, name):
+		from erpnext.manufacturing.doctype.job_card import job_card
+		method = getattr(job_card, name, None)
+		self.assertTrue(callable(method), f"B04 required calculation entry missing: {name}")
+		return method
+
+	def make_card(self, start, end, minutes=0):
+		from erpnext.manufacturing.doctype.work_order.test_work_order import TestWorkOrderRequiredQuantity
+		order, raw, _ = TestWorkOrderRequiredQuantity.make_quantity_order(self, 0.5, planned=10)
+		station = make_workstation(workstation_name=raw.name + "-工时").name
+		operation = frappe.get_doc({"doctype": "Operation", "__newname": raw.name + "-工序"}).insert().name
+		order.append("operations", {"operation": operation, "workstation": station, "time_in_mins": 1})
+		order.insert()
+		return frappe.get_doc({"doctype": "Job Card", "work_order": order.name, "company": order.company,
+			"operation": operation, "operation_id": order.operations[0].name,
+			"workstation": station, "wip_warehouse": order.wip_warehouse, "for_quantity": 5,
+			"time_logs": [{"from_time": start, "to_time": end, "time_in_mins": minutes}]})
+
+	def test_native_closed_time_recalculated_and_cross_day(self):
+		for start, end, expected in (("2026-10-20 09:00:00", "2026-10-20 17:00:00", 480),
+			("2026-10-20 22:00:00", "2026-10-21 02:00:00", 240)):
+			card = self.make_card(start, end, 999999).insert().reload()
+			self.assertEqual(card.total_time_in_mins, expected)
+			self.assertEqual(card.time_logs[0].time_in_mins, expected)
+			self.assertEqual(str(card.time_logs[0].from_time), start)
+
+	def test_native_open_row_cannot_save_forged_minutes(self):
+		card = self.make_card("2026-10-20 09:00:00", None, 999999).insert().reload()
+		self.assertEqual(card.time_logs[0].time_in_mins, 0)
+		self.assertEqual(card.total_time_in_mins, 0)
+		self.assertIsNone(card.time_logs[0].to_time)
+
+	def test_native_end_requires_start(self):
+		card = self.make_card(None, "2099-10-20 10:00:00", 999999)
+		with self.assertRaises(frappe.ValidationError):
+			card.insert()
+
+	def test_native_reverse_and_overlap_still_rejected(self):
+		card = self.make_card("2026-10-20 10:00:00", "2026-10-20 09:00:00")
+		with self.assertRaises(frappe.ValidationError):
+			card.insert()
+		card.time_logs[0].to_time = "2026-10-20 11:00:00"
+		card.insert()
+		overlap = frappe.copy_doc(card)
+		overlap.time_logs[0].from_time = "2026-10-20 10:30:00"
+		overlap.time_logs[0].to_time = "2026-10-20 11:30:00"
+		with self.assertRaises(frappe.ValidationError):
+			overlap.insert()
+
+	def rule(self, **changes):
+		return {"name": "午休", "priority": 1, "enabled": True, "operation": None,
+			"rest_periods": [["12:00", "13:00"]], "overtime_periods": [], **changes}
+
+	def test_work_time_t01_to_t04_and_t06_to_t09(self):
+		calc = self.calculator("calculate_report_time")
+		day = ("2026-10-20 09:00:00", "2026-10-20 17:00:00")
+		result = calc(*day, rules=[self.rule()])
+		self.assertEqual((result["reported_seconds"], result["rest_seconds"], result["effective_seconds"]), (28800, 3600, 25200))
+		cross = calc("2026-10-20 22:00:00", "2026-10-21 02:00:00", rules=[self.rule(rest_periods=[["23:00", "01:00"]])])
+		self.assertEqual((cross["reported_seconds"], cross["rest_seconds"], cross["effective_seconds"]), (14400, 7200, 7200))
+		with self.assertRaisesRegex(frappe.ValidationError, "7小时"):
+			calc(*day, rules=[self.rule()], shutdown_seconds=28800)
+		covered = calc("2026-10-20 12:30:00", "2026-10-20 12:45:00", rules=[self.rule()])
+		self.assertEqual((covered["rest_seconds"], covered["effective_seconds"]), (900, 0))
+		rule = self.rule(overtime_periods=[["16:00", "17:00"]])
+		result = calc(*day, rules=[rule], shutdown_seconds=3600, overtime_seconds=1800)
+		self.assertEqual((result["overtime_limit_seconds"], result["effective_seconds"]), (3600, 23400))
+		with self.assertRaisesRegex(frappe.ValidationError, "1小时"):
+			calc(*day, rules=[rule], overtime_seconds=3601)
+		with self.assertRaises(frappe.ValidationError):
+			calc(day[1], day[0], rules=[])
+		with self.assertRaises(TypeError):
+			calc(*day, rules=[rule], effective_seconds=999999)
+
+	def test_rule_priority_scope_overlap_union_and_multiday(self):
+		calc = self.calculator("calculate_report_time")
+		day = ("2026-10-20 09:00:00", "2026-10-20 17:00:00")
+		rules = [self.rule(name="后序", priority=2), self.rule(name="他工序", priority=0, operation="他工序"),
+			self.rule(name="命中", rest_periods=[["12:00", "13:00"], ["12:30", "13:30"]])]
+		result = calc(*day, rules=rules, operation="下料")
+		self.assertEqual((result["matched_rule"], result["rest_seconds"], result["effective_seconds"]), ("命中", 5400, 23400))
+		result = calc("2026-10-20 00:00:00", "2026-10-23 00:00:00", rules=[self.rule()])
+		self.assertEqual(result["rest_seconds"], 10800)
+		result = calc("2026-10-20T01:00:00+00:00", "2026-10-20T09:00:00+00:00", rules=[self.rule()])
+		self.assertEqual(result["effective_seconds"], 25200)
+		result = calc("2026-10-20 09:00:00.200", "2026-10-20 09:00:02.100", rules=[])
+		self.assertEqual(result["effective_seconds"], 1)
+
+	def test_fractional_overlap_matches_before_whole_second_conversion(self):
+		calc = self.calculator("calculate_report_time")
+		span = ("2026-10-20 12:59:59.500", "2026-10-20 14:00:00")
+		first = self.rule(name="优先规则")
+		second = self.rule(name="后序规则", priority=2, rest_periods=[["13:00", "14:00"]])
+		for rules in ([first, second], [first]):
+			with self.subTest(rules=rules):
+				result = calc(*span, rules=rules)
+				self.assertEqual(result["matched_rule"], "优先规则")
+				self.assertEqual(result["rest_seconds"], 0)
+				self.assertEqual(result["effective_seconds"], 3600)
+				self.assertEqual(result["overtime_limit_seconds"], 0)
+
+	def test_no_rule_is_explicit_and_bad_context_is_rejected(self):
+		calc = self.calculator("calculate_report_time")
+		day = ("2026-10-20 09:00:00", "2026-10-20 10:00:00")
+		result = calc(*day, rules=[])
+		self.assertEqual((result["rest_seconds"], result["overtime_limit_seconds"], result["effective_seconds"]), (0, 3600, 3600))
+		self.assertIsNone(result["matched_rule"])
+		self.assertIn("未匹配", result["rule_message"])
+		for rules in (None, {}, [self.rule(rest_periods=[["25:00", "13:00"]])]):
+			with self.subTest(rules=rules), self.assertRaises(frappe.ValidationError):
+				calc(*day, rules=rules)
+		for field in ("shutdown_seconds", "overtime_seconds"):
+			for value in (-1, 0.5, False, "NaN", "Infinity"):
+				with self.subTest(field=field, value=value), self.assertRaises(frappe.ValidationError):
+					calc(*day, rules=[], **{field: value})
+		for value in (None, "", "not-a-date"):
+			with self.subTest(value=value), self.assertRaises(frappe.ValidationError):
+				calc(value, day[1], rules=[])
+
+	def test_metrics_m01_m02_efficiency_and_pay(self):
+		calc = self.calculator("calculate_report_metrics")
+		args = {"plan_quantity": 10, "good_quantity": 8, "bad_quantity": 2, "effective_seconds": 7200,
+			"completed_tasks": 1, "total_tasks": 1, "issued_quantity": 4, "required_quantity": 10,
+			"standard_efficiency": 10, "wage_mode": "hourly", "wage_rate": 10}
+		for rework in (0, 3):
+			result = calc(**args, rework_quantity=rework)
+			self.assertEqual(result["quality_percent"], 80)
+			self.assertEqual(result["unfinished_quantity"], 0)
+			self.assertEqual(result["task_completion_percent"], 100)
+			self.assertEqual(result["material_issue_percent"], 40)
+			self.assertEqual(result["actual_efficiency"], 5)
+			self.assertEqual(result["efficiency_percent"], 50)
+			self.assertEqual(result["estimated_wage"], 20)
+		args["wage_mode"] = "piece"
+		self.assertEqual(calc(**args)["estimated_wage"], 80)
+
+	def test_metrics_zero_denominators_and_decimal_quantity(self):
+		from decimal import Decimal
+		calc = self.calculator("calculate_report_metrics")
+		for rework in (0, 3):
+			result = calc(plan_quantity=10, good_quantity=0, bad_quantity=0, rework_quantity=rework, effective_seconds=0,
+				completed_tasks=0, total_tasks=0, issued_quantity=0, required_quantity=0, standard_efficiency=0)
+			for field in ("quality_percent", "task_completion_percent", "material_issue_percent", "actual_efficiency", "efficiency_percent", "estimated_wage"):
+				self.assertIsNone(result[field], field)
+		result = calc(plan_quantity="0.123457", good_quantity="0.123456", bad_quantity=0, effective_seconds=1,
+			completed_tasks=0, total_tasks=1, issued_quantity=0, required_quantity=1)
+		self.assertEqual(result["unfinished_quantity"], Decimal("0.000001"))
+
+	def test_metrics_reject_invalid_inputs(self):
+		calc = self.calculator("calculate_report_metrics")
+		args = dict(plan_quantity=10, good_quantity=8, bad_quantity=2, effective_seconds=7200,
+			completed_tasks=1, total_tasks=1, issued_quantity=4, required_quantity=10)
+		for field, value in (("good_quantity", -1), ("bad_quantity", "NaN"), ("plan_quantity", 1000000000),
+			("good_quantity", "0.0000001"), ("effective_seconds", 0.5), ("completed_tasks", 2),
+			("total_tasks", False), ("standard_efficiency", -1), ("wage_mode", "other")):
+			with self.subTest(field=field, value=value), self.assertRaises(frappe.ValidationError):
+				calc(**{**args, field: value})
+
+	def test_shared_quantity_validator_preserves_positive_default(self):
+		from erpnext.manufacturing.doctype.bom.bom import validate_quantity_input
+		with self.assertRaises(frappe.ValidationError):
+			validate_quantity_input(0, "数量")
+		self.assertEqual(validate_quantity_input("999999999.999999", "数量"), 999999999.999999)
+		self.assertEqual(validate_quantity_input("0.000000", "数量", allow_zero=True), 0)
+		for value in (False, -1, "0.0000001", 1000000000):
+			with self.subTest(value=value), self.assertRaises(frappe.ValidationError):
+				validate_quantity_input(value, "数量", allow_zero=True)

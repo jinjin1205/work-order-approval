@@ -41,13 +41,14 @@ def validate_material_loss(row):
 	return loss
 
 
-def validate_quantity_input(value, label):
+def validate_quantity_input(value, label, *, allow_zero=False):
 	try:
 		quantity = Decimal(str(value))
 	except InvalidOperation:
 		frappe.throw("{0}必须填写有效数字。".format(label))
-	if not quantity.is_finite() or quantity <= 0:
-		frappe.throw("{0}必须大于零，且不能是无穷或非数字值。".format(label))
+	if not quantity.is_finite() or quantity < 0 or (quantity == 0 and not allow_zero):
+		condition = "为非负数" if allow_zero else "大于零"
+		frappe.throw("{0}必须{1}，且不能是无穷或非数字值。".format(label, condition))
 	if quantity >= Decimal("1000000000"):
 		frappe.throw("{0}必须小于10亿，请调整数量或计量单位。".format(label))
 	if quantity != quantity.quantize(Decimal("0.000001")):

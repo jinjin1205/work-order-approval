@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-27",
+  "public_base_commit": "59e63446c9ad9f27bb49b9e91aa7ffcd3da8e693",
+  "upstream_commit": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+  "patch_sha256": "fc68d4af7ab3c74ed84ca898bffebe36b24c5c66041b272ec851e241754214e3",
+  "changed_files_this_batch": [
+    "erpnext/manufacturing/doctype/bom/bom.py",
+    "erpnext/manufacturing/doctype/job_card/job_card.py",
+    "erpnext/manufacturing/doctype/job_card/test_job_card.py"
+  ],
+  "source_files_checked": 22,
+  "runtime_matches_source": true,
+  "native_probe_cases": 6,
+  "initial_red": {
+    "tests": 11,
+    "failures": 8,
+    "errors": 1,
+    "error_cause": "new allow_zero parameter absent in original implementation; not fixture failure"
+  },
+  "review_red": {
+    "tests": 12,
+    "failed_subtests": 2,
+    "cause": "fractional overlap lost before rule matching"
+  },
+  "final_tests": {
+    "tests": 12,
+    "seconds": "1.854",
+    "result": "OK"
+  },
+  "business_table_hashes_compared": 11,
+  "business_data_unchanged": true,
+  "workflow_count": 0,
+  "python_parse": true,
+  "diff_check": true,
+  "raw_evidence_sha256": {
+    "native-probe.jsonl": "5507f21f32bf823c9f45632d0cd89c50254cac3168c1064120cede15ec0e3544",
+    "red-tests.log": "85ab598da4f3b200d468ba3d4551321cbfb86102f9f35a691e01c9d328398181",
+    "review-red-tests.log": "df43f44a41a8fb7ae31b4535f9abc5aadc965f2527b0914185117abf31069b4f",
+    "final-tests.log": "3ee4384f871ec760f8421483ee5a70031e75453058245b0e4def5c2be950becb",
+    "final-runtime.json": "3330e59893b9c28c3070984447c13fa0a9dea05faaa7d6ef8878f63d6852ae80",
+    "data-before.json": "dbe4f209cd1f8e5bc03627bcb0c0d47b330ad8523af5fa91862c8c65d1703801",
+    "data-after.json": "dbe4f209cd1f8e5bc03627bcb0c0d47b330ad8523af5fa91862c8c65d1703801"
+  },
+  "scope": "Native time-row guards and explicit-input internal time/metrics calculations only",
+  "not_passed": [
+    "B04 whole card / G1",
+    "B08/B14/B16 persistence and Chinese UI integration",
+    "G2 original report facts",
+    "G3 full concurrency",
+    "customer acceptance"
+  ],
+  "web_deployment": "Existing 18086 and 18088 containers not replaced this batch; verified source applies to isolated bench tests",
+  "public_data": "Only metadata, sanitized conclusions and fixture definitions; raw logs and runtime records remain local"
+}

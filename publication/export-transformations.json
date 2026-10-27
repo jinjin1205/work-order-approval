@@ -15,7 +15,7 @@
     "source": ".development/repos/erpnext/erpnext/manufacturing/doctype/bom/bom.py",
     "public_path": "source/erpnext/erpnext/manufacturing/doctype/bom/bom.py",
     "treatment": "unchanged",
-    "source_sha256": "e131b1397c7f270acda632057946d5978fc46bad426fbe05dd5ec9736b4840b3"
+    "source_sha256": "53e9fe5b5a7519a1871985ba63e6bec69da2a880056a9156153375db8cc9edf5"
   },
   {
     "source": ".development/repos/erpnext/erpnext/manufacturing/doctype/bom/test_bom.py",
@@ -33,13 +33,13 @@
     "source": ".development/repos/erpnext/erpnext/manufacturing/doctype/job_card/job_card.py",
     "public_path": "source/erpnext/erpnext/manufacturing/doctype/job_card/job_card.py",
     "treatment": "unchanged",
-    "source_sha256": "709bdd3e79a1e7b2ce69898b7f9879e082d8145f563473d1725195ff227dec3a"
+    "source_sha256": "e6db1367a778785ec92a8ce37dab145bdf22c549c08e42889736bf055accdc79"
   },
   {
     "source": ".development/repos/erpnext/erpnext/manufacturing/doctype/job_card/test_job_card.py",
     "public_path": "source/erpnext/erpnext/manufacturing/doctype/job_card/test_job_card.py",
     "treatment": "unchanged",
-    "source_sha256": "461f8b0ea3dbf9ec5fc228d4793f6c79766599b07867ed800d9d03ae15636f4f"
+    "source_sha256": "89f91df580ad7b4524f71bd5556289e7e6ced709470865d6e4a458b51a39f313"
   },
   {
     "source": ".development/repos/erpnext/erpnext/manufacturing/doctype/work_order/test_work_order.py",
@@ -138,6 +138,12 @@
     "source_sha256": "e56d3bb7914ef123ac13fe8d21fceb433a6ebfd7e5d844e19cfa74581a867e85"
   },
   {
+    "source": "evidence/B04/time-metrics/implementation.patch",
+    "public_path": "evidence/B04/time-metrics/implementation.patch",
+    "treatment": "unchanged",
+    "source_sha256": "fc68d4af7ab3c74ed84ca898bffebe36b24c5c66041b272ec851e241754214e3"
+  },
+  {
     "source": "AGENTS.md",
     "public_path": "AGENTS.md",
     "treatment": "unchanged",
@@ -153,7 +159,7 @@
     "source": "docs/任务卡/02-生产与物料闭环.md",
     "public_path": "docs/任务卡/02-生产与物料闭环.md",
     "treatment": "personal paths/runtime identifiers removed",
-    "source_sha256": "a922b02b5bafebb941c1c30b1ce78559dfc4cd5ef44c62a6d3df8800bceac3d8"
+    "source_sha256": "9af1addbc78b1100e514512d4a52330d03a038351cdac3c2378353746448401a"
   },
   {
     "source": "docs/任务卡/03-AI与交付.md",
@@ -165,13 +171,13 @@
     "source": "docs/决策与范围.md",
     "public_path": "docs/决策与范围.md",
     "treatment": "personal paths/runtime identifiers removed",
-    "source_sha256": "72e23beb93ccc58e1a827f918a122f12d6ad06e52f896fe160e5eac2fb5969da"
+    "source_sha256": "a8cf91e699929f5b7c259796810691fa318301ee7802c174a451e598f50b8882"
   },
   {
     "source": "docs/开发TODO.md",
     "public_path": "docs/开发TODO.md",
     "treatment": "unchanged",
-    "source_sha256": "7557b143972b2afac71f3b0903597ceabe5ce5948026e15c4a35c88bd16e51b1"
+    "source_sha256": "25998625b58ae99c263c9f4c247b7efdc4894b8725c05025e4b2060c0ca2c1fb"
   },
   {
     "source": "docs/验收样例.md",
@@ -208,6 +214,12 @@
     "public_path": "evidence/B04/run-record.md",
     "treatment": "unchanged",
     "source_sha256": "cf7a510bcd4f170623f5ca111cda8bbde0e69a711430ea57dd2d22d73ab15a7e"
+  },
+  {
+    "source": "evidence/B04/time-metrics/run-record.md",
+    "public_path": "evidence/B04/time-metrics/run-record.md",
+    "treatment": "unchanged",
+    "source_sha256": "c26f3020f183f70550a56e09947b5f081dbafb153638e026b18de21dc47812a8"
   },
   {
     "source": "evidence/B10/run-record.md",
@@ -447,7 +459,7 @@
     "source": "evidence/R07/quantity-return.md",
     "public_path": "evidence/R07/quantity-return.md",
     "treatment": "unchanged",
-    "source_sha256": "ad6841a07954dad6aeee35b8fff3b32a073a6757611c4b51f08b58e08d6c597f"
+    "source_sha256": "a7547a2b7e64f1f4af62452f221f6b64d949b7cf380551c8c8a987e522ce92ca"
   },
   {
     "source": "evidence/R07/report-concurrency.md",
@@ -526,6 +538,12 @@
     "public_path": ".development/checks/b04_precision_probe.py",
     "treatment": "unchanged",
     "source_sha256": "67c877e525fe113aac0bcc593c9e317da2e3a5de0a0ded5e504a72ba6aaf8cfc"
+  },
+  {
+    "source": ".development/checks/b04_time_probe.py",
+    "public_path": ".development/checks/b04_time_probe.py",
+    "treatment": "unchanged",
+    "source_sha256": "b21a7e6c28d59fdde2b436d57cbadb87d026ea17c0536dc1b3668b365386a285"
   },
   {
     "source": ".development/checks/b19_http.py",
@@ -696,6 +714,24 @@
     "source_sha256": "0253371e27e53c2c8be318fe215b346ecdfd7184754d64a95022416f22668955"
   },
   {
+    "source": ".development/checks/b04-time-red-source-manifest.json",
+    "public_path": ".development/checks/b04-time-red-source-manifest.json",
+    "treatment": "unchanged",
+    "source_sha256": "6289ef648e1e47296008164857410f2038cb3f62f0a060ccaaa54e85dce84c00"
+  },
+  {
+    "source": ".development/checks/b04-time-review-red-source-manifest.json",
+    "public_path": ".development/checks/b04-time-review-red-source-manifest.json",
+    "treatment": "unchanged",
+    "source_sha256": "7cefff1dc6664b6585798bbd340798aa2115b3f65a1e441273579bde06ebdcbf"
+  },
+  {
+    "source": ".development/checks/b04-time-source-manifest.json",
+    "public_path": ".development/checks/b04-time-source-manifest.json",
+    "treatment": "unchanged",
+    "source_sha256": "b83f3812106b9475312cb760879501adee89d471831bb3b7936efd0b7c26f93f"
+  },
+  {
     "source": ".development/checks/b19-changes-source-manifest.json",
     "public_path": ".development/checks/b19-changes-source-manifest.json",
     "treatment": "unchanged",
@@ -850,6 +886,18 @@
     "public_path": "evidence/R05/r02-probe-attempt5.py",
     "treatment": "unchanged",
     "source_sha256": "bebd418f53e027db69fc9888dfc4bf01fc162aab71394832e1e2572c6d9cd774"
+  },
+  {
+    "source": "evidence/B04/time-metrics/closeout-check.json",
+    "public_path": "evidence/B04/time-metrics/closeout-check.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "565554f231e74315070fb052cf5b2df077784a84680ba8557878861ab515f650"
+  },
+  {
+    "source": "evidence/B04/time-metrics/source-manifest.json",
+    "public_path": "evidence/B04/time-metrics/source-manifest.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "b83f3812106b9475312cb760879501adee89d471831bb3b7936efd0b7c26f93f"
   },
   {
     "source": "evidence/B04/input-ui/closeout-check.json",

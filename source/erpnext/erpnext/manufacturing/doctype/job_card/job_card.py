@@ -2,7 +2,10 @@
 # For license information, please see license.txt
 import datetime
 import json
+import re
 from collections import OrderedDict
+from decimal import Decimal, InvalidOperation
+from zoneinfo import ZoneInfo
 
 import frappe
 from frappe import _, bold
@@ -205,6 +208,9 @@ class JobCard(Document):
 
 		if self.get("time_logs"):
 			for d in self.get("time_logs"):
+				d.time_in_mins = 0
+				if d.to_time and not d.from_time:
+					frappe.throw("第{0}行：填写结束时间时必须填写开始时间。".format(d.idx))
 				if d.to_time and get_datetime(d.from_time) > get_datetime(d.to_time):
 					frappe.throw(_("Row {0}: From time must be less than to time").format(d.idx))
 
@@ -1360,3 +1366,143 @@ def make_corrective_job_card(source_name, operation=None, for_operation=None, ta
 	)
 
 	return doclist
+
+
+def _non_negative_number(value, label):
+	try:
+		number = Decimal(str(value))
+	except InvalidOperation:
+		frappe.throw(f"{label}必须是有效数字。")
+	if not number.is_finite() or number < 0:
+		frappe.throw(f"{label}必须是有限的非负数字。")
+	return number
+
+
+def _whole_non_negative(value, label):
+	number = _non_negative_number(value, label)
+	if number != number.to_integral_value():
+		frappe.throw(f"{label}必须是非负整数。")
+	return int(number)
+
+
+def _report_datetime(value, label):
+	if not isinstance(value, (str, datetime.datetime)) or not value:
+		frappe.throw(f"{label}必须填写日期和时间。")
+	try:
+		parsed = get_datetime(value)
+	except (TypeError, ValueError):
+		frappe.throw(f"{label}不是有效的日期时间。")
+	if not isinstance(parsed, datetime.datetime):
+		frappe.throw(f"{label}不是有效的日期时间。")
+	zone = ZoneInfo("Asia/Shanghai")
+	return parsed.replace(tzinfo=zone) if parsed.tzinfo is None else parsed.astimezone(zone)
+
+
+def _daily_overlap(start, end, periods):
+	"""Union and clip daily intervals, preserving fractions for rule matching."""
+	if not isinstance(periods, list):
+		frappe.throw("时段规则必须提供时段列表。")
+	intervals = []
+	for period in periods:
+		if not isinstance(period, (list, tuple)) or len(period) != 2:
+			frappe.throw("每个规则时段必须包含开始和结束时刻。")
+		if any(not isinstance(v, str) or not re.fullmatch(r"(?:[01]\d|2[0-3]):[0-5]\d", v) for v in period):
+			frappe.throw("规则时刻必须使用有效的HH:mm格式。")
+		left, right = [int(v[:2]) * 3600 + int(v[3:]) * 60 for v in period]
+		if left < right:
+			intervals.append((left, right))
+		elif left > right:
+			intervals.extend(((left, 86400), (0, right)))
+	merged = []
+	for left, right in sorted(intervals):
+		if merged and left <= merged[-1][1]:
+			merged[-1][1] = max(merged[-1][1], right)
+		else:
+			merged.append([left, right])
+	total = datetime.timedelta()
+	day = start.replace(hour=0, minute=0, second=0, microsecond=0)
+	while day < end:
+		for left, right in merged:
+			clip_start = max(start, day + datetime.timedelta(seconds=left))
+			clip_end = min(end, day + datetime.timedelta(seconds=right))
+			if clip_end > clip_start:
+				total += clip_end - clip_start
+		day += datetime.timedelta(days=1)
+	return total
+
+
+def calculate_report_time(start, end, *, rules, operation=None, shutdown_seconds=0, overtime_seconds=0):
+	"""Internal calculation only. B14 supplies authorized rules; B08 owns confirmation."""
+	start, end = _report_datetime(start, "开始时间"), _report_datetime(end, "结束时间")
+	if end < start:
+		frappe.throw("结束时间不能早于开始时间，请明确填写日期。")
+	if not isinstance(rules, list):
+		frappe.throw("缺少有效时段规则上下文；确认无规则时请明确提供空列表。")
+	reported = (end - start) // datetime.timedelta(seconds=1)
+	shutdown = _whole_non_negative(shutdown_seconds, "停工秒数")
+	overtime = _whole_non_negative(overtime_seconds, "加班秒数")
+	candidates = []
+	for rule in rules:
+		if not isinstance(rule, dict) or not {"name", "priority", "enabled", "operation", "rest_periods", "overtime_periods"} <= rule.keys():
+			frappe.throw("时段规则字段不完整，不能按无规则处理。")
+		if not isinstance(rule["name"], str) or not rule["name"].strip() or rule["enabled"] not in (0, 1):
+			frappe.throw("时段规则名称或启用状态无效。")
+		if rule["operation"] is not None and not isinstance(rule["operation"], str):
+			frappe.throw("规则适用工序必须是明确的工序标识。")
+		priority = _whole_non_negative(rule["priority"], "规则优先级")
+		if not rule["enabled"]:
+			continue
+		rest = _daily_overlap(start, end, rule["rest_periods"])
+		allowed = _daily_overlap(start, end, rule["overtime_periods"])
+		if (rule["operation"] is None or rule["operation"] == operation) and (rest or allowed):
+			second = datetime.timedelta(seconds=1)
+			candidates.append((priority, rule["name"], rest // second, allowed // second))
+	matched, rest, allowed = None, 0, reported
+	if candidates:
+		_, matched, rest, allowed = min(candidates)
+	shutdown_limit = reported - rest
+	for value, limit, label in ((shutdown, shutdown_limit, "停工"), (overtime, allowed, "加班")):
+		if value > limit:
+			frappe.throw(f"{label}时长不能超过{limit // 3600}小时{limit % 3600 // 60}分钟{limit % 60}秒。")
+	return {"reported_seconds": reported, "rest_seconds": rest, "shutdown_seconds": shutdown,
+		"overtime_seconds": overtime, "shutdown_limit_seconds": shutdown_limit,
+		"overtime_limit_seconds": allowed, "effective_seconds": reported - rest - shutdown + overtime,
+		"matched_rule": matched, "timezone": "Asia/Shanghai",
+		"rule_message": "已匹配时段规则。" if matched else "未匹配时段规则：休息为0，加班上限为报工时长。"}
+
+
+def calculate_report_metrics(*, plan_quantity, good_quantity, bad_quantity, effective_seconds,
+	completed_tasks, total_tasks, issued_quantity, required_quantity, rework_quantity=0,
+	standard_efficiency=None, wage_mode=None, wage_rate=None):
+	"""Calculate from authorized effective facts; never infer defects or post wages."""
+	from erpnext.manufacturing.doctype.bom.bom import validate_quantity_input
+
+	quantities = {}
+	for key, value, label in (("plan", plan_quantity, "计划数量"), ("good", good_quantity, "良品数量"),
+		("bad", bad_quantity, "不良数量"), ("rework", rework_quantity, "返工数量"),
+		("issued", issued_quantity, "生效累计领料"), ("required", required_quantity, "需求数量")):
+		quantities[key] = Decimal(str(validate_quantity_input(value, label, allow_zero=True)))
+	seconds = _whole_non_negative(effective_seconds, "有效工时秒数")
+	done = _whole_non_negative(completed_tasks, "已完成任务数")
+	total = _whole_non_negative(total_tasks, "任务总数")
+	if done > total:
+		frappe.throw("已完成任务数不能超过任务总数。")
+	standard = None if standard_efficiency is None else _non_negative_number(standard_efficiency, "标准效率")
+	actual = quantities["good"] + quantities["bad"]
+	efficiency = actual * 3600 / seconds if seconds else None
+	estimated_wage = None
+	if wage_mode is not None:
+		if wage_mode not in ("hourly", "piece"):
+			frappe.throw("计价方式必须明确为计时或计件。")
+		rate = _non_negative_number(wage_rate, "工资单价")
+		estimated_wage = Decimal(seconds) * rate / 3600 if wage_mode == "hourly" else quantities["good"] * rate
+	elif wage_rate is not None:
+		frappe.throw("填写工资单价时必须明确计价方式。")
+	return {"quality_percent": quantities["good"] * 100 / actual if actual else None,
+		"quality_numerator": quantities["good"], "quality_denominator": actual,
+		"unfinished_quantity": max(Decimal(0), quantities["plan"] - actual),
+		"task_completion_percent": Decimal(done) * 100 / total if total else None,
+		"material_issue_percent": quantities["issued"] * 100 / quantities["required"] if quantities["required"] else None,
+		"actual_efficiency": efficiency,
+		"efficiency_percent": efficiency * 100 / standard if efficiency is not None and standard else None,
+		"estimated_wage": estimated_wage}
