@@ -41,6 +41,20 @@ def validate_material_loss(row):
 	return loss
 
 
+def validate_quantity_input(value, label):
+	try:
+		quantity = Decimal(str(value))
+	except InvalidOperation:
+		frappe.throw("{0}必须填写有效数字。".format(label))
+	if not quantity.is_finite() or quantity <= 0:
+		frappe.throw("{0}必须大于零，且不能是无穷或非数字值。".format(label))
+	if quantity >= Decimal("1000000000"):
+		frappe.throw("{0}必须小于10亿，请调整数量或计量单位。".format(label))
+	if quantity != quantity.quantize(Decimal("0.000001")):
+		frappe.throw("{0}最多允许六位小数，请明确调整后再保存。".format(label))
+	return float(quantity)
+
+
 class BOMTree:
 	"""Full tree representation of a BOM"""
 
@@ -276,6 +290,14 @@ class BOM(WebsiteGenerator):
 			index = 1
 
 		return index
+
+	def before_validate(self):
+		self.validate_quantity_inputs()
+
+	def validate_quantity_inputs(self):
+		self.quantity = validate_quantity_input(self.quantity, "BOM父项基数")
+		for row in self.items:
+			row.qty = validate_quantity_input(row.qty, "第{0}行原料用量".format(row.idx))
 
 	def validate(self):
 		self.route = frappe.scrub(self.name).replace("_", "-")
@@ -543,6 +565,7 @@ class BOM(WebsiteGenerator):
 		if self.docstatus == 2:
 			return
 		if save:
+			self.validate_quantity_inputs()
 			self.validate_material_loss_write()
 
 		self.flags.cost_updated = False
@@ -1303,7 +1326,11 @@ def get_bom_items_as_dict(
 
 	for item in items:
 		if not is_scrap:
+			if material_quantities[item.item_code] >= Decimal("1000000000000"):
+				frappe.throw("计算出的物料需求超过当前存储范围，请调整数量或计量单位。")
 			quantity = material_quantities[item.item_code].quantize(Decimal("0.0001"), rounding=ROUND_HALF_UP)
+			if quantity >= Decimal("1000000000000"):
+				frappe.throw("舍入后的物料需求超过当前存储范围，请调整数量或计量单位。")
 			if not cint(fetch_exploded):
 				conversion = Decimal(item.conversion_factor)
 				if not fetch_qty_in_stock_uom:
@@ -1332,6 +1359,7 @@ def get_bom_items_as_dict(
 @frappe.whitelist()
 def get_bom_items(bom, company, qty=1, fetch_exploded=1):
 	frappe.has_permission("BOM", "read", doc=bom, throw=True)
+	qty = validate_quantity_input(qty, "计划数量")
 
 	items = get_bom_items_as_dict(
 		bom, company, qty, fetch_exploded, include_non_stock_items=True, ignore_permissions=False

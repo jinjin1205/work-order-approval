@@ -180,6 +180,16 @@
       "executed_on": "2026-10-27",
       "group": "B04 precision and material loss",
       "source_patch_sha256": "ac2baec0af1bc8d046d39fb349ce21c10faad8a018f4cb0adf745c2aeb4ff5fe"
+    },
+    {
+      "local_log": "evidence/B04/input-ui/final-tests.log",
+      "sha256": "37fe89f0e28b78749df8abb74de351fa26b3e64d22a38a8c43cc4e6893fd734d",
+      "tests": 4,
+      "seconds": "2.698",
+      "result": "OK",
+      "executed_on": "2026-10-27",
+      "group": "B04 input/save and Chinese BOM PC",
+      "source_patch_sha256": "e56d3bb7914ef123ac13fe8d21fceb433a6ebfd7e5d844e19cfa74581a867e85"
     }
   ],
   "http_B02_historical": {
@@ -191,5 +201,5 @@
     "verified_after_all_requests": true,
     "publication_note": "Only assertions/counts retained; runtime business_state and raw responses remain local."
   },
-  "current_patch_sha256": "ac2baec0af1bc8d046d39fb349ce21c10faad8a018f4cb0adf745c2aeb4ff5fe"
+  "current_patch_sha256": "e56d3bb7914ef123ac13fe8d21fceb433a6ebfd7e5d844e19cfa74581a867e85"
 }

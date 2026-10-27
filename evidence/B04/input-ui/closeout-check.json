@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-27",
+  "upstream_commit": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+  "patch_sha256": "e56d3bb7914ef123ac13fe8d21fceb433a6ebfd7e5d844e19cfa74581a867e85",
+  "runtime_files_checked": 22,
+  "bench_and_web_match": true,
+  "native_probe_inputs": 33,
+  "red_suite": {
+    "tests": 3,
+    "failures": 11,
+    "errors": 12,
+    "meaning": "subtest failures/errors, not 23 distinct tests"
+  },
+  "review_red_suite": {
+    "tests": 4,
+    "failures": 1
+  },
+  "final_suite": {
+    "tests": 4,
+    "seconds": "2.698",
+    "result": "OK",
+    "log_sha256": "37fe89f0e28b78749df8abb74de351fa26b3e64d22a38a8c43cc4e6893fd734d"
+  },
+  "scope": [
+    "BOM.quantity",
+    "BOM Item.qty",
+    "Work Order.qty",
+    "raw material demand storage upper edge",
+    "native Chinese BOM PC cost preview"
+  ],
+  "input_rule": "finite positive, less than 1000000000, at most six decimal places",
+  "web_control": "native six-place rounding disclosed in Chinese descriptions; do not call it raw-input rejection",
+  "pc_observed": {
+    "ordinary_role": "Manufacturing User",
+    "base_sql": "2.123456000",
+    "material_sql": "0.623456000",
+    "material_loss_percent": 20,
+    "cost_preview_and_saved": 1.5,
+    "limit_and_negative_rejected_in_chinese": true
+  },
+  "preservation": {
+    "test_site_tables_unchanged": 11,
+    "dev_prior_core_tables_empty": 6,
+    "old_approval_demo_unchanged": true,
+    "workflow_enabled_on_dev": false
+  },
+  "gates": {
+    "G1": "open",
+    "G2": "open",
+    "G3": "open",
+    "B04": "partial",
+    "B13": "not accepted"
+  },
+  "limits": [
+    "No real phone/PDA, scanner or weak-network acceptance",
+    "No customer acceptance/deployment",
+    "Not every quantity object or derived/transaction-UOM storage boundary covered",
+    "Direct update_cost and get_bom_items share the new guard; no separate HTTP acceptance claimed"
+  ]
+}

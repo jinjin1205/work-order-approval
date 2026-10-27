@@ -1138,3 +1138,80 @@ class TestBOMRequiredQuantity(FrappeTestCase):
 		draft.insert().submit()
 		scrap = self.quantities(draft, qty=10, fetch_exploded=0, fetch_scrap_items=1)
 		self.assertEqual(scrap[self.raw.name].qty, 0.2)
+
+
+class TestProductionQuantityInput(FrappeTestCase):
+	"""Only BOM base/material and Work Order plan input/save boundaries."""
+
+	def setUp(self):
+		from frappe.utils.nestedset import get_root_of
+		from erpnext.manufacturing.doctype.work_order.test_work_order import TestWorkOrderRequiredQuantity
+		from erpnext.manufacturing.doctype.production_plan.test_production_plan import make_bom
+
+		frappe.set_user("Administrator")
+		self.addCleanup(self.clean_fixture)
+		self.order, self.raw, _ = TestWorkOrderRequiredQuantity.make_quantity_order(self, 0.5, 10, 2)
+		self.finished = make_item(self.raw.name + "-input", {"item_group": get_root_of("Item Group"),
+			"stock_uom": self.raw.stock_uom, "is_stock_item": 1})
+		self.bom = make_bom(item=self.finished.name, company=self.order.company,
+			currency=frappe.get_cached_value("Company", self.order.company, "default_currency"),
+			quantity=1, raw_materials=[self.raw.name], rm_qty=0.5, rate=2,
+			source_warehouse=self.order.source_warehouse, with_operations=False)
+
+	def clean_fixture(self):
+		frappe.db.rollback()
+		frappe.clear_cache()
+
+	def make_input(self, subject, value):
+		from erpnext.manufacturing.doctype.work_order.test_work_order import make_wo_order_test_record
+
+		if subject == "plan":
+			doc = make_wo_order_test_record(item=self.finished.name, bom_no=self.bom.name, qty=1,
+				company=self.order.company, stock_uom=self.raw.stock_uom,
+				source_warehouse=self.order.source_warehouse, wip_warehouse=self.order.wip_warehouse,
+				fg_warehouse=self.order.fg_warehouse, do_not_save=True)
+			doc.qty = value
+		else:
+			doc = frappe.copy_doc(self.bom)
+			if subject == "base":
+				doc.quantity = value
+			else:
+				doc.items[0].qty = value
+		return doc
+
+	def test_six_places_and_limit_save_without_change(self):
+		from decimal import Decimal
+
+		for subject in ("base", "material", "plan"):
+			for value in (1.123456, "1.123456", "0.000001", "999999999.999999"):
+				with self.subTest(subject=subject, value=value):
+					doc = self.make_input(subject, value).insert().reload()
+					row = doc.items[0] if subject == "material" else doc
+					field = "quantity" if subject == "base" else "qty"
+					stored = frappe.db.sql(f"SELECT CAST(`{field}` AS CHAR) FROM `tab{row.doctype}` WHERE name=%s", row.name)[0][0]
+					self.assertEqual(Decimal(stored), Decimal(str(value)))
+					self.assertEqual(Decimal(str(row.get(field))), Decimal(str(value)))
+
+	def test_invalid_quantity_is_rejected_before_defaults(self):
+		for subject in ("base", "material", "plan"):
+			for value in (0, -1, False, "不是数字", "NaN", "Infinity", 1.1234567, 1000000000, "123456789012.123456"):
+				with self.subTest(subject=subject, value=value):
+					doc = self.make_input(subject, value)
+					with self.assertRaises(frappe.ValidationError):
+						doc.insert()
+
+	def test_calculated_demand_rejects_database_overflow(self):
+		from erpnext.manufacturing.doctype.bom.bom import get_bom_items_as_dict
+
+		bom = self.make_input("material", 1000000).insert().submit()
+		with self.assertRaises(frappe.ValidationError):
+			get_bom_items_as_dict(bom.name, self.order.company, qty=1000000)
+
+	def test_rounded_demand_rejects_database_overflow(self):
+		from erpnext.manufacturing.doctype.bom.bom import get_bom_items_as_dict
+
+		bom = frappe.copy_doc(self.bom)
+		bom.quantity, bom.items[0].qty = 3, 999999.999999
+		bom.insert().submit()
+		with self.assertRaises(frappe.ValidationError):
+			get_bom_items_as_dict(bom.name, self.order.company, qty="3000000.000003")

@@ -142,6 +142,7 @@
   {
    "columns": 2,
    "fieldname": "qty",
+   "description": "数量须大于零、小于10亿。网页按系统设置保留六位小数，保存前请核对显示值。",
    "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Qty",
