@@ -1,0 +1,34 @@
+{
+  "upstream": "https://github.com/frappe/erpnext.git",
+  "commit": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+  "version": "15.124.1",
+  "frappe_version": "15.124.0",
+  "frappe_commit": "f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab",
+  "patch_sha256": "221937fbf2f011d04012aa6e0a602a982d65edb5e9a72b7b53f40060322ec5d3",
+  "files": {
+    "erpnext/manufacturing/doctype/job_card/job_card.py": {
+      "base_sha256": "5d7f77cea9046aaca47ae81e19ebb9766a78a06823dfdf6d392dbab869ba9779",
+      "modified_sha256": "952979d835ec902462bc71c98847f867e1fbadd43c97c30ccb249ad7eb982620"
+    },
+    "erpnext/manufacturing/doctype/job_card/test_job_card.py": {
+      "base_sha256": "2947cbe40ebc044332a8a5802568c2ee1d782a8609cb6e35848b9a844dd84020",
+      "modified_sha256": "abcb9d1b79f7991f3df9cf9a993734728438ef2d998a5dbb8b5b8986ffd67125"
+    },
+    "erpnext/manufacturing/doctype/work_order/test_work_order.py": {
+      "base_sha256": "7fee421acd6c7616c621a648d129df834ec09fbb62e7a814a556975961a82285",
+      "modified_sha256": "6c108a751e5150d7e42675dfa2378aec4a0f1db66deaed27dacbda00cce016ea"
+    },
+    "erpnext/manufacturing/doctype/work_order/work_order.py": {
+      "base_sha256": "4592b2f82a9045c74dbfdb8ea1d82dbd5c39bedd1d4bb6d6c21158af63c9d546",
+      "modified_sha256": "496edb0645ebebba33e94b80f9b1771f3e7818e057fca318fc0cf7b0393bfb7a"
+    },
+    "erpnext/stock/doctype/stock_entry/stock_entry.py": {
+      "base_sha256": "d3b32c0f711e12bc2dcab7367d13ab36252a6a67e3e14219a11ee9f003eae19d",
+      "modified_sha256": "859abda827612fc99ea136d62056bff6e360649f6b7c458e2be211352d94a2a0"
+    },
+    "erpnext/stock/doctype/stock_entry/test_stock_entry.py": {
+      "base_sha256": "aa89dfe1a05bf9110ebdafae03cc88dd2d392a629b71b08496af76fcfcad6238",
+      "modified_sha256": "10555b4e6e7276e7680f1b3a6f33925ecf79f3374215caccdad41050bd72d166"
+    }
+  }
+}

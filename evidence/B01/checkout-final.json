@@ -1,0 +1,8 @@
+{
+  "recorded_at": "2026-10-26T21:28:31.841842+08:00",
+  "commit": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+  "branch": "codex/xgd-maintenance",
+  "porcelain": "",
+  "env_mode": "0o600",
+  "allowed_files": "environment/config/checks and original planning documents only; upstream ERPNext checkout unchanged"
+}

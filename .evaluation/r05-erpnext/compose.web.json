@@ -1,0 +1,30 @@
+{
+  "services": {
+    "web": {
+      "image": "frappe/erpnext@sha256:4160d3c77aafb41c7770aad3daa67254a13f8750765ee83d632434ed564a4834",
+      "working_dir": "/home/frappe/frappe-bench",
+      "entrypoint": [
+        "/usr/local/bin/entrypoint.sh"
+      ],
+      "command": [
+        "bench",
+        "--site",
+        "r05.localhost",
+        "serve",
+        "--port",
+        "8000",
+        "--noreload"
+      ],
+      "environment": {
+        "CI": "1"
+      },
+      "ports": [
+        "127.0.0.1:18085:8000"
+      ],
+      "volumes": [
+        "sites:/home/frappe/frappe-bench/sites",
+        "logs:/home/frappe/frappe-bench/logs"
+      ]
+    }
+  }
+}

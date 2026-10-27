@@ -1,0 +1,9 @@
+{
+  "initial_requests": 12,
+  "revoked_same_token_requests": 4,
+  "all_passed": true,
+  "business_state_unchanged": true,
+  "patch_sha256": "221937fbf2f011d04012aa6e0a602a982d65edb5e9a72b7b53f40060322ec5d3",
+  "verified_after_all_requests": true,
+  "publication_note": "Only assertions/counts retained; runtime business_state and raw responses remain local."
+}

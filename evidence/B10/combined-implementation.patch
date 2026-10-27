@@ -1,0 +1,624 @@
+diff --git a/erpnext/manufacturing/doctype/job_card/job_card.py b/erpnext/manufacturing/doctype/job_card/job_card.py
+index cd8c77d..9e465e3 100644
+--- a/erpnext/manufacturing/doctype/job_card/job_card.py
++++ b/erpnext/manufacturing/doctype/job_card/job_card.py
+@@ -1128,6 +1128,7 @@ def make_time_log(args):
+ @frappe.whitelist()
+ def get_operation_details(work_order, operation):
+ 	if work_order and operation:
++		frappe.get_doc("Work Order", work_order).check_permission("read")
+ 		return frappe.get_all(
+ 			"Work Order Operation",
+ 			fields=["name", "idx"],
+@@ -1136,10 +1137,14 @@ def get_operation_details(work_order, operation):
+ 
+ 
+ @frappe.whitelist()
+-def get_operations(doctype, txt, searchfield, start, page_len, filters):
+-	if not filters.get("work_order"):
++def get_operations(doctype, txt, searchfield, start, page_len, filters=None):
++	filters = frappe.parse_json(filters)
++	if filters is not None and not isinstance(filters, dict):
++		frappe.throw(_("工单筛选条件必须是对象。"))
++	if not filters or not filters.get("work_order"):
+ 		frappe.msgprint(_("Please select a Work Order first."))
+ 		return []
++	frappe.get_doc("Work Order", filters["work_order"]).check_permission("read")
+ 	args = {"parent": filters.get("work_order")}
+ 	if txt:
+ 		args["operation"] = ("like", f"%{txt}%")
+@@ -1264,7 +1269,17 @@ def get_job_details(start: str, end: str, filters: str | None = None):
+ 
+ 	from frappe.desk.reportview import get_filters_cond
+ 
++	frappe.has_permission("Job Card", "read", throw=True)
+ 	conditions = get_filters_cond("Job Card", filters, [])
++	# List access can grant select without read; confirm actual document reads.
++	readable_names = [
++		card.name
++		for card in frappe.get_list("Job Card", fields=["name"], limit_page_length=0)
++		if frappe.has_permission("Job Card", "read", doc=card.name)
++	]
++	if not readable_names:
++		return []
++	conditions += get_filters_cond("Job Card", {"name": ["in", readable_names]}, [])
+ 
+ 	job_cards = frappe.db.sql(
+ 		f""" SELECT `tabJob Card`.name, `tabJob Card`.work_order,
+diff --git a/erpnext/manufacturing/doctype/job_card/test_job_card.py b/erpnext/manufacturing/doctype/job_card/test_job_card.py
+index a432418..32486c8 100644
+--- a/erpnext/manufacturing/doctype/job_card/test_job_card.py
++++ b/erpnext/manufacturing/doctype/job_card/test_job_card.py
+@@ -14,12 +14,16 @@ from erpnext.manufacturing.doctype.job_card.job_card import (
+ 	JobCardOverTransferError,
+ 	OperationMismatchError,
+ 	OverlapError,
++	get_job_details,
++	get_operation_details,
++	get_operations,
+ 	make_corrective_job_card,
+ 	make_material_request,
+ )
+ from erpnext.manufacturing.doctype.job_card.job_card import (
+ 	make_stock_entry as make_stock_entry_from_jc,
+ )
++from erpnext.manufacturing.doctype.production_plan.test_production_plan import make_bom
+ from erpnext.manufacturing.doctype.work_order.test_work_order import make_wo_order_test_record
+ from erpnext.manufacturing.doctype.work_order.work_order import WorkOrder, make_job_card
+ from erpnext.manufacturing.doctype.workstation.test_workstation import make_workstation
+@@ -27,6 +31,229 @@ from erpnext.stock.doctype.item.test_item import create_item
+ from erpnext.stock.doctype.stock_entry.stock_entry_utils import make_stock_entry
+ 
+ 
++class TestJobCardReadPermissions(FrappeTestCase):
++	"""Helper reads must obey the same native object grants as document reads."""
++
++	def setUp(self):
++		from frappe.permissions import add_permission, add_user_permission
++
++		import erpnext
++
++		frappe.set_user("Administrator")
++		self.prefix = "B02-" + random_string(8)
++		company = erpnext.get_default_company()
++		warehouse = (
++			frappe.get_doc({"doctype": "Warehouse", "warehouse_name": self.prefix, "company": company})
++			.insert()
++			.name
++		)
++		raw = create_item(self.prefix + "-RM", company=company, warehouse=warehouse)
++		finished = create_item(self.prefix + "-FG", company=company, warehouse=warehouse)
++		bom = make_bom(
++			item=finished.name,
++			company=company,
++			currency=frappe.get_cached_value("Company", company, "default_currency"),
++			raw_materials=[raw.name],
++			rm_qty=1,
++			with_operations=False,
++		)
++		workstation = make_workstation(workstation_name=self.prefix).name
++		self.operations = [
++			frappe.get_doc({"doctype": "Operation", "__newname": self.prefix + suffix}).insert().name
++			for suffix in ("-下料", "-检验")
++		]
++		self.orders = []
++		self.cards = []
++		for index in range(2):
++			order = make_wo_order_test_record(
++				item=finished.name,
++				bom_no=bom.name,
++				qty=10,
++				company=company,
++				stock_uom="Nos",
++				source_warehouse=warehouse,
++				wip_warehouse=warehouse,
++				fg_warehouse=warehouse,
++				do_not_save=True,
++			)
++			for operation in self.operations:
++				order.append(
++					"operations", {"operation": operation, "workstation": workstation, "time_in_mins": 1}
++				)
++			order.insert()
++			self.orders.append(order)
++			card = frappe.get_doc(
++				{
++					"doctype": "Job Card",
++					"work_order": order.name,
++					"company": company,
++					"workstation": workstation,
++					"wip_warehouse": warehouse,
++					"operation": self.operations[0],
++					"operation_id": order.operations[0].name,
++					"for_quantity": 1,
++					"remarks": self.prefix + ("-可见" if index == 0 else "-受限"),
++					"time_logs": [
++						{
++							"from_time": f"2026-10-{20 + index} 08:00:00",
++							"to_time": f"2026-10-{20 + index} 08:01:00",
++						}
++					],
++				}
++			).insert()
++			self.cards.append(card)
++		self.role = (
++			frappe.get_doc({"doctype": "Role", "role_name": self.prefix, "desk_access": 1}).insert().name
++		)
++		for doctype in ("Work Order", "Job Card"):
++			add_permission(doctype, self.role, ptype="read")
++		self.reader = frappe.get_doc(
++			{
++				"doctype": "User",
++				"email": self.prefix.lower() + "@example.invalid",
++				"first_name": "权限验证员",
++				"send_welcome_email": 0,
++				"language": "zh",
++				"roles": [{"role": self.role}],
++			}
++		).insert()
++		self.outsider = frappe.get_doc(
++			{
++				"doctype": "User",
++				"email": self.prefix.lower() + "-outside@example.invalid",
++				"first_name": "无权限对照",
++				"send_welcome_email": 0,
++				"language": "zh",
++			}
++		).insert()
++		add_user_permission("Work Order", self.orders[0].name, self.reader.name)
++		frappe.set_user(self.reader.name)
++
++	def tearDown(self):
++		frappe.set_user("Administrator")
++		frappe.db.rollback()
++		frappe.clear_cache()
++
++	def test_read_fixture_and_authorized_helpers(self):
++		self.orders[0].check_permission("read")
++		with self.assertRaises(frappe.PermissionError):
++			self.orders[1].check_permission("read")
++		self.assertFalse(frappe.has_permission("Stock Entry", "create"))
++		self.assertEqual(
++			get_operation_details(self.orders[0].name, self.operations[0]),
++			[{"name": self.orders[0].operations[0].name, "idx": 1}],
++		)
++		self.assertEqual(
++			[
++				row[0]
++				for row in get_operations(
++					"Operation", "检验", "name", 0, 1, {"work_order": self.orders[0].name}
++				)
++			],
++			[self.operations[1]],
++		)
++		self.assertEqual(
++			[
++				row[0]
++				for row in get_operations("Operation", "", "name", 1, 1, {"work_order": self.orders[0].name})
++			],
++			[self.operations[1]],
++		)
++
++	def test_operation_helpers_reject_other_work_order(self):
++		with self.assertRaises(frappe.PermissionError):
++			get_operation_details(self.orders[1].name, self.operations[0])
++		with self.assertRaises(frappe.PermissionError):
++			get_operations("Operation", "", "name", 0, 20, {"work_order": self.orders[1].name})
++
++	def test_helpers_reject_user_without_business_role(self):
++		frappe.set_user(self.outsider.name)
++		with self.assertRaises(frappe.PermissionError):
++			get_operation_details(self.orders[0].name, self.operations[0])
++		with self.assertRaises(frappe.PermissionError):
++			get_operations("Operation", "", "name", 0, 20, {"work_order": self.orders[0].name})
++		with self.assertRaises(frappe.PermissionError):
++			get_job_details("2026-10-19", "2026-10-22")
++
++	def test_calendar_contains_only_readable_cards(self):
++		events = get_job_details("2026-10-19", "2026-10-22")
++		self.assertEqual({event["name"] for event in events}, {self.cards[0].name})
++		self.assertEqual(str(events[0]["from_time"]), "2026-10-20 08:00:00")
++		self.assertEqual(str(events[0]["to_time"]), "2026-10-20 08:01:00")
++		self.assertIn(self.orders[0].name, events[0]["subject"])
++		self.assertEqual(
++			get_job_details("2026-10-19", "2026-10-22", frappe.as_json({"name": self.cards[1].name})), []
++		)
++
++	def test_helpers_recheck_removed_role(self):
++		frappe.set_user("Administrator")
++		self.reader.set("roles", [])
++		self.reader.save()
++		frappe.set_user(self.reader.name)
++		with self.assertRaises(frappe.PermissionError):
++			get_operation_details(self.orders[0].name, self.operations[0])
++		with self.assertRaises(frappe.PermissionError):
++			get_job_details("2026-10-19", "2026-10-22")
++
++	def test_calendar_requires_read_not_select_and_honors_shared_read(self):
++		from frappe.permissions import update_permission_property
++
++		frappe.set_user("Administrator")
++		update_permission_property("Job Card", self.role, 0, "read", 0)
++		update_permission_property("Job Card", self.role, 0, "select", 1)
++		frappe.set_user(self.reader.name)
++		self.assertTrue(frappe.only_has_select_perm("Job Card"))
++		with self.assertRaises(frappe.PermissionError):
++			get_job_details("2026-10-19", "2026-10-22")
++
++		frappe.set_user("Administrator")
++		frappe.share.add("Job Card", self.cards[0].name, user=self.reader.name, read=1)
++		for permission in frappe.get_all("User Permission", filters={"user": self.reader.name}, pluck="name"):
++			frappe.delete_doc("User Permission", permission)
++		frappe.set_user(self.reader.name)
++		self.assertTrue(frappe.has_permission("Job Card", "read"))
++		self.assertFalse(frappe.has_permission("Job Card", "read", doc=self.cards[1].name))
++		events = get_job_details("2026-10-19", "2026-10-22")
++		self.assertEqual({event["name"] for event in events}, {self.cards[0].name})
++
++	def test_calendar_preserves_exclusion_filters(self):
++		events = get_job_details("2026-10-19", "2026-10-22", frappe.as_json({"status": "!Completed"}))
++		self.assertEqual({event["name"] for event in events}, {self.cards[0].name})
++		self.assertEqual(
++			get_job_details("2026-10-19", "2026-10-22", frappe.as_json({"status": "!Work In Progress"})), []
++		)
++		events = get_job_details(
++			"2026-10-19", "2026-10-22", frappe.as_json({"work_order": ["like", self.orders[0].name + "%"]})
++		)
++		self.assertEqual({event["name"] for event in events}, {self.cards[0].name})
++
++	def test_operation_search_without_parent_has_no_results(self):
++		self.assertEqual(get_operations("Operation", "", "name", 0, 20), [])
++		self.assertEqual(get_operations("Operation", "", "name", 0, 20, None), [])
++		self.assertEqual(get_operations("Operation", "", "name", 0, 20, {}), [])
++
++	def test_calendar_preserves_literal_percent_filters(self):
++		frappe.set_user("Administrator")
++		self.cards[0].remarks = "进度100% '备注'"
++		self.cards[0].save()
++		frappe.set_user(self.reader.name)
++		events = get_job_details(
++			"2026-10-19", "2026-10-22", frappe.as_json({"remarks": self.cards[0].remarks})
++		)
++		self.assertEqual({event["name"] for event in events}, {self.cards[0].name})
++		self.assertEqual(
++			get_job_details(
++				"2026-10-19", "2026-10-22", frappe.as_json({"remarks": "!" + self.cards[0].remarks})
++			),
++			[],
++		)
++
++	def test_operation_search_rejects_malformed_filters(self):
++		for filters in (["work_order"], '["work_order"]', 7):
++			with self.subTest(filters=filters), self.assertRaises(frappe.ValidationError):
++				get_operations("Operation", "", "name", 0, 20, filters)
++
++
+ class TestJobCard(FrappeTestCase):
+ 	def setUp(self):
+ 		make_bom_for_jc_tests()
+diff --git a/erpnext/manufacturing/doctype/work_order/test_work_order.py b/erpnext/manufacturing/doctype/work_order/test_work_order.py
+index ffe9378..d18dd05 100644
+--- a/erpnext/manufacturing/doctype/work_order/test_work_order.py
++++ b/erpnext/manufacturing/doctype/work_order/test_work_order.py
+@@ -49,6 +49,189 @@ from erpnext.stock.utils import get_bin
+ test_dependencies = ["BOM"]
+ 
+ 
++class TestWorkOrderStockUnits(FrappeTestCase):
++	"""Real stock documents exercise consumption totals and cancel recalculation."""
++
++	def setUp(self):
++		frappe.set_user("Administrator")
++
++	def tearDown(self):
++		frappe.local.future_sle = {}
++		frappe.db.rollback()
++		frappe.clear_cache()
++
++	def make_stock_uom_fixture(self):
++		from frappe.utils.nestedset import get_root_of
++
++		import erpnext
++
++		prefix = "B10-" + frappe.generate_hash(length=8)
++		company = erpnext.get_default_company()
++		warehouses = [
++			frappe.get_doc({"doctype": "Warehouse", "company": company, "warehouse_name": prefix + suffix})
++			.insert()
++			.name
++			for suffix in ("-原料", "-在制", "-成品")
++		]
++		kg, gram = prefix + "-kg", prefix + "-g"
++		for unit in (kg, gram):
++			frappe.get_doc({"doctype": "UOM", "uom_name": unit, "must_be_whole_number": 0}).insert()
++		raw = make_item(
++			prefix + "-RM",
++			{
++				"item_group": get_root_of("Item Group"),
++				"is_stock_item": 1,
++				"stock_uom": kg,
++				"valuation_method": "Moving Average",
++			},
++			uoms=[{"uom": kg, "conversion_factor": 1}, {"uom": gram, "conversion_factor": 0.001}],
++		)
++		finished = make_item(
++			prefix + "-FG", {"item_group": get_root_of("Item Group"), "is_stock_item": 1, "stock_uom": "Nos"}
++		)
++		bom = make_bom(
++			item=finished.name,
++			company=company,
++			currency=frappe.get_cached_value("Company", company, "default_currency"),
++			quantity=1,
++			raw_materials=[raw.name],
++			rm_qty=0.001,
++			rate=2,
++			source_warehouse=warehouses[0],
++			with_operations=False,
++		)
++		test_stock_entry.make_stock_entry(
++			item_code=raw.name, company=company, target=warehouses[0], qty=1, basic_rate=2
++		)
++		order = make_wo_order_test_record(
++			item=finished.name,
++			bom_no=bom.name,
++			qty=1,
++			company=company,
++			stock_uom="Nos",
++			source_warehouse=warehouses[0],
++			wip_warehouse=warehouses[1],
++			fg_warehouse=warehouses[2],
++		)
++		transfer = frappe.get_doc(make_stock_entry(order.name, "Material Transfer for Manufacture", 1))
++		transfer.submit()
++		returned = make_stock_return_entry(order.name)
++		returned.company = company
++		returned.items[0].cost_center = frappe.get_cached_value("Company", company, "cost_center")
++		returned.items[0].qty = 0.0004
++		returned.submit()
++		order.reload()
++		self.assertEqual(order.required_items[0].transferred_qty, 0.001)
++		self.assertEqual(order.required_items[0].returned_qty, 0.0004)
++		self.assertEqual(
++			frappe.db.get_value("Bin", {"item_code": raw.name, "warehouse": warehouses[1]}, "actual_qty"),
++			0.0006,
++		)
++		return frappe._dict(order=order, raw=raw.name, kg=kg, gram=gram, warehouses=warehouses)
++
++	def consumption_draft(self, order, raw, qty, uom, factor):
++		doc = frappe.new_doc("Stock Entry")
++		doc.update(
++			{
++				"company": order.company,
++				"purpose": "Material Consumption for Manufacture",
++				"work_order": order.name,
++				"from_bom": 1,
++				"bom_no": order.bom_no,
++				"fg_completed_qty": order.qty,
++				"from_warehouse": order.wip_warehouse,
++			}
++		)
++		doc.set_stock_entry_type()
++		doc.append(
++			"items",
++			{
++				"item_code": raw,
++				"s_warehouse": order.wip_warehouse,
++				"qty": qty,
++				"uom": uom,
++				"conversion_factor": factor,
++			},
++		)
++		return doc
++
++	@change_settings("System Settings", {"float_precision": 6})
++	@change_settings(
++		"Manufacturing Settings",
++		{
++			"material_consumption": 1,
++			"disable_capacity_planning": 1,
++			"backflush_raw_materials_based_on": "Material Transferred for Manufacture",
++		},
++	)
++	def test_consumed_qty_uses_stock_uom(self):
++		fixture = self.make_stock_uom_fixture()
++		consumption = self.consumption_draft(fixture.order, fixture.raw, 0.5, fixture.gram, 0.001)
++		consumption.submit()
++		consumption.reload()
++		fixture.order.reload()
++		self.assertEqual(consumption.items[0].qty, 0.5)
++		self.assertEqual(consumption.items[0].uom, fixture.gram)
++		self.assertEqual(consumption.items[0].transfer_qty, 0.0005)
++		self.assertEqual(fixture.order.required_items[0].consumed_qty, 0.0005)
++		self.assertEqual(
++			frappe.db.get_value(
++				"Bin", {"item_code": fixture.raw, "warehouse": fixture.warehouses[1]}, "actual_qty"
++			),
++			0.0001,
++		)
++		consumption.cancel()
++		fixture.order.reload()
++		self.assertEqual(fixture.order.required_items[0].consumed_qty, 0)
++		self.assertEqual(
++			frappe.db.get_value(
++				"Bin", {"item_code": fixture.raw, "warehouse": fixture.warehouses[1]}, "actual_qty"
++			),
++			0.0006,
++		)
++		self.assertEqual(frappe.db.get_value("Stock Entry", consumption.name, "docstatus"), 2)
++		self.assertEqual(frappe.db.get_value("Stock Entry Detail", consumption.items[0].name, "qty"), 0.5)
++
++	@change_settings("System Settings", {"float_precision": 6})
++	@change_settings(
++		"Manufacturing Settings",
++		{
++			"material_consumption": 1,
++			"disable_capacity_planning": 1,
++			"backflush_raw_materials_based_on": "Material Transferred for Manufacture",
++		},
++	)
++	def test_consumed_qty_keeps_order_and_document_status_filters(self):
++		fixture = self.make_stock_uom_fixture()
++		order = fixture.order
++		other = make_wo_order_test_record(
++			item=order.production_item,
++			bom_no=order.bom_no,
++			qty=1,
++			company=order.company,
++			stock_uom="Nos",
++			source_warehouse=order.source_warehouse,
++			wip_warehouse=order.wip_warehouse,
++			fg_warehouse=order.fg_warehouse,
++		)
++		frappe.get_doc(make_stock_entry(other.name, "Material Transfer for Manufacture", 1)).submit()
++		self.consumption_draft(other, fixture.raw, 0.0002, fixture.kg, 1).submit()
++		draft = self.consumption_draft(order, fixture.raw, 0.0003, fixture.kg, 1).insert()
++		order.update_consumed_qty_for_required_items()
++		order.reload()
++		self.assertEqual(order.required_items[0].consumed_qty, 0)
++		draft.submit()
++		order.reload()
++		self.assertEqual(order.required_items[0].consumed_qty, 0.0003)
++		other.reload()
++		self.assertEqual(other.required_items[0].consumed_qty, 0.0002)
++		draft.cancel()
++		order.reload()
++		self.assertEqual(order.required_items[0].consumed_qty, 0)
++		other.reload()
++		self.assertEqual(other.required_items[0].consumed_qty, 0.0002)
++
++
+ class TestWorkOrder(FrappeTestCase):
+ 	def setUp(self):
+ 		self.warehouse = "_Test Warehouse 2 - _TC"
+diff --git a/erpnext/manufacturing/doctype/work_order/work_order.py b/erpnext/manufacturing/doctype/work_order/work_order.py
+index 808777b..d5da405 100644
+--- a/erpnext/manufacturing/doctype/work_order/work_order.py
++++ b/erpnext/manufacturing/doctype/work_order/work_order.py
+@@ -1389,7 +1389,7 @@ class WorkOrder(Document):
+ 			consumed_qty = frappe.db.sql(
+ 				"""
+ 				SELECT
+-					SUM(detail.qty)
++					SUM(detail.transfer_qty)
+ 				FROM
+ 					`tabStock Entry` entry,
+ 					`tabStock Entry Detail` detail
+diff --git a/erpnext/stock/doctype/stock_entry/stock_entry.py b/erpnext/stock/doctype/stock_entry/stock_entry.py
+index fed639c..978528c 100644
+--- a/erpnext/stock/doctype/stock_entry/stock_entry.py
++++ b/erpnext/stock/doctype/stock_entry/stock_entry.py
+@@ -1284,12 +1284,12 @@ class StockEntry(StockController):
+ 			if key not in pending_by_item:
+ 				continue
+ 
+-			transfer_by_item[key] = transfer_by_item.get(key, 0.0) + flt(item.qty)
++			transfer_by_item[key] = transfer_by_item.get(key, 0.0) + flt(item.transfer_qty)
+ 			first_row_by_item.setdefault(key, item)
+ 
+ 		for key, transfer_qty in transfer_by_item.items():
+ 			item = first_row_by_item[key]
+-			precision = item.precision("qty")
++			precision = item.precision("transfer_qty")
+ 			transfer_qty = flt(transfer_qty, precision)
+ 			pending_qty = max(0.0, flt(pending_by_item[key], precision))
+ 			if transfer_qty > pending_qty:
+@@ -1300,7 +1300,7 @@ class StockEntry(StockController):
+ 					).format(
+ 						item.idx,
+ 						transfer_qty,
+-						item.uom,
++						item.stock_uom,
+ 						frappe.bold(item.item_code),
+ 						pending_qty,
+ 					),
+diff --git a/erpnext/stock/doctype/stock_entry/test_stock_entry.py b/erpnext/stock/doctype/stock_entry/test_stock_entry.py
+index 31ca720..2eef808 100644
+--- a/erpnext/stock/doctype/stock_entry/test_stock_entry.py
++++ b/erpnext/stock/doctype/stock_entry/test_stock_entry.py
+@@ -1598,16 +1598,86 @@ class TestStockEntry(FrappeTestCase):
+ 				"s_warehouse": "_Test Warehouse - _TC",
+ 				"qty": 0.001,
+ 				"uom": "Nos",
++				"stock_uom": "Nos",
++				"conversion_factor": 1,
+ 			},
+ 		)
+ 
++		stock_entry.set_transfer_qty()
+ 		stock_entry.pro_doc = work_order
+ 		stock_entry._validate_no_excess_transfer()
+ 
+ 		stock_entry.items[0].qty = 0.002
++		stock_entry.set_transfer_qty()
+ 		with self.assertRaises(frappe.ValidationError):
+ 			stock_entry._validate_no_excess_transfer()
+ 
++	@change_settings("System Settings", {"float_precision": 6})
++	@change_settings("Manufacturing Settings", {"backflush_raw_materials_based_on": "BOM"})
++	def test_transfer_limit_uses_stock_uom(self):
++		# Expected amounts are independent constants in the work order's stock unit.
++		cases = [
++			("kg", 0.5, [(500, "g", 0.001)], False),
++			("kg", 0.5, [(600, "g", 0.001)], True),
++			("g", 500, [(0.6, "kg", 1000)], True),
++			("g", 500, [(0.5, "kg", 1000)], False),
++			("kg", 0.5, [(0.2, "kg", 1), (300, "g", 0.001)], False),
++			("kg", 0.5, [(0.2, "kg", 1), (400, "g", 0.001)], True),
++			("kg", 0.5, [(0.5, "kg", 1)], False),
++			("kg", 0.5, [(0.6, "kg", 1)], True),
++		]
++		for stock_uom, pending, rows, reject in cases:
++			with self.subTest(stock_uom=stock_uom, rows=rows):
++				order = frappe.new_doc("Work Order")
++				order.append("required_items", {"item_code": "B10-原料", "required_qty": pending})
++				entry = frappe.new_doc("Stock Entry")
++				entry.pro_doc = order
++				for qty, uom, factor in rows:
++					entry.append(
++						"items",
++						{
++							"item_code": "B10-原料",
++							"s_warehouse": "B10-原料仓",
++							"qty": qty,
++							"uom": uom,
++							"stock_uom": stock_uom,
++							"conversion_factor": factor,
++						},
++					)
++				entry.set_transfer_qty()
++				if reject:
++					with self.assertRaises(frappe.ValidationError):
++						entry._validate_no_excess_transfer()
++				else:
++					entry._validate_no_excess_transfer()
++
++	@change_settings("Manufacturing Settings", {"backflush_raw_materials_based_on": "BOM"})
++	def test_transfer_limit_uses_stock_quantity_precision(self):
++		from frappe.custom.doctype.property_setter.property_setter import make_property_setter
++
++		self.addCleanup(frappe.clear_cache)
++		make_property_setter("Stock Entry Detail", "qty", "precision", "3", "Int")
++		make_property_setter("Stock Entry Detail", "transfer_qty", "precision", "6", "Int")
++		order = frappe.new_doc("Work Order")
++		order.append("required_items", {"item_code": "B10-原料", "required_qty": 0.0005})
++		entry = frappe.new_doc("Stock Entry")
++		entry.pro_doc = order
++		entry.append(
++			"items",
++			{
++				"item_code": "B10-原料",
++				"s_warehouse": "B10-原料仓",
++				"qty": 0.6,
++				"uom": "g",
++				"stock_uom": "kg",
++				"conversion_factor": 0.001,
++			},
++		)
++		entry.set_transfer_qty()
++		self.assertEqual(entry.items[0].transfer_qty, 0.0006)
++		with self.assertRaises(frappe.ValidationError):
++			entry._validate_no_excess_transfer()
++
+ 	@change_settings("Manufacturing Settings", {"material_consumption": 1})
+ 	def test_work_order_manufacture_with_material_consumption(self):
+ 		from erpnext.manufacturing.doctype.work_order.work_order import (

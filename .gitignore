@@ -1,0 +1,22 @@
+# Local secrets and generated runtime data must never enter the public repository.
+.env
+.env.*
+!.env.example
+**/private/
+**/*secrets*.json
+**/access-secrets.json
+**/sites/
+**/logs/
+**/repos/
+**/__pycache__/
+**/*.pyc
+**/.DS_Store
+**/node_modules/
+**/.venv/
+**/*.sqlite
+**/*.sqlite3
+**/*.db
+**/*.sql.gz
+**/backups/
+**/volumes/
+.publication/

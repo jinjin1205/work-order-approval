@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-27",
+  "scope": "Explicit public snapshot only; historical application tests were not rerun",
+  "allowlist_passed": true,
+  "known_credential_literal_matches": 0,
+  "credential_pattern_matches": 0,
+  "raw_runtime_json_matches": 0,
+  "personal_host_paths": 0,
+  "python_sources_parse": true,
+  "modified_source_files_exact": 6,
+  "business_test_data_in_export": "No runtime documents/responses/databases; fixture definitions and expected results retained",
+  "limitation": "This is a bounded publication check, not a universal secret or license audit"
+}

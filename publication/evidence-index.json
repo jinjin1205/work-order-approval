@@ -1,0 +1,1442 @@
+[
+  {
+    "path": "evidence/B01/checkout-final.json",
+    "original_sha256": "73280a780cf3e6c6651f81d717c6e84703834c24319ca931c38ed6244202038c",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B01/chinese-after-restart-ax.txt",
+    "original_sha256": "99d243a3626b14c75411d8df026b8046c797ef4f79118556b8ffeb17177bd8e8",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/chinese-after-restart.png",
+    "original_sha256": "0a6cbd9a573a3f565404ba54439479ccdbc989abf9d734c769377832dd1fbf3b",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/chinese-home.png",
+    "original_sha256": "4c4cc2f9ee377a9f3a8fa9ba459af5f7b684565f785d5268e88885f6f20f48ae",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/chinese-relogin-ax.txt",
+    "original_sha256": "291d6215663ee4e97427d3728c73f594e10c9fda57c4bb417aa445d65f724d45",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/closeout-check.json",
+    "original_sha256": "9719900d8d76b5323444aef92b5e7ebd43feb002abe0b6695c4940e6fc2b2249",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B01/dev-after-restart.json",
+    "original_sha256": "cc6f1a3f75a2d89b6430345a705b55a494777e59188ccffd179b9976754621ba",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/dev-before-restart.json",
+    "original_sha256": "cc6f1a3f75a2d89b6430345a705b55a494777e59188ccffd179b9976754621ba",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/dev-before-service-restart.json",
+    "original_sha256": "cc6f1a3f75a2d89b6430345a705b55a494777e59188ccffd179b9976754621ba",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/dev-setup-retry.log",
+    "original_sha256": "61f0f511a10d5897e7d6b0311da39a71fe490a508cc0219cc21162ab1df24aa2",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/dev-setup.log",
+    "original_sha256": "d2ec04fd258f11b1f2b53137894e6c52f9900994149e8f67fabee31bafae6a98",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/dev-site-create.log",
+    "original_sha256": "4ba946c1afcccbfe352c07539e1580e21b23a8d1dcfa82a52266cffedea61811",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/image-build.log",
+    "original_sha256": "ebb9d1c09b89fdfb63dc05e781715eea428dab82fb3163a0f3c4c60b36def9fa",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/login-rejected.png",
+    "original_sha256": "30bd2455fb7d82aec1fb1944bbb12649deac07aa9ec04c439c34176cfe1f9226",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/missing-secret-rejection.log",
+    "original_sha256": "9b7e20fc55a4a9f33e5c50dfe85ca614d5a266a91dd45444fc9701360714614a",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/native-serve-entry.txt",
+    "original_sha256": "e5ff3e711145b8c941c8dfa7a24ae9f5a9e3051b389767ab47ae0a28b7e491a8",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/native-web-serve.txt",
+    "original_sha256": "db48b559a5ee204044ab4d0473d8053e55a0872f4d82647800a952c858ca2bfb",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/persistence-check.json",
+    "original_sha256": "08b56046a85fe0b24be26165e666ea9165bd0d9966fe7df053c48ad2505afb84",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/r05-final-status.txt",
+    "original_sha256": "3dfa0e4227f36c6aa612c1daef291f32a4c150edf5b528c101fdbd969b7955fa",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/run-record.md",
+    "original_sha256": "2e63c6d106eb7b277923b3c8e37e59e3e6191920672526736c90ff50f42bc56d",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B01/services-after-restart.jsonl",
+    "original_sha256": "e78199d4b52343177d695dda62b00b378c3501c8414f18d6021716b3ef0ee1de",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/services-before-restart.jsonl",
+    "original_sha256": "d1ec13b84e3953cdc0bae1346800393d568cb3eb9c2d32e611ef87df54ea10cb",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/services-final.jsonl",
+    "original_sha256": "95b89ff1b15e804e0ee10096804921b0a48b805e9f5c49207c6eb622954360a7",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/services-restart.log",
+    "original_sha256": "c283813b47ed5cb614895dbc4488c133b919e37068e062474b01d4ce5f0cd9d4",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/services-start.log",
+    "original_sha256": "0c052a6c6a1420ac89351ed8e3c7c6f63cfd7f2ad58bf12530d195edb97254c9",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/services-stop.log",
+    "original_sha256": "68f05bef940540c22f5e8be1c2cec05206b2cc5c8c791dfb0baf01bb7dbbe256",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/services-stopped.jsonl",
+    "original_sha256": "f225fb0786d5defaf8b1f13527584d952c0607f2b63f61ae9a7032e2da6455e8",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/source-binding.json",
+    "original_sha256": "030c76555d67736bd0b7c08e20a2e5d15e50b0076796c22b11d71cbaf1549acb",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/source-clone.log",
+    "original_sha256": "67813d9520fc72d3f15b5bbda31f2371d3ebc0cae7918a3d999070ea7b9b4294",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/test-after-restart.json",
+    "original_sha256": "b7e61b31763ade9ba0f9a1f4d3b66e62f2a4bd674df890bcb38acbb615b6890c",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/test-before-restart.json",
+    "original_sha256": "08fbd2d18b2af1dedc38804809b46ce12c76a928e778fd872d4e298570c93eda",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/test-before-service-restart.json",
+    "original_sha256": "b7e61b31763ade9ba0f9a1f4d3b66e62f2a4bd674df890bcb38acbb615b6890c",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/test-enable.log",
+    "original_sha256": "f61f115fb3b80daab49b81f43ff016e33032776f53d605d1e50d414121163899",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/test-fixture-adaptation-complete.log",
+    "original_sha256": "78563fe955a13f6a7eef7a197ab44ab75bc32fbcc7823494a9827b5f1ce39a72",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/test-fixture-adaptation.json",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/test-fixture-adaptation.log",
+    "original_sha256": "7cd021c43a2fbbfdc0598a66ecb954af88297e62a55bdc614e02695bb2bd20d8",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/test-fixture-roots-after-first-adaptation.json",
+    "original_sha256": "70b79d432b4abf6b508dc5ac5e65e0f8bbb0992644ee1298343b7f1d77b36415",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/test-fixture-roots.json",
+    "original_sha256": "42a1030b17f403f43d9fe62e93dc957a9f29721506bde4b9c53172fc901e191b",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/test-setup.log",
+    "original_sha256": "4ccb9ca04c40f38fab8d7c8f03ba3b105a60a4c6d09e9a1a89b8c773f5123075",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/test-site-create.log",
+    "original_sha256": "150c4ef39c104955c55d808b3ac24230b0a6b2790a48d5a0ab963f9f776de18e",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/warehouse-baseline-after-fixture.log",
+    "original_sha256": "6501b0b2c5e2053c4dc0c764c56d58b5bef39be81ff83713bd79cae4e0a2481c",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/warehouse-baseline-doctype.log",
+    "original_sha256": "4f3a015af5456d11116e2a5554fed94cd9125cdec96675a00b3f0350a34048a1",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/warehouse-baseline-final-result.log",
+    "original_sha256": "6780e5f2d671d841945f91999c73bfaa4c699081c10d870171a4bf9f0b889531",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/warehouse-baseline-final.log",
+    "original_sha256": "d130df050d3e0d9a319af2bb84d96114e8282d1d418b66d867085a0237b905dd",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/warehouse-baseline-with-fixtures.log",
+    "original_sha256": "455af8f7c9a3cd6673973a5966162f76196078247fc895e3c99aedfa9cfabd0e",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/warehouse-baseline.log",
+    "original_sha256": "2f52d122c98fb627622cb4d21f9a542524dfd2337cc3dabd9c2d846c938021a6",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/web-final-image-mounts.txt",
+    "original_sha256": "123f93ed721664b6ebd8aec2ee704f4f68c313333aad67bbcbe3f328f57a594e",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/web-final-source-binding.json",
+    "original_sha256": "030c76555d67736bd0b7c08e20a2e5d15e50b0076796c22b11d71cbaf1549acb",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/web-final-start.log",
+    "original_sha256": "a4904ab975319319b54a26bb5c4cc3ea829896571bb4a3d8be0a4f76c6797e7d",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/web-image-mounts.txt",
+    "original_sha256": "123f93ed721664b6ebd8aec2ee704f4f68c313333aad67bbcbe3f328f57a594e",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/web-source-binding.json",
+    "original_sha256": "030c76555d67736bd0b7c08e20a2e5d15e50b0076796c22b11d71cbaf1549acb",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/web-source-path.json",
+    "original_sha256": "a10a7f6221c34e4482915195be6ceaffc589d51d39ffe9e1a5e5f95008ea3283",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/web-start.log",
+    "original_sha256": "90fa05008b6b082442c8bd4e2069690ee402da788c37c7729d59958edd909376",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/web-stop-sigint.log",
+    "original_sha256": "cbc2fa5854aebcb6899e1de3405ff02fbee5c7916f2c6a8ee4be14d16a63c322",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/web-stop-signal-recreate.log",
+    "original_sha256": "9f2d3019008142635f1d03bb6d6fc1e1ed6dbd1399f45bf24f626a9f0fa39f18",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B01/web-stopped-sigint.json",
+    "original_sha256": "3098eac229c4571a13cc0fff40e8e24058089cec9e98000325a6135375df3f1c",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/acceptance-build.log",
+    "original_sha256": "842c079bd19e1204c3d30232a8c692b9fb66196b30ee60b4aa17b1a99469960e",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/acceptance-http-after-stderr.log",
+    "original_sha256": "7dc3d056bd95ca3b5a064286ad332a165848179e2872c3314171c377d402c15a",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/acceptance-http-after.json",
+    "original_sha256": "5706822efe3fb8ce15f01bb3ab811aeb35b4739f676f6e23e17fc4f64f23db7a",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/acceptance-http-initial.json",
+    "original_sha256": "87d4e3216bead31ae98ed6ff322d71ed908e98c3af603fcd58ad55c79d655d72",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/acceptance-http-restore-stderr.log",
+    "original_sha256": "af21c9650019f5c56c36b31e6902bc6ac02978735227395776f737a08297b752",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/acceptance-http-restore.json",
+    "original_sha256": "aad0344a9cf6ec9099399a518207f13d0376ff94cbc37d07a727a8bd604df4b7",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/acceptance-http-revoke-stderr.log",
+    "original_sha256": "10f1c7e4427b30efdc3c10bab7a4080eaa43f423ff17e52547d709c7cdcb3916",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/acceptance-http-revoke.json",
+    "original_sha256": "d04debf3fa6a25d84a7a945cc967f5fe5d645c053a55efbd1c3fb7e596e7cb76",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/acceptance-http-revoked.json",
+    "original_sha256": "15fa4eb18b6967879b936ad529d84af6d4cc3cd02ca8ff6555566150aee0613a",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/acceptance-http-start.log",
+    "original_sha256": "742f6a4769d179a0f7e552faa69dec547c5ca32c7c8031f368727edd180a75ee",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/acceptance-http-stop.log",
+    "original_sha256": "eb4fe04c08a6bec459d7878335554d12c2f86dd57d77fe4c9cfb0862f7a4c536",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/acceptance-http-summary.json",
+    "original_sha256": "2d577acfed772f90687294d9cee38292266efad82b491823279150a346bd955e",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B02/acceptance-tests.log",
+    "original_sha256": "527a28edb5fd35148a1be672be2d0987a3614c8277745b968dc6d7b02950ee0e",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/final-build.log",
+    "original_sha256": "b8d44ccdc61f1065af49771acc6cb144e4baaa5f7874f3b3f6029f252b1df722",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/final-tests.log",
+    "original_sha256": "d80eebbabdfb1840471cf162fbeaafc10aba7b8301bb2fb3a953ac41eee41298",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/fixture-build-2.log",
+    "original_sha256": "6e7d455c4065ab06985e95b6f638ced7e0451a8efd3de06ae041bef80c0a402b",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/fixture-build-3.log",
+    "original_sha256": "6cd81facc8471eb7e898cd00d99ce0c3d13fd8dbb6662d3c4288fd988911eff7",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/fixture-build.log",
+    "original_sha256": "2e9fa707276aef93d2ed2a75035a151240e961d1932eac36304457cde6467038",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/fixture-first.log",
+    "original_sha256": "6e33188fdda675cf4f09e7f9d166a2494944ff5d48ddfe87500c030a581a174b",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/fixture-pass.log",
+    "original_sha256": "644c45b3a93d8e794f080211e300582c02466f2c345625e4afb91640704489f0",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/fixture-result.log",
+    "original_sha256": "03e3a9f4aee4375c347248ffbb55d89fee0c2cbedf9f9f5f01fbab6e73bc821b",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/fixture-verified.log",
+    "original_sha256": "0d7650e74367572420aacc1655cb4e130c3a80475b8fbf81084978f7218646d0",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/green.log",
+    "original_sha256": "a7d65dfbdaf7253a1bd2e6da30a351c405b9ab672b834fcb09e394f4cf5b8463",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/http-initial.json",
+    "original_sha256": "a33955028dd55e6e02e29d10896f2ea40c6a492a8669f5278ebb557890ea55b1",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/http-revoke-stderr.log",
+    "original_sha256": "f314c95efdc18b25dc5b6d796c2d2311ad010dfa92818a6fbfb4b3dc70165f39",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/http-revoke.json",
+    "original_sha256": "15007a821ddc01f744ecd1cf04b20c27b76de1e403a3411dce21e3ba63348f39",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/http-revoked.json",
+    "original_sha256": "7d2fd676f23ea1815bf5f161d351dc74a4823c34a6f4b32ee4c5fb804f272e2f",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/http-server-start.log",
+    "original_sha256": "03885542258a4c36eae07b55c187b134a733acc14b5d817faebaf42edbffb659",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/http-server-stop.log",
+    "original_sha256": "eb4fe04c08a6bec459d7878335554d12c2f86dd57d77fe4c9cfb0862f7a4c536",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/http-setup-stderr.log",
+    "original_sha256": "62b4a7642a68ca6ef7ee67bca4ec0d2a13bfbe56ea5ab278adac6b8ba88633ac",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/http-setup.json",
+    "original_sha256": "93172d3fb3a6d51a803cdb809301c521f44abaf8e4f027747ff9a9b00bc36430",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/http-summary.json",
+    "original_sha256": "016352551ec66339c00b7af036004b0c00bf4ef777a5f108d1a2bef747545606",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/input-red.log",
+    "original_sha256": "1e98cb594e4c77c65bd130e1f28b4ca4a64c86da1f6d97c9a256cebc6af5f5b1",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/input-test-build.log",
+    "original_sha256": "507d934705b86f58dc5cb53b5d28060649e9f5d806644a19e53f0284f10f3c26",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/patch-build.log",
+    "original_sha256": "91ee821bb922ee435504d61e46b73c99427edb06bda3f8a0e5b3ed32365916dd",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/percent-red-build.log",
+    "original_sha256": "9835fac8dd8177f4168f6969a12b3f70541e5bac92b05a0b7ddffcbe7ccd3f03",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/percent-red.log",
+    "original_sha256": "a8897c6449cb59452259a520bc4b21a5e4e332c9c2325f7db116c8c23126d27a",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/red.log",
+    "original_sha256": "5df3f06ae4a2bb1895d8dd5d71ea991997cadb20122b383d355a62baac872a27",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/review-filter-build.log",
+    "original_sha256": "a35c2645d4f5f0cc884f78f267252a0d62d55414e86c6442e1a6dbd7e924f819",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/review-filter-green.log",
+    "original_sha256": "b9ae2650e7eb8c0baca66f966d17fcc849c77f281d9dfd9804cf24d7b1f1e283",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/review-final-build.log",
+    "original_sha256": "632b8945f56f12b2e7aad4f15c57c31ddab85a0e4f45a17ef19b4900d7cc3f94",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/review-final-tests.log",
+    "original_sha256": "ca5573c2a0cc2ff939dc07a04667e11a2a4e6be28e26a742c9b42df72f6670fd",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/review-green-build.log",
+    "original_sha256": "7b499c13b38d2a554b08fd116d081640b159e40c82299caebd6eb7a2c1eca5c6",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/review-red-build.log",
+    "original_sha256": "8c808e23fc75ea8fa834949436c648a3429078353d9c8bdd73b7d7dd22fd7bf7",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/review-red.log",
+    "original_sha256": "c65b381f6ce388d6fef563e8d539419d56e079f758137236418f26863637c3e4",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B02/run-record.md",
+    "original_sha256": "6f9eb36dc77874aff67d6b7a52b50b54806f3ab28df9af160ceeab3802f87331",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B10/acceptance-bench-source-stderr.log",
+    "original_sha256": "1d5602ee42b7eae7b96b1a9cf1991d5d7a09fb1871b1036db59b34c7719adb15",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B10/acceptance-bench-source.json",
+    "original_sha256": "f1cc2d66b1c331ca03f92fc443183e69e79029be1714fa74ad6bd5b4527a2298",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B10/acceptance-consumption.log",
+    "original_sha256": "4f968efdc6376112e7898913a9ec9261bb34ccc7a85c8726c4d684245a650b10",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B10/acceptance-dev-site-stderr.log",
+    "original_sha256": "5a78f196ad437eb80bb61175e742d152bd9cd7495a819969b95463a9992b485f",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B10/acceptance-dev-site.json",
+    "original_sha256": "cc6f1a3f75a2d89b6430345a705b55a494777e59188ccffd179b9976754621ba",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B10/acceptance-r05-state.txt",
+    "original_sha256": "3dfa0e4227f36c6aa612c1daef291f32a4c150edf5b528c101fdbd969b7955fa",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B10/acceptance-runtime-images.txt",
+    "original_sha256": "fda1a545a91fc7121a3bcda3e7377f633918cc57266d759ceb90fcc560ca225a",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B10/acceptance-test-site-stderr.log",
+    "original_sha256": "163e54ff74cbe6dd4685eff52fcfad2f7b1b286ec1e9c25508e8cac976b69e1b",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B10/acceptance-test-site.json",
+    "original_sha256": "96c6348923ee54fbbbf726e38fc2f2fac37eae6b4f098bfc5c1ff4e8c58962f8",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B10/acceptance-transfer.log",
+    "original_sha256": "f9ed330763341f4529359c0c7f85d1d615c089ae8cca572a8fb6c954dbf252a9",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B10/acceptance-web-http.json",
+    "original_sha256": "2cd5ff0ca57c3bf6520b638a54e27d8de47d0f251c50fb8b1446d3a6b791f1b2",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B10/acceptance-web-recreate.log",
+    "original_sha256": "9f2d3019008142635f1d03bb6d6fc1e1ed6dbd1399f45bf24f626a9f0fa39f18",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B10/acceptance-web-source-stderr.log",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B10/acceptance-web-source.json",
+    "original_sha256": "f1cc2d66b1c331ca03f92fc443183e69e79029be1714fa74ad6bd5b4527a2298",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B10/combined-implementation.patch",
+    "original_sha256": "221937fbf2f011d04012aa6e0a602a982d65edb5e9a72b7b53f40060322ec5d3",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B10/consumption-green.log",
+    "original_sha256": "de7c653a67341e9054f9e11c6ade98d0de6a26f04dc53608c48e35ef5a3666f7",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B10/consumption-red.log",
+    "original_sha256": "8a28563ad8a2606502df93e4edfb41437b7a663dab15eb13cbcb9498eab3815c",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B10/final-bench-source-stderr.log",
+    "original_sha256": "424df22b0cbb649ff6a1edf266ff136bc5be845d0a1fb25212cae5f56c8f36e7",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B10/final-bench-source.json",
+    "original_sha256": "5bf11334a03073ccd52315986fb5199d802238542ccb8186176aeb1c3d29f631",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B10/final-build.log",
+    "original_sha256": "022adc122950c906369105c8fba86d53819a2917af5a2967a0ec6caaf1935bb0",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B10/final-web-recreate.log",
+    "original_sha256": "9f2d3019008142635f1d03bb6d6fc1e1ed6dbd1399f45bf24f626a9f0fa39f18",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B10/green-build.log",
+    "original_sha256": "3eb330f2d2112f75946bfebb7bcff06a5648885cf7c66ab0641c921fa8d59251",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B10/pause-save-check.json",
+    "original_sha256": "72be3284259559111f52cd0907e044b0dd32c4c89d73b77316661a0b1ee9d2fe",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B10/red-build.log",
+    "original_sha256": "27a1c64ba6c0a4c1f10c5c69205b57c19f1035acf16dd9ff51de91a97a631ea1",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B10/run-record.md",
+    "original_sha256": "096f8106fb93445d6fc2e448f034b821c5f4e1a9c60dfc9349110fc170ccf985",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B10/transfer-green.log",
+    "original_sha256": "e0f02e4ad60b5e3d2fb02da349a5d39481fc0989bc9b8e35ec34b4202ffd2bec",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B10/transfer-red.log",
+    "original_sha256": "3b47040643995085000d6e3abf264c7ac72b9aa9a403e6846b899c2679992d0d",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R00/document-check.json",
+    "original_sha256": "e88d8d9951df32b6b2342f950ca6b2182e1f59f683b7699ae4bb70e31ccbd598",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R00/source-register.md",
+    "original_sha256": "bd03a2eb649117d2c3c1f68b002442f829e3c730cf1088c3a0ca2baf39bfcde0",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R01/erpnext-evidence.md",
+    "original_sha256": "b86645a1dc82a01f7cdc123a3e70a29cda5213837ffc8bf84a17a726621bc5d5",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R01/license-inventory.md",
+    "original_sha256": "5cf1dd255973a3c3ac5fe2201c6feb67d78147a91ecc5378511d456e8f63c63f",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R01/open-scope.md",
+    "original_sha256": "49e437c2062ff4a456b38d9410904326e2c8ef1670b74fabb302229c826d036c",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R01/openmes-evidence.md",
+    "original_sha256": "89a1c24aadcb289fd2e28d21681c1994195937bc55d069921ecac85c894e581e",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R01/source-lock.md",
+    "original_sha256": "b11fb233fdb91241199776938d5c45ffa0a40951ed750ede8df96573809bbf0f",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R01/t3rik-evidence.md",
+    "original_sha256": "ceb9e35846d5f516d342ada5a9f7f68297d4bc68dae47075213aeeb7cb5f4cc3",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R02/arithmetic-check.json",
+    "original_sha256": "91fdda69953e0740d54edc4837f5fdc29769df8eabb6a01b30d1bb6a8b595e2a",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R02/document-check.json",
+    "original_sha256": "fb6caadb5f523a2c097ac89d00f91bfe01795c0b99578dc12bf4013dbd6e0a81",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R02/expected-results.md",
+    "original_sha256": "06d0aeecacf85b5cc9c2934e9c577f2d06f0de85abe3c34a9dddf035b494345d",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R02/fixture-spec.md",
+    "original_sha256": "9a4ae68d54d9e9277bc068281c8ddb29f3684077311925d135cd91d93c4678c1",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R02/verify-arithmetic.py",
+    "original_sha256": "4dbd7843f8b05d49550f4efe83ba028cdc04741a03af6b0b54136a75d02580bc",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R03/fit-matrix.md",
+    "original_sha256": "37e4f92cb266fd6c2248fb62531566889b6c979a59d5d0056340983ff56c3c23",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R03/run-record.md",
+    "original_sha256": "e467817119746ecd10b95b6c17642f9ca480a091f77fc357dc59b5eb197f2b3f",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R03-R05/container-status.jsonl",
+    "original_sha256": "185d20e43fb77df1229264e19063bf28c5508b304f43e3aba770bf74e528c9b8",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R03-R05/document-check.json",
+    "original_sha256": "049389de192bf950481b449122feadce1631ad3d6d7c747cbf486ab478e1c8d5",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R03-R05/environment.md",
+    "original_sha256": "32d82f4620e4576e921edd8fc31bc5ba3b9fef2b4e5e663d25eef949de770741",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R03-R05/summary.md",
+    "original_sha256": "c264c11ea0844383ee921e9f475b16d51f73fed2ebe2d26e41db18b4ab7c23cc",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R04/fit-matrix.md",
+    "original_sha256": "b2cf7c639140ba22a5415d9afd2b1b66620b2c9da7e71a61520ce081bd279856",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R04/run-record.md",
+    "original_sha256": "eb771b6542dbf736950dc1982353bba74e3978f549c8731c3ecfc20c40162337",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R05/boundary-probe-attempt1.py",
+    "original_sha256": "a006a1d6f4f450efe989c08ac88f51b21dde3d4f47d57625d72cbd8ca134719b",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R05/boundary-probe-attempt2.log",
+    "original_sha256": "f8349f856aecec4e6f2d1fae2b92c2ddcbe366aae881c89550cb9ce657304365",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/boundary-probe-attempt2.py",
+    "original_sha256": "5839657eeed3a5e58be26cbe2fb43772ffbb26cb0a59b1f2419ed47c7bf4b802",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R05/boundary-probe-attempt3.log",
+    "original_sha256": "69db31f8082db0a6b607fec4980c2fc74bc01c39cc5266666b5ef7c0e3584095",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/boundary-probe.log",
+    "original_sha256": "43f52c853a4b8ac323e1037b0ed1a80bd002b6143d902bf396dc5c0ed94112ea",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/boundary-result-attempt2.json",
+    "original_sha256": "57a817394a82434e391480bb8b2f9fbb731d66161c13b5e397c383e174ad1f45",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/boundary-result-attempt3.json",
+    "original_sha256": "01c17a5c8cdefe76693fab74ed4934758f45ff101e08804f4743c4f0875c4408",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/boundary-result.json",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/boundary-state-recovery.log",
+    "original_sha256": "f435e03be9ec266be579c386d37e7d18032c7d28a90f9dc6564cd8e2515e2835",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/fit-matrix.md",
+    "original_sha256": "8f164dd71f2768db079f98ba5361a97adddefeec133ef4b170affd078496399a",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R05/followup/access-readback-attempt2.json",
+    "original_sha256": "26a2ce0f1fafd7fdc588b58bb1528f3e02672dc5e9b04bce750212a9c116ef04",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/access-readback-attempt2.log",
+    "original_sha256": "c2a816989346909cfa3fc6ce281b5b9c9a291adec1a2e520db45ab16fc7e39be",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/access-readback.json",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/access-readback.log",
+    "original_sha256": "2c67938ba3366103ec597d76e55338314ced62c57cbffc69057a6d3fe1039533",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/access-setup.json",
+    "original_sha256": "2ee7e2ce04ed917a374c8ae6d59862e863e575f31fe83ad2b3cf5f332fd53f56",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/access-setup.log",
+    "original_sha256": "89aea063248162ab66114192bfbded8864b14ac23ce227af8fb6e5fec8ae9f01",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/access.json",
+    "original_sha256": "b665b92d50961361968445b8efccf32d9c5fbcbd6b33220a80e8956941bae66b",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/access.log",
+    "original_sha256": "e731fd78b1b1a9d5151af72351e8514638ec1fc30c397ffca2d70aa6649d7ce2",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/concurrency.json",
+    "original_sha256": "efacbab753c5e597b962e584be5f29f2fea540387932ccf6cecd9af83fe4cf00",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/concurrency.log",
+    "original_sha256": "7291a7388e7214dba7bf3eedf334b223da3849cbd8ee166f08c9d9aaf5e9d1ec",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/container-status.jsonl",
+    "original_sha256": "66e7503f200445437d80575655c60bcf2f803c8d5af22c20dbf899201f2cba28",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/delete.json",
+    "original_sha256": "38851a64169a3674eb1a75ea026a0af731431b77349edd5ee08aebdb9c8bdd7c",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/delete.log",
+    "original_sha256": "f8da002bb8a7cb026e84850b1dbf860db41b2e0d2aed24ee145b93e46d902e41",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/docker-desktop-status.txt",
+    "original_sha256": "a6933b122b6cabe309a33da69f7978ed5f138eba5736ebc42fdbe5a6cb46929d",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/material.json",
+    "original_sha256": "4cf8366cf01a0023a009e337e1c50d38076506eb761ab17f11e6a9f7e65ba542",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/material.log",
+    "original_sha256": "6385cba84e97a7c52b5fe983ddd63565121e747f96f6da7587af275254ae2818",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/mobile/before-submit.json",
+    "original_sha256": "9a5d9c1dcdb38f4a261dc7cb0d6943f95c43c9a627749cd79d70c0337ac5e4cf",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/mobile/browser-errors.json",
+    "original_sha256": "eeef22429ee4070f98c56d9804df4a644af72aedc2aae4f7eb0a91e855273405",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/mobile/complete-dialog.png",
+    "original_sha256": "29cb5a9e11871db13e35d919fc5f397a466c570ca774b2603e00202130ef8bf8",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/mobile/in-progress-return-menu.png",
+    "original_sha256": "658879777c348b5d011bbc532927446b3e973a0ab28af930b37c7e79e09e67cb",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/mobile/in-progress-return-menu.txt",
+    "original_sha256": "ffacd2d03616bbe87681fdf9674d467fa4a584cc4fad3bb6549aec5acc8402c8",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/mobile/issue-submitted.json",
+    "original_sha256": "f72530b3fd6bfb8e5085b070ff8654bd4361fe2acb2c594ae2954e0cd62e7310",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/mobile/issue-submitted.png",
+    "original_sha256": "c6271cdc4bc5d12ab606593620ac7af5b1ac0939b2d07a79ca29a2530c5d0f59",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/mobile/job-card-before.png",
+    "original_sha256": "48f334a4c6c5eb66888842b1f26f19479c465edf19ee811dc0b1d97ab1729244",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/mobile/job-card-list.png",
+    "original_sha256": "0bfc5c7ea7bdc014d19c2809c09a7e8bfc744e328c46d2b10c3f734b7b3e79ab",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/mobile/job-card-list.txt",
+    "original_sha256": "3ab3461edb7960c2cc673a80dcc52cfbf8429ef1ff9c6693f2d6a4d099e930f2",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/mobile/login.png",
+    "original_sha256": "3c7487c97cdfc8fd408a2fa7577cd1e04292f45d9b977233d6a61cf5bf3485ca",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/mobile/material-setup.json",
+    "original_sha256": "52aba65de6eb4785b229154803cca454ad136255c778d2de5d606cd884fcfa58",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/mobile/material-setup.log",
+    "original_sha256": "9116ecc25c56f2ae21f7a65318db3a2c394f838159fe1124832108683239b3ec",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/mobile/refreshed.json",
+    "original_sha256": "bf7ec2495cd1e1e5fd93b04e8825cfd2d16d323efac272fcff63228d6fca4dc4",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/mobile/report-completed.png",
+    "original_sha256": "ca4ec0da14fb37a4ded48a77cd9c4e7d8b1da2a9cdb8b733c6766acd3dfd2f90",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/mobile/start-menu.png",
+    "original_sha256": "7fdeebca7f34aff86aab282be5893e1db7001bdb2d775b0c7f61d88431a3febf",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/mobile/stock-settings-warning.png",
+    "original_sha256": "cfbaaab1708850a3a938982591263ee2d2efec024f6bcaf0198233bf10e6ed2c",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/mobile/submitted.json",
+    "original_sha256": "b603f1665c121552036558402277386585a640ea8f84b1532d4f0017fa6e2a56",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/retry.json",
+    "original_sha256": "b656fd6ebecc23b7af75fb2619a249f8b65086c8ad10a24642c9c2ce82a078ef",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/retry.log",
+    "original_sha256": "785818a6da96a4e192e56a3f77319f16fdf2ef336ae8eee53e28cc5c3e7870e4",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/service-stop.log",
+    "original_sha256": "b7a0f8cc50b0b53fb73bbf0fd6fb90df49b40668624cffa43f2e37ecf07796ae",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/split-recovery.json",
+    "original_sha256": "9995c9331ba69acc0818345d5247a908c84301d5ebb640845b5391c8a77405b3",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/split-recovery.log",
+    "original_sha256": "bddf2def49f161d5213950d091bae2dc8440fd59398ba0c87d85620ae0e7dbfe",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup/web-final-state.json",
+    "original_sha256": "904d5e7833d5fd4a2f811d6af55b03074cd28d2e0aae1b231df41c641d68e023",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/followup-access.md",
+    "original_sha256": "4b2d6817a9e1ebe841ae69edf7783dc7e35e97e430d1561efef6024950fb4775",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R05/followup-material.md",
+    "original_sha256": "f92f738e24d663dc0306a6d981154609f697d5ae1826e44efedac6177c5811ed",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R05/followup-mobile.md",
+    "original_sha256": "77ceccd22c657820e01d3b46970a8cc55e1a47053d5961fd97c7431cd282fd50",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R05/persistence-readback.json",
+    "original_sha256": "de3e4674d06965cae65eeb27f329d77062d78bb26f61717553bf8b93f6048823",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/persistence-readback.log",
+    "original_sha256": "f1ca396533229856ce840d9fa4f06c018c6699e2a532d79963021d9b5f7a71b1",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/precision-probe.log",
+    "original_sha256": "09cdc950af4f5a06393511bd7c773ceccd02be8b5bfa8e5080a7ab76c45fc08f",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/precision-result.json",
+    "original_sha256": "14942aae3067f681f83bf1c1e2fe941bb45c2e4c046a4519854278846942fbbb",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/r02-probe-attempt1.json",
+    "original_sha256": "416998d839ff73cecea3fb16e5bb8b37469300cbf1120d1f87acb2b320061286",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/r02-probe-attempt1.py",
+    "original_sha256": "56c09805ad0e9fb79bbec32587bdd1fcf68f484f81219b9b0047f216552b632e",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R05/r02-probe-attempt2.json",
+    "original_sha256": "339a52635889a03e4f24dfce54db6dba9355589f90d29348a1de1a5dfe31e955",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/r02-probe-attempt2.log",
+    "original_sha256": "5c7ec57f8ceb420daa26ea2821a6e4db1faca8428c2ae047d176cd0f2e718241",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/r02-probe-attempt2.py",
+    "original_sha256": "5a900c13e4245f1da437257022cb6ae290b19ef81aadab44b7381a799a840503",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R05/r02-probe-attempt3.json",
+    "original_sha256": "3caa12195d515e36f546315fb0fcd352a2cff0e017732f6033daff0b3b160f5b",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/r02-probe-attempt3.log",
+    "original_sha256": "699c9dc20cbc28d8bc9dc555bcfb633d252ff09d9409d06c4543d6a3849cc18a",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/r02-probe-attempt4.json",
+    "original_sha256": "ed4873f679c8ef79604867290860a2dd33db478eefe21f496348e98dda628d6d",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/r02-probe-attempt4.log",
+    "original_sha256": "2c1b96851bcac7b2de64a7a00b6db22c7a8cfa8423e48a19aac33956e42a69ba",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/r02-probe-attempt4.py",
+    "original_sha256": "8efac1a89a3fc1c0c2f75b4bf40ac6afac6fddcc7723c4c6212be27522f9e0f6",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R05/r02-probe-attempt5.json",
+    "original_sha256": "855bde0b4431d2cc613d35f89daefd5a9cfcf3e9230eef8bee82ee3a5979f0f0",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/r02-probe-attempt5.log",
+    "original_sha256": "4c91cd1e651875132dd58d893ab8f29f061d285961af0b95dc3c29795029936c",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/r02-probe-attempt5.py",
+    "original_sha256": "bebd418f53e027db69fc9888dfc4bf01fc162aab71394832e1e2572c6d9cd774",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R05/r02-probe.log",
+    "original_sha256": "639d7bf11c2247486cc12565f0ca291c380811049a4304d7f27b307dedee7af0",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/run-record.md",
+    "original_sha256": "d7735c0f2ccab452579b25f22f487ec3a80a337f08a18735046311a6c50805a5",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R05/site-init.log",
+    "original_sha256": "323bb31209ecdef3db4c2c033a74dd32a5288e1f5a70e3202fde5525a71bd907",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/uom-diagnostic.log",
+    "original_sha256": "0363db833b9e61cda878e3d735671e138d9bd5f6b9b16313a867189019bd529f",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/upstream-job-card.log",
+    "original_sha256": "06b9cf0f420514a7c7990d2df9007d9b72ee3b3a3b88968fdcf0bf983cff6873",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/upstream-stock-precision.log",
+    "original_sha256": "f96e648838cb8da19f84d34ad9ad2fe9cc1a674cc9880d95618be551fd030bfc",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/upstream-test-results.json",
+    "original_sha256": "424b262202d8477564540a3e5abd56a4d0e0f1f15f6e8767e2b4da5fdd8770eb",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R05/upstream-work-order.log",
+    "original_sha256": "d45a97321aea7c38aeea6c2263c89b1ff49a4d55986bbaf43160814596ddd2b4",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/R06/cost-boundaries.md",
+    "original_sha256": "ff8b1fb00f44e4d63b17010c318445ae017cf0b719ffdffccf7f32236af7ead5",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R06/document-check.json",
+    "original_sha256": "673064a560bd951e183982a7752abfba8588fabeb0f40c835651b92d6228eeb7",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R06/reuse-matrix.md",
+    "original_sha256": "a7184b89e39d0bc944039a406c6437f6ae7764994f64b479d25e843a758898bf",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R06/selection.md",
+    "original_sha256": "6183f19309294bf93ab6374790d35be5f7b5d7bae8ec20b72b9057bc984a667b",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R07/card-binding.md",
+    "original_sha256": "45417a6661c478eda1130ae9e602c0246bbd508cb8b03ca64cd8ff758bd16b06",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R07/chinese-interface.md",
+    "original_sha256": "7c0304f7a28fc2c61651455655cdf2146eb05883fcd8b1db979d0167e8782283",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R07/document-check.json",
+    "original_sha256": "1601ba44df7947612f25ce1d6569875502c5e1a337a0a5698bf9d54f7bf85475",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R07/permissions.md",
+    "original_sha256": "32663ed8c6f722bd85daf1b8052261e68a07cc05bd23cd9d5e4d1816832d5ea3",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R07/quantity-return.md",
+    "original_sha256": "eecbc38ca4ecd44da3978a334ece2ab05219b4c06b6a84baaf0cd03c2a7e5ab8",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R07/report-concurrency.md",
+    "original_sha256": "3a37308e19e5489193dca5a3269c883cccbfb43050aadaf3be7760af5c531ea0",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R07/scope-review.json",
+    "original_sha256": "6f1852fc3cd1f08aaf6281fcee79aab75df8df64237d70ae39b950418dee23df",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/R07/source-manifest.json",
+    "original_sha256": "190d1510b2c8d29ceac63a5969cb003d6a03dfd268b1333aeab0cc0ddb2de956",
+    "published": true,
+    "reason": "public copy"
+  }
+]

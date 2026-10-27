@@ -1,0 +1,6 @@
+{
+  "url": "http://127.0.0.1:18086/login",
+  "http_status": 200,
+  "zh_login_text_present": true,
+  "scope": "public HTTP response only, not browser login acceptance"
+}

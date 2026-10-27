@@ -1,0 +1,7 @@
+**
+!Dockerfile
+!repos/
+!repos/erpnext/
+!repos/erpnext/**
+repos/erpnext/.git
+**/__pycache__

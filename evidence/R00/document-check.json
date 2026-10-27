@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-26",
+  "scope": "仅文档编号、引用、依赖与合成预期算术检查；非应用测试",
+  "cards": 33,
+  "unique_cards": 33,
+  "todo_rows": 33,
+  "case_groups": 12,
+  "unknown_dependencies": [],
+  "cycles": [],
+  "broken_local_links": [],
+  "quantity_expected_values": [
+    "54.9500",
+    "8.3333",
+    "27.5000",
+    "0.0167"
+  ],
+  "completed_execution_checkboxes": {
+    "R00": 4
+  },
+  "review": "独立文档审阅发现的3类门槛问题已修正；新增TODO与AI交付卡复核无重大问题",
+  "application_run": false,
+  "ai_real_run": false,
+  "customer_deployment": false,
+  "field_acceptance": false
+}

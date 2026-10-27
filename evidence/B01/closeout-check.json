@@ -1,0 +1,11 @@
+{
+  "unique_cards": 33,
+  "modified_document_local_links": 101,
+  "missing_links": [],
+  "upstream_product_diff": "clean",
+  "web_source_key_files_match": true,
+  "sigint_web_exit_code": 0,
+  "final_services_running": 4,
+  "test_baseline": "NOT_PASSED: fixture dependency Payment Gateway missing",
+  "scope": "document/environment checks only; not business acceptance"
+}

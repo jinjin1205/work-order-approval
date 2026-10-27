@@ -1,0 +1,39 @@
+{
+  "scope": "Saved historical execution, not rerun on publication",
+  "tests": [
+    {
+      "local_log": "evidence/B02/acceptance-tests.log",
+      "sha256": "527a28edb5fd35148a1be672be2d0987a3614c8277745b968dc6d7b02950ee0e",
+      "tests": 10,
+      "seconds": "15.656",
+      "result": "OK",
+      "executed_on": "2026-10-26"
+    },
+    {
+      "local_log": "evidence/B10/acceptance-consumption.log",
+      "sha256": "4f968efdc6376112e7898913a9ec9261bb34ccc7a85c8726c4d684245a650b10",
+      "tests": 2,
+      "seconds": "4.519",
+      "result": "OK",
+      "executed_on": "2026-10-26"
+    },
+    {
+      "local_log": "evidence/B10/acceptance-transfer.log",
+      "sha256": "f9ed330763341f4529359c0c7f85d1d615c089ae8cca572a8fb6c954dbf252a9",
+      "tests": 3,
+      "seconds": "1.218",
+      "result": "OK",
+      "executed_on": "2026-10-26"
+    }
+  ],
+  "http": {
+    "initial_requests": 12,
+    "revoked_same_token_requests": 4,
+    "all_passed": true,
+    "business_state_unchanged": true,
+    "patch_sha256": "221937fbf2f011d04012aa6e0a602a982d65edb5e9a72b7b53f40060322ec5d3",
+    "verified_after_all_requests": true,
+    "publication_note": "Only assertions/counts retained; runtime business_state and raw responses remain local."
+  },
+  "patch_sha256": "221937fbf2f011d04012aa6e0a602a982d65edb5e9a72b7b53f40060322ec5d3"
+}

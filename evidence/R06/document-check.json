@@ -1,0 +1,82 @@
+{
+  "checked_utc": "2026-10-26T11:25:37.349374+00:00",
+  "scope": "Document/evidence checks only; not product tests",
+  "markdown_files": 15,
+  "local_links_checked": 220,
+  "broken_links": [],
+  "task_count": 33,
+  "unique_task_count": 33,
+  "completed_preparation_ids": [
+    "R00",
+    "R01",
+    "R02",
+    "R03",
+    "R04",
+    "R05",
+    "R06"
+  ],
+  "remaining_count": 26,
+  "dependency_cycles": [],
+  "valid_nonempty_followup_json": 15,
+  "invalid_json": [],
+  "empty_historical_outputs_not_counted": [
+    "evidence/R05/followup/access-readback.json"
+  ],
+  "syntax_parsed_probes": [
+    ".evaluation/r05-erpnext/probes/precision_probe.py",
+    ".evaluation/r05-erpnext/probes/mobile_stock_readback.py",
+    ".evaluation/r05-erpnext/probes/mobile_material_setup.py",
+    ".evaluation/r05-erpnext/probes/ui_readback.py",
+    ".evaluation/r05-erpnext/probes/access_readback.py",
+    ".evaluation/r05-erpnext/probes/access_setup.py",
+    ".evaluation/r05-erpnext/probes/r02_probe.py",
+    ".evaluation/r05-erpnext/probes/boundary_probe.py",
+    ".evaluation/r05-erpnext/probes/material_followup.py",
+    ".evaluation/r05-erpnext/probes/access_http.py"
+  ],
+  "secret_value_matches": [],
+  "credential_file_modes": {
+    ".evaluation/r05-erpnext/access-secrets.json": "0o600",
+    ".evaluation/r05-erpnext/.env": "0o600"
+  },
+  "final_services": [
+    {
+      "Service": "db",
+      "State": "exited",
+      "ExitCode": 0
+    },
+    {
+      "Service": "redis-cache",
+      "State": "exited",
+      "ExitCode": 0
+    },
+    {
+      "Service": "redis-queue",
+      "State": "exited",
+      "ExitCode": 0
+    },
+    {
+      "Service": "web",
+      "State": "exited",
+      "ExitCode": 137
+    }
+  ],
+  "sha256": {
+    "docs/开发TODO.md": "487e5bd9a5aaf6c1c97d63c70e425b862500169b0de1a3542e358643a2b2f6b7",
+    "docs/任务卡/01-复用核验与选型.md": "e771d127a36a23930647b23c5bfaa41d72bfa90728b1d21921dc9cf37dcc73b2",
+    "docs/决策与范围.md": "74aa5921d5b14a6d1f1acf5256d99c446835a10c8f77d83b69d99382adf1cd09",
+    "docs/验收样例.md": "3d8762b8d56fdfcdd80df455808e7a57b2c58eafd9fe1722097f7e3421c8bae6",
+    "evidence/R03-R05/summary.md": "c264c11ea0844383ee921e9f475b16d51f73fed2ebe2d26e41db18b4ab7c23cc",
+    "evidence/R03-R05/environment.md": "32d82f4620e4576e921edd8fc31bc5ba3b9fef2b4e5e663d25eef949de770741",
+    "evidence/R05/run-record.md": "d7735c0f2ccab452579b25f22f487ec3a80a337f08a18735046311a6c50805a5",
+    "evidence/R05/fit-matrix.md": "8f164dd71f2768db079f98ba5361a97adddefeec133ef4b170affd078496399a",
+    "evidence/R05/followup-material.md": "f92f738e24d663dc0306a6d981154609f697d5ae1826e44efedac6177c5811ed",
+    "evidence/R05/followup-access.md": "4b2d6817a9e1ebe841ae69edf7783dc7e35e97e430d1561efef6024950fb4775",
+    "evidence/R05/followup-mobile.md": "77ceccd22c657820e01d3b46970a8cc55e1a47053d5961fd97c7431cd282fd50",
+    "evidence/R06/selection.md": "6183f19309294bf93ab6374790d35be5f7b5d7bae8ec20b72b9057bc984a667b",
+    "evidence/R06/reuse-matrix.md": "a7184b89e39d0bc944039a406c6437f6ae7764994f64b479d25e843a758898bf",
+    "evidence/R06/cost-boundaries.md": "ff8b1fb00f44e4d63b17010c318445ae017cf0b719ffdffccf7f32236af7ead5",
+    ".evaluation/r05-erpnext/README.md": "147249922eb473c97b188fe961b0127b90f62c1f78c16294012e1e9d7a226868"
+  },
+  "passed": true
+}

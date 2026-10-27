@@ -1,0 +1,95 @@
+{
+  "name": "xgd-dev",
+  "services": {
+    "db": {
+      "image": "mariadb@sha256:88ac718dafee1e8fb415233c04f314f3c3866af99177ce25d436106c62090461",
+      "environment": {
+        "MARIADB_ROOT_PASSWORD": "${B01_DB_PASSWORD:?B01_DB_PASSWORD must be set}"
+      },
+      "command": [
+        "--character-set-server=utf8mb4",
+        "--collation-server=utf8mb4_unicode_ci",
+        "--skip-character-set-client-handshake"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "healthcheck.sh",
+          "--connect",
+          "--innodb_initialized"
+        ],
+        "interval": "5s",
+        "timeout": "5s",
+        "retries": 20
+      },
+      "volumes": [
+        "db-data:/var/lib/mysql"
+      ]
+    },
+    "redis-cache": {
+      "image": "redis@sha256:592b215e9287182f11ba9d7c229dc0ba312bb900a016ea65ae378b0127567319"
+    },
+    "redis-queue": {
+      "image": "redis@sha256:592b215e9287182f11ba9d7c229dc0ba312bb900a016ea65ae378b0127567319",
+      "volumes": [
+        "redis-queue-data:/data"
+      ]
+    },
+    "bench": {
+      "image": "xgd-erpnext:b01",
+      "working_dir": "/home/frappe/frappe-bench",
+      "entrypoint": [],
+      "environment": {
+        "B01_DB_PASSWORD": "${B01_DB_PASSWORD:?B01_DB_PASSWORD must be set}",
+        "B01_DEV_ADMIN_PASSWORD": "${B01_DEV_ADMIN_PASSWORD:?B01_DEV_ADMIN_PASSWORD must be set}",
+        "B01_TEST_ADMIN_PASSWORD": "${B01_TEST_ADMIN_PASSWORD:?B01_TEST_ADMIN_PASSWORD must be set}",
+        "B01_OPERATOR_PASSWORD": "${B01_OPERATOR_PASSWORD:?B01_OPERATOR_PASSWORD must be set}"
+      },
+      "volumes": [
+        "sites:/home/frappe/frappe-bench/sites",
+        "logs:/home/frappe/frappe-bench/logs",
+        "./checks:/b01:ro"
+      ],
+      "build": {
+        "context": ".",
+        "dockerfile": "Dockerfile"
+      },
+      "profiles": [
+        "tools"
+      ]
+    },
+    "web": {
+      "image": "xgd-erpnext:b01",
+      "working_dir": "/home/frappe/frappe-bench",
+      "entrypoint": [
+        "/usr/local/bin/entrypoint.sh"
+      ],
+      "command": [
+        "bench",
+        "--site",
+        "xgd-dev.localhost",
+        "serve",
+        "--port",
+        "8000",
+        "--noreload"
+      ],
+      "ports": [
+        "127.0.0.1:18086:8000"
+      ],
+      "volumes": [
+        "sites:/home/frappe/frappe-bench/sites",
+        "logs:/home/frappe/frappe-bench/logs"
+      ],
+      "environment": {
+        "CI": "1"
+      },
+      "stop_signal": "SIGINT"
+    }
+  },
+  "volumes": {
+    "db-data": {},
+    "redis-queue-data": {},
+    "sites": {},
+    "logs": {}
+  }
+}

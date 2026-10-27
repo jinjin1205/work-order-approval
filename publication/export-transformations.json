@@ -1,0 +1,560 @@
+[
+  {
+    "source": ".development/repos/erpnext/erpnext/manufacturing/doctype/job_card/job_card.py",
+    "public_path": "source/erpnext/erpnext/manufacturing/doctype/job_card/job_card.py",
+    "treatment": "unchanged",
+    "source_sha256": "952979d835ec902462bc71c98847f867e1fbadd43c97c30ccb249ad7eb982620"
+  },
+  {
+    "source": ".development/repos/erpnext/erpnext/manufacturing/doctype/job_card/test_job_card.py",
+    "public_path": "source/erpnext/erpnext/manufacturing/doctype/job_card/test_job_card.py",
+    "treatment": "unchanged",
+    "source_sha256": "abcb9d1b79f7991f3df9cf9a993734728438ef2d998a5dbb8b5b8986ffd67125"
+  },
+  {
+    "source": ".development/repos/erpnext/erpnext/manufacturing/doctype/work_order/test_work_order.py",
+    "public_path": "source/erpnext/erpnext/manufacturing/doctype/work_order/test_work_order.py",
+    "treatment": "unchanged",
+    "source_sha256": "6c108a751e5150d7e42675dfa2378aec4a0f1db66deaed27dacbda00cce016ea"
+  },
+  {
+    "source": ".development/repos/erpnext/erpnext/manufacturing/doctype/work_order/work_order.py",
+    "public_path": "source/erpnext/erpnext/manufacturing/doctype/work_order/work_order.py",
+    "treatment": "unchanged",
+    "source_sha256": "496edb0645ebebba33e94b80f9b1771f3e7818e057fca318fc0cf7b0393bfb7a"
+  },
+  {
+    "source": ".development/repos/erpnext/erpnext/stock/doctype/stock_entry/stock_entry.py",
+    "public_path": "source/erpnext/erpnext/stock/doctype/stock_entry/stock_entry.py",
+    "treatment": "unchanged",
+    "source_sha256": "859abda827612fc99ea136d62056bff6e360649f6b7c458e2be211352d94a2a0"
+  },
+  {
+    "source": ".development/repos/erpnext/erpnext/stock/doctype/stock_entry/test_stock_entry.py",
+    "public_path": "source/erpnext/erpnext/stock/doctype/stock_entry/test_stock_entry.py",
+    "treatment": "unchanged",
+    "source_sha256": "10555b4e6e7276e7680f1b3a6f33925ecf79f3374215caccdad41050bd72d166"
+  },
+  {
+    "source": ".development/repos/erpnext/license.txt",
+    "public_path": "source/erpnext/license.txt",
+    "treatment": "unchanged",
+    "source_sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+  },
+  {
+    "source": "evidence/B10/combined-implementation.patch",
+    "public_path": "evidence/B10/combined-implementation.patch",
+    "treatment": "unchanged",
+    "source_sha256": "221937fbf2f011d04012aa6e0a602a982d65edb5e9a72b7b53f40060322ec5d3"
+  },
+  {
+    "source": "AGENTS.md",
+    "public_path": "AGENTS.md",
+    "treatment": "unchanged",
+    "source_sha256": "58b283d4eb9288e739e83ea8f079167a424cc2512897ef69111f2907d00a3010"
+  },
+  {
+    "source": "docs/任务卡/01-复用核验与选型.md",
+    "public_path": "docs/任务卡/01-复用核验与选型.md",
+    "treatment": "unchanged",
+    "source_sha256": "8a815e4959a7111424e340486d74941e3c4fa188cc720b28e85efd3b169d54e0"
+  },
+  {
+    "source": "docs/任务卡/02-生产与物料闭环.md",
+    "public_path": "docs/任务卡/02-生产与物料闭环.md",
+    "treatment": "personal paths/runtime identifiers removed",
+    "source_sha256": "a38fd52ed4812203409a291cebf01454878b0c56d6d2183544bd9cececdb9ac7"
+  },
+  {
+    "source": "docs/任务卡/03-AI与交付.md",
+    "public_path": "docs/任务卡/03-AI与交付.md",
+    "treatment": "unchanged",
+    "source_sha256": "0e5e2fdf017698adeab1ecbe67a7ae272aacf7321557c17972731caa15f1855b"
+  },
+  {
+    "source": "docs/决策与范围.md",
+    "public_path": "docs/决策与范围.md",
+    "treatment": "personal paths/runtime identifiers removed",
+    "source_sha256": "a2d959b7bb9791367af7039b6ee6ac6469dcf14106619e8b7afcc940a98006bd"
+  },
+  {
+    "source": "docs/开发TODO.md",
+    "public_path": "docs/开发TODO.md",
+    "treatment": "unchanged",
+    "source_sha256": "94a41f7fcd45b83de89bcc428980c8812c0aa489a3995282ae00c84849c958e4"
+  },
+  {
+    "source": "docs/验收样例.md",
+    "public_path": "docs/验收样例.md",
+    "treatment": "unchanged",
+    "source_sha256": "c1d1b1acd17f00c3355968d385a11031554b731592140c5b76a22d3a1618ec67"
+  },
+  {
+    "source": "evidence/B01/run-record.md",
+    "public_path": "evidence/B01/run-record.md",
+    "treatment": "unchanged",
+    "source_sha256": "2e63c6d106eb7b277923b3c8e37e59e3e6191920672526736c90ff50f42bc56d"
+  },
+  {
+    "source": "evidence/B02/run-record.md",
+    "public_path": "evidence/B02/run-record.md",
+    "treatment": "personal paths/runtime identifiers removed",
+    "source_sha256": "6f9eb36dc77874aff67d6b7a52b50b54806f3ab28df9af160ceeab3802f87331"
+  },
+  {
+    "source": "evidence/B10/run-record.md",
+    "public_path": "evidence/B10/run-record.md",
+    "treatment": "unchanged",
+    "source_sha256": "096f8106fb93445d6fc2e448f034b821c5f4e1a9c60dfc9349110fc170ccf985"
+  },
+  {
+    "source": "evidence/R00/source-register.md",
+    "public_path": "evidence/R00/source-register.md",
+    "treatment": "personal paths/runtime identifiers removed",
+    "source_sha256": "bd03a2eb649117d2c3c1f68b002442f829e3c730cf1088c3a0ca2baf39bfcde0"
+  },
+  {
+    "source": "evidence/R01/erpnext-evidence.md",
+    "public_path": "evidence/R01/erpnext-evidence.md",
+    "treatment": "unchanged",
+    "source_sha256": "b86645a1dc82a01f7cdc123a3e70a29cda5213837ffc8bf84a17a726621bc5d5"
+  },
+  {
+    "source": "evidence/R01/license-inventory.md",
+    "public_path": "evidence/R01/license-inventory.md",
+    "treatment": "unchanged",
+    "source_sha256": "5cf1dd255973a3c3ac5fe2201c6feb67d78147a91ecc5378511d456e8f63c63f"
+  },
+  {
+    "source": "evidence/R01/open-scope.md",
+    "public_path": "evidence/R01/open-scope.md",
+    "treatment": "unchanged",
+    "source_sha256": "49e437c2062ff4a456b38d9410904326e2c8ef1670b74fabb302229c826d036c"
+  },
+  {
+    "source": "evidence/R01/openmes-evidence.md",
+    "public_path": "evidence/R01/openmes-evidence.md",
+    "treatment": "unchanged",
+    "source_sha256": "89a1c24aadcb289fd2e28d21681c1994195937bc55d069921ecac85c894e581e"
+  },
+  {
+    "source": "evidence/R01/source-lock.md",
+    "public_path": "evidence/R01/source-lock.md",
+    "treatment": "unchanged",
+    "source_sha256": "b11fb233fdb91241199776938d5c45ffa0a40951ed750ede8df96573809bbf0f"
+  },
+  {
+    "source": "evidence/R01/t3rik-evidence.md",
+    "public_path": "evidence/R01/t3rik-evidence.md",
+    "treatment": "unchanged",
+    "source_sha256": "ceb9e35846d5f516d342ada5a9f7f68297d4bc68dae47075213aeeb7cb5f4cc3"
+  },
+  {
+    "source": "evidence/R02/expected-results.md",
+    "public_path": "evidence/R02/expected-results.md",
+    "treatment": "unchanged",
+    "source_sha256": "06d0aeecacf85b5cc9c2934e9c577f2d06f0de85abe3c34a9dddf035b494345d"
+  },
+  {
+    "source": "evidence/R02/fixture-spec.md",
+    "public_path": "evidence/R02/fixture-spec.md",
+    "treatment": "unchanged",
+    "source_sha256": "9a4ae68d54d9e9277bc068281c8ddb29f3684077311925d135cd91d93c4678c1"
+  },
+  {
+    "source": "evidence/R03/fit-matrix.md",
+    "public_path": "evidence/R03/fit-matrix.md",
+    "treatment": "unchanged",
+    "source_sha256": "37e4f92cb266fd6c2248fb62531566889b6c979a59d5d0056340983ff56c3c23"
+  },
+  {
+    "source": "evidence/R03/run-record.md",
+    "public_path": "evidence/R03/run-record.md",
+    "treatment": "personal paths/runtime identifiers removed",
+    "source_sha256": "e467817119746ecd10b95b6c17642f9ca480a091f77fc357dc59b5eb197f2b3f"
+  },
+  {
+    "source": "evidence/R03-R05/environment.md",
+    "public_path": "evidence/R03-R05/environment.md",
+    "treatment": "unchanged",
+    "source_sha256": "32d82f4620e4576e921edd8fc31bc5ba3b9fef2b4e5e663d25eef949de770741"
+  },
+  {
+    "source": "evidence/R03-R05/summary.md",
+    "public_path": "evidence/R03-R05/summary.md",
+    "treatment": "unchanged",
+    "source_sha256": "c264c11ea0844383ee921e9f475b16d51f73fed2ebe2d26e41db18b4ab7c23cc"
+  },
+  {
+    "source": "evidence/R04/fit-matrix.md",
+    "public_path": "evidence/R04/fit-matrix.md",
+    "treatment": "unchanged",
+    "source_sha256": "b2cf7c639140ba22a5415d9afd2b1b66620b2c9da7e71a61520ce081bd279856"
+  },
+  {
+    "source": "evidence/R04/run-record.md",
+    "public_path": "evidence/R04/run-record.md",
+    "treatment": "personal paths/runtime identifiers removed",
+    "source_sha256": "eb771b6542dbf736950dc1982353bba74e3978f549c8731c3ecfc20c40162337"
+  },
+  {
+    "source": "evidence/R05/fit-matrix.md",
+    "public_path": "evidence/R05/fit-matrix.md",
+    "treatment": "unchanged",
+    "source_sha256": "8f164dd71f2768db079f98ba5361a97adddefeec133ef4b170affd078496399a"
+  },
+  {
+    "source": "evidence/R05/followup-access.md",
+    "public_path": "evidence/R05/followup-access.md",
+    "treatment": "personal paths/runtime identifiers removed",
+    "source_sha256": "4b2d6817a9e1ebe841ae69edf7783dc7e35e97e430d1561efef6024950fb4775"
+  },
+  {
+    "source": "evidence/R05/followup-material.md",
+    "public_path": "evidence/R05/followup-material.md",
+    "treatment": "personal paths/runtime identifiers removed",
+    "source_sha256": "f92f738e24d663dc0306a6d981154609f697d5ae1826e44efedac6177c5811ed"
+  },
+  {
+    "source": "evidence/R05/followup-mobile.md",
+    "public_path": "evidence/R05/followup-mobile.md",
+    "treatment": "personal paths/runtime identifiers removed",
+    "source_sha256": "77ceccd22c657820e01d3b46970a8cc55e1a47053d5961fd97c7431cd282fd50"
+  },
+  {
+    "source": "evidence/R05/run-record.md",
+    "public_path": "evidence/R05/run-record.md",
+    "treatment": "personal paths/runtime identifiers removed",
+    "source_sha256": "d7735c0f2ccab452579b25f22f487ec3a80a337f08a18735046311a6c50805a5"
+  },
+  {
+    "source": "evidence/R06/cost-boundaries.md",
+    "public_path": "evidence/R06/cost-boundaries.md",
+    "treatment": "unchanged",
+    "source_sha256": "ff8b1fb00f44e4d63b17010c318445ae017cf0b719ffdffccf7f32236af7ead5"
+  },
+  {
+    "source": "evidence/R06/reuse-matrix.md",
+    "public_path": "evidence/R06/reuse-matrix.md",
+    "treatment": "unchanged",
+    "source_sha256": "a7184b89e39d0bc944039a406c6437f6ae7764994f64b479d25e843a758898bf"
+  },
+  {
+    "source": "evidence/R06/selection.md",
+    "public_path": "evidence/R06/selection.md",
+    "treatment": "unchanged",
+    "source_sha256": "6183f19309294bf93ab6374790d35be5f7b5d7bae8ec20b72b9057bc984a667b"
+  },
+  {
+    "source": "evidence/R07/card-binding.md",
+    "public_path": "evidence/R07/card-binding.md",
+    "treatment": "unchanged",
+    "source_sha256": "45417a6661c478eda1130ae9e602c0246bbd508cb8b03ca64cd8ff758bd16b06"
+  },
+  {
+    "source": "evidence/R07/chinese-interface.md",
+    "public_path": "evidence/R07/chinese-interface.md",
+    "treatment": "unchanged",
+    "source_sha256": "7c0304f7a28fc2c61651455655cdf2146eb05883fcd8b1db979d0167e8782283"
+  },
+  {
+    "source": "evidence/R07/permissions.md",
+    "public_path": "evidence/R07/permissions.md",
+    "treatment": "unchanged",
+    "source_sha256": "32663ed8c6f722bd85daf1b8052261e68a07cc05bd23cd9d5e4d1816832d5ea3"
+  },
+  {
+    "source": "evidence/R07/quantity-return.md",
+    "public_path": "evidence/R07/quantity-return.md",
+    "treatment": "unchanged",
+    "source_sha256": "eecbc38ca4ecd44da3978a334ece2ab05219b4c06b6a84baaf0cd03c2a7e5ab8"
+  },
+  {
+    "source": "evidence/R07/report-concurrency.md",
+    "public_path": "evidence/R07/report-concurrency.md",
+    "treatment": "unchanged",
+    "source_sha256": "3a37308e19e5489193dca5a3269c883cccbfb43050aadaf3be7760af5c531ea0"
+  },
+  {
+    "source": ".development/Dockerfile",
+    "public_path": ".development/Dockerfile",
+    "treatment": "unchanged",
+    "source_sha256": "4693b064c869d8ecb5e16bc690e10f93bac8c8a1a311a440ed877b8beb376840"
+  },
+  {
+    "source": ".development/compose.json",
+    "public_path": ".development/compose.json",
+    "treatment": "unchanged",
+    "source_sha256": "6ab141351b76d2f720e3130e714af3fd5a2f78b2f45e9dc3dbf1e59e55043877"
+  },
+  {
+    "source": ".development/README.md",
+    "public_path": ".development/README.md",
+    "treatment": "unchanged",
+    "source_sha256": "ddedd897929f536f96e9e3144692c397fa743a64e2e98f889e1c16d781cb7591"
+  },
+  {
+    "source": ".development/.dockerignore",
+    "public_path": ".development/.dockerignore",
+    "treatment": "unchanged",
+    "source_sha256": "3db909134d7af64a93efe328cf5d20179c5843357d483d8f3b6c45ae3cf620be"
+  },
+  {
+    "source": ".development/.gitignore",
+    "public_path": ".development/.gitignore",
+    "treatment": "unchanged",
+    "source_sha256": "3c59cb3597f6a3d7e1a80bd9552459a9010580e3ce7fcba74af37231bc1d7777"
+  },
+  {
+    "source": ".development/checks/b02_http.py",
+    "public_path": ".development/checks/b02_http.py",
+    "treatment": "unchanged",
+    "source_sha256": "45d1c330a6f6b4c8880e94aa755e65c8441b0d4316356ae07ca49b47331df59b"
+  },
+  {
+    "source": ".development/checks/check_source.py",
+    "public_path": ".development/checks/check_source.py",
+    "treatment": "unchanged",
+    "source_sha256": "c3daa80d088e1c1bd3eb6a4b2b9bb3b293f83315f74081007af64ba3fd85a41c"
+  },
+  {
+    "source": ".development/checks/create_site.py",
+    "public_path": ".development/checks/create_site.py",
+    "treatment": "unchanged",
+    "source_sha256": "b141e6c08bfec581d14bf2cb475a95918ffd9edd0a7e4199e8aaf3724d9d0d7b"
+  },
+  {
+    "source": ".development/checks/prepare_test_roots.py",
+    "public_path": ".development/checks/prepare_test_roots.py",
+    "treatment": "unchanged",
+    "source_sha256": "08c65e46d160d1dab384f84e5d000e61d3e3b2867d49fdd19e4e7fd26664b7a5"
+  },
+  {
+    "source": ".development/checks/read_site.py",
+    "public_path": ".development/checks/read_site.py",
+    "treatment": "unchanged",
+    "source_sha256": "1ef2434353068908d06b1175b2366d8e0d41ba8d75b4501b1c5a5aa84b8e846c"
+  },
+  {
+    "source": ".development/checks/setup_b02_http.py",
+    "public_path": ".development/checks/setup_b02_http.py",
+    "treatment": "unchanged",
+    "source_sha256": "8ade988ee227d72641769803e9c54670f6d06eeb094ed504e0bbc87ae9d4a350"
+  },
+  {
+    "source": ".development/checks/setup_site.py",
+    "public_path": ".development/checks/setup_site.py",
+    "treatment": "unchanged",
+    "source_sha256": "538ab77705419fb3075f3cedc51adb78152d22356434fc088105f72ec531ec48"
+  },
+  {
+    "source": ".development/checks/b02-b10-source-manifest.json",
+    "public_path": ".development/checks/b02-b10-source-manifest.json",
+    "treatment": "unchanged",
+    "source_sha256": "c9001a2942892d616632f126c38d92a3f3bcdd6cbbb31d7d90720050e31172ea"
+  },
+  {
+    "source": ".development/checks/source-manifest.json",
+    "public_path": ".development/checks/source-manifest.json",
+    "treatment": "unchanged",
+    "source_sha256": "807d621ecd9b74662084ba65f0f6ced14abd1a2355d72d07beb075adbcde08a9"
+  },
+  {
+    "source": ".evaluation/r05-erpnext/compose.json",
+    "public_path": ".evaluation/r05-erpnext/compose.json",
+    "treatment": "unchanged",
+    "source_sha256": "aadc2311fb1978ace80ecd42bbed21b9e1288e323296b9d15e25691319a3fb8f"
+  },
+  {
+    "source": ".evaluation/r05-erpnext/compose.web.json",
+    "public_path": ".evaluation/r05-erpnext/compose.web.json",
+    "treatment": "unchanged",
+    "source_sha256": "467d3278e4e2f51bb65f6f5e8fd02e9b4d4c75cf9f2bd6ab1ee883d953d2e5ec"
+  },
+  {
+    "source": ".evaluation/r05-erpnext/README.md",
+    "public_path": ".evaluation/r05-erpnext/README.md",
+    "treatment": "unchanged",
+    "source_sha256": "147249922eb473c97b188fe961b0127b90f62c1f78c16294012e1e9d7a226868"
+  },
+  {
+    "source": ".evaluation/r05-erpnext/probes/access_http.py",
+    "public_path": ".evaluation/r05-erpnext/probes/access_http.py",
+    "treatment": "unchanged",
+    "source_sha256": "1dd9cac1e1d68a3af6e30cc060aba66a2151725965545481456a0f3dce6983f9"
+  },
+  {
+    "source": ".evaluation/r05-erpnext/probes/access_readback.py",
+    "public_path": ".evaluation/r05-erpnext/probes/access_readback.py",
+    "treatment": "personal paths/runtime identifiers removed",
+    "source_sha256": "dd5654d62727fedb575d50e6ac4aa9eb294901b1fd9143c3dc4683baaadea665"
+  },
+  {
+    "source": ".evaluation/r05-erpnext/probes/access_setup.py",
+    "public_path": ".evaluation/r05-erpnext/probes/access_setup.py",
+    "treatment": "unchanged",
+    "source_sha256": "b8f0b6b304e9db2030e9cc4c680302eb189e0c84eb34c2fc73aa8c4a27a71b3b"
+  },
+  {
+    "source": ".evaluation/r05-erpnext/probes/boundary_probe.py",
+    "public_path": ".evaluation/r05-erpnext/probes/boundary_probe.py",
+    "treatment": "personal paths/runtime identifiers removed",
+    "source_sha256": "4bc27162771dc6f9e3504febe7f636bf1d0bfc7fe3a2e8d3b6a1a1c498f1f9ea"
+  },
+  {
+    "source": ".evaluation/r05-erpnext/probes/material_followup.py",
+    "public_path": ".evaluation/r05-erpnext/probes/material_followup.py",
+    "treatment": "unchanged",
+    "source_sha256": "23326a49429a3c1269b8a90766cf7228d658bcbeb0490e13c5aa96b5b8882f3a"
+  },
+  {
+    "source": ".evaluation/r05-erpnext/probes/mobile_material_setup.py",
+    "public_path": ".evaluation/r05-erpnext/probes/mobile_material_setup.py",
+    "treatment": "unchanged",
+    "source_sha256": "39789f054dc69558e8e1a0f4f2d4fdc40d71e4433a3e847d32c4269d385ab0a5"
+  },
+  {
+    "source": ".evaluation/r05-erpnext/probes/mobile_stock_readback.py",
+    "public_path": ".evaluation/r05-erpnext/probes/mobile_stock_readback.py",
+    "treatment": "unchanged",
+    "source_sha256": "0f041688e5d70918900009e18fd5b649031892b9c34dae167eb2ea04398047e5"
+  },
+  {
+    "source": ".evaluation/r05-erpnext/probes/precision_probe.py",
+    "public_path": ".evaluation/r05-erpnext/probes/precision_probe.py",
+    "treatment": "unchanged",
+    "source_sha256": "0aa685e2af80d90c2f9ae562bf5e9cf53076b319c898449f915763812a3e455c"
+  },
+  {
+    "source": ".evaluation/r05-erpnext/probes/r02_probe.py",
+    "public_path": ".evaluation/r05-erpnext/probes/r02_probe.py",
+    "treatment": "unchanged",
+    "source_sha256": "bebd418f53e027db69fc9888dfc4bf01fc162aab71394832e1e2572c6d9cd774"
+  },
+  {
+    "source": ".evaluation/r05-erpnext/probes/ui_readback.py",
+    "public_path": ".evaluation/r05-erpnext/probes/ui_readback.py",
+    "treatment": "unchanged",
+    "source_sha256": "2b7657f8a18b3314f8bca022798c2c40af30853cabd1753bf9165c677d014743"
+  },
+  {
+    "source": "evidence/R02/verify-arithmetic.py",
+    "public_path": "evidence/R02/verify-arithmetic.py",
+    "treatment": "unchanged",
+    "source_sha256": "4dbd7843f8b05d49550f4efe83ba028cdc04741a03af6b0b54136a75d02580bc"
+  },
+  {
+    "source": "evidence/R05/boundary-probe-attempt1.py",
+    "public_path": "evidence/R05/boundary-probe-attempt1.py",
+    "treatment": "personal paths/runtime identifiers removed",
+    "source_sha256": "a006a1d6f4f450efe989c08ac88f51b21dde3d4f47d57625d72cbd8ca134719b"
+  },
+  {
+    "source": "evidence/R05/boundary-probe-attempt2.py",
+    "public_path": "evidence/R05/boundary-probe-attempt2.py",
+    "treatment": "personal paths/runtime identifiers removed",
+    "source_sha256": "5839657eeed3a5e58be26cbe2fb43772ffbb26cb0a59b1f2419ed47c7bf4b802"
+  },
+  {
+    "source": "evidence/R05/r02-probe-attempt1.py",
+    "public_path": "evidence/R05/r02-probe-attempt1.py",
+    "treatment": "unchanged",
+    "source_sha256": "56c09805ad0e9fb79bbec32587bdd1fcf68f484f81219b9b0047f216552b632e"
+  },
+  {
+    "source": "evidence/R05/r02-probe-attempt2.py",
+    "public_path": "evidence/R05/r02-probe-attempt2.py",
+    "treatment": "unchanged",
+    "source_sha256": "5a900c13e4245f1da437257022cb6ae290b19ef81aadab44b7381a799a840503"
+  },
+  {
+    "source": "evidence/R05/r02-probe-attempt4.py",
+    "public_path": "evidence/R05/r02-probe-attempt4.py",
+    "treatment": "unchanged",
+    "source_sha256": "8efac1a89a3fc1c0c2f75b4bf40ac6afac6fddcc7723c4c6212be27522f9e0f6"
+  },
+  {
+    "source": "evidence/R05/r02-probe-attempt5.py",
+    "public_path": "evidence/R05/r02-probe-attempt5.py",
+    "treatment": "unchanged",
+    "source_sha256": "bebd418f53e027db69fc9888dfc4bf01fc162aab71394832e1e2572c6d9cd774"
+  },
+  {
+    "source": "evidence/R00/document-check.json",
+    "public_path": "evidence/R00/document-check.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "e88d8d9951df32b6b2342f950ca6b2182e1f59f683b7699ae4bb70e31ccbd598"
+  },
+  {
+    "source": "evidence/R02/arithmetic-check.json",
+    "public_path": "evidence/R02/arithmetic-check.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "91fdda69953e0740d54edc4837f5fdc29769df8eabb6a01b30d1bb6a8b595e2a"
+  },
+  {
+    "source": "evidence/R06/document-check.json",
+    "public_path": "evidence/R06/document-check.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "673064a560bd951e183982a7752abfba8588fabeb0f40c835651b92d6228eeb7"
+  },
+  {
+    "source": "evidence/R07/document-check.json",
+    "public_path": "evidence/R07/document-check.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "1601ba44df7947612f25ce1d6569875502c5e1a337a0a5698bf9d54f7bf85475"
+  },
+  {
+    "source": "evidence/R07/scope-review.json",
+    "public_path": "evidence/R07/scope-review.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "6f1852fc3cd1f08aaf6281fcee79aab75df8df64237d70ae39b950418dee23df"
+  },
+  {
+    "source": "evidence/R07/source-manifest.json",
+    "public_path": "evidence/R07/source-manifest.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "190d1510b2c8d29ceac63a5969cb003d6a03dfd268b1333aeab0cc0ddb2de956"
+  },
+  {
+    "source": "evidence/B01/checkout-final.json",
+    "public_path": "evidence/B01/checkout-final.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "73280a780cf3e6c6651f81d717c6e84703834c24319ca931c38ed6244202038c"
+  },
+  {
+    "source": "evidence/B01/closeout-check.json",
+    "public_path": "evidence/B01/closeout-check.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "9719900d8d76b5323444aef92b5e7ebd43feb002abe0b6695c4940e6fc2b2249"
+  },
+  {
+    "source": "evidence/B10/pause-save-check.json",
+    "public_path": "evidence/B10/pause-save-check.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "72be3284259559111f52cd0907e044b0dd32c4c89d73b77316661a0b1ee9d2fe"
+  },
+  {
+    "source": "evidence/B10/acceptance-web-http.json",
+    "public_path": "evidence/B10/acceptance-web-http.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "2cd5ff0ca57c3bf6520b638a54e27d8de47d0f251c50fb8b1446d3a6b791f1b2"
+  },
+  {
+    "source": "evidence/B10/acceptance-web-source.json",
+    "public_path": "evidence/B10/acceptance-web-source.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "f1cc2d66b1c331ca03f92fc443183e69e79029be1714fa74ad6bd5b4527a2298"
+  },
+  {
+    "source": "evidence/B10/acceptance-bench-source.json",
+    "public_path": "evidence/B10/acceptance-bench-source.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "f1cc2d66b1c331ca03f92fc443183e69e79029be1714fa74ad6bd5b4527a2298"
+  },
+  {
+    "source": "evidence/B02/acceptance-http-summary.json",
+    "public_path": "evidence/B02/acceptance-http-summary.json",
+    "treatment": "runtime business_state removed",
+    "source_sha256": "2d577acfed772f90687294d9cee38292266efad82b491823279150a346bd955e"
+  }
+]

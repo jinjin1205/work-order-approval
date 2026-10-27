@@ -1,0 +1,71 @@
+{
+  "date": "2026-10-26",
+  "scope": "计划与证据维护；未执行B01、未改产品代码、未运行业务测试",
+  "objective_changes": false,
+  "new_task_cards": 0,
+  "tasks": {
+    "total": 33,
+    "unique": 33,
+    "table_rows": 33,
+    "complete": 7,
+    "partial": [
+      "R07"
+    ],
+    "other_incomplete": 25
+  },
+  "explicit_task_graph_cycle": false,
+  "graph_limit": "仅显式依赖表；语义互相等待另行人工核查，不证明程序无死锁。",
+  "semantic_fixes": [
+    "B02基础规则交接与下游接入验收分开；导出由B16、AI由A01-A03验，不反等AI",
+    "G1/G2/G3开工绑定、限定实现、实现后验收顺序分开",
+    "超范围失败停止受影响项；无新输入/有限方案/决策不重评候选",
+    "首次显式图检查结论限定为显式表无环，不扩大为语义无环"
+  ],
+  "remaining_unverified": [
+    "G1完整十进制/材料损耗",
+    "G2逐笔事实与最小岗位派生回写",
+    "G3完整写入锁序/并发/失败恢复",
+    "B01环境尚未创建"
+  ],
+  "next_execution": "B01隔离中文环境；先证运行本checkout，B02/B10改动后核变化文件及其反例",
+  "development_directory_exists": false,
+  "local_links_checked": 120,
+  "missing_paths_or_anchors": [],
+  "format_issues": [],
+  "source_hash_recheck": "未执行；源码未修改，不重复历史核验",
+  "docker_or_database_commands": "本轮未执行",
+  "documents": [
+    {
+      "path": "docs/开发TODO.md",
+      "sha256": "ce74df8a6d2bbc16b6e317eb84c13e4f846ba6c2f15c5bf2c05500bd00d024ca"
+    },
+    {
+      "path": "docs/决策与范围.md",
+      "sha256": "263f2ee7a342783a5d5cbada2658f4febc4bfe89791aeb085668510ef58289a3"
+    },
+    {
+      "path": "docs/任务卡/01-复用核验与选型.md",
+      "sha256": "2f10261db0f96eda9e45ee67fbccac838b06ee2a961d747304110f3d076389cf"
+    },
+    {
+      "path": "docs/任务卡/02-生产与物料闭环.md",
+      "sha256": "be480d5e8428aab5b52a1d3f621954ffcd3c403be752259f730a5196b8e55ef5"
+    },
+    {
+      "path": "docs/任务卡/03-AI与交付.md",
+      "sha256": "a6bf195b71d8c0a64a91e47d43294b8693aca87d98cc8786018dca788f701ced"
+    },
+    {
+      "path": "evidence/R07/card-binding.md",
+      "sha256": "17e14f7798ac2bdd8aeae327ff81a6f2280f945f1eaa89365a53586a20197fab"
+    },
+    {
+      "path": "evidence/R07/permissions.md",
+      "sha256": "32663ed8c6f722bd85daf1b8052261e68a07cc05bd23cd9d5e4d1816832d5ea3"
+    }
+  ],
+  "independent_targeted_review": {
+    "result": "原4项文档问题已修正，未发现本次范围内新的文档阻塞",
+    "limit": "不是技术门槛或业务测试通过"
+  }
+}

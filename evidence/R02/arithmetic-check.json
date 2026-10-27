@@ -1,0 +1,236 @@
+{
+  "checked_at_utc": "2026-10-26T09:23:13.141474+00:00",
+  "scope": "仅R02合成预期的独立算术核对；未执行候选代码或业务路径",
+  "command": "python3 evidence/R02/verify-arithmetic.py",
+  "python_version": "3.9.6",
+  "fixture_version": "v1",
+  "documents_sha256": {
+    "fixture-spec.md": "9a4ae68d54d9e9277bc068281c8ddb29f3684077311925d135cd91d93c4678c1",
+    "expected-results.md": "06d0aeecacf85b5cc9c2934e9c577f2d06f0de85abe3c34a9dddf035b494345d",
+    "verify-arithmetic.py": "4dbd7843f8b05d49550f4efe83ba028cdc04741a03af6b0b54136a75d02580bc"
+  },
+  "checks": [
+    {
+      "id": "Q01",
+      "actual": "54.9500",
+      "expected": "54.9500",
+      "passed": true
+    },
+    {
+      "id": "Q02",
+      "actual": "8.3333",
+      "expected": "8.3333",
+      "passed": true
+    },
+    {
+      "id": "Q03",
+      "actual": "27.5000",
+      "expected": "27.5000",
+      "passed": true
+    },
+    {
+      "id": "Q04",
+      "actual": "0.0167",
+      "expected": "0.0167",
+      "passed": true
+    },
+    {
+      "id": "Q05",
+      "actual": "0.0002",
+      "expected": "0.0002",
+      "passed": true
+    },
+    {
+      "id": "CASE01-demand",
+      "actual": "5.0",
+      "expected": "5",
+      "passed": true
+    },
+    {
+      "id": "CASE01-source-stock",
+      "actual": "15",
+      "expected": "15",
+      "passed": true
+    },
+    {
+      "id": "U01-net-kg",
+      "actual": "0.0006",
+      "expected": "0.0006",
+      "passed": true
+    },
+    {
+      "id": "U01-net-g",
+      "actual": "0.6000",
+      "expected": "0.6",
+      "passed": true
+    },
+    {
+      "id": "V01-value",
+      "actual": "60",
+      "expected": "60",
+      "passed": true
+    },
+    {
+      "id": "V01-average",
+      "actual": "3",
+      "expected": "3",
+      "passed": true
+    },
+    {
+      "id": "V02-quantity",
+      "actual": "15",
+      "expected": "15",
+      "passed": true
+    },
+    {
+      "id": "V02-value",
+      "actual": "45",
+      "expected": "45",
+      "passed": true
+    },
+    {
+      "id": "M01-M02-yield-percent-excluding-rework",
+      "actual": "80.0",
+      "expected": "80",
+      "passed": true
+    },
+    {
+      "id": "M01-remaining",
+      "actual": "0",
+      "expected": "0",
+      "passed": true
+    },
+    {
+      "id": "T01-report",
+      "actual": "28800",
+      "expected": "28800",
+      "passed": true
+    },
+    {
+      "id": "T01-effective",
+      "actual": "25200",
+      "expected": "25200",
+      "passed": true
+    },
+    {
+      "id": "T02-report",
+      "actual": "14400",
+      "expected": "14400",
+      "passed": true
+    },
+    {
+      "id": "T02-effective",
+      "actual": "7200",
+      "expected": "7200",
+      "passed": true
+    },
+    {
+      "id": "T04-report",
+      "actual": "900",
+      "expected": "900",
+      "passed": true
+    },
+    {
+      "id": "T04-effective",
+      "actual": "0",
+      "expected": "0",
+      "passed": true
+    },
+    {
+      "id": "T03-shutdown-limit",
+      "actual": "25200",
+      "expected": "25200",
+      "passed": true
+    },
+    {
+      "id": "T03-reject-excess",
+      "actual": "True",
+      "expected": "True",
+      "passed": true
+    },
+    {
+      "id": "T05-estimated-wage",
+      "actual": "20",
+      "expected": "20",
+      "passed": true
+    },
+    {
+      "id": "T06-effective",
+      "actual": "23400",
+      "expected": "23400",
+      "passed": true
+    },
+    {
+      "id": "T07-reject-excess",
+      "actual": "True",
+      "expected": "True",
+      "passed": true
+    },
+    {
+      "id": "T10-no-rule-effective",
+      "actual": "3600",
+      "expected": "3600",
+      "passed": true
+    },
+    {
+      "id": "T11-union-rest",
+      "actual": "5400",
+      "expected": "5400",
+      "passed": true
+    },
+    {
+      "id": "T11-effective",
+      "actual": "23400",
+      "expected": "23400",
+      "passed": true
+    },
+    {
+      "id": "CASE05-full-reversal-net",
+      "actual": "8",
+      "expected": "8",
+      "passed": true
+    },
+    {
+      "id": "CASE05-partial-reversal-net",
+      "actual": "8",
+      "expected": "8",
+      "passed": true
+    },
+    {
+      "id": "CASE05-remaining",
+      "actual": "2",
+      "expected": "2",
+      "passed": true
+    },
+    {
+      "id": "CASE06-source-stock",
+      "actual": "12",
+      "expected": "12",
+      "passed": true
+    },
+    {
+      "id": "CASE06-net-issued",
+      "actual": "8",
+      "expected": "8",
+      "passed": true
+    },
+    {
+      "id": "CASE06-cumulative-progress",
+      "actual": "100",
+      "expected": "100",
+      "passed": true
+    },
+    {
+      "id": "CASE06-unknown-difference",
+      "actual": "1",
+      "expected": "1",
+      "passed": true
+    }
+  ],
+  "passed": 36,
+  "failed": 0,
+  "application_run": false,
+  "ai_real_run": false,
+  "restore_run": false,
+  "field_acceptance": false
+}
