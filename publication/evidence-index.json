@@ -1902,6 +1902,12 @@
     "reason": "local raw execution evidence; not uploaded"
   },
   {
+    "path": "evidence/B08/implementation/pause-code-ci.json",
+    "original_sha256": "0bd0ed0be274e3637870f442f30592fb2b7f6e49d737b930d3107aa89cd1eab0",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
     "path": "evidence/B08/implementation/plan-write-red.log",
     "original_sha256": "bfdfe6648f708e175cbdebc20f5ffbd510298d5fee59359145db72010cdbff6d",
     "published": false,
@@ -4588,6 +4594,12 @@
     "original_sha256": "4de2be84634c5cdd60e2c217b26fec11a30eee6153a2db76ebfa39f1b561224a",
     "published": true,
     "reason": "public copy"
+  },
+  {
+    "path": "evidence/发布/B08-2026-10-27-63f4d1a-remote.json",
+    "original_sha256": "b95fbf2d680568d8dd82286379f8e7282122b7118f9145a257b8cb74e4043760",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
   },
   {
     "path": "evidence/发布/B08-card-2026-10-27-remote.json",

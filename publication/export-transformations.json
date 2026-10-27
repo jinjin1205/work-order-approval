@@ -243,7 +243,7 @@
     "source": "docs/任务卡/02-生产与物料闭环.md",
     "public_path": "docs/任务卡/02-生产与物料闭环.md",
     "treatment": "personal paths/runtime identifiers removed",
-    "source_sha256": "32a9bb13dc7c1eaa73f6a388812e77ad30ac0e273ca6f2c034b5a6be47047c7d"
+    "source_sha256": "30bb8aeac28e2642f9448f94a25bd51eca7c068b52e8afa5e642578776b5e284"
   },
   {
     "source": "docs/任务卡/03-AI与交付.md",
@@ -261,7 +261,7 @@
     "source": "docs/开发TODO.md",
     "public_path": "docs/开发TODO.md",
     "treatment": "unchanged",
-    "source_sha256": "a48070b93b5378836f2f15efa96caaa679d13e3dd7a116665bec3599a914f6e4"
+    "source_sha256": "4ef1397cdd5fce769b32ddfecbefd8028aec4667f2d05364d0cc69c6ce9991bc"
   },
   {
     "source": "docs/验收样例.md",
@@ -1120,6 +1120,12 @@
     "public_path": "evidence/R05/r02-probe-attempt5.py",
     "treatment": "unchanged",
     "source_sha256": "bebd418f53e027db69fc9888dfc4bf01fc162aab71394832e1e2572c6d9cd774"
+  },
+  {
+    "source": "evidence/B08/implementation/pause-code-ci.json",
+    "public_path": "evidence/B08/implementation/pause-code-ci.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "0bd0ed0be274e3637870f442f30592fb2b7f6e49d737b930d3107aa89cd1eab0"
   },
   {
     "source": "evidence/发布/B08-2026-10-27-519759e-remote.json",
