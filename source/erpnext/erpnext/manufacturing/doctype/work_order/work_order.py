@@ -82,16 +82,21 @@ def _check_production_approval_scope(doc, *, team_required):
 			frappe.throw("没有此公司或班组的工单审批授权", frappe.PermissionError)
 
 
-def check_production_execution(work_order, *, require_team=False, material_return=False):
+def check_production_execution(work_order, *, require_team=False, material_return=False, for_update=False):
 	"""Read the actual parent and reuse the approval policy; no new quantity or lock framework."""
-	from frappe.model.workflow import get_workflow_name
-
-	order = frappe.get_doc("Work Order", work_order)
+	order = frappe.get_doc("Work Order", work_order, for_update=for_update)
 	if not order.get("approval_requested_by") and not frappe.db.exists("Workflow", PRODUCTION_APPROVAL_WORKFLOW):
 		return None
 
 	order.check_permission("read")
 	_check_production_approval_scope(order, team_required=require_team)
+	return validate_production_execution_state(order, material_return=material_return)
+
+
+def validate_production_execution_state(order, *, material_return=False):
+	"""Internal state check for an already read/authorized production order."""
+	from frappe.model.workflow import get_workflow_name
+
 	if (
 		order.docstatus != 1
 		or order.get("workflow_state") != "已批准"
@@ -381,12 +386,40 @@ class WorkOrder(Document):
 				self.approval_reviewed_by = None
 			return
 
+		context = getattr(frappe.local, "production_report_context", None)
+		if context and context.order is self and context.user == user and context.card.work_order == self.name:
+			self.validate_report_derivation(before, context.operation_id)
+			return
+
 		protected = ("workflow_state", "approval_requested_by", "approval_reviewed_by", "approval_note", "docstatus")
 		if any(self.get(f) != before.get(f) for f in protected):
 			frappe.throw("请通过工单审批动作处理，不能直接改审批字段或提交", frappe.PermissionError)
 		if before.workflow_state not in ("草稿", "退回") or user != before.approval_requested_by:
 			frappe.throw("送审后的依据已冻结，请退回或撤回后由发起人修改", frappe.PermissionError)
 		_check_production_approval_scope(self, team_required=True)
+
+	def validate_report_derivation(self, before, operation_id):
+		parent_fields = {"actual_operating_cost", "total_operating_cost", "actual_start_date", "actual_end_date", "lead_time", "status", "modified", "modified_by"}
+		operation_fields = {"completed_qty", "process_loss_qty", "actual_operation_time", "actual_start_time", "actual_end_time", "status", "actual_operating_cost", "modified", "modified_by"}
+		old, new = before.as_dict(), self.as_dict()
+		for field in set(old) | set(new):
+			if field == "operations":
+				continue
+			left_value, right_value = old.get(field), new.get(field)
+			if self.meta.get_field(field) and self.meta.get_field(field).fieldtype in ("Table", "Table MultiSelect"):
+				left_value, right_value = [
+					[{k: v for k, v in row.items() if k not in ("modified", "modified_by")} for row in rows]
+					for rows in (left_value or [], right_value or [])
+				]
+			if field not in parent_fields and left_value != right_value:
+				frappe.throw("报工不能修改工单字段：" + field, frappe.PermissionError)
+		if [r.name for r in before.operations] != [r.name for r in self.operations]:
+			frappe.throw("报工不能修改任务清单", frappe.PermissionError)
+		for left, right in zip(before.operations, self.operations):
+			allowed = operation_fields if right.name == operation_id else {"modified", "modified_by"}
+			for field in set(left.as_dict()) | set(right.as_dict()):
+				if field not in allowed and left.get(field) != right.get(field):
+					frappe.throw("报工不能修改任务字段：" + field, frappe.PermissionError)
 
 	def before_update_after_submit(self):
 		self.validate_production_approval()
@@ -661,6 +694,9 @@ class WorkOrder(Document):
 			if status not in ["Closed", "Stopped"]:
 				status = "Not Started"
 				if flt(self.material_transferred_for_manufacturing) > 0 or self.has_transferred_material():
+					status = "In Process"
+
+				if self.get("approval_requested_by") and frappe.db.exists("Job Card", {"work_order": self.name, "docstatus": 1, "report_request_id": ["is", "set"]}):
 					status = "In Process"
 
 				precision = frappe.get_precision("Work Order", "produced_qty")

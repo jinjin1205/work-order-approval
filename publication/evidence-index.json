@@ -1590,6 +1590,468 @@
     "reason": "local raw execution evidence; not uploaded"
   },
   {
+    "path": "evidence/B08/implementation/acceptance-summary.json",
+    "original_sha256": "7654cb570b831cd7863587053c28042aa08e0c8b20e13c6c56abc15fe2dbc78e",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/implementation/affected-regression.log",
+    "original_sha256": "fece563f2a2f4fead5911d79f9ea1aba641c3c063a157fe572b10af3c68d97d6",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/b08-only.patch",
+    "original_sha256": "14f1aec1fa16fe2dee721477196d2d42ff700f4689a43698e2531cbbdd6e2776",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/business-tests-source-manifest.json",
+    "original_sha256": "cae34d05a00bbcba0020a0944318f9eb063fb17c351269982e23302c19881279",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/implementation/check-source.json",
+    "original_sha256": "1ea608def2ee214f2193f95aba385096ce36778a8c8a8bc8f306b7497567166d",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/closeout-check.json",
+    "original_sha256": "d4c940e0350808fd3a46979f94a6e93f142d2a253f4bb3cd2a6100dca5fe51dc",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/implementation/confirmation-suite.log",
+    "original_sha256": "f9207ba32e6ea8d661fede598282ac6e0a340868957604962d4db41b25483ca3",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/contract-red.log",
+    "original_sha256": "ac4a8f22fa5257e27462707faa934874ec7e6f4610f044dac155732e3d92b987",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/core-build.log",
+    "original_sha256": "2a2bb7bd0c11d388a781e577c5819a78d0648e0d1213b97ae8a780880d535395",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/core-first.log",
+    "original_sha256": "cdfcfde81e5cca3d6e5aef5381460cfd2afe9a8e5b5ee964c7d343da4d984cb0",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/core-fourth.log",
+    "original_sha256": "b563bd23dc82626789ab92d158655239a83b2bcbe67e019171a11a414fa7d6f7",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/core-guards-red.log",
+    "original_sha256": "4e4b348b50ecb343dae4d9449e89fdfc212be55883b9576f84b6345a4217fb18",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/core-second.log",
+    "original_sha256": "af27a590a0054fe044a01496cc6e14aab4c432bb074fca06f7da97c3f8fe1c31",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/core-third.log",
+    "original_sha256": "88cf5ce46a7eb6dd7502a8d7d92bc75c6793c41c8ca694c1b9d8cf6c818929c7",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/current-read-local.log",
+    "original_sha256": "6d9b4d0f159c10339499435401b6dfccf4122135c7066b27d63b7a2524dcc618",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/data-after.json",
+    "original_sha256": "239d0a361ae9740533e073f91b8cb472451442564e3ede497bf24588e76a79e9",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/data-before.json",
+    "original_sha256": "82ca4b0c5fb1d04d9e2b66ae311d62449579f3146eb9e2b8fbb25e7a24363afb",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/data-before.stderr.log",
+    "original_sha256": "37285ae3ce1f94d23976fe75569a68e0e029f7fcacea5ca90381067ee96ce7fd",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/derivation-diagnostic.log",
+    "original_sha256": "6d8ad03ee836b83478fa110ad32a1eb0c03c1a36623191df9a3a1ac28f14ad90",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/derivation-rollback.log",
+    "original_sha256": "c08c1646527bc4154aa8c61b5a1e4237113b46b7b0c10a27c336836b3eb2aba3",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/final-build.log",
+    "original_sha256": "639d8469357da97058791ca9e58b5d86f8a9542214cda0adcd614b523ecea814",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/final-confirmation-tests.log",
+    "original_sha256": "1a3baa63cea294d3f15b3e2a275796f979649fcc95302b74f2aa3c04d37817f5",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/fixture-build.log",
+    "original_sha256": "7939eb71d485d4943de3df491bcb2abdfd42c87e37ad749c213bfeb3cd470331",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/history-first.log",
+    "original_sha256": "020691d91142e4f11ae24664652fe7f0eb4f581bcac489a6bf03e23a579a106b",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/history-red.log",
+    "original_sha256": "78c957ecb35bdb61a673dc6165b253faf3ad23182a48b6a8c0339cf7b7f8ee42",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/history-schema.log",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/http-clone-env.log",
+    "original_sha256": "3b6a1200b797770b99ec18289efba1bbc5dbf897a1a3115f1ca338d50e3d8d27",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/http-clone.log",
+    "original_sha256": "6980f24a0a5115fae2779ff8c2ae589bee684f70771f2568b3e5ad074afd0d34",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/http-current-read-restart.log",
+    "original_sha256": "8e52b24a69364c8f9db277bd1eb426e7aadd73f1a2ee7b87c82c4d91de0ea5ae",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/http-final-attempt.log",
+    "original_sha256": "372dabcf02358676f9a81ec4ccc324791e2be92f67083aa593ed409bfb9d0d8b",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/http-fixed-distinct-time.log",
+    "original_sha256": "e11014989c30773a331f497522a1eb1eb2e7367824aabf2454e11a193bc070e1",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/http-fixed-ready.log",
+    "original_sha256": "753f186d8d7c7cdf4f23aa7c6206c13c3841995c221e478295ba7a9e7732e46e",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/http-fixed-run.log",
+    "original_sha256": "b9afeb7f2a5423ddb29452316fdb06a6acb0e969dcd030a1cc0d9e99b5256c2c",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/http-followup-results.json",
+    "original_sha256": "074b0998a4ee040665827b22f533cdff0d57ecf51006efb77f15ef8b2aa9234b",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/http-followup-run.log",
+    "original_sha256": "34ad9066b548cebd7c0b77ce68fdfef9f466a350d650589e693d326ef5bc6963",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/http-initial-failure.json",
+    "original_sha256": "1dafe371b5b8712e52eda2740ddb93d56e1c8c3d5afd479c0fc85ec41b41295b",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/http-initial-failure.log",
+    "original_sha256": "029f5057c585862f589519061ef6afdd1512e408f066a093c5b554fbe135cb82",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/http-new-sample.log",
+    "original_sha256": "d65d1bfea9128055ac529226612f241e030224081b4f6a880bc50b11aff794b6",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/http-order.log",
+    "original_sha256": "d65d1bfea9128055ac529226612f241e030224081b4f6a880bc50b11aff794b6",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/http-overlap-fixture.json",
+    "original_sha256": "8149cf3ad8ab5dfb3642388e0965ad2069614f1a3076ec7e4f2d31e95b0d1acf",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/http-remaining-results.json",
+    "original_sha256": "42c649641f9c78b47958c1cb6aad374ea076c32d86454ea829d6bd4679bdf8e8",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/http-remaining-run.log",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/http-result-new-sample.log",
+    "original_sha256": "d65d1bfea9128055ac529226612f241e030224081b4f6a880bc50b11aff794b6",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/http-result-read-failure.json",
+    "original_sha256": "71106ca68b0c08dc8c80870590ad84bb3363e458967fbc797e02bc453bf663c4",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/http-result-restart.log",
+    "original_sha256": "8e52b24a69364c8f9db277bd1eb426e7aadd73f1a2ee7b87c82c4d91de0ea5ae",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/http-results.json",
+    "original_sha256": "965685962d3fe7ba14309fe0179728c48a80e9490ebc5050f9ff80db222c348c",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/http-run.log",
+    "original_sha256": "029f5057c585862f589519061ef6afdd1512e408f066a093c5b554fbe135cb82",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/http-same-key-pass-zero-time-failure.json",
+    "original_sha256": "965685962d3fe7ba14309fe0179728c48a80e9490ebc5050f9ff80db222c348c",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/http-setup.log",
+    "original_sha256": "5de1c7369a0e3624c0e2d2cde2ebab4aeb93d7392751852002554a4df54bed22",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/implementation.patch",
+    "original_sha256": "f732c73a905b77d9f8b8a40d31c1956be918cd7edbc4f7d84e86102ba48ace83",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/implementation/initial-tests.log",
+    "original_sha256": "71854bf3b8977be021827afac5bb08acf5781ec22f844a1051ee11dc790ef4b9",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/menu-red.log",
+    "original_sha256": "22a1a5bcb9ee0c3381a61f550a2e907cf3dfe5099f4dc7b293a65a409aabef65",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/plan-write-red.log",
+    "original_sha256": "bfdfe6648f708e175cbdebc20f5ffbd510298d5fee59359145db72010cdbff6d",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/prep-build.log",
+    "original_sha256": "9cc76820252edc2c5f876eaffcf45ed2e37c346322d99f9ab290b903869d4417",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/reload-card.log",
+    "original_sha256": "3a0b798c5105294189a8200839f82d9e3736f01392f98b0f46f3116cc9aedaf1",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/reload-operation.log",
+    "original_sha256": "9d8964efd97795fb0b9666d6669bc7ba6106a1eed99ec592ba04d021ec9fb2af",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/restore-check.json",
+    "original_sha256": "68f8c1c9fd67f9f48b0c54a4306166273d83e10331c4c0a957412716f95c8a27",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/implementation/retention-summary.json",
+    "original_sha256": "78d5dbd32eecbe6c6b03437deb7a43467142549fd4b23cfb05f5ecc7290e3b8b",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/implementation/review-business-red.log",
+    "original_sha256": "087225bd71cb2e65fc27841bfa5515165ffe720c7d1334b266253e3d13267ce1",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/review-downstream-red.log",
+    "original_sha256": "5e00ea9598e8394bbd79db0be9a162cd50f8f91925c12821ca9e944de91e6cb6",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/review-package.md",
+    "original_sha256": "b98ac0d0a45e680a0e61581dfc4c3e112240a3c918d272010eff68c0f96b0ae4",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/implementation/review-ui-fixed.log",
+    "original_sha256": "672e19f8e27f6757bc6be3999da5a57b0ed7208e265957339a5995ca36884797",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/review-ui-red.log",
+    "original_sha256": "98d5fc664934fad6665eaa94f8b0ab6727c63ee9e6209fac7d4d22399638c5d4",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/run-record.md",
+    "original_sha256": "c552fe2f586a4ba37febcdcfd97b5582ac2934923597b4606b266fcb42740a16",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/implementation/source-manifest.json",
+    "original_sha256": "63a76cc15414ab040116f2b687c871b6a987b58f7dc784e9b0c5af8ca250e1cb",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/implementation/source-runtime.json",
+    "original_sha256": "1ea608def2ee214f2193f95aba385096ce36778a8c8a8bc8f306b7497567166d",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/implementation/ui-build.log",
+    "original_sha256": "c198742b49a242c62076ca5408cb0cacb2df32edc40777e1fe37e928a27f549d",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/ui-normal-timing.json",
+    "original_sha256": "819dbe51bac37266b74478237bf3696e06b1e5f2ab0c38b154c8ab2eb951f7af",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/ui-preview-cache.log",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/ui-snapshot-ax.txt",
+    "original_sha256": "5abe1d36a926a29d7b1417bb5aa3a6487846de3fd554d2399902beaa31f4df23",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/ui-start.log",
+    "original_sha256": "0d53e80da224c2218539288253a891aba3a94b388ece8504fc84eda2d4f2455c",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/ui-three-reports-ax.txt",
+    "original_sha256": "84b4fd681580dd8b689d5303925a60abab8ac0439753c86759d923972682b295",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/ui-timings.json",
+    "original_sha256": "7d96c6570b33db2a886aee37bdf587f77d44788c5f2528e02b9f2b7613836e85",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/web-source.json",
+    "original_sha256": "1ea608def2ee214f2193f95aba385096ce36778a8c8a8bc8f306b7497567166d",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/implementation/zero-time-restart.log",
+    "original_sha256": "8e52b24a69364c8f9db277bd1eb426e7aadd73f1a2ee7b87c82c4d91de0ea5ae",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/三笔报工中文结果.png",
+    "original_sha256": "b9275fca9663fc47157caded441ee42687826da8a33ab9c9d4fc48eeb9db2389",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/implementation/三笔报工最终重读.png",
+    "original_sha256": "1fa370920983f642a6ece85284981784ca4b2726dfa5769d37cc78e76d4c607a",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
     "path": "evidence/B08/native-fact/native-probe.jsonl",
     "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "published": false,
@@ -4051,7 +4513,7 @@
   },
   {
     "path": "evidence/R07/permissions.md",
-    "original_sha256": "32663ed8c6f722bd85daf1b8052261e68a07cc05bd23cd9d5e4d1816832d5ea3",
+    "original_sha256": "a931ead35aebc39b95def0f0cf3e8cc2816a2f944bd1ebd68f154458f058b602",
     "published": true,
     "reason": "public copy"
   },
@@ -4063,7 +4525,7 @@
   },
   {
     "path": "evidence/R07/report-concurrency.md",
-    "original_sha256": "a5aa132d5ccb248541164e661eae71e6a6635adddac89cdab8372f64c5f5d208",
+    "original_sha256": "a42cd1cbca7cb15fca009eb3072cd1df87883900c4d7e697a6621da222e26bc4",
     "published": true,
     "reason": "public copy"
   },
@@ -4081,7 +4543,7 @@
   },
   {
     "path": "evidence/R07/time-config-binding.md",
-    "original_sha256": "600efcd190ceaf93d6be09923c92af426893e801eb14d5f58fa202eb89a8a4ac",
+    "original_sha256": "a5ecf4880acd4aa1fca3909ea9999a6702ac46ac28ba3a058929f1097a505860",
     "published": true,
     "reason": "public copy"
   },
@@ -4120,6 +4582,12 @@
     "original_sha256": "fc0b99dfeb375301c9f77321d2dfcb6a530922b36fd43d2f0d74da4bfddb2cd6",
     "published": true,
     "reason": "public copy"
+  },
+  {
+    "path": "evidence/发布/B08-card-2026-10-27-remote.json",
+    "original_sha256": "e1d026220dc8696dbe2c598b0702d0e23ded0cbc1fbdcda5e0175a4f0f5a8490",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
   },
   {
     "path": "evidence/发布/B14-2026-10-27-remote.json",

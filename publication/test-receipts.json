@@ -2,6 +2,36 @@
   "scope": "Separate executed batches tied to their own source patches; no cumulative full-suite result; publication itself does not rerun tests",
   "tests": [
     {
+      "local_log": "evidence/B08/implementation/final-confirmation-tests.log",
+      "sha256": "1a3baa63cea294d3f15b3e2a275796f979649fcc95302b74f2aa3c04d37817f5",
+      "tests": 14,
+      "seconds": "134.652",
+      "result": "OK",
+      "executed_on": "2026-10-27",
+      "group": "B08 confirmation and affected original cases",
+      "source_patch_sha256": "c7f16339d77d100d31505a5066ac0c5e95e40faca251c467c3cee0e8c874905a"
+    },
+    {
+      "local_log": "evidence/B08/implementation/affected-regression.log",
+      "sha256": "fece563f2a2f4fead5911d79f9ea1aba641c3c063a157fe572b10af3c68d97d6",
+      "tests": 3,
+      "seconds": "36.812",
+      "result": "OK",
+      "executed_on": "2026-10-27",
+      "group": "B08 confirmation and affected original cases",
+      "source_patch_sha256": "c7f16339d77d100d31505a5066ac0c5e95e40faca251c467c3cee0e8c874905a"
+    },
+    {
+      "local_log": "evidence/B08/implementation/derivation-rollback.log",
+      "sha256": "c08c1646527bc4154aa8c61b5a1e4237113b46b7b0c10a27c336836b3eb2aba3",
+      "tests": 1,
+      "seconds": "14.911",
+      "result": "OK",
+      "executed_on": "2026-10-27",
+      "group": "B08 added native derivation rollback case; product logic unchanged",
+      "source_patch_sha256": "f732c73a905b77d9f8b8a40d31c1956be918cd7edbc4f7d84e86102ba48ace83"
+    },
+    {
       "local_log": "evidence/B14/review-fixed-tests.log",
       "sha256": "c3d08e90be0c162141b40556bf2a6bf879cebd919bd0209cb63e84f8d17f0792",
       "tests": 15,
@@ -221,5 +251,5 @@
     "verified_after_all_requests": true,
     "publication_note": "Only assertions/counts retained; runtime business_state and raw responses remain local."
   },
-  "current_patch_sha256": "a08b8eb7e2ec509982b817527c840bd2cbdc252e1d1a121e425077605fcbab1f"
+  "current_patch_sha256": "f732c73a905b77d9f8b8a40d31c1956be918cd7edbc4f7d84e86102ba48ace83"
 }

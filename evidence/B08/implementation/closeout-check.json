@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-27",
+  "source_patch_sha256": "f732c73a905b77d9f8b8a40d31c1956be918cd7edbc4f7d84e86102ba48ace83",
+  "manifest_files": 32,
+  "modified_source_files": 24,
+  "runtime_and_web_files_match": true,
+  "python_ast_and_metadata_json": true,
+  "build_succeeded": true,
+  "retained_source_business_tables": 11,
+  "retention_passed": true,
+  "restore_passed": true,
+  "full_card_passed": false,
+  "G1": false,
+  "G2": false,
+  "G3": false,
+  "remaining": "permission and disabled-rule combinations, field 10-second experience, original full-card remainder"
+}

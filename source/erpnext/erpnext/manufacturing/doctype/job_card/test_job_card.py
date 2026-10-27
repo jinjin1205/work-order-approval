@@ -1813,3 +1813,299 @@ class TestProductionTimeMetrics(FrappeTestCase):
 		for value in (False, -1, "0.0000001", 1000000000):
 			with self.subTest(value=value), self.assertRaises(frappe.ValidationError):
 				validate_quantity_input(value, "数量", allow_zero=True)
+
+
+class TestProductionReportConfirmation(FrappeTestCase):
+	"""B08: real workflow fixture, narrow operator, native per-confirmation cards."""
+
+	def setUp(self):
+		from frappe.permissions import add_permission, add_user_permission, update_permission_property
+		from erpnext.manufacturing.doctype.work_order.test_work_order import TestWorkOrderApproval
+		self.approval = TestWorkOrderApproval()
+		self.addCleanup(self.approval.clean_fixture)
+		self.approval.setUp()
+		f = self.approval
+		frappe.set_user("Administrator")
+		if not frappe.db.exists("Role", "生产报工"):
+			frappe.get_doc({"doctype": "Role", "role_name": "生产报工", "desk_access": 1}).insert()
+		add_permission("Work Order", "生产报工", ptype="read")
+		add_permission("Job Card", "生产报工", ptype="read")
+		for p in ("create", "write", "submit"):
+			update_permission_property("Job Card", "生产报工", 0, p, 1)
+		for dt in ("Employee", "Operation", "Workstation", "Item"):
+			add_permission(dt, "生产报工", ptype="select")
+		self.user = f.prefix.lower() + "-report@example.invalid"
+		frappe.get_doc({"doctype": "User", "email": self.user, "first_name": "报工验收员",
+			"language": "zh", "send_welcome_email": 0, "roles": [{"role": "生产报工"}]}).insert()
+		self.employee = frappe.get_doc({"doctype": "Employee", "first_name": "报工验收员", "gender": "Male",
+			"date_of_birth": "1990-01-01", "date_of_joining": "2020-01-01", "company": f.company,
+			"department": f.teams[0], "status": "Active", "user_id": self.user, "create_user_permission": 0}).insert().name
+		add_user_permission("Company", f.company, self.user)
+		add_user_permission("Department", f.teams[0], self.user, applicable_for="Work Order")
+		add_user_permission("Work Order", f.order.name, self.user)
+		frappe.set_user(f.users["operator"])
+		f.order.operations[0].report_scope = "PERSON"
+		f.order.operations[0].report_employee = self.employee
+		f.order.operations[1].report_scope = "ALL" if self._testMethodName == "test_correction_rejects_existing_downstream_facts" else ""
+		f.order.operations[2].report_scope = "ALL"
+		f.order.save()
+		f.act("operator", "送审")
+		f.act("reviewer", "审核通过")
+		f.act("director", "签批通过")
+		self.order = f.order
+		self.operation_id = self.order.operations[0].name
+		self.plan_names = frappe.get_all("Job Card", filters={"work_order": self.order.name}, pluck="name")
+		frappe.set_user(self.user)
+
+	def method(self, name):
+		from erpnext.manufacturing.doctype.job_card import job_card
+		method = getattr(job_card, name, None)
+		self.assertTrue(callable(method), name + " is not implemented")
+		return method
+
+	def report(self, good, bad, hour=9, request_id=None, **changes):
+		start, end = f"2026-10-20 {hour:02}:00:00", f"2026-10-20 {hour+1:02}:00:00"
+		preview = self.method("preview_production_report_time")(self.order.name, self.operation_id, start, end)
+		return self.method("confirm_production_report")(**dict(request_id=request_id or frappe.generate_hash(length=32),
+			work_order=self.order.name, operation_id=self.operation_id, good_quantity=good, bad_quantity=bad,
+			from_time=start, to_time=end, shutdown_seconds=0, overtime_seconds=0,
+			context_fingerprint=preview["context_fingerprint"], **changes))
+
+	def test_00_narrow_fixture_runnable(self):
+		self.assertEqual(len(self.plan_names), 3)
+		self.assertEqual(self.order.workflow_state, "已批准")
+		self.assertFalse(frappe.has_permission("Work Order", "write"))
+		self.assertFalse(frappe.has_permission("Stock Entry", "create"))
+		self.assertTrue(frappe.has_permission("Job Card", "submit"))
+		self.assertEqual(self.order.operations[0].report_employee, self.employee)
+
+	def test_three_reports_preserve_plan_and_explicit_bad(self):
+		for index, (good, bad, fine, rejected) in enumerate(((1,0,1,0),(1,0,2,0),(6,2,8,2))):
+			result = self.report(good, bad, 9+index)
+			doc = frappe.get_doc("Job Card", result["name"])
+			self.assertEqual((doc.docstatus, doc.total_completed_qty, doc.process_loss_qty, doc.for_quantity), (1,good,bad,good+bad))
+			self.assertEqual(doc.time_logs[0].employee, self.employee)
+			self.order.reload()
+			row = self.order.operations[0]
+			self.assertEqual((row.completed_qty,row.process_loss_qty,self.order.qty), (fine,rejected,10))
+			self.assertEqual(self.order.status, "In Process")
+			self.assertEqual(self.order.produced_qty, 0)
+			self.assertTrue(all(o.completed_qty == 0 for o in self.order.operations[1:]))
+		self.assertEqual(self.order.operations[0].status, "Completed")
+		self.assertEqual(frappe.db.count("Job Card", {"work_order":self.order.name,"docstatus":1}),3)
+		self.assertTrue(all(frappe.db.get_value("Job Card", n, "for_quantity") == 10 for n in self.plan_names))
+
+	def test_scope_denial_and_parent_write_remain_restricted(self):
+		preview = self.method("preview_production_report_time")
+		with self.assertRaises(frappe.PermissionError):
+			preview(self.order.name, self.order.operations[1].name, "2026-10-20 09:00", "2026-10-20 10:00")
+		self.order.qty = 11
+		with self.assertRaises(frappe.PermissionError):
+			self.order.save()
+		self.order.reload()
+		result = self.report(1, 0)
+		self.assertEqual(frappe.db.get_value("Work Order", self.order.name, "qty"),10)
+		frappe.set_user("Administrator")
+		user = frappe.get_doc("User", self.user)
+		user.roles = [r for r in user.roles if r.role != "生产报工"]
+		user.save()
+		frappe.set_user(self.user)
+		with self.assertRaises(frappe.PermissionError):
+			preview(self.order.name, self.operation_id, "2026-10-20 10:00", "2026-10-20 11:00")
+		self.assertEqual(frappe.db.get_value("Job Card",result["name"],"total_completed_qty"),1)
+
+	def test_same_key_retry_and_distinct_quantities(self):
+		key = frappe.generate_hash(length=32)
+		first = self.report(1, 0, request_id=key)
+		self.assertEqual(self.report(1, 0, request_id=key), first)
+		with self.assertRaises(frappe.PermissionError):
+			self.report(2, 0, request_id=key)
+		second = self.report(1, 0, hour=10)
+		self.assertNotEqual(first["name"], second["name"])
+		self.order.reload()
+		self.assertEqual(self.order.operations[0].completed_qty,2)
+
+	def test_real_overquantity_still_rejected_and_plan_not_loss(self):
+		self.report(1, 0)
+		frappe.db.savepoint("before_overquantity")
+		with self.assertRaises(frappe.ValidationError):
+			self.report(10, 0, hour=10)
+		frappe.db.rollback(save_point="before_overquantity")
+		self.assertEqual(frappe.db.count("Job Card", {"work_order":self.order.name,"docstatus":1}),1)
+		plan = frappe.get_doc("Job Card", self.plan_names[0])
+		plan.total_completed_qty = 1
+		plan.process_loss_qty = 9
+		plan.set_process_loss()
+		self.assertEqual(plan.process_loss_qty,0)
+		with self.assertRaises(frappe.PermissionError):
+			plan.submit()
+
+	def test_original_parent_and_child_protected(self):
+		name = self.report(1, 0)["name"]
+		for action in ("update", "clear_key", "cancel", "delete", "child"):
+			with self.subTest(action=action):
+				doc = frappe.get_doc("Job Card", name)
+				with self.assertRaises((frappe.PermissionError, frappe.ValidationError)):
+					if action == "update":
+						doc.flags.ignore_validate_update_after_submit = True
+						doc.remarks = "tampered"
+						doc.save()
+					elif action == "clear_key":
+						doc.report_request_id = None
+						doc.flags.ignore_validate_update_after_submit = True
+						doc.save()
+					elif action == "cancel":
+						doc.cancel()
+					elif action == "delete":
+						frappe.delete_doc("Job Card", name, ignore_permissions=True)
+					else:
+						row = frappe.get_doc("Job Card Time Log", doc.time_logs[0].name)
+						row.completed_qty = 9
+						row.flags.ignore_validate_update_after_submit = True
+						row.save(ignore_permissions=True)
+		self.assertEqual(frappe.db.get_value("Job Card Time Log",doc.time_logs[0].name,"completed_qty"),1)
+
+	def test_rule_snapshot_and_stale_preview(self):
+		frappe.set_user("Administrator")
+		rule = frappe.get_doc({"doctype":"Production Time Rule", "rule_name":self.approval.prefix+"休息",
+			"company":self.order.company,"enabled":1,"priority":0,"operation":self.order.operations[0].operation,
+			"periods":[{"period_type":"Rest","start_time":"12:00","end_time":"13:00"}]}).insert()
+		frappe.set_user(self.user)
+		preview = self.method("preview_production_report_time")
+		confirm = self.method("confirm_production_report")
+		args = dict(work_order=self.order.name, operation_id=self.operation_id,
+			from_time="2026-10-20 09:00",to_time="2026-10-20 17:00")
+		old = preview(**args)
+		self.assertEqual(old["effective_seconds"],25200)
+		first = confirm(**args, request_id=frappe.generate_hash(length=32),good_quantity=1,bad_quantity=0,
+			context_fingerprint=old["context_fingerprint"])
+		original = frappe.get_doc("Job Card",first["name"])
+		frappe.set_user("Administrator")
+		rule.periods[0].end_time = "14:00"
+		rule.save()
+		frappe.set_user(self.user)
+		with self.assertRaisesRegex(frappe.ValidationError,"时段依据已变化"):
+			confirm(**args,request_id=frappe.generate_hash(length=32),good_quantity=1,bad_quantity=0,
+				context_fingerprint=old["context_fingerprint"])
+		args.update(from_time="2026-10-21 09:00",to_time="2026-10-21 17:00")
+		new = preview(**args)
+		self.assertEqual(new["effective_seconds"],21600)
+		second = confirm(**args,request_id=frappe.generate_hash(length=32),good_quantity=1,bad_quantity=0,
+			context_fingerprint=new["context_fingerprint"])
+		original.reload()
+		self.assertEqual(original.report_effective_seconds,25200)
+		self.assertEqual(frappe.parse_json(original.report_time_context)["rule"]["rest_periods"],[["12:00","13:00"]])
+		self.assertEqual(frappe.db.get_value("Job Card",second["name"],"report_effective_seconds"),21600)
+
+	def test_full_correction_retains_original_rule_and_fact(self):
+		from frappe.permissions import update_permission_property
+		frappe.set_user("Administrator")
+		update_permission_property("Job Card","生产报工",0,"cancel",1)
+		frappe.set_user(self.user)
+		first = self.report(10,0)
+		original = frappe.get_doc("Job Card",first["name"])
+		old_context = original.report_time_context
+		correct = self.method("correct_production_report")
+		key = frappe.generate_hash(length=32)
+		new = correct(original.name,key,8,0,"数量录错，按实际更正")
+		self.assertEqual(correct(original.name,key,8,0,"数量录错，按实际更正"),new)
+		original.reload()
+		self.assertEqual((original.docstatus,original.total_completed_qty,original.report_time_context),(2,10,old_context))
+		replacement = frappe.get_doc("Job Card",new["name"])
+		self.assertEqual((replacement.docstatus,replacement.amended_from,replacement.total_completed_qty),(1,original.name,8))
+		self.assertEqual(frappe.parse_json(replacement.report_time_context)["result"],frappe.parse_json(old_context)["result"])
+		self.order.reload()
+		self.assertEqual((self.order.operations[0].completed_qty,self.order.qty),(8,10))
+		with self.assertRaises(frappe.PermissionError):
+			frappe.delete_doc("Job Card",original.name,ignore_permissions=True)
+		with self.assertRaises(frappe.PermissionError):
+			correct(original.name,frappe.generate_hash(length=32),7,0,"另一次更正")
+
+	def test_task_menu_and_saved_result_are_scoped(self):
+		menu = self.method("get_production_report_tasks")(self.order.name)
+		self.assertEqual({r["name"] for r in menu["tasks"]},{self.operation_id,self.order.operations[2].name})
+		key = frappe.generate_hash(length=32)
+		first = self.report(1,0,request_id=key)
+		result = self.method("get_production_report_result")(key)
+		self.assertEqual((result["name"],result["docstatus"]),(first["name"],1))
+		frappe.set_user(self.approval.users["other"])
+		with self.assertRaises(frappe.PermissionError):
+			self.method("get_production_report_result")(key)
+
+	def test_operator_cannot_rewrite_plan_card(self):
+		plan = frappe.get_doc("Job Card",self.plan_names[0])
+		plan.for_quantity = 1
+		with self.assertRaises(frappe.PermissionError):
+			plan.save()
+		self.assertEqual(frappe.db.get_value("Job Card",plan.name,"for_quantity"),10)
+
+	def test_identical_zero_time_facts_distinct_keys(self):
+		args=dict(work_order=self.order.name,operation_id=self.operation_id,from_time="2026-10-20 09:00",to_time="2026-10-20 09:00")
+		preview=self.method("preview_production_report_time")(**args)
+		confirm=self.method("confirm_production_report")
+		names=[confirm(**args,request_id=frappe.generate_hash(length=32),good_quantity=1,bad_quantity=0,
+			context_fingerprint=preview["context_fingerprint"])["name"] for _ in range(2)]
+		self.assertNotEqual(*names)
+		self.order.reload()
+		self.assertEqual(self.order.operations[0].completed_qty,2)
+		self.assertTrue(all(frappe.db.get_value("Job Card",n,"report_effective_seconds")==0 for n in names))
+
+	def test_correction_rejects_existing_downstream_facts(self):
+		from frappe.permissions import update_permission_property
+		frappe.set_user("Administrator")
+		update_permission_property("Job Card","生产报工",0,"cancel",1)
+		frappe.set_user(self.user)
+		original=self.report(10,0)["name"]
+		args=dict(work_order=self.order.name,operation_id=self.order.operations[1].name,from_time="2026-10-20 10:00",to_time="2026-10-20 11:00")
+		preview=self.method("preview_production_report_time")(**args)
+		self.method("confirm_production_report")(**args,request_id=frappe.generate_hash(length=32),good_quantity=10,bad_quantity=0,context_fingerprint=preview["context_fingerprint"])
+		with self.assertRaisesRegex(frappe.ValidationError,"后工序"):
+			self.method("correct_production_report")(original,frappe.generate_hash(length=32),8,0,"数量更正")
+		self.assertEqual(frappe.db.get_value("Job Card",original,"docstatus"),1)
+
+	def test_retry_after_stop_returns_existing_but_rejects_new(self):
+		args=dict(work_order=self.order.name,operation_id=self.operation_id,from_time="2026-10-20 09:00",to_time="2026-10-20 10:00")
+		preview=self.method("preview_production_report_time")(**args)
+		args.update(request_id=frappe.generate_hash(length=32),good_quantity=1,bad_quantity=0,context_fingerprint=preview["context_fingerprint"])
+		confirm=self.method("confirm_production_report")
+		first=confirm(**args)
+		self.approval.order.reload()
+		self.approval.act("director","停止执行",reason="停止新增执行")
+		frappe.set_user(self.user)
+		self.assertEqual(confirm(**args),first)
+		with self.assertRaises(frappe.PermissionError):
+			confirm(**{**args,"request_id":frappe.generate_hash(length=32)})
+
+	def test_sub_operations_rejected_before_confirmation(self):
+		frappe.set_user("Administrator")
+		op=frappe.get_doc("Operation",self.order.operations[0].operation)
+		op.append("sub_operations",{"operation":self.order.operations[2].operation,"time_in_mins":1})
+		op.save()
+		frappe.set_user(self.user)
+		with self.assertRaisesRegex(frappe.ValidationError,"子工序"):
+			self.method("preview_production_report_time")(self.order.name,self.operation_id,"2026-10-20 09:00","2026-10-20 10:00")
+
+	def test_derivation_failure_rolls_back_native_fact(self):
+		from unittest.mock import patch
+		from erpnext.manufacturing.doctype.work_order.work_order import WorkOrder
+		validate = WorkOrder.validate_report_derivation
+		seen = []
+		def invalid_plan_write(order, before, operation_id):
+			context = frappe.local.production_report_context
+			self.assertTrue(frappe.db.exists("Job Card", context.card.name))
+			self.assertTrue(frappe.db.exists("Job Card Time Log", {"parent": context.card.name}))
+			seen.append(context.card.name)
+			order.qty = 11
+			return validate(order, before, operation_id)
+		frappe.db.savepoint("report_derivation_failure")
+		with patch.object(WorkOrder, "validate_report_derivation", invalid_plan_write):
+			with self.assertRaisesRegex(frappe.PermissionError, "报工不能修改工单字段"):
+				self.report(1, 0)
+		self.assertTrue(seen)
+		self.assertIsNone(frappe.local.production_report_context)
+		# This is controlled failure injection with a real DB rollback, not an HTTP result.
+		frappe.db.rollback(save_point="report_derivation_failure")
+		self.assertFalse(frappe.db.exists("Job Card", seen[0]))
+		self.assertFalse(frappe.db.exists("Job Card Time Log", {"parent": seen[0]}))
+		self.order.reload()
+		self.assertEqual((self.order.qty, self.order.operations[0].completed_qty), (10, 0))

@@ -182,3 +182,11 @@ bench --site xgd-test.localhost run-tests --app erpnext --module erpnext.manufac
 已有入口、删除旁路、原生锁先后、请求身份缺口和一个事实承载候选已定位。原生Job Card／cancel-amend仍是优先复用方向，未证明逐笔语义及全部旁路可以在允许范围收敛；F-RPT-01的计划卡／任务映射、显式不良下游影响、最小角色与受限父工单派生写入，以及专用入口前置工单锁的覆盖仍是明确门槛。
 
 因此本报告支持根任务将相关卡写成“真实位置已绑定，前置试验／依赖未满足”；**不支持将B08/B09直接写成可开工或已通过**。需要的局部验证已限定，不启动无边界研究。没有人天、费用、稳定性发生率或节省比例结论。
+
+## 2026-10-27 B08 本批实现回链
+
+实际证据见[实施记录](../B08/implementation/run-record.md)。原Job Card每笔事实/唯一`report_request_id`/`report_payload_hash`、服务端`report_time_context`与秒数字段；原Work Order Operation增加`report_scope/report_department/report_employee`。JobCardTimeLog只补已确认父卡保护；WorkOrder只放行服务器上下文中的本工序派生字段。没有新增permissions模块、事实表或Frappe改动。
+
+实际入口均在`job_card.py`：`get_production_report_tasks`、`preview_production_report_time`、`confirm_production_report`、`get_production_report_result`、`correct_production_report`；内部`_report_task/_report_context`复用原公司/班组/状态检查，`_report_time_context`复用B04计算和B14读取。中文原WorkOrder弹窗及JobCard依据查看，不另建页面系统。`work_order.py:validate_production_execution_state`由原判定拆出复用，旧请求找回先查历史权限，新事实仍查执行状态。
+
+实际最小更正为原生cancel/amend，起止不变沿用原时段依据；有提交库存单或后工序事实即拒绝。原生子工序配置明确拒绝，不新增子工序业务。三笔、窄回写、同键真实HTTP、快照旧新、原卡/子行保护及受控回滚已有证据；全部权限组合、完整逆向/跨对象并发、现场10秒及G1/G2/G3未通过。旧节中的“拟新增/当前不存在”为实施前历史，不代表本批状态。

@@ -1,0 +1,8 @@
+{
+  "date": "2026-10-27",
+  "tables_checked": 11,
+  "unchanged": true,
+  "source_work_order_workflows": 0,
+  "comparison": "Original row values and counts; only explicitly added B08 schema columns excluded",
+  "limitation": "Not a whole-database audit; new synthetic HTTP-site records are intentionally retained"
+}

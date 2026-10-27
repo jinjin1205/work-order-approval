@@ -1,0 +1,94 @@
+{
+  "date": "2026-10-27",
+  "status": "partial; end-to-end 10-second experience and full card remain open",
+  "source_patch_sha256": "f732c73a905b77d9f8b8a40d31c1956be918cd7edbc4f7d84e86102ba48ace83",
+  "product": "ERPNext 15.124.1 / Frappe 15.124.0",
+  "reuse": "Native Job Card, Work Order aggregation, permissions, transactions, cancel/amend, native form; B04 calculator and B14 rule loader",
+  "controlled_tests": [
+    {
+      "count": 14,
+      "seconds": 134.652,
+      "result": "OK",
+      "patch": "c7f16339d77d100d31505a5066ac0c5e95e40faca251c467c3cee0e8c874905a"
+    },
+    {
+      "count": 3,
+      "seconds": 36.812,
+      "result": "OK",
+      "scope": "Affected original approval and task/timer"
+    },
+    {
+      "count": 1,
+      "seconds": 14.911,
+      "result": "OK",
+      "scope": "Controlled native derivation failure, real DB savepoint rollback; NOT HTTP"
+    }
+  ],
+  "three_reports": [
+    {
+      "good": 1,
+      "bad": 0,
+      "total_good": 1,
+      "total_bad": 0,
+      "unfinished": 9,
+      "plan": 10
+    },
+    {
+      "good": 1,
+      "bad": 0,
+      "total_good": 2,
+      "total_bad": 0,
+      "unfinished": 8,
+      "plan": 10
+    },
+    {
+      "good": 6,
+      "bad": 2,
+      "total_good": 8,
+      "total_bad": 2,
+      "unfinished": 0,
+      "plan": 10
+    }
+  ],
+  "http": {
+    "same_key_concurrent_two_200_one_fact": true,
+    "same_key_different_payload_403": true,
+    "distinct_keys_identical_zero_duration_two_facts": true,
+    "real_overquantity_417_no_change": true,
+    "unauthorized_task_403": true,
+    "parent_and_original_and_child_put_403": true,
+    "lost_response_lookup_200": true,
+    "limits": "Not complete cross-key/workstation/stock concurrency or injected HTTP commit failure"
+  },
+  "ui": {
+    "ordinary_role": true,
+    "language": "zh",
+    "three_reports_real_pc": true,
+    "saved_snapshot_reopened": true,
+    "normal": {
+      "scenario": "默认良品等于未完成7，不良0，填写实际起止时间",
+      "list_to_success_ms": 18015,
+      "context_ready_confirmation_ms": 595,
+      "confirmation_clicks": 1,
+      "pointer_clicks": 3,
+      "typed_fields": 2,
+      "measurement": "CUA实际键盘与页面操作，含工具等待，不代表人工现场用时"
+    },
+    "full_flow_ten_seconds": "not achieved in this automated measurement; human on-site timing unverified"
+  },
+  "correction": {
+    "original_retained": true,
+    "example": "10 -> 8, native cancel/amend",
+    "same_times_keep_original_rule": true,
+    "limits": "Only no submitted stock entry and no later-operation report; cancel permission still required; no full reverse chain"
+  },
+  "open": [
+    "G1",
+    "G2",
+    "G3",
+    "B08 full-card remainder",
+    "10-second on-site experience",
+    "mobile/PDA/weak network",
+    "full inverse/stock correction chain"
+  ]
+}

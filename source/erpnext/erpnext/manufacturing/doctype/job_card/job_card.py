@@ -1,6 +1,7 @@
 # Copyright (c) 2021, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 import datetime
+import hashlib
 import json
 import re
 from collections import OrderedDict
@@ -139,7 +140,40 @@ class JobCard(Document):
 		return frappe.db.exists("Stock Entry", {"job_card": self.name, "docstatus": ["!=", 2]})
 
 	def before_validate(self):
+		self.validate_report_record()
 		self.set_wip_warehouse()
+
+	def validate_report_record(self):
+		old_key = frappe.db.get_value("Job Card", self.name, "report_request_id") if not self.is_new() else None
+		context = getattr(frappe.local, "production_report_context", None)
+		trusted = context and context.card is self and context.user == frappe.session.user
+		if (old_key or any(self.get(f) for f in ("report_request_id", "report_payload_hash", "report_time_context",
+			"report_effective_seconds", "report_time_rule", "report_shutdown_seconds", "report_overtime_seconds"))) and not trusted:
+			frappe.throw("报工事实只能通过确认或关联更正保存，原记录不能改写", frappe.PermissionError)
+		if not trusted and not self.get("report_request_id") and self.work_order:
+			order = frappe.get_doc("Work Order", self.work_order)
+			if order.get("approval_requested_by") and not frappe.has_permission("Work Order", "write", doc=order):
+				frappe.throw("操作工不能修改计划卡，请通过逐笔报工确认实际数量", frappe.PermissionError)
+		for row in self.get("time_logs") + self.get("employee"):
+			if row.name:
+				parent = frappe.db.get_value("Job Card Time Log", row.name, "parent")
+				if parent and parent != self.name:
+					frappe.throw("不能使用其他作业卡的时间或人员记录", frappe.PermissionError)
+
+	def before_submit(self):
+		self.validate_report_record()
+		if self.work_order and frappe.db.get_value("Work Order", self.work_order, "approval_requested_by") and not self.get("report_request_id"):
+			frappe.throw("计划卡不能作为报工提交，请使用确认报工入口", frappe.PermissionError)
+
+	def before_update_after_submit(self):
+		self.validate_report_record()
+
+	def before_cancel(self):
+		self.validate_report_record()
+
+	def on_trash(self):
+		if frappe.db.get_value("Job Card", self.name, "report_request_id"):
+			frappe.throw("报工原记录必须保留，不能删除", frappe.PermissionError)
 
 	def validate(self):
 		self.validate_work_order()
@@ -155,6 +189,21 @@ class JobCard(Document):
 
 	def validate_job_card_qty(self):
 		if not (self.operation_id and self.work_order):
+			return
+
+		if frappe.db.get_value("Work Order", self.work_order, "approval_requested_by"):
+			from erpnext.manufacturing.doctype.bom.bom import validate_quantity_input
+			filters = {"work_order": self.work_order, "operation_id": self.operation_id, "name": ["!=", self.name]}
+			if self.get("report_request_id"):
+				filters.update(docstatus=1, report_request_id=["is", "set"])
+			else:
+				filters.update(docstatus=["!=", 2], report_request_id=["is", "not set"])
+			quantities = [row[0] for row in frappe.db.get_values("Job Card", filters, "for_quantity", for_update=True)]
+			total = sum((Decimal(str(q)) for q in quantities), Decimal(0)) + Decimal(str(validate_quantity_input(self.for_quantity, "本次数量")))
+			plan = Decimal(str(frappe.db.get_value("Work Order", self.work_order, "qty")))
+			allowance = Decimal(str(frappe.db.get_single_value("Manufacturing Settings", "overproduction_percentage_for_work_order") or 0))
+			if total > plan * (1 + allowance / 100):
+				frappe.throw("本工序累计数量超过工单允许数量，请核对本次报工和已确认记录")
 			return
 
 		wo_qty = flt(frappe.get_cached_value("Work Order", self.work_order, "qty"))
@@ -218,7 +267,8 @@ class JobCard(Document):
 				if d.get("employee"):
 					open_job_cards = self.get_open_job_cards(d.get("employee"), workstation=self.workstation)
 
-				data = self.get_overlap_for(d, open_job_cards=open_job_cards)
+				empty_report_interval = self.get("report_request_id") and d.from_time and d.to_time and get_datetime(d.from_time) == get_datetime(d.to_time)
+				data = None if empty_report_interval else self.get_overlap_for(d, open_job_cards=open_job_cards)
 				if data:
 					frappe.throw(
 						_("Row {0}: From Time and To Time of {1} is overlapping with {2}").format(
@@ -760,6 +810,10 @@ class JobCard(Document):
 			self.set(time_required, time_in_mins)
 
 	def set_process_loss(self):
+		if self.work_order and frappe.db.get_value("Work Order", self.work_order, "approval_requested_by"):
+			if not self.get("report_request_id"):
+				self.process_loss_qty = 0
+			return
 		precision = self.precision("total_completed_qty")
 		should_set_process_loss = self.total_completed_qty or self.process_loss_qty
 
@@ -789,7 +843,7 @@ class JobCard(Document):
 			time_in_mins = flt(data[0].time_in_mins)
 			process_loss_qty = flt(data[0].process_loss_qty)
 
-		wo = frappe.get_doc("Work Order", self.work_order)
+		wo = frappe.get_doc("Work Order", self.work_order, for_update=bool(self.get("report_request_id")))
 
 		if self.is_corrective_job_card:
 			self.update_corrective_in_work_order(wo)
@@ -833,7 +887,7 @@ class JobCard(Document):
 		jc = frappe.qb.DocType("Job Card")
 		jctl = frappe.qb.DocType("Job Card Time Log")
 
-		time_data = (
+		time_query = (
 			frappe.qb.from_(jc)
 			.from_(jctl)
 			.select(Min(jctl.from_time).as_("start_time"), Max(jctl.to_time).as_("end_time"))
@@ -844,7 +898,8 @@ class JobCard(Document):
 				& (jc.docstatus == 1)
 				& (IfNull(jc.is_corrective_job_card, 0) == 0)
 			)
-		).run(as_dict=True)
+		)
+		time_data = (time_query.for_update() if self.get("report_request_id") else time_query).run(as_dict=True)
 
 		for data in wo.operations:
 			if data.get("name") == self.operation_id:
@@ -862,9 +917,25 @@ class JobCard(Document):
 		wo.update_operation_status(self.operation_id)
 		wo.calculate_operating_cost()
 		wo.set_actual_dates()
-		wo.save()
+		context = getattr(frappe.local, "production_report_context", None)
+		if context and context.card is self and context.user == frappe.session.user:
+			context.order = wo
+			old_permission = wo.flags.ignore_permissions
+			try:
+				wo.status = wo.get_status()
+				wo.save(ignore_permissions=True)
+			finally:
+				wo.flags.ignore_permissions = old_permission
+				context.order = None
+		else:
+			wo.save()
 
 	def get_current_operation_data(self):
+		if self.get("report_request_id"):
+			return frappe.db.get_values("Job Card", {"docstatus": 1, "work_order": self.work_order,
+				"operation_id": self.operation_id, "is_corrective_job_card": 0},
+				["sum(total_time_in_mins) as time_in_mins", "sum(total_completed_qty) as completed_qty", "sum(process_loss_qty) as process_loss_qty"],
+				as_dict=True, for_update=True)
 		return frappe.get_all(
 			"Job Card",
 			fields=[
@@ -1506,3 +1577,175 @@ def calculate_report_metrics(*, plan_quantity, good_quantity, bad_quantity, effe
 		"actual_efficiency": efficiency,
 		"efficiency_percent": efficiency * 100 / standard if efficiency is not None and standard else None,
 		"estimated_wage": estimated_wage}
+
+
+def _report_scope_allows(operation, employee):
+	scope = operation.get("report_scope")
+	return (scope == "ALL" or scope == "PERSON" and operation.report_employee == employee.name
+		or scope == "DEPT" and operation.report_department and operation.report_department == employee.department)
+
+
+def _report_context(work_order, *, history=False, for_update=False):
+	from erpnext.manufacturing.doctype.work_order.work_order import check_production_execution, _check_production_approval_scope
+
+	if "生产报工" not in frappe.get_roles():
+		frappe.throw("没有生产报工权限", frappe.PermissionError)
+	if history:
+		order = frappe.get_doc("Work Order", work_order, for_update=for_update)
+		order.check_permission("read")
+		_check_production_approval_scope(order, team_required=True)
+	else:
+		order = check_production_execution(work_order, require_team=True, for_update=for_update)
+	if not order or not order.get("approval_requested_by"):
+		frappe.throw("存量工单未确认审批依据，不能报工", frappe.PermissionError)
+	employees = frappe.get_all("Employee", filters={"user_id": frappe.session.user, "status": "Active", "company": order.company}, fields=["name", "department"])
+	if len(employees) != 1:
+		frappe.throw("缺少唯一有效员工，不能报工", frappe.PermissionError)
+	return order, employees[0]
+
+
+def _report_task(work_order, operation_id, *, history=False, for_update=False):
+	order, employee = _report_context(work_order, history=history, for_update=for_update)
+	operation = next((row for row in order.operations if row.name == operation_id), None)
+	if not operation or not _report_scope_allows(operation, employee):
+		frappe.throw("没有本道工序的报工授权", frappe.PermissionError)
+	return order, operation, employee
+
+
+@frappe.whitelist()
+def get_production_report_tasks(work_order):
+	order, employee = _report_context(work_order, history=True)
+	tasks = [{"name": row.name, "operation": row.operation, "plan": order.qty, "good": row.completed_qty,
+		"bad": row.process_loss_qty, "unfinished": max(Decimal(0), Decimal(str(order.qty)) - Decimal(str(row.completed_qty or 0)) - Decimal(str(row.process_loss_qty or 0))),
+		"status": row.status} for row in order.operations if _report_scope_allows(row, employee)]
+	reports = frappe.get_list("Job Card", filters={"work_order": work_order, "operation_id": ["in", [t["name"] for t in tasks]],
+		"report_request_id": ["is", "set"]}, fields=["name", "operation_id", "total_completed_qty", "process_loss_qty", "report_effective_seconds", "docstatus", "amended_from"],
+		order_by="creation desc", limit_page_length=50) if tasks else []
+	return {"tasks": tasks, "reports": reports, "unit": order.stock_uom, "employee": employee.name}
+
+
+@frappe.whitelist()
+def get_production_report_result(request_id):
+	name = frappe.db.get_value("Job Card", {"report_request_id": request_id}, "name")
+	if not name:
+		return None
+	doc = frappe.get_doc("Job Card", name)
+	if doc.owner != frappe.session.user:
+		frappe.throw("不能查询他人的报工请求", frappe.PermissionError)
+	_report_task(doc.work_order, doc.operation_id, history=True)
+	doc.check_permission("read")
+	return {"name": doc.name, "docstatus": doc.docstatus, "good": doc.total_completed_qty, "bad": doc.process_loss_qty,
+		"time_context": frappe.parse_json(doc.report_time_context)}
+
+
+def _report_time_context(order, operation, from_time, to_time, shutdown_seconds, overtime_seconds):
+	from erpnext.manufacturing.doctype.production_time_rule.production_time_rule import load_report_time_rules
+
+	if frappe.db.exists("Sub Operation", {"parent": operation.operation, "parenttype": "Operation"}):
+		frappe.throw("该任务含子工序，本轮逐笔报工暂不支持，请先核对任务配置")
+	rules = load_report_time_rules(order.company, operation.operation)
+	result = calculate_report_time(from_time, to_time, rules=rules, operation=operation.operation,
+		shutdown_seconds=shutdown_seconds, overtime_seconds=overtime_seconds)
+	context = {"calculation_version": "B04-time-v1", "company": order.company, "operation": operation.operation,
+		"rule": next((r for r in rules if r["name"] == result["matched_rule"]), None), "result": result}
+	fingerprint = hashlib.sha256(frappe.as_json(context).encode()).hexdigest()
+	return context, fingerprint
+
+
+@frappe.whitelist()
+def preview_production_report_time(work_order, operation_id, from_time, to_time, shutdown_seconds=0, overtime_seconds=0):
+	order, operation, employee = _report_task(work_order, operation_id)
+	context, fingerprint = _report_time_context(order, operation, from_time, to_time, shutdown_seconds, overtime_seconds)
+	return {"context_fingerprint": fingerprint, **context["result"]}
+
+
+@frappe.whitelist()
+def confirm_production_report(work_order, operation_id, request_id, good_quantity, bad_quantity,
+	from_time, to_time, context_fingerprint, shutdown_seconds=0, overtime_seconds=0):
+	return _confirm_production_report(work_order, operation_id, request_id, good_quantity, bad_quantity,
+		from_time, to_time, context_fingerprint, shutdown_seconds, overtime_seconds)
+
+
+@frappe.whitelist()
+def correct_production_report(original_job_card, request_id, good_quantity, bad_quantity, reason):
+	original = frappe.get_doc("Job Card", original_job_card)
+	original.check_permission("read")
+	original.check_permission("cancel")
+	if not original.get("report_request_id") or not isinstance(reason, str) or not reason.strip():
+		frappe.throw("请选择原报工并填写更正原因")
+	frappe.db.get_value("Work Order", original.work_order, "name", for_update=True)
+	original = frappe.get_doc("Job Card", original.name, for_update=True)
+	line = original.time_logs[0]
+	return _confirm_production_report(original.work_order, original.operation_id, request_id, good_quantity,
+		bad_quantity, line.from_time, line.to_time, None, original.report_shutdown_seconds,
+		original.report_overtime_seconds, original=original, correction_reason=reason.strip())
+
+
+def _confirm_production_report(work_order, operation_id, request_id, good_quantity, bad_quantity,
+	from_time, to_time, context_fingerprint, shutdown_seconds=0, overtime_seconds=0, *, original=None, correction_reason=None):
+	"""A single native Job Card in the request transaction; no internal commit."""
+	from erpnext.manufacturing.doctype.bom.bom import validate_quantity_input
+
+	if not isinstance(request_id, str) or not re.fullmatch(r"[A-Za-z0-9_-]{16,64}", request_id):
+		frappe.throw("报工请求编号无效，请重新打开报工页面")
+	# Lock the existing parent before checking current scope and before native child/workstation writes.
+	frappe.db.get_value("Work Order", work_order, "name", for_update=True)
+	order, operation, employee = _report_task(work_order, operation_id, history=True, for_update=True)
+	good = Decimal(str(validate_quantity_input(good_quantity, "良品数量", allow_zero=True)))
+	bad = Decimal(str(validate_quantity_input(bad_quantity, "不良数量", allow_zero=True)))
+	quantity = validate_quantity_input(good + bad, "本次数量")
+	start, end = _report_datetime(from_time, "开始时间"), _report_datetime(to_time, "结束时间")
+	payload = {"user": frappe.session.user, "work_order": work_order, "operation_id": operation_id,
+		"good": format(good.normalize(), "f"), "bad": format(bad.normalize(), "f"), "from": start.isoformat(), "to": end.isoformat(),
+		"shutdown": _whole_non_negative(shutdown_seconds, "停工秒数"), "overtime": _whole_non_negative(overtime_seconds, "加班秒数"),
+		"context_fingerprint": context_fingerprint, "original": original.name if original else None, "correction_reason": correction_reason}
+	payload_hash = hashlib.sha256(frappe.as_json(payload).encode()).hexdigest()
+	existing = frappe.db.get_value("Job Card", {"report_request_id": request_id}, ["name", "report_payload_hash", "owner", "docstatus"], as_dict=True, for_update=True)
+	if existing:
+		if existing.owner != frappe.session.user or existing.report_payload_hash != payload_hash:
+			frappe.throw("请求编号已用于其他报工内容，不能覆盖原记录", frappe.PermissionError)
+		frappe.get_doc("Job Card", existing.name, for_update=True).check_permission("read")
+		return {"name": existing.name, "docstatus": existing.docstatus}
+	from erpnext.manufacturing.doctype.work_order.work_order import validate_production_execution_state
+	validate_production_execution_state(order)
+	if operation.status == "Completed" and not original:
+		frappe.throw("本道工序已经完成，请核对已有报工")
+	if original:
+		if original.docstatus != 1:
+			frappe.throw("原报工已被更正或取消，请核对当前记录", frappe.PermissionError)
+		if frappe.db.exists("Stock Entry", {"work_order": work_order, "docstatus": 1}):
+			frappe.throw("本轮只支持无库存后续单据的全冲更正，请先处理关联库存单据")
+		downstream = [row.name for row in order.operations if row.idx > operation.idx]
+		if downstream and frappe.db.get_values("Job Card", {"work_order": work_order, "docstatus": 1,
+			"operation_id": ["in", downstream]}, "name", for_update=True):
+			frappe.throw("已有后工序报工，请先处理后工序记录后再更正，原报工未改变")
+		context = frappe.parse_json(original.report_time_context)
+		context["original_report"] = original.name
+		context["rule_basis"] = "沿用原报工时段依据，起止时间不变"
+	else:
+		context, fingerprint = _report_time_context(order, operation, from_time, to_time, shutdown_seconds, overtime_seconds)
+		if fingerprint != context_fingerprint:
+			frappe.throw("时段依据已变化，请重新核对工时后确认")
+	context["confirmed_at"] = frappe.utils.now()
+	doc = frappe.get_doc({"doctype": "Job Card", "amended_from": original.name if original else None, "correction_reason": correction_reason,
+		"work_order": work_order, "operation_id": operation_id,
+		"operation": operation.operation, "sequence_id": operation.sequence_id, "workstation": operation.workstation,
+		"workstation_type": operation.workstation_type, "company": order.company, "production_item": order.production_item,
+		"bom_no": order.bom_no, "wip_warehouse": order.wip_warehouse, "for_quantity": quantity, "process_loss_qty": float(bad), "hour_rate": operation.hour_rate,
+		"report_request_id": request_id, "report_payload_hash": payload_hash, "report_time_context": frappe.as_json(context),
+		"report_shutdown_seconds": payload["shutdown"], "report_overtime_seconds": payload["overtime"],
+		"report_effective_seconds": context["result"]["effective_seconds"], "report_time_rule": context["result"]["matched_rule"],
+		"time_logs": [{"from_time": start.replace(tzinfo=None), "to_time": end.replace(tzinfo=None),
+			"completed_qty": float(good), "employee": employee.name}]})
+	previous = getattr(frappe.local, "production_report_context", None)
+	frappe.local.production_report_context = frappe._dict(card=doc, user=frappe.session.user, order=None, operation_id=operation_id)
+	try:
+		if original:
+			frappe.local.production_report_context.card = original
+			original.cancel()
+			frappe.local.production_report_context.card = doc
+		doc.insert()
+		doc.submit()
+	finally:
+		frappe.local.production_report_context = previous
+	return {"name": doc.name, "docstatus": doc.docstatus}

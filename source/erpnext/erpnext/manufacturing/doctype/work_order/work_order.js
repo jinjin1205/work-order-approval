@@ -167,6 +167,9 @@ frappe.ui.form.on("Work Order", {
 	},
 
 	refresh: function (frm) {
+		if (frm.doc.approval_requested_by && frm.doc.docstatus === 1 && frappe.user.has_role("生产报工")) {
+			frm.add_custom_button("逐笔报工", () => erpnext.work_order.open_production_report(frm));
+		}
 		erpnext.toggle_naming_series();
 		erpnext.work_order.set_custom_buttons(frm);
 		frm.set_intro("");
@@ -1178,3 +1181,114 @@ frappe.tour["Work Order"] = [
 		),
 	},
 ];
+
+// B08 reuses the native form/dialog; quantities and confirmation remain server-authoritative.
+erpnext.work_order.open_production_report = async function (frm) {
+	const api = "erpnext.manufacturing.doctype.job_card.job_card.";
+	const { message: menu } = await frappe.call(api + "get_production_report_tasks", { work_order: frm.doc.name });
+	if (!menu.tasks.length) {
+		frappe.msgprint("没有已授权的工序任务，请由负责人检查任务授权。");
+		return;
+	}
+	const storage_key = `production-report:${frappe.session.user}:${frm.doc.name}`;
+	let fingerprint = null;
+	let preview_generation = 0;
+	const escape = (value) => frappe.utils.escape_html(String(value ?? ""));
+	const dialog = new frappe.ui.Dialog({
+		title: "逐笔报工", size: "large",
+		fields: [
+			{ fieldname: "task", label: "工序任务", fieldtype: "Select", reqd: 1,
+				options: menu.tasks.map((t) => ({ value: t.name, label: t.operation })), default: menu.tasks[0].name,
+				onchange: () => { update_task(); update_preview(); } },
+			{ fieldname: "summary", fieldtype: "HTML" },
+			{ fieldname: "good_quantity", label: "本次良品数量", fieldtype: "Data", reqd: 1 },
+			{ fieldname: "bad_quantity", label: "本次不良数量", fieldtype: "Data", default: "0", reqd: 1 },
+			{ fieldname: "from_time", label: "实际开始时间", fieldtype: "Datetime", reqd: 1, onchange: () => update_preview() },
+			{ fieldname: "to_time", label: "实际结束时间", fieldtype: "Datetime", reqd: 1, default: frappe.datetime.now_datetime(), onchange: () => update_preview() },
+			{ fieldname: "shutdown_seconds", label: "停工秒数", fieldtype: "Int", default: 0, onchange: () => update_preview() },
+			{ fieldname: "overtime_seconds", label: "加班秒数", fieldtype: "Int", default: 0, onchange: () => update_preview() },
+			{ fieldname: "time_preview", fieldtype: "HTML" },
+			{ fieldname: "history", fieldtype: "HTML" },
+		],
+		primary_action_label: "确认报工",
+		primary_action: async (values) => {
+			if (!fingerprint) { frappe.msgprint("请先填写起止时间并核对工时预览。"); return; }
+			if (localStorage.getItem(storage_key)) {
+				frappe.msgprint("上次提交结果尚未核对，请先使用“查询或重试上次报工”，不要重复创建新记录。"); return;
+			}
+			const args = { work_order: frm.doc.name, operation_id: values.task,
+				request_id: crypto.randomUUID(), good_quantity: values.good_quantity, bad_quantity: values.bad_quantity,
+				from_time: values.from_time, to_time: values.to_time, shutdown_seconds: values.shutdown_seconds,
+				overtime_seconds: values.overtime_seconds, context_fingerprint: fingerprint };
+			localStorage.setItem(storage_key, JSON.stringify(args));
+			await submit(args);
+		},
+	});
+	function update_task() {
+		const task = menu.tasks.find((t) => t.name === dialog.get_value("task"));
+		if (!task) return;
+		dialog.set_value("good_quantity", String(task.unfinished));
+		dialog.fields_dict.summary.$wrapper.html(`<p>计划 ${escape(task.plan)}；累计良品 ${escape(task.good)}；累计不良 ${escape(task.bad)}；未完成 ${escape(task.unfinished)}（${escape(menu.unit)}）。本次确认不改计划量。</p>`);
+		const rows = menu.reports.filter((r) => r.operation_id === task.name);
+		dialog.fields_dict.history.$wrapper.html("<b>最近50笔中的本道工序记录</b>" + (rows.length ?
+			"<table class='table table-bordered'><thead><tr><th>记录</th><th>良品</th><th>不良</th><th>有效秒数</th><th>状态</th></tr></thead><tbody>" + rows.map((r) =>
+				`<tr><td><a href='/app/job-card/${encodeURIComponent(r.name)}' target='_blank'>${escape(r.name)}</a></td><td>${escape(r.total_completed_qty)}</td><td>${escape(r.process_loss_qty)}</td><td>${escape(r.report_effective_seconds)}</td><td>${r.docstatus === 1 ? "已确认" : "已冲销"}</td></tr>`).join("") + "</tbody></table>" : "<p>暂无已确认记录。</p>"));
+	}
+	async function update_preview() {
+		const generation = ++preview_generation;
+		fingerprint = null;
+		const start = dialog.get_value("from_time"), end = dialog.get_value("to_time");
+		if (!start || !end) return;
+		const { message: result } = await frappe.call(api + "preview_production_report_time", {
+			work_order: frm.doc.name, operation_id: dialog.get_value("task"), from_time: start, to_time: end,
+			shutdown_seconds: dialog.get_value("shutdown_seconds"), overtime_seconds: dialog.get_value("overtime_seconds"),
+		});
+		if (generation !== preview_generation) return;
+		fingerprint = result.context_fingerprint;
+		dialog.fields_dict.time_preview.$wrapper.html(`<p>经过 ${escape(result.reported_seconds)} 秒，休息 ${escape(result.rest_seconds)} 秒，有效工时 <b>${escape(result.effective_seconds)} 秒</b>。${escape(result.rule_message)}</p>`);
+	}
+	async function submit(args) {
+		dialog.get_primary_btn().prop("disabled", true);
+		let saved;
+		try {
+			const response = await frappe.call(api + "confirm_production_report", args);
+			saved = response.message;
+		} catch (error) {
+			if (error.status >= 400 && error.responseJSON?.exc_type) {
+				localStorage.removeItem(storage_key);
+				fingerprint = null;
+				dialog.fields_dict.time_preview.$wrapper.html("<p>服务器已拒绝本次报工，未保存。请按错误提示修正并重新核对工时。</p>");
+			} else {
+				// Preserve an uncertain request; a missing response is not proof of failure.
+				dialog.fields_dict.time_preview.$wrapper.html("<p>本次结果待核对。请查询或按原请求重试，不要重新报一笔。</p>");
+			}
+			return;
+		} finally {
+			dialog.get_primary_btn().prop("disabled", false);
+		}
+		await show_saved(saved);
+	}
+	async function show_saved(saved) {
+		localStorage.removeItem(storage_key);
+		dialog.hide();
+		const state = {0: "未生效", 1: "已确认", 2: "已冲销"}[saved.docstatus];
+		frappe.msgprint({ title: saved.docstatus === 1 ? "报工已确认" : "原记录已找回",
+			message: `记录：${escape(saved.name)}，${escape(state)}。本笔数量与当次工时依据已保存。` });
+		try { await frm.reload_doc(); }
+		catch (error) {
+			frappe.msgprint({ title: "记录已保存，页面刷新失败", message: `记录：${escape(saved.name)}。请重新打开工单查看，不要再次报工。` });
+		}
+	}
+	dialog.set_secondary_action(async () => {
+		const pending = localStorage.getItem(storage_key);
+		if (!pending) { frappe.msgprint("没有待核对的提交。"); return; }
+		const args = JSON.parse(pending);
+		const { message: saved } = await frappe.call(api + "get_production_report_result", { request_id: args.request_id });
+		if (saved) {
+			await show_saved(saved);
+		} else { await submit(args); }
+	});
+	dialog.set_secondary_action_label("查询或重试上次报工");
+	dialog.show();
+	update_task();
+};

@@ -133,3 +133,11 @@ B08拟新增有限类放原`job_card/test_job_card.py`，名称`TestProductionRe
 允许产品范围：第3节两个新原生DocType及其测试；原`job_card.py/.json/.js/test_job_card.py`；确需权限共用时原R07已拟的`erpnext/manufacturing/permissions.py`及`hooks.py`必要注册；历史/派生联动只沿原`report-concurrency.md`文件与字段白名单。新增字段跟随原生元数据/可复现迁移，不手改客户库。Frappe所有源码、库存估价、制造排程/工作站时段含义均禁止修改。
 
 本轮R07结束条件：实际源码入口/哈希可核、C14落定、结构/读取/快照/接口/失败样例及条件边界写回原卡、产品差异未变、白名单发布回读。不是B14/B08运行验收；本轮不新增配置、不开放接口、不重跑B04/Q05/B19，G1/G2/G3继续保留。需要改全局框架、第二套任务/库存账、放宽整单权限或出现白名单外派生修改时，记录实际证据并止于对应子项，不无限扩卡。
+
+## 2026-10-27 B08 本批实现回链
+
+实际证据见[实施记录](../B08/implementation/run-record.md)。原Job Card每笔事实/唯一`report_request_id`/`report_payload_hash`、服务端`report_time_context`与秒数字段；原Work Order Operation增加`report_scope/report_department/report_employee`。JobCardTimeLog只补已确认父卡保护；WorkOrder只放行服务器上下文中的本工序派生字段。没有新增permissions模块、事实表或Frappe改动。
+
+实际入口均在`job_card.py`：`get_production_report_tasks`、`preview_production_report_time`、`confirm_production_report`、`get_production_report_result`、`correct_production_report`；内部`_report_task/_report_context`复用原公司/班组/状态检查，`_report_time_context`复用B04计算和B14读取。中文原WorkOrder弹窗及JobCard依据查看，不另建页面系统。`work_order.py:validate_production_execution_state`由原判定拆出复用，旧请求找回先查历史权限，新事实仍查执行状态。
+
+实际最小更正为原生cancel/amend，起止不变沿用原时段依据；有提交库存单或后工序事实即拒绝。原生子工序配置明确拒绝，不新增子工序业务。三笔、窄回写、同键真实HTTP、快照旧新、原卡/子行保护及受控回滚已有证据；全部权限组合、完整逆向/跨对象并发、现场10秒及G1/G2/G3未通过。旧节中的“拟新增/当前不存在”为实施前历史，不代表本批状态。
