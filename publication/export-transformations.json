@@ -81,7 +81,7 @@
     "source": "docs/开发TODO.md",
     "public_path": "docs/开发TODO.md",
     "treatment": "unchanged",
-    "source_sha256": "94a41f7fcd45b83de89bcc428980c8812c0aa489a3995282ae00c84849c958e4"
+    "source_sha256": "b9cbe216ef222791d09f0d653479332f2fd95c5d0e32f07228e58be22f452170"
   },
   {
     "source": "docs/验收样例.md",
@@ -274,6 +274,12 @@
     "public_path": "evidence/R07/report-concurrency.md",
     "treatment": "unchanged",
     "source_sha256": "3a37308e19e5489193dca5a3269c883cccbfb43050aadaf3be7760af5c531ea0"
+  },
+  {
+    "source": "evidence/发布/2026-10-27.md",
+    "public_path": "evidence/发布/2026-10-27.md",
+    "treatment": "unchanged",
+    "source_sha256": "7767723c87d434eca6ce6430e41d148de02d4d31ca68579486cdd12059bf9d75"
   },
   {
     "source": ".development/Dockerfile",

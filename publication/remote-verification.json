@@ -1,0 +1,14 @@
+{
+  "verified_at": "2026-10-27T10:01:04.399698+08:00",
+  "repository": "https://github.com/jinjin1205/work-order-approval",
+  "branch": "main",
+  "verified_commit": "83202ae54fb139759855cd1d350434f6f9efa82d",
+  "method": "Fresh remote clone + SHA256 of every listed file + exact equality with six local modified source files and saved patch; independent GitHub ref read also matched",
+  "tracked_files": 103,
+  "content_hashes_verified": 102,
+  "manifest_self_verified_via_git_commit": true,
+  "source_files_exact": 6,
+  "missing_or_extra_files": 0,
+  "hash_mismatches": 0,
+  "scope": "Public snapshot; secrets and raw local execution data deliberately excluded; no new application test or CI result"
+}

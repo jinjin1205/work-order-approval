@@ -1438,5 +1438,11 @@
     "original_sha256": "190d1510b2c8d29ceac63a5969cb003d6a03dfd268b1333aeab0cc0ddb2de956",
     "published": true,
     "reason": "public copy"
+  },
+  {
+    "path": "evidence/发布/2026-10-27.md",
+    "original_sha256": "7767723c87d434eca6ce6430e41d148de02d4d31ca68579486cdd12059bf9d75",
+    "published": true,
+    "reason": "public copy"
   }
 ]
