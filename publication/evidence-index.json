@@ -5598,6 +5598,18 @@
     "reason": "public copy"
   },
   {
+    "path": "evidence/发布/2026-10-28-dcbd494-ci.json",
+    "original_sha256": "5b550505fa4af2ac2877dfd8583edc95a6536164b740faa625020a12169e9efb",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/发布/2026-10-28-dcbd494-remote.json",
+    "original_sha256": "66c8477579be1abb3183ac505ec877735bc7d6f1a1f694ca0353095cf34259e1",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
     "path": "evidence/发布/B04-B19-ui-2026-10-27-remote.json",
     "original_sha256": "5de69034f0249f1dfa15abd56adf892d8ba9a6c1bc18a77eb984ee94344e86fc",
     "published": true,
@@ -5683,7 +5695,13 @@
   },
   {
     "path": "evidence/维护/2026-10-28-暂停与保存.md",
-    "original_sha256": "ab448d0fc7e714c24bb88271ab39024d5e5534aa0d26e68fb1dd93d4b9ac0f3f",
+    "original_sha256": "ccffe148d50656d46a515fa417abcb1a9c237279e75e6018d929bb26636c5b87",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/维护/2026-10-28-缓存清理结果.json",
+    "original_sha256": "a0c1e66d67cb34666327664052796737f9525ef2b90f2723efcfbe454fb03c13",
     "published": true,
     "reason": "public copy"
   }
