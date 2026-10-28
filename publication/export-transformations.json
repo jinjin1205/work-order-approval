@@ -303,7 +303,7 @@
     "source": "docs/开发TODO.md",
     "public_path": "docs/开发TODO.md",
     "treatment": "unchanged",
-    "source_sha256": "7f7733eb19d2f549cf50103a128ee20fe004828f399bc1544f1a6c0e8b6f5c62"
+    "source_sha256": "ce208dee0b10bc8e748b999ef6d951d67bb980cf29fb3bddf98791096760647c"
   },
   {
     "source": "docs/验收样例.md",
@@ -681,7 +681,7 @@
     "source": "evidence/维护/2026-10-28-暂停与保存.md",
     "public_path": "evidence/维护/2026-10-28-暂停与保存.md",
     "treatment": "unchanged",
-    "source_sha256": "9c78db0ca83eaada0dcb57d5bfc8a584f56031424f881d90bdada25f2534cd34"
+    "source_sha256": "ab448d0fc7e714c24bb88271ab39024d5e5534aa0d26e68fb1dd93d4b9ac0f3f"
   },
   {
     "source": "openspec/config.yaml",
@@ -837,7 +837,7 @@
     "source": ".publication/export_public.py",
     "public_path": ".publication/export_public.py",
     "treatment": "unchanged",
-    "source_sha256": "26bf7df8f95bcd6484b127d9673cbef253420b6309c77a550ccf6a56d6673b0c"
+    "source_sha256": "d24f8e8d0cfd90dffecc082eb5aa26a29619defa2e1b0d7c766c0d0b4362fac1"
   },
   {
     "source": ".publication/check_public.py",
@@ -873,7 +873,7 @@
     "source": ".development/README.md",
     "public_path": ".development/README.md",
     "treatment": "unchanged",
-    "source_sha256": "af1ecf2cca1fc30d1ca15ec316d7ed8ad71c48aaa2b81c35b2ec4497ac4dc1ba"
+    "source_sha256": "0727bef0a57098fa1072755214995b77d550a5b50e5de4530d67d198b373a5d4"
   },
   {
     "source": ".development/.dockerignore",
@@ -1528,6 +1528,18 @@
     "public_path": "evidence/R05/r02-probe-attempt5.py",
     "treatment": "unchanged",
     "source_sha256": "bebd418f53e027db69fc9888dfc4bf01fc162aab71394832e1e2572c6d9cd774"
+  },
+  {
+    "source": "evidence/发布/2026-10-28-c048268-remote.json",
+    "public_path": "evidence/发布/2026-10-28-c048268-remote.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "7a28aa12ab6cb7c13b6dd55d6050feddc06fe55de4f08dd322a64d421d98db8c"
+  },
+  {
+    "source": "evidence/发布/2026-10-28-c048268-ci.json",
+    "public_path": "evidence/发布/2026-10-28-c048268-ci.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "d15512333c68416e4614b52ef5697d9602a8691d826e9ef86acdbe5821c67fcf"
   },
   {
     "source": "evidence/发布/2026-10-28-9684f38-remote.json",
