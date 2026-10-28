@@ -1,3 +1,19 @@
+# 通用质量与开发协作要求（2026-10-28用户更新）
+
+所有结论必须有依据，未验证明确标注；当前状态先核实，不扩张用户范围，表达简明直接。以下规则与原项目约定共同适用。
+
+## 开发任务的默认配合流程
+
+1. 先核实并复用已安装的OpenSpec、Playwright CLI和Superpowers；只在缺失/损坏时按对应官方仓库当前README补齐，不重复安装或自行升级。
+2. 实施前检查项目根目录`openspec/config.yaml`、`.agents/skills/openspec-*`和`.agents/skills/playwright-cli`。缺失时按需执行`openspec init --tools codex`、`playwright-cli install --skills=agents`，保留既有配置、自定义内容及项目规则；完成后实际核对命令和文件。仅讨论、只读核查或明确限定的文档维护不自动启动开发或部署。
+3. 用OpenSpec统一需求/方案/变更/任务，Superpowers执行适用的澄清、计划、实现、测试与审查。沿用原34张任务卡及编号；OpenSpec引用原卡/验收/证据，不复制第二份任务清单，不把旧已验子项全部重开。适用步骤按规模裁剪，不能跳过正确性或权限检查。
+4. 涉及网页交互或页面改动时，按当前可用工具及上级约束执行真实浏览器验收，项目偏好Playwright CLI；其他任务做相应测试。工具无法使用或受到约束时说明原因、实际替代方式和未验范围，不将API成功冒充页面通过。
+5. 按实际结果更新任务；必要实现/测试/验收全部满足才归档，不提前勾选。开工先写“做什么、不做什么、怎样算通过”，完工附版本、实际命令/结果及未测项。正式交付前必须完成Z01/CASE-11的干净环境启动、配置、备份恢复及独立接手验证；本机旧环境跑通不能代替交付。
+
+官方依据：[OpenSpec](https://github.com/Fission-AI/OpenSpec)、[Superpowers](https://github.com/obra/superpowers)、[Playwright CLI](https://github.com/microsoft/playwright-cli)。
+
+---
+
 # 项目开发约定
 
 适用于本目录及子目录。来源：用户在本会话明确提出的质量、复用、边界和开发偏好；2026-10-26 整理，2026-10-27 补充工单审批与执行检查。

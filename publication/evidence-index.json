@@ -4548,6 +4548,12 @@
     "reason": "public copy"
   },
   {
+    "path": "evidence/R07/task-card-refresh-2026-10-28.md",
+    "original_sha256": "43096df9e72af8507aa00cc97ca887d04293c15bd278d6e778c02b06e7c69dea",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
     "path": "evidence/R07/time-config-binding.md",
     "original_sha256": "a5ecf4880acd4aa1fca3909ea9999a6702ac46ac28ba3a058929f1097a505860",
     "published": true,
@@ -4594,6 +4600,12 @@
     "original_sha256": "4de2be84634c5cdd60e2c217b26fec11a30eee6153a2db76ebfa39f1b561224a",
     "published": true,
     "reason": "public copy"
+  },
+  {
+    "path": "evidence/发布/B08-2026-10-27-6274451-remote.json",
+    "original_sha256": "c43311066b6dfa4b5bf42963baeca92ae4d0e3f2cdcd15399ec2bb4ac5fde705",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
   },
   {
     "path": "evidence/发布/B08-2026-10-27-63f4d1a-remote.json",

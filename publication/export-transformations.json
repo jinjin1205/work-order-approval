@@ -231,25 +231,25 @@
     "source": "AGENTS.md",
     "public_path": "AGENTS.md",
     "treatment": "unchanged",
-    "source_sha256": "138fe4c42c4924733cf70c361051346b342c3390edffea25366214d6625cdd2d"
+    "source_sha256": "1f074eb7f488f6359f8ca97b93ec32f8e8dc35d97bcf18bd7e897e1b247316e5"
   },
   {
     "source": "docs/任务卡/01-复用核验与选型.md",
     "public_path": "docs/任务卡/01-复用核验与选型.md",
     "treatment": "unchanged",
-    "source_sha256": "038674e6c8eed3546620e637591f19bc9d02a743e63575734cbb7c06993b4ac5"
+    "source_sha256": "6b7059e64da4dd96bb6a0b5e007d48d5aa42c356338ce6e06f97d935d79823b3"
   },
   {
     "source": "docs/任务卡/02-生产与物料闭环.md",
     "public_path": "docs/任务卡/02-生产与物料闭环.md",
     "treatment": "personal paths/runtime identifiers removed",
-    "source_sha256": "30bb8aeac28e2642f9448f94a25bd51eca7c068b52e8afa5e642578776b5e284"
+    "source_sha256": "1000a06352da49b034b7f8b19404471bcd332a854b8c31a80ec5b7dd666ae3a5"
   },
   {
     "source": "docs/任务卡/03-AI与交付.md",
     "public_path": "docs/任务卡/03-AI与交付.md",
     "treatment": "unchanged",
-    "source_sha256": "de44277a9618a3ab08578b99c75f3924022e08e1f43dd9e0e512fd2554fab7ba"
+    "source_sha256": "2f6b21c2814178018454c16200de3f3036f06fd76d0372fd378df83e0c629faa"
   },
   {
     "source": "docs/决策与范围.md",
@@ -261,13 +261,13 @@
     "source": "docs/开发TODO.md",
     "public_path": "docs/开发TODO.md",
     "treatment": "unchanged",
-    "source_sha256": "4ef1397cdd5fce769b32ddfecbefd8028aec4667f2d05364d0cc69c6ce9991bc"
+    "source_sha256": "59b1daa9d26b74d0b3acaa74774abef407babf69968247787a855f7fd166d722"
   },
   {
     "source": "docs/验收样例.md",
     "public_path": "docs/验收样例.md",
     "treatment": "unchanged",
-    "source_sha256": "67b261077e3925379d542da6307afd31c1ed177b3a55b1a5a8f596f8fbc0f53f"
+    "source_sha256": "c1c3c503e3c1e0d91a5fdd65a0abbd7585e490114898a9663d0bdd878246d75e"
   },
   {
     "source": "evidence/B01/run-record.md",
@@ -580,6 +580,12 @@
     "public_path": "evidence/R07/report-concurrency.md",
     "treatment": "unchanged",
     "source_sha256": "a42cd1cbca7cb15fca009eb3072cd1df87883900c4d7e697a6621da222e26bc4"
+  },
+  {
+    "source": "evidence/R07/task-card-refresh-2026-10-28.md",
+    "public_path": "evidence/R07/task-card-refresh-2026-10-28.md",
+    "treatment": "unchanged",
+    "source_sha256": "43096df9e72af8507aa00cc97ca887d04293c15bd278d6e778c02b06e7c69dea"
   },
   {
     "source": "evidence/R07/time-config-binding.md",
