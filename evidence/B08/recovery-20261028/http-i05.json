@@ -1,0 +1,256 @@
+{
+  "passed": true,
+  "scripts_before_actions": {
+    "b08_recovery_fixture.py": "72e442b1fc1fc356999ee188e18838c522505280c18717d04172d7863d595a7a",
+    "b08_response_loss_http.py": "47d7b945bed66c5bf9d1b95c4b3d1a5a6908e9fd1c011edb7c18ca92859561c7",
+    "b08_distinct_concurrency_fixture.py": "756b7f1f5b1f19fd326952a56ca583ecc3e2f7f79ab5e98cc5e5b3c5ac61bac8",
+    "b08_distinct_concurrency_http.py": "edb40d5981f1d5d8a40fcaae6545b75e16ed00b528c58c5420e8352640805ad3"
+  },
+  "confirmation_post_retries": 0,
+  "permissions": [
+    {
+      "doctype": "Work Order",
+      "permission": "read",
+      "actual": true,
+      "expected": true
+    },
+    {
+      "doctype": "Work Order",
+      "permission": "write",
+      "actual": false,
+      "expected": false
+    },
+    {
+      "doctype": "Stock Entry",
+      "permission": "create",
+      "actual": false,
+      "expected": false
+    },
+    {
+      "doctype": "Job Card",
+      "permission": "create",
+      "actual": true,
+      "expected": true
+    }
+  ],
+  "request_key_sha256": "9fb35f85d6a474db1f3ec398700dba219e8f942a636524b3f003a7d21defb423",
+  "business_content_sha256": "5fc3c6549ab364a4c3a3168175b14c05659253ba9e723af2002eeda6926b24b9",
+  "actor_identity_sha256": "9fe239a408c456d8450d1e09dad0defb46d1e210296cc3657221c4f17bff39ed",
+  "client_disconnect_error_type": "RemoteDisconnected",
+  "verification": {
+    "passed": true,
+    "new_facts": 1,
+    "new_time_rows": 1,
+    "orphan_time_rows": 0,
+    "recovery_returns_original": true,
+    "recovery_changes_no_values": true,
+    "plan_route_other_tasks_and_old_cards_logs_unchanged": true,
+    "stock_unchanged": true,
+    "final": {
+      "plan": 10,
+      "good": 2,
+      "bad": 0,
+      "remaining": 8,
+      "minutes": 60,
+      "task_status": "Work in Progress",
+      "work_order_status": "In Process",
+      "hour_rate": 0.0,
+      "actual_operating_cost": 0.0
+    },
+    "nonzero_cost_verified": false
+  },
+  "retention": {
+    "groups": {
+      "business": {
+        "Work Order": {
+          "old_rows": 20,
+          "missing": 0,
+          "changed": 0,
+          "new_rows": 1
+        },
+        "Work Order Item": {
+          "old_rows": 20,
+          "missing": 0,
+          "changed": 0,
+          "new_rows": 1
+        },
+        "Work Order Operation": {
+          "old_rows": 50,
+          "missing": 0,
+          "changed": 0,
+          "new_rows": 3
+        },
+        "Job Card": {
+          "old_rows": 58,
+          "missing": 0,
+          "changed": 0,
+          "new_rows": 4
+        },
+        "Job Card Time Log": {
+          "old_rows": 22,
+          "missing": 0,
+          "changed": 0,
+          "new_rows": 1
+        },
+        "Stock Entry": {
+          "old_rows": 2,
+          "missing": 0,
+          "changed": 0,
+          "new_rows": 0
+        },
+        "Stock Entry Detail": {
+          "old_rows": 2,
+          "missing": 0,
+          "changed": 0,
+          "new_rows": 0
+        },
+        "Stock Ledger Entry": {
+          "old_rows": 2,
+          "missing": 0,
+          "changed": 0,
+          "new_rows": 0
+        },
+        "Workflow Action": {
+          "old_rows": 52,
+          "missing": 0,
+          "changed": 0,
+          "new_rows": 4
+        },
+        "Version": {
+          "old_rows": 128,
+          "missing": 0,
+          "changed": 0,
+          "new_rows": 7
+        },
+        "Comment": {
+          "old_rows": 246,
+          "missing": 0,
+          "changed": 0,
+          "new_rows": 7
+        }
+      },
+      "security": {
+        "User": {
+          "old_rows": 25,
+          "missing": 0,
+          "changed": 0,
+          "new_rows": 1
+        },
+        "Role": {
+          "old_rows": 61,
+          "missing": 0,
+          "changed": 0,
+          "new_rows": 0
+        },
+        "Has Role": {
+          "old_rows": 690,
+          "missing": 0,
+          "changed": 0,
+          "new_rows": 2
+        },
+        "User Permission": {
+          "old_rows": 43,
+          "missing": 0,
+          "changed": 0,
+          "new_rows": 3
+        },
+        "Custom DocPerm": {
+          "old_rows": 69,
+          "missing": 0,
+          "changed": 0,
+          "new_rows": 0
+        }
+      },
+      "extra": {
+        "Employee": {
+          "old_rows": 8,
+          "missing": 0,
+          "changed": 0,
+          "new_rows": 1
+        },
+        "Production Time Rule": {
+          "old_rows": 1,
+          "missing": 0,
+          "changed": 0,
+          "new_rows": 0
+        },
+        "Production Time Period": {
+          "old_rows": 2,
+          "missing": 0,
+          "changed": 0,
+          "new_rows": 0
+        },
+        "Workstation": {
+          "old_rows": 6,
+          "missing": 0,
+          "changed": 0,
+          "new_rows": 1
+        }
+      }
+    },
+    "all_old_rows_unchanged": true,
+    "stock_new_rows": 0
+  },
+  "events": {
+    "client_send": {
+      "monotonic_ns": 2450425041,
+      "utc": "2026-10-28T05:34:43.035042+00:00"
+    },
+    "proxy_request_validated": {
+      "monotonic_ns": 2451179666,
+      "utc": "2026-10-28T05:34:43.035804+00:00"
+    },
+    "upstream_send": {
+      "monotonic_ns": 2451218583,
+      "utc": "2026-10-28T05:34:43.035834+00:00"
+    },
+    "backend_response_buffered": {
+      "monotonic_ns": 2572118875,
+      "utc": "2026-10-28T05:34:43.156738+00:00"
+    },
+    "db_observation_start": {
+      "monotonic_ns": 2572952125,
+      "utc": "2026-10-28T05:34:43.157567+00:00"
+    },
+    "commit_observed": {
+      "monotonic_ns": 3469740875,
+      "utc": "2026-10-28T05:34:44.054358+00:00"
+    },
+    "downstream_drop_start": {
+      "monotonic_ns": 3469770166,
+      "utc": "2026-10-28T05:34:44.054384+00:00"
+    },
+    "downstream_drop_finished": {
+      "monotonic_ns": 3469802208,
+      "utc": "2026-10-28T05:34:44.054416+00:00"
+    },
+    "client_disconnect_observed": {
+      "monotonic_ns": 3469956750,
+      "utc": "2026-10-28T05:34:44.054571+00:00"
+    },
+    "recovery_start": {
+      "monotonic_ns": 3469986000,
+      "utc": "2026-10-28T05:34:44.054600+00:00"
+    },
+    "recovery_finished": {
+      "monotonic_ns": 3490281000,
+      "utc": "2026-10-28T05:34:44.074895+00:00"
+    }
+  },
+  "upstream_confirmation_posts": 1,
+  "downstream_response_bytes": 0,
+  "commit_observed_before_drop": true,
+  "upstream_status": 200,
+  "db_observation": {
+    "label": "committed",
+    "state_sha256": "e9351602dbf9fdfc1e0c71c2d27a80fa03e5686720b612250670901ec5d62a01",
+    "database_read_only": true,
+    "fresh_process_and_connection": true,
+    "isolation": "REPEATABLE-READ",
+    "connection_id_sha256": "a0b44327f2e6365b10c0eddd538cd7142fcbf8f30bfe0517f313a248eb939b2d",
+    "submitted_fact_time_and_parent_visible": true
+  },
+  "proxy_failure_type": null,
+  "exact_commit_instruction_time_recorded": false,
+  "limit": "Commit was observable through a fresh DB connection before response loss; no precise COMMIT instruction timestamp, browser, I06 or full G3 claim."
+}

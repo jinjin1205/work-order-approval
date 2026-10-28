@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-28T05:34:57.508489+00:00",
+  "command": [
+    "docker",
+    "exec",
+    "xgd-b08-check",
+    "env/bin/python",
+    "/b01/b08_correction_rollback.py"
+  ],
+  "script_sha256": "1cbbb054bfcd4596e3070e758f3b708d020ece51dce0cb81c7fc9ed31f997500"
+}

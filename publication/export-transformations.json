@@ -285,7 +285,7 @@
     "source": "docs/任务卡/02-生产与物料闭环.md",
     "public_path": "docs/任务卡/02-生产与物料闭环.md",
     "treatment": "personal paths/runtime identifiers removed",
-    "source_sha256": "3e2edb4e82770f6a5f80f002dca00bac617f44505e3cdcbcb63b02b220eabe70"
+    "source_sha256": "74678773c5eaec59067dc8c8146f87905bac164dd3d9d9345804818d3d92cb7f"
   },
   {
     "source": "docs/任务卡/03-AI与交付.md",
@@ -303,7 +303,7 @@
     "source": "docs/开发TODO.md",
     "public_path": "docs/开发TODO.md",
     "treatment": "unchanged",
-    "source_sha256": "0656166fd50eeee398934beb725b8602500d55c5e41adab140c4b85c244e378a"
+    "source_sha256": "8e832e111a0894c1c98226287fe3e0cd0be7a143dd1b4f9ea757fdea8550632f"
   },
   {
     "source": "docs/验收样例.md",
@@ -394,6 +394,12 @@
     "public_path": "evidence/B08/native-fact/run-record.md",
     "treatment": "unchanged",
     "source_sha256": "58f3fa582677795482b29e66a439047d12eb261456eff413f4bd183c53738190"
+  },
+  {
+    "source": "evidence/B08/recovery-20261028/run-record.md",
+    "public_path": "evidence/B08/recovery-20261028/run-record.md",
+    "treatment": "unchanged",
+    "source_sha256": "4f6c972344f71ed716d435585397994b16745129725bc1c8cd114c0b6985e199"
   },
   {
     "source": "evidence/B10/run-record.md",
@@ -651,7 +657,7 @@
     "source": "evidence/R07/report-concurrency.md",
     "public_path": "evidence/R07/report-concurrency.md",
     "treatment": "unchanged",
-    "source_sha256": "9757d3f1ac72dae0878c3c63a2b394252542c4a87b991658a7f1c34cd717ef4a"
+    "source_sha256": "9e05cf4ccaf8719fee405ee13323c3e332fe2860229e6260a9cc7d296114699c"
   },
   {
     "source": "evidence/R07/task-card-refresh-2026-10-28.md",
@@ -681,19 +687,19 @@
     "source": "openspec/changes/b08-followup-20261028/design.md",
     "public_path": "openspec/changes/b08-followup-20261028/design.md",
     "treatment": "unchanged",
-    "source_sha256": "166d5252258cdfdbf4e772269e795bd78940ed83adc7d9103c5676bc26f07046"
+    "source_sha256": "b4f06014b94739f82d2c83bf90044e46225a4dd1da04cd32f6c5358ecaa278ea"
   },
   {
     "source": "openspec/changes/b08-followup-20261028/proposal.md",
     "public_path": "openspec/changes/b08-followup-20261028/proposal.md",
     "treatment": "unchanged",
-    "source_sha256": "c239034c691f9a5b0aab6815b0fb946a1f826787858c42eac999753d2f9c7df2"
+    "source_sha256": "8521650357d86a65a1204b59e3fe591d6eb8d41954e94d3d094970e5c82f7958"
   },
   {
     "source": "openspec/changes/b08-followup-20261028/tasks.md",
     "public_path": "openspec/changes/b08-followup-20261028/tasks.md",
     "treatment": "unchanged",
-    "source_sha256": "03ec89a336560155adb3eabb8b32c0c20b05dc2e119b968c9c9d06956850162e"
+    "source_sha256": "ad582bdda6f4f402457ba7cb3336157d08d1bee8e8401cabee46b67c802d1127"
   },
   {
     "source": "openspec/changes/b08-followup-20261028/.openspec.yaml",
@@ -784,6 +790,12 @@
     "public_path": ".development/checks/b08_clone.py",
     "treatment": "unchanged",
     "source_sha256": "432a22de146df023e7be08746949cfa5f3db47b1a4d10d0c4f9950991b399c2c"
+  },
+  {
+    "source": ".development/checks/b08_correction_rollback.py",
+    "public_path": ".development/checks/b08_correction_rollback.py",
+    "treatment": "unchanged",
+    "source_sha256": "1cbbb054bfcd4596e3070e758f3b708d020ece51dce0cb81c7fc9ed31f997500"
   },
   {
     "source": ".development/checks/b08_distinct_concurrency_fixture.py",
@@ -910,6 +922,18 @@
     "public_path": ".development/checks/b08_preserve.py",
     "treatment": "unchanged",
     "source_sha256": "4e755143411367352d99c99055109f3a8121fd4d2db2c600d61cc4508bf67d14"
+  },
+  {
+    "source": ".development/checks/b08_recovery_fixture.py",
+    "public_path": ".development/checks/b08_recovery_fixture.py",
+    "treatment": "unchanged",
+    "source_sha256": "72e442b1fc1fc356999ee188e18838c522505280c18717d04172d7863d595a7a"
+  },
+  {
+    "source": ".development/checks/b08_response_loss_http.py",
+    "public_path": ".development/checks/b08_response_loss_http.py",
+    "treatment": "unchanged",
+    "source_sha256": "47d7b945bed66c5bf9d1b95c4b3d1a5a6908e9fd1c011edb7c18ca92859561c7"
   },
   {
     "source": ".development/checks/b08_setup.py",
@@ -1170,6 +1194,12 @@
     "source_sha256": "4509c93f6d4faf3fe9131c3f0dadd1b003e9896fd9adf3c03d1dc2078047cc93"
   },
   {
+    "source": ".development/checks/b08-recovery-source-manifest.json",
+    "public_path": ".development/checks/b08-recovery-source-manifest.json",
+    "treatment": "unchanged",
+    "source_sha256": "62d15604f2eb6387164b3c2585bb22d287b1975a2d35aa109fab2a3c8dc8e80c"
+  },
+  {
     "source": ".development/checks/b08-source-manifest.json",
     "public_path": ".development/checks/b08-source-manifest.json",
     "treatment": "unchanged",
@@ -1348,6 +1378,78 @@
     "public_path": "evidence/R05/r02-probe-attempt5.py",
     "treatment": "unchanged",
     "source_sha256": "bebd418f53e027db69fc9888dfc4bf01fc162aab71394832e1e2572c6d9cd774"
+  },
+  {
+    "source": "evidence/B08/recovery-20261028/baseline.json",
+    "public_path": "evidence/B08/recovery-20261028/baseline.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "91ef6b7f17398af39631e7573df59b067e5b040785b53322c1a5a313b773756d"
+  },
+  {
+    "source": "evidence/B08/recovery-20261028/source-manifest.json",
+    "public_path": "evidence/B08/recovery-20261028/source-manifest.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "62d15604f2eb6387164b3c2585bb22d287b1975a2d35aa109fab2a3c8dc8e80c"
+  },
+  {
+    "source": "evidence/B08/recovery-20261028/runtime-source.json",
+    "public_path": "evidence/B08/recovery-20261028/runtime-source.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "1f524bb39cbbec05d50aa22990d30fcd7ba376f78219014702787781bedfc7e6"
+  },
+  {
+    "source": "evidence/B08/recovery-20261028/web-source.json",
+    "public_path": "evidence/B08/recovery-20261028/web-source.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "f5bf3bb3cdfe8756a466042296c379ce520370165100fe9ded543187e1a96e87"
+  },
+  {
+    "source": "evidence/B08/recovery-20261028/transaction-source.json",
+    "public_path": "evidence/B08/recovery-20261028/transaction-source.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "19766f59301e0cc47f4b93a1eced7b0cb4c231ebbd8d89cbe5e2aaed6ea27b80"
+  },
+  {
+    "source": "evidence/B08/recovery-20261028/http-setup-before.json",
+    "public_path": "evidence/B08/recovery-20261028/http-setup-before.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "13ef04f69e169c1cf67ff466221fae293b25afa8cb145ed257459f271deac395"
+  },
+  {
+    "source": "evidence/B08/recovery-20261028/http-setup.json",
+    "public_path": "evidence/B08/recovery-20261028/http-setup.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "d176f2923628fdb191ce25f1931d904db66947add8f7105455a1ee6ac43705cd"
+  },
+  {
+    "source": "evidence/B08/recovery-20261028/http-i05-before.json",
+    "public_path": "evidence/B08/recovery-20261028/http-i05-before.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "f3448498f793d7e1e3064c2f79e5f9e7653b8a767bae4a451b4650a5777c40af"
+  },
+  {
+    "source": "evidence/B08/recovery-20261028/http-i05.json",
+    "public_path": "evidence/B08/recovery-20261028/http-i05.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "d499d9a1778e705ae2f8d96eefac6b2f73dfe5cd54fbbc5e4cca19eabbc66226"
+  },
+  {
+    "source": "evidence/B08/recovery-20261028/i06-controlled-before.json",
+    "public_path": "evidence/B08/recovery-20261028/i06-controlled-before.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "5b783d05f1453383ff773d882e7398b95da5682fd0acbbd1edf7f87d0807e091"
+  },
+  {
+    "source": "evidence/B08/recovery-20261028/i06-controlled.json",
+    "public_path": "evidence/B08/recovery-20261028/i06-controlled.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "22cbc8295b5646358ffcf76e354f7edc59b90b568fde77211747d242246a0df9"
+  },
+  {
+    "source": "evidence/B08/recovery-20261028/acceptance-summary.json",
+    "public_path": "evidence/B08/recovery-20261028/acceptance-summary.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "563f3c93b952840493a0a3efb9823754c8d514389621fca8bf3c128246c0ea3e"
   },
   {
     "source": "evidence/发布/2026-10-28-698a780-remote.json",

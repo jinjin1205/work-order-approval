@@ -1,0 +1,21 @@
+{
+  "read_at": "2026-10-28T05:32:31.325476+00:00",
+  "runtime_file": "apps/frappe/frappe/app.py",
+  "sha256": "06bb4a6f9fdd9f5dcfab3fa914dd9846d99d5ae178b64f0687bc6f418e430866",
+  "observed_order": [
+    {
+      "line": 184,
+      "operation": "sync_database(rollback) on successful handler path"
+    },
+    {
+      "line": 453,
+      "operation": "UNSAFE method invokes frappe.db.commit() before returning response"
+    },
+    {
+      "line": 203,
+      "operation": "return response after sync_database and after-request hooks"
+    }
+  ],
+  "basis": "Actual read-only container source inspection; same hash on check and Web",
+  "boundary": "Source order supports probe design; actual commit visibility and dropped response require I05 runtime evidence. No exact database COMMIT timestamp captured."
+}

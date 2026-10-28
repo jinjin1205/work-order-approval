@@ -2946,6 +2946,84 @@
     "reason": "public copy"
   },
   {
+    "path": "evidence/B08/recovery-20261028/acceptance-summary.json",
+    "original_sha256": "563f3c93b952840493a0a3efb9823754c8d514389621fca8bf3c128246c0ea3e",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/recovery-20261028/baseline.json",
+    "original_sha256": "91ef6b7f17398af39631e7573df59b067e5b040785b53322c1a5a313b773756d",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/recovery-20261028/http-i05-before.json",
+    "original_sha256": "f3448498f793d7e1e3064c2f79e5f9e7653b8a767bae4a451b4650a5777c40af",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/recovery-20261028/http-i05.json",
+    "original_sha256": "d499d9a1778e705ae2f8d96eefac6b2f73dfe5cd54fbbc5e4cca19eabbc66226",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/recovery-20261028/http-setup-before.json",
+    "original_sha256": "13ef04f69e169c1cf67ff466221fae293b25afa8cb145ed257459f271deac395",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/recovery-20261028/http-setup.json",
+    "original_sha256": "d176f2923628fdb191ce25f1931d904db66947add8f7105455a1ee6ac43705cd",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/recovery-20261028/i06-controlled-before.json",
+    "original_sha256": "5b783d05f1453383ff773d882e7398b95da5682fd0acbbd1edf7f87d0807e091",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/recovery-20261028/i06-controlled.json",
+    "original_sha256": "22cbc8295b5646358ffcf76e354f7edc59b90b568fde77211747d242246a0df9",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/recovery-20261028/run-record.md",
+    "original_sha256": "4f6c972344f71ed716d435585397994b16745129725bc1c8cd114c0b6985e199",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/recovery-20261028/runtime-source.json",
+    "original_sha256": "1f524bb39cbbec05d50aa22990d30fcd7ba376f78219014702787781bedfc7e6",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/recovery-20261028/source-manifest.json",
+    "original_sha256": "62d15604f2eb6387164b3c2585bb22d287b1975a2d35aa109fab2a3c8dc8e80c",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/recovery-20261028/transaction-source.json",
+    "original_sha256": "19766f59301e0cc47f4b93a1eced7b0cb4c231ebbd8d89cbe5e2aaed6ea27b80",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/recovery-20261028/web-source.json",
+    "original_sha256": "f5bf3bb3cdfe8756a466042296c379ce520370165100fe9ded543187e1a96e87",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
     "path": "evidence/B10/acceptance-bench-source-stderr.log",
     "original_sha256": "1d5602ee42b7eae7b96b1a9cf1991d5d7a09fb1871b1036db59b34c7719adb15",
     "published": false,
@@ -5383,7 +5461,7 @@
   },
   {
     "path": "evidence/R07/report-concurrency.md",
-    "original_sha256": "9757d3f1ac72dae0878c3c63a2b394252542c4a87b991658a7f1c34cd717ef4a",
+    "original_sha256": "9e05cf4ccaf8719fee405ee13323c3e332fe2860229e6260a9cc7d296114699c",
     "published": true,
     "reason": "public copy"
   },
@@ -5428,6 +5506,18 @@
     "original_sha256": "5bc50443f1ee66cb5cdd94bc6c6ef958a7b1ddd0a131d482bfb355ed9e1cd644",
     "published": true,
     "reason": "public copy"
+  },
+  {
+    "path": "evidence/发布/2026-10-28-05aa3ab-ci.json",
+    "original_sha256": "548678bea31f39a89997873ec97c4e2c3547fad41ebeae5de0b52447db671983",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/发布/2026-10-28-05aa3ab-remote.json",
+    "original_sha256": "440bf08bf7bd2972869a5c4194c010105c8371f56a09b3d3931e6004afea875f",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
   },
   {
     "path": "evidence/发布/2026-10-28-35d6332-remote.json",

@@ -1,0 +1,17 @@
+{
+  "at": "2026-10-28T05:34:25.360509+00:00",
+  "command": [
+    "docker",
+    "exec",
+    "xgd-b08-check",
+    "env/bin/python",
+    "/b01/b08_recovery_fixture.py",
+    "setup"
+  ],
+  "scripts": {
+    "b08_recovery_fixture.py": "72e442b1fc1fc356999ee188e18838c522505280c18717d04172d7863d595a7a",
+    "b08_response_loss_http.py": "47d7b945bed66c5bf9d1b95c4b3d1a5a6908e9fd1c011edb7c18ca92859561c7",
+    "b08_distinct_concurrency_fixture.py": "756b7f1f5b1f19fd326952a56ca583ecc3e2f7f79ab5e98cc5e5b3c5ac61bac8",
+    "b08_distinct_concurrency_http.py": "edb40d5981f1d5d8a40fcaae6545b75e16ed00b528c58c5420e8352640805ad3"
+  }
+}

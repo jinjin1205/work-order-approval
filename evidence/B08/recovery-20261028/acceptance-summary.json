@@ -1,0 +1,118 @@
+{
+  "scope": "Original B08/B09 I05 and correction-stage I06 only; no product edits or old verification replay",
+  "passed": true,
+  "product_patch_sha256": "e15fba0d7e7272c8a311c5f272476e76325a690a2ad1dc3dbfc021836effc3f2",
+  "scripts_at_execution_and_final": {
+    "b08_recovery_fixture.py": "72e442b1fc1fc356999ee188e18838c522505280c18717d04172d7863d595a7a",
+    "b08_response_loss_http.py": "47d7b945bed66c5bf9d1b95c4b3d1a5a6908e9fd1c011edb7c18ca92859561c7",
+    "b08_correction_rollback.py": "1cbbb054bfcd4596e3070e758f3b708d020ece51dce0cb81c7fc9ed31f997500",
+    "b08_distinct_concurrency_fixture.py": "756b7f1f5b1f19fd326952a56ca583ecc3e2f7f79ab5e98cc5e5b3c5ac61bac8",
+    "b08_distinct_concurrency_http.py": "edb40d5981f1d5d8a40fcaae6545b75e16ed00b528c58c5420e8352640805ad3"
+  },
+  "commands": [
+    {
+      "argv": [
+        "docker",
+        "exec",
+        "xgd-b08-check",
+        "env/bin/python",
+        "/b01/b08_recovery_fixture.py",
+        "setup"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "python3",
+        ".development/checks/b08_response_loss_http.py",
+        "--run"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "docker",
+        "exec",
+        "xgd-b08-check",
+        "env/bin/python",
+        "/b01/b08_correction_rollback.py"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "i05": {
+    "confirmation_posts": 1,
+    "post_retries": 0,
+    "backend_status": 200,
+    "client_error": "RemoteDisconnected",
+    "downstream_response_bytes": 0,
+    "commit_observed_before_drop": true,
+    "exact_commit_instruction_timestamp": false,
+    "recovery_query_count": 1,
+    "result": {
+      "passed": true,
+      "new_facts": 1,
+      "new_time_rows": 1,
+      "orphan_time_rows": 0,
+      "recovery_returns_original": true,
+      "recovery_changes_no_values": true,
+      "plan_route_other_tasks_and_old_cards_logs_unchanged": true,
+      "stock_unchanged": true,
+      "final": {
+        "plan": 10,
+        "good": 2,
+        "bad": 0,
+        "remaining": 8,
+        "minutes": 60,
+        "task_status": "Work in Progress",
+        "work_order_status": "In Process",
+        "hour_rate": 0.0,
+        "actual_operating_cost": 0.0
+      },
+      "nonzero_cost_verified": false
+    },
+    "old_rows_by_group": {
+      "business": 602,
+      "security": 888,
+      "extra": 17
+    },
+    "old_rows_changed_or_missing": 0,
+    "stock_new_rows": 0
+  },
+  "i06": {
+    "test_name": "test_correction_cancel_insert_failure_rolls_back_then_same_key_recovers",
+    "tests_run": 1,
+    "failures": 0,
+    "errors": 0,
+    "raw_runner_lines": [
+      "Ran 1 test in 12.142s",
+      "OK"
+    ],
+    "runner_elapsed_seconds": 12.409324,
+    "raw_log_sha256": "8a820834a1267ec3bf8cde1e380cae5d0fceb22e2852f0a19dd191fb2156ce97",
+    "runtime_and_script_source_unchanged": true,
+    "controlled_savepoint_rollback": true,
+    "same_key_recovery_calls": 1,
+    "final_tables": 20,
+    "final_old_rows": 1001,
+    "all_tables_exactly_restored": true
+  },
+  "review": {
+    "independent_script_review_before_execution": true,
+    "clarifications_before_execution": [
+      "Compare recovered saved time snapshot",
+      "Only require no new orphan time rows; preserve existing rows"
+    ],
+    "product_defects_found": 0,
+    "runtime_failures": 0,
+    "old_batches_rerun": false
+  },
+  "limitations": [
+    "I05 is a real HTTP transport interruption after a fresh DB observer sees committed facts, not browser/onsite weak-network acceptance.",
+    "I06 rollback is explicitly invoked by a controlled harness, not an HTTP exception, database crash, or committed correction.",
+    "Both fixtures use zero workstation cost; nonzero-cost cases were not verified.",
+    "20 captured table/column baselines are bounded retention checks, not an entire-database audit.",
+    "Full cards, G1/G2/G3, onsite/mobile, Z01 and background cycles remain unchanged."
+  ],
+  "publication_status": "pending whitelist push and fresh remote readback"
+}

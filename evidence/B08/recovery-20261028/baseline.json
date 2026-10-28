@@ -1,0 +1,15 @@
+{
+  "observed_at": "2026-10-28T05:28:57.255943+00:00",
+  "public_head": "05aa3ab7b6210466c7a7ec76b94f5c27cf654b16",
+  "public_clean": true,
+  "maintenance_branch": "codex/xgd-maintenance",
+  "maintenance_base": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+  "maintenance_modified_count": 25,
+  "maintenance_unknown_files": 0,
+  "public_source_hashes_match": true,
+  "patch_sha256": "e15fba0d7e7272c8a311c5f272476e76325a690a2ad1dc3dbfc021836effc3f2",
+  "runtime_manifest_file_count": 33,
+  "project_initialization_files_present": 8,
+  "initialization_changed": false,
+  "business_verifications_replayed": false
+}

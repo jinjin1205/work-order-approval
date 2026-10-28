@@ -300,3 +300,31 @@ python3 .development/checks/b08_distinct_concurrency_http.py I04
 [最终保留](../B08/distinct-concurrency-20261028/http-retention-final.json)核11业务+5安全配置+4额外共20表，旧行/捕获列不变，库存新增0。新Workstation的hour_rate=0，成本仅本样例0值符合，不证明非零成本并发。一次脚本定向审查在执行前补输入时间/数量及派生状态/成本断言，未产生产品失败；各批发前脚本hash与33文件清单分别绑定于HTTP摘要。实际记录Barrier(2)同步方式及每请求发送/返回时刻，未单独采集屏障释放事件时间戳；原I03/I04要求的实际请求区间重叠已核，不为补释放时间戳重放。线程配置及客户端区间重叠不等于DB锁轨迹、压力测试或完整G3，不称页面、单测或客户验收通过。
 
 每组两普通授权身份、独立连接、不同键；记录各请求发送/返回时刻并证明实际区间重叠，不仅记录“使用了线程”。通过条件只在原卡两行维护：I03余2各2仅一笔2且失败无残留，I04余2各1两笔1；独立连接回读事实/关联/累计、原计划和库存。不用同账号同键、顺序异键或只有源码锁字样代替；首次失败和恢复分别保存，不无限重试。I05/I06新故障、跨工单/库存/共享工作站完整并发、后台队列、页面/现场/手机、导航/图片/自定义字段、Z01及周期均排除。本包有限HTTP及保留已核，本包验证提交`698a780`已推送并fresh clone回读，362文件/361内容哈希、25份源码一致，见[回执](../发布/2026-10-28-698a780-remote.json)；仅此有限包收口；不提前关闭整卡/G1/G2/G3/Z01或归档。
+
+## 2026-10-28 提交丢响应与更正回滚续接绑定
+
+本轮仅补原第7节I05/I06和[原B08当前两行矩阵](../../docs/任务卡/02-生产与物料闭环.md#2026-10-28-提交丢响应与更正回滚续接)。两项均首次有限验证通过，当前待白名单公开保存及远端回读；证据目录为`evidence/B08/recovery-20261028/`，实际命令、脚本hash、输入和输出已留证。原I03/I04有限HTTP与20表保留、公开回读已核，沿[上包记录](../B08/distinct-concurrency-20261028/run-record.md)引用；实现/输入/依赖未变化不重放。已收到完整成功响应后的结果查询不满足I05，普通确认派生失败不满足I06更正取消后的故障。
+
+**真实入口和允许文件：**复用原`erpnext.manufacturing.doctype.job_card.job_card`中的`get_production_report_tasks`、`preview_production_report_time`、`confirm_production_report`、`get_production_report_result`及`correct_production_report`。本包实际仅新增`.development/checks/b08_recovery_fixture.py`、`.development/checks/b08_response_loss_http.py`和`.development/checks/b08_correction_rollback.py`三个检查脚本及manifest，未改产品或原`test_job_card.py`；未build或重启。复用当前维护checkout及既有工具；本包[开工记录](../B08/recovery-20261028/run-record.md)已核25份维护/33份运行清单一致，累计e15fba补丁未变，开工公开main实际为`05aa3ab`；本轮业务与保留已有限通过。无产品失败或产品修补，未重跑旧回归。真实产品失败才按原第6节白名单最小修补原`job_card.py`及必要原测试，先记录失败与范围，不新增API/权限、事实表或Frappe改动。
+
+**I05断响应机制：**`b08_recovery_fixture.py`负责本包隔离样例、源码/数据基线和独立DB回读；`b08_response_loss_http.py`通过仅监听loopback的一次性代理调用现有专用合成HTTP站`xgd-b08-http.localhost`。代理只转发一次正常确认，缓存后端响应，向下游发送0字节；另开独立DB连接观察该键提交可见后丢弃响应，使客户端实际收到EOF。记录转发次数、后端响应已缓存/下游字节数、独立可见性观察和EOF；可证明提交对新连接可见发生在丢弃响应之前，不宣称捕获精确COMMIT时刻。随后只用原键通过新HTTP调用`get_production_report_result`一次，再独立DB核事实、时间行、快照、累计及孤儿；不以新键重提、不把延迟读取当丢响应。本包新合成样例保留，捕获并比较上一包同口径20表旧行/捕获列；旧业务数据、旧权限及库存不因该样例被改写。
+
+**I06故障位置及恢复：**`b08_correction_rollback.py`在`xgd-test.localhost`使用独立`unittest.TestCase`、单方法及真实DB，复用原`TestProductionReportConfirmation.setUp`和`method/report`，沿原生cancel/amend流程；清理由原setUp已注册的`approval.clean_fixture`执行rollback及clear_cache。原类没有自定义tearDown，本runner不调用会commit的`FrappeTestCase.setUpClass`；无需修改原测试文件。在替代卡已insert、其`JobCard.submit`被调用处patch抛错，抛错前断言旧卡确已cancel、新卡确已insert，避免仅在前置校验失败却声称覆盖此边界。由检查脚本控制savepoint回滚，核原事实/状态/快照/关联/派生累计恢复、失败请求键无新事实或孤儿和临时上下文恢复；同键正常更正恢复一次、结果查询一次，最后全事务回滚并比较源站原业务及权限基线。该项是受控故障注入的真实DB验证，不是HTTP提交故障或数据库进程崩溃恢复。
+
+**实际命令与执行前绑定：**以下3个顶层命令各执行一次且exit0；不是重放指令。各自执行前脚本hash和运行清单见[setup前](../B08/recovery-20261028/http-setup-before.json)、[I05前](../B08/recovery-20261028/http-i05-before.json)及[I06前](../B08/recovery-20261028/i06-controlled-before.json)。主执行者已独立审阅，并在执行前补快照/新孤儿断言；本轮未出现运行失败或重跑。
+
+```sh
+docker exec xgd-b08-check env/bin/python /b01/b08_recovery_fixture.py setup
+python3 .development/checks/b08_response_loss_http.py --run
+docker exec xgd-b08-check env/bin/python /b01/b08_correction_rollback.py
+```
+
+`b08_recovery_fixture.py`实际模式为`source`、`setup`、`snapshot before|committed|after`、`preserve`；其中仅`setup`写DB，source核源码、snapshot/preserve核DB且只读。I05脚本内部在check/ui两容器调用`source`，在check容器用新进程/新连接依次调用三个snapshot及preserve，不另算确认请求。HTTP身份查询、对象权限及预览预检均为只读，不计确认写入。Setup新建普通合成用户、Employee、工作站与审批工单各1个，保留原生计划卡，确认事实初始0；权限正例/整单write和库存create拒绝见[setup结果](../B08/recovery-20261028/http-setup.json)。
+
+**I05实际结果：**[http-i05.json](../B08/recovery-20261028/http-i05.json)记录仅1次确认POST、重试0、后端200、代理向下游发送0字节。新进程独立DB连接在REPEATABLE-READ下观察已提交事实/时间行/父派生可见，此观察后0.029291毫秒开始断连，客户端实际`RemoteDisconnected`；该间隔不是COMMIT指令时间。再用预存原键经新HTTP仅1次GET查回同卡与同工时快照，未用代理缓存结果给恢复客户端。新增1事实/1时间行、无新孤儿；计划/路线/其他任务和旧卡不改，良2/不良0/余8、原生60分钟/有效3600秒，工单In Process、任务Work in Progress。20表旧行/捕获列全部保留，库存新增0，新合成样例保留。
+
+**I06实际结果：**真实方法`TestCorrectionRollback.test_correction_cancel_insert_failure_rolls_back_then_same_key_recovers`首次1项12.409324秒（含runner），0失败/0错误/0跳过，见[i06-controlled.json](../B08/recovery-20261028/i06-controlled.json)。先观察旧卡docstatus2、替代草稿docstatus0及新时间行、派生变化，再捕获专用`InjectedCorrectionFailure`；显式savepoint回滚后20表捕获快照、原卡全部字段/时间行/快照/派生一致，失败键及新增部分行不存在、请求上下文恢复。去patch后仅同键正常恢复1次10→8，再查询同卡/同工时快照1次；原10保留、净8/不良0/余2，原生60分钟/有效3600秒，计划/其他任务/库存不改，无新孤儿。最终全事务回滚，源站20表捕获快照完全恢复、全部新增0，源码保持。
+
+两样例hour_rate=0，只核本样例零成本，非零成本未验证；I06的显式savepoint不能外推HTTP自动回滚、数据库崩溃或完整逆向链。**本包有限验证通过，待白名单公开保存及远端回读**；达到有限验收后不重跑。凭据及原始敏感响应只在本地私有路径，公开证据不含密钥。
+
+本包不重跑I03/I04、旧同键、单价/效率、权限、规则、历史旁路或页面；不接父删除/复制、完整库存逆向、跨工单/库存/共享工作站完整并发、后台队列、页面/现场/手机、导航/图片/自定义字段、Z01或后台周期。完成判断仅沿原卡两行，不复制第二套任务清单；G1/G2/G3、B08/B09整卡及正式交付门槛保留，OpenSpec不归档。
