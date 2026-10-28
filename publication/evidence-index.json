@@ -5538,6 +5538,18 @@
     "reason": "public copy"
   },
   {
+    "path": "evidence/发布/2026-10-28-9684f38-ci.json",
+    "original_sha256": "2b9834aa84c2033eee3d4b41928e670c9a82ae22075200f86035d46dde94e642",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/发布/2026-10-28-9684f38-remote.json",
+    "original_sha256": "0021a4b049044149bc12043313e8054ecc9c4ac4d229ffb9b32a3a4a9f0f69f9",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
     "path": "evidence/发布/2026-10-28-afe5eb8-remote.json",
     "original_sha256": "e43e2520ae264aa2ed2b86a2b10aa441c46d6e40ed583f4b27f30a843d3b08da",
     "published": false,
@@ -5656,5 +5668,11 @@
     "original_sha256": "1e3c484210b3541f13d36bb817234b97d5589f94aa7c9c4a680b6939a76274f2",
     "published": false,
     "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/维护/2026-10-28-暂停与保存.md",
+    "original_sha256": "9c78db0ca83eaada0dcb57d5bfc8a584f56031424f881d90bdada25f2534cd34",
+    "published": true,
+    "reason": "public copy"
   }
 ]

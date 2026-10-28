@@ -19,4 +19,8 @@
 **/*.sql.gz
 **/backups/
 **/volumes/
-.publication/
+.publication/*
+!.publication/export_public.py
+!.publication/check_public.py
+!.publication/verify_b08.py
+!.publication/check_ci_pause.py

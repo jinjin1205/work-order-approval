@@ -2,6 +2,12 @@
 
 本次归档日期：2026-10-28。本文件登记实际来源和范围，不替代完整依赖许可审查。
 
+## 项目工作流程说明
+
+- `.agents/skills/openspec-*/SKILL.md`为本项目OpenSpec 1.15.0生成的6份技能说明，文件声明MIT；`.agents/skills/.openspec-target`仅记录目标工具`codex`。对应[固定v1.15.0 MIT许可](third_party/workflow-licenses/OpenSpec-MIT.txt)取自[Fission-AI/OpenSpec](https://github.com/Fission-AI/OpenSpec/tree/v1.15.0)，保留许可原文。
+- `.agents/skills/playwright-cli/`为已安装`@playwright/cli` 0.1.22提供的技能及10份引用说明，随安装包声明Apache-2.0；[许可原文](third_party/workflow-licenses/Playwright-Apache-2.0.txt)直接取自该安装包LICENSE，来源项目为[microsoft/playwright-cli](https://github.com/microsoft/playwright-cli)。这里只保存项目说明，不包含CLI二进制、浏览器、登录会话或缓存。
+- `.publication/`仅保存4份本项目发布维护脚本源码；其运行依赖原工作区布局及本地私有证据/排除扫描，不能据公开归档宣称完整发布或部署已可在新机器直接运行。未复制Superpowers插件代码或本机全局安装。
+
 ## 实际包含的第三方源码
 
 - 上游：[frappe/erpnext](https://github.com/frappe/erpnext)，v15.124.1，提交`4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e`。

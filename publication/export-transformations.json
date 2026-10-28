@@ -303,7 +303,7 @@
     "source": "docs/开发TODO.md",
     "public_path": "docs/开发TODO.md",
     "treatment": "unchanged",
-    "source_sha256": "525b1f3bd56b06179d19fa757d2fd1b332b8d9a5c1b0e1ea854fc7bd046dfd5b"
+    "source_sha256": "7f7733eb19d2f549cf50103a128ee20fe004828f399bc1544f1a6c0e8b6f5c62"
   },
   {
     "source": "docs/验收样例.md",
@@ -678,6 +678,12 @@
     "source_sha256": "7767723c87d434eca6ce6430e41d148de02d4d31ca68579486cdd12059bf9d75"
   },
   {
+    "source": "evidence/维护/2026-10-28-暂停与保存.md",
+    "public_path": "evidence/维护/2026-10-28-暂停与保存.md",
+    "treatment": "unchanged",
+    "source_sha256": "9c78db0ca83eaada0dcb57d5bfc8a584f56031424f881d90bdada25f2534cd34"
+  },
+  {
     "source": "openspec/config.yaml",
     "public_path": "openspec/config.yaml",
     "treatment": "unchanged",
@@ -708,6 +714,150 @@
     "source_sha256": "3e106cef4c976d96c04efe8bcf9122fa4c128e42e0304cae42d33e6167ef3402"
   },
   {
+    "source": ".agents/skills/openspec-apply-change/SKILL.md",
+    "public_path": ".agents/skills/openspec-apply-change/SKILL.md",
+    "treatment": "unchanged",
+    "source_sha256": "8ebce01b55784ed1f3198894fed19fbe4c613ebbe09b82bc83c3c52dec4f1f4b"
+  },
+  {
+    "source": ".agents/skills/openspec-archive-change/SKILL.md",
+    "public_path": ".agents/skills/openspec-archive-change/SKILL.md",
+    "treatment": "unchanged",
+    "source_sha256": "4eca0401139ee708c50c85e5e73e1dfa6d8bb39c981da0d0cad7237a54f9ca2c"
+  },
+  {
+    "source": ".agents/skills/openspec-explore/SKILL.md",
+    "public_path": ".agents/skills/openspec-explore/SKILL.md",
+    "treatment": "unchanged",
+    "source_sha256": "6464b80e4c4c19b1ede13828348e123d23631a6d558bc30468114d15fcfd9ff1"
+  },
+  {
+    "source": ".agents/skills/openspec-propose/SKILL.md",
+    "public_path": ".agents/skills/openspec-propose/SKILL.md",
+    "treatment": "unchanged",
+    "source_sha256": "df1f3c5849192a5c3df045f131b93a29680b595833ae4821a6c489e59eaab222"
+  },
+  {
+    "source": ".agents/skills/openspec-sync-specs/SKILL.md",
+    "public_path": ".agents/skills/openspec-sync-specs/SKILL.md",
+    "treatment": "unchanged",
+    "source_sha256": "5e036c570c71234c1c7b0d51f1b2c4cd066163986bbe0c9834ada2310cd41fb2"
+  },
+  {
+    "source": ".agents/skills/openspec-update-change/SKILL.md",
+    "public_path": ".agents/skills/openspec-update-change/SKILL.md",
+    "treatment": "unchanged",
+    "source_sha256": "881a08bfe743f1c473cf31276e961e62b8f98a744d922e11507d640def631fe9"
+  },
+  {
+    "source": ".agents/skills/.openspec-target",
+    "public_path": ".agents/skills/.openspec-target",
+    "treatment": "unchanged",
+    "source_sha256": "243b0dc9b847e66c440dca985e10fe0ce9e29c379b018ddd5747ba8948f84cc8"
+  },
+  {
+    "source": ".agents/skills/playwright-cli/SKILL.md",
+    "public_path": ".agents/skills/playwright-cli/SKILL.md",
+    "treatment": "unchanged",
+    "source_sha256": "9bba755285a4c9ad72a4a41b9c7baef6fb516d329c0b44ed0573715f4479b906"
+  },
+  {
+    "source": ".agents/skills/playwright-cli/references/element-attributes.md",
+    "public_path": ".agents/skills/playwright-cli/references/element-attributes.md",
+    "treatment": "unchanged",
+    "source_sha256": "bf19aa4671e0a50a0fefa9c790f39124e803060eefe395042b723c29fcb7faa2"
+  },
+  {
+    "source": ".agents/skills/playwright-cli/references/playwright-tests.md",
+    "public_path": ".agents/skills/playwright-cli/references/playwright-tests.md",
+    "treatment": "unchanged",
+    "source_sha256": "c5b0719fef2cfdff50bd744051b2f9afc119775db4b48e9b2882c1cf3886797c"
+  },
+  {
+    "source": ".agents/skills/playwright-cli/references/pr-attachments.md",
+    "public_path": ".agents/skills/playwright-cli/references/pr-attachments.md",
+    "treatment": "unchanged",
+    "source_sha256": "24b118e74598be72e73e24fe223d295b9099c85b1860a7c8f6e5690c9038fa2a"
+  },
+  {
+    "source": ".agents/skills/playwright-cli/references/request-mocking.md",
+    "public_path": ".agents/skills/playwright-cli/references/request-mocking.md",
+    "treatment": "unchanged",
+    "source_sha256": "54e801c9663fc2b6d68ceb058cb1c360724c2499f42acc7852a68e83e5b5f37c"
+  },
+  {
+    "source": ".agents/skills/playwright-cli/references/running-code.md",
+    "public_path": ".agents/skills/playwright-cli/references/running-code.md",
+    "treatment": "unchanged",
+    "source_sha256": "3029569ed6ddaeffc0b87badde967efdc2973b1677f078830098146eb3b78ebe"
+  },
+  {
+    "source": ".agents/skills/playwright-cli/references/session-management.md",
+    "public_path": ".agents/skills/playwright-cli/references/session-management.md",
+    "treatment": "unchanged",
+    "source_sha256": "a4f16271f95d3eec7bc56e659d8adbb8f6ad7d603a6fa15efdcdd071a50c6ce3"
+  },
+  {
+    "source": ".agents/skills/playwright-cli/references/storage-state.md",
+    "public_path": ".agents/skills/playwright-cli/references/storage-state.md",
+    "treatment": "unchanged",
+    "source_sha256": "9ac47f9ae4a1aedcd2077f8ac9ab1ba6bee1962cb83ff51adcd36fb6d83b5ec6"
+  },
+  {
+    "source": ".agents/skills/playwright-cli/references/test-generation.md",
+    "public_path": ".agents/skills/playwright-cli/references/test-generation.md",
+    "treatment": "unchanged",
+    "source_sha256": "27ecb11ef647999bd7486695bb1aacc3682097e6bb5742804cb6c8769c2b5364"
+  },
+  {
+    "source": ".agents/skills/playwright-cli/references/tracing.md",
+    "public_path": ".agents/skills/playwright-cli/references/tracing.md",
+    "treatment": "unchanged",
+    "source_sha256": "ef73e71bee792e341df9cd4f60529c929ade48b538ac76e033f4f20843e8dbda"
+  },
+  {
+    "source": ".agents/skills/playwright-cli/references/video-recording.md",
+    "public_path": ".agents/skills/playwright-cli/references/video-recording.md",
+    "treatment": "unchanged",
+    "source_sha256": "1c800b897824cb54394c34265d8ebffdbb530adfc8d612c5d798b667a1799f48"
+  },
+  {
+    "source": "third_party/workflow-licenses/OpenSpec-MIT.txt",
+    "public_path": "third_party/workflow-licenses/OpenSpec-MIT.txt",
+    "treatment": "unchanged",
+    "source_sha256": "c3c7235bea1214ab62df643473975c2e8b8848f528901a976693f7d069713e64"
+  },
+  {
+    "source": "third_party/workflow-licenses/Playwright-Apache-2.0.txt",
+    "public_path": "third_party/workflow-licenses/Playwright-Apache-2.0.txt",
+    "treatment": "unchanged",
+    "source_sha256": "9a7110fc2d2f964038e5dc49128f908f29f47a574c961cba16085914e879cbda"
+  },
+  {
+    "source": ".publication/export_public.py",
+    "public_path": ".publication/export_public.py",
+    "treatment": "unchanged",
+    "source_sha256": "26bf7df8f95bcd6484b127d9673cbef253420b6309c77a550ccf6a56d6673b0c"
+  },
+  {
+    "source": ".publication/check_public.py",
+    "public_path": ".publication/check_public.py",
+    "treatment": "unchanged",
+    "source_sha256": "bd5fe594d2b103a74ff184faa163bbbb54c7bb31e0d95e81428e336e808cdb95"
+  },
+  {
+    "source": ".publication/verify_b08.py",
+    "public_path": ".publication/verify_b08.py",
+    "treatment": "unchanged",
+    "source_sha256": "3f5f1e746105838a2c2693e4d76b54fa50f265b37eb311da30a89c1682584b57"
+  },
+  {
+    "source": ".publication/check_ci_pause.py",
+    "public_path": ".publication/check_ci_pause.py",
+    "treatment": "unchanged",
+    "source_sha256": "4aef4cabd0749daecda513e8a032564b737e215aa19512bd9acd39f13fd21565"
+  },
+  {
     "source": ".development/Dockerfile",
     "public_path": ".development/Dockerfile",
     "treatment": "unchanged",
@@ -723,7 +873,7 @@
     "source": ".development/README.md",
     "public_path": ".development/README.md",
     "treatment": "unchanged",
-    "source_sha256": "62936cb7a473ccc59b5472c381809ec09ffc2bc4221cf339b520a3ed5b9d397c"
+    "source_sha256": "af1ecf2cca1fc30d1ca15ec316d7ed8ad71c48aaa2b81c35b2ec4497ac4dc1ba"
   },
   {
     "source": ".development/.dockerignore",
@@ -1378,6 +1528,18 @@
     "public_path": "evidence/R05/r02-probe-attempt5.py",
     "treatment": "unchanged",
     "source_sha256": "bebd418f53e027db69fc9888dfc4bf01fc162aab71394832e1e2572c6d9cd774"
+  },
+  {
+    "source": "evidence/发布/2026-10-28-9684f38-remote.json",
+    "public_path": "evidence/发布/2026-10-28-9684f38-remote.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "0021a4b049044149bc12043313e8054ecc9c4ac4d229ffb9b32a3a4a9f0f69f9"
+  },
+  {
+    "source": "evidence/发布/2026-10-28-9684f38-ci.json",
+    "public_path": "evidence/发布/2026-10-28-9684f38-ci.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "2b9834aa84c2033eee3d4b41928e670c9a82ae22075200f86035d46dde94e642"
   },
   {
     "source": "evidence/发布/2026-10-28-83aaf4e-remote.json",
