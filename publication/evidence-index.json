@@ -1645,7 +1645,7 @@
   },
   {
     "path": "evidence/B08/distinct-concurrency-20261028/run-record.md",
-    "original_sha256": "4aa55b620f49e26655912903d07402c70a5e5a5bfbf91abcb38eee6748a06708",
+    "original_sha256": "3d9b1eba249b009a65c34ebda65e51a367cbe77377aaddbdea2ccf7d8ab2bbf3",
     "published": true,
     "reason": "public copy"
   },
@@ -5383,7 +5383,7 @@
   },
   {
     "path": "evidence/R07/report-concurrency.md",
-    "original_sha256": "a5cebaad200731213d7989c6a8cd95bc1d5ac870fec205bf017e7f99e64cf32e",
+    "original_sha256": "9757d3f1ac72dae0878c3c63a2b394252542c4a87b991658a7f1c34cd717ef4a",
     "published": true,
     "reason": "public copy"
   },
@@ -5434,6 +5434,12 @@
     "original_sha256": "c6af60ff2060b77073ce9a4f1c837f394a79e46861351a6089fc48b9e07b43ed",
     "published": false,
     "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/发布/2026-10-28-698a780-remote.json",
+    "original_sha256": "712a847ecc49b882f4f9d246c44cbf52cc9ede776441b7654603628fbd90e8a3",
+    "published": true,
+    "reason": "public copy"
   },
   {
     "path": "evidence/发布/2026-10-28-afe5eb8-remote.json",
