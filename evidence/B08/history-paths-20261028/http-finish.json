@@ -1,0 +1,511 @@
+{
+  "mode": "finish",
+  "complete": false,
+  "failure_type": "KeyError",
+  "cases": [
+    {
+      "case": "preflight",
+      "passed": true,
+      "ordinary_actor": true,
+      "pricing_unconfigured": true,
+      "original_docstatus": 2,
+      "replacement_docstatus": 1,
+      "original_good": 2.0,
+      "replacement_good": 1.0,
+      "permissions": [
+        {
+          "doctype": "Work Order Operation",
+          "permission": "read",
+          "allowed": true
+        },
+        {
+          "doctype": "Work Order Operation",
+          "permission": "write",
+          "allowed": true
+        },
+        {
+          "doctype": "Work Order Operation",
+          "permission": "submit",
+          "allowed": true
+        },
+        {
+          "doctype": "Work Order Operation",
+          "permission": "delete",
+          "allowed": true
+        },
+        {
+          "doctype": "Job Card Time Log",
+          "permission": "read",
+          "allowed": true
+        },
+        {
+          "doctype": "Job Card Time Log",
+          "permission": "write",
+          "allowed": true
+        },
+        {
+          "doctype": "Job Card Time Log",
+          "permission": "delete",
+          "allowed": true
+        },
+        {
+          "doctype": "Work Order",
+          "permission": "read",
+          "allowed": true
+        },
+        {
+          "doctype": "Work Order",
+          "permission": "write",
+          "allowed": true
+        },
+        {
+          "doctype": "Work Order",
+          "permission": "delete",
+          "allowed": true
+        },
+        {
+          "doctype": "Work Order",
+          "permission": "read",
+          "allowed": true
+        },
+        {
+          "doctype": "Work Order",
+          "permission": "write",
+          "allowed": true
+        },
+        {
+          "doctype": "Work Order",
+          "permission": "delete",
+          "allowed": true
+        },
+        {
+          "doctype": "Job Card",
+          "permission": "read",
+          "allowed": true
+        },
+        {
+          "doctype": "Job Card",
+          "permission": "write",
+          "allowed": true
+        },
+        {
+          "doctype": "Job Card",
+          "permission": "delete",
+          "allowed": true
+        }
+      ]
+    },
+    {
+      "case": "draft-operation-resource-delete",
+      "status": 202,
+      "child_readback_status": 403,
+      "new_empty_child_deleted": true,
+      "parent_retained": true,
+      "historical_cards_unchanged": true,
+      "passed": true,
+      "independent_database_check": {
+        "doctype": "Work Order Operation",
+        "fixture_row_index": 2,
+        "exists": false,
+        "protected_cancelled_time_exists": true
+      },
+      "reviewed_prior_delete_only": true,
+      "new_delete_request": false,
+      "initial_404_expectation_failure_retained": true
+    },
+    {
+      "case": "operation-resource-put-parent",
+      "status": 403,
+      "exception_type": "PermissionError",
+      "expected_guard_message_matched": true,
+      "all_original_fields_and_links_unchanged": true,
+      "before_sha256": "593edecffebee8fd9a17549c6a6f9230c548893beba4f277ddde6d3020d085ec",
+      "after_sha256": "593edecffebee8fd9a17549c6a6f9230c548893beba4f277ddde6d3020d085ec",
+      "passed": true,
+      "guard": "business_history"
+    },
+    {
+      "case": "draft-operation-client-delete",
+      "status": 200,
+      "child_readback_status": 403,
+      "new_empty_child_deleted": true,
+      "parent_retained": true,
+      "independent_database_check": {
+        "doctype": "Work Order Operation",
+        "fixture_row_index": 1,
+        "exists": false,
+        "protected_cancelled_time_exists": true
+      },
+      "historical_cards_unchanged": true,
+      "passed": true
+    }
+  ],
+  "requests": [
+    {
+      "case": "authenticate-new-test-actor",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.047
+    },
+    {
+      "case": "authorized-object-read",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.024
+    },
+    {
+      "case": "permission-read",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.015
+    },
+    {
+      "case": "permission-write",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.013
+    },
+    {
+      "case": "permission-submit",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.011
+    },
+    {
+      "case": "permission-delete",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.011
+    },
+    {
+      "case": "authorized-object-read",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.013
+    },
+    {
+      "case": "permission-read",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.011
+    },
+    {
+      "case": "permission-write",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.012
+    },
+    {
+      "case": "permission-delete",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.011
+    },
+    {
+      "case": "authorized-object-read",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.01
+    },
+    {
+      "case": "permission-read",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.011
+    },
+    {
+      "case": "permission-write",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.01
+    },
+    {
+      "case": "permission-delete",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.01
+    },
+    {
+      "case": "authorized-object-read",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.012
+    },
+    {
+      "case": "permission-read",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.011
+    },
+    {
+      "case": "permission-write",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.01
+    },
+    {
+      "case": "permission-delete",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.01
+    },
+    {
+      "case": "authorized-object-read",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.012
+    },
+    {
+      "case": "permission-read",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.013
+    },
+    {
+      "case": "permission-write",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.012
+    },
+    {
+      "case": "permission-delete",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.012
+    },
+    {
+      "case": "read",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.011
+    },
+    {
+      "case": "read",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.012
+    },
+    {
+      "case": "read",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.011
+    },
+    {
+      "case": "read",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.011
+    },
+    {
+      "case": "history-readback",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.012
+    },
+    {
+      "case": "history-readback",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.012
+    },
+    {
+      "case": "history-readback",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.012
+    },
+    {
+      "case": "history-readback",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.011
+    },
+    {
+      "case": "history-readback",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.012
+    },
+    {
+      "case": "history-readback",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.011
+    },
+    {
+      "case": "history-readback",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.012
+    },
+    {
+      "case": "operation-resource-put-parent",
+      "verb": "PUT",
+      "status": 403,
+      "exception_type": "PermissionError",
+      "elapsed_seconds": 0.033
+    },
+    {
+      "case": "history-readback",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.012
+    },
+    {
+      "case": "history-readback",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.012
+    },
+    {
+      "case": "history-readback",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.012
+    },
+    {
+      "case": "history-readback",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.012
+    },
+    {
+      "case": "history-readback",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.012
+    },
+    {
+      "case": "history-readback",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.01
+    },
+    {
+      "case": "history-readback",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.012
+    },
+    {
+      "case": "disposable-child-read",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.011
+    },
+    {
+      "case": "disposable-parent-read",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.011
+    },
+    {
+      "case": "read",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.011
+    },
+    {
+      "case": "read",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.011
+    },
+    {
+      "case": "draft-operation-client-delete",
+      "verb": "POST",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.216
+    },
+    {
+      "case": "deleted-child-readback",
+      "verb": "GET",
+      "status": 403,
+      "exception_type": "PermissionError",
+      "elapsed_seconds": 0.016
+    },
+    {
+      "case": "read",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.01
+    },
+    {
+      "case": "read",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.013
+    },
+    {
+      "case": "read",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.011
+    },
+    {
+      "case": "disposable-child-read",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.013
+    },
+    {
+      "case": "disposable-parent-read",
+      "verb": "GET",
+      "status": 200,
+      "exception_type": null,
+      "elapsed_seconds": 0.012
+    }
+  ],
+  "credentials_printed": false,
+  "scope": "real HTTP; no browser actions; synchronous bulk only"
+}

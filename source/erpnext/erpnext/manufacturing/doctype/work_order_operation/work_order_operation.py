@@ -40,6 +40,7 @@ class WorkOrderOperation(Document):
 	# end: auto-generated types
 
 	def before_validate(self):
+		self.validate_report_history()
 		# Parent saves validate and freeze these terms together; direct child saves do not.
 		before = self.get_doc_before_save()
 		fields = ("report_wage_mode", "report_wage_rate", "report_wage_currency", "report_standard_efficiency")
@@ -49,3 +50,15 @@ class WorkOrderOperation(Document):
 		protected = fields + ("parent", "parenttype", "parentfield", "operation")
 		if not before or any(self.get(field) != before.get(field) for field in protected):
 			frappe.throw("计价和标准效率依据必须从工单工序表修改，并遵守送审冻结；不能直接保存工序子行", frappe.PermissionError)
+
+	def validate_report_history(self):
+		# operation_id is Data, so native Link checks cannot preserve this history.
+		# Use the persisted row identity, not the client-supplied parent. Cancelled
+		# cards still belong to the task; native parent saves handle derived updates.
+		if not self.is_new() and frappe.db.exists("Job Card", {
+			"operation_id": self.name, "docstatus": [">", 0],
+		}):
+			frappe.throw("工序已有报工历史，不能直接改写、改挂或删除任务行", frappe.PermissionError)
+
+	before_update_after_submit = validate_report_history
+	on_trash = validate_report_history

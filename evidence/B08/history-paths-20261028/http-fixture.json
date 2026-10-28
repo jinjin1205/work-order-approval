@@ -1,0 +1,81 @@
+{
+  "fixture_ready": true,
+  "new_users": 1,
+  "new_roles": 1,
+  "new_orders": 4,
+  "approved_orders": 2,
+  "new_confirmed_reports": 1,
+  "retained_cancelled_reports": 1,
+  "empty_draft_time_rows": 3,
+  "base_permissions": [
+    {
+      "doctype": "Work Order Operation",
+      "permission": "read",
+      "allowed": true
+    },
+    {
+      "doctype": "Work Order Operation",
+      "permission": "write",
+      "allowed": true
+    },
+    {
+      "doctype": "Work Order Operation",
+      "permission": "submit",
+      "allowed": true
+    },
+    {
+      "doctype": "Work Order Operation",
+      "permission": "delete",
+      "allowed": true
+    },
+    {
+      "doctype": "Job Card Time Log",
+      "permission": "read",
+      "allowed": true
+    },
+    {
+      "doctype": "Job Card Time Log",
+      "permission": "write",
+      "allowed": true
+    },
+    {
+      "doctype": "Job Card Time Log",
+      "permission": "delete",
+      "allowed": true
+    },
+    {
+      "doctype": "Work Order",
+      "permission": "read",
+      "allowed": true
+    },
+    {
+      "doctype": "Work Order",
+      "permission": "write",
+      "allowed": true
+    },
+    {
+      "doctype": "Work Order",
+      "permission": "delete",
+      "allowed": true
+    },
+    {
+      "doctype": "Job Card",
+      "permission": "read",
+      "allowed": true
+    },
+    {
+      "doctype": "Job Card",
+      "permission": "write",
+      "allowed": true
+    },
+    {
+      "doctype": "Job Card",
+      "permission": "delete",
+      "allowed": true
+    }
+  ],
+  "old_rows_unchanged": true,
+  "stock_rows_added": 0,
+  "negative_http_executed": false,
+  "credentials_printed": false
+}

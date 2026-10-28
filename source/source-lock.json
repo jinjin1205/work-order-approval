@@ -4,7 +4,7 @@
   "version": "15.124.1",
   "frappe_version": "15.124.0",
   "frappe_commit": "f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab",
-  "patch_sha256": "ddc6efaf432e7fa1c0e2428d908b29a4e7789de6184646bdadd2357ef9794ad5",
+  "patch_sha256": "e15fba0d7e7272c8a311c5f272476e76325a690a2ad1dc3dbfc021836effc3f2",
   "files": {
     "erpnext/hooks.py": {
       "base_sha256": "e9d55d583820c5411a2133754362e2bf0b8f24ca48bf236ae27460af7fdf66bc",
@@ -40,7 +40,7 @@
     },
     "erpnext/manufacturing/doctype/job_card/test_job_card.py": {
       "base_sha256": "2947cbe40ebc044332a8a5802568c2ee1d782a8609cb6e35848b9a844dd84020",
-      "modified_sha256": "1801d93f351e493ed7012a85b43f2704cba98bb29f0cb47c127e88c4241157e0"
+      "modified_sha256": "c4409c953f6bd167c94bbfb72e5397f30d3f902f7c1fd75f4cc2b64a86a849fc"
     },
     "erpnext/manufacturing/doctype/job_card_time_log/job_card_time_log.py": {
       "base_sha256": "1466e3819e8598968c8af885bd31a4c3bf5e1a1c7503975f740bfd20fc50ebcc",
@@ -92,7 +92,7 @@
     },
     "erpnext/manufacturing/doctype/work_order_operation/work_order_operation.py": {
       "base_sha256": "6135963079dba860314b334cd8eaa32681bbb0e8765ade7cce9a7d118dd28d0a",
-      "modified_sha256": "40a0fd24acbfe3fd6e46a10a082c2a1b84907bd72f6958c0b80d984ec8517969"
+      "modified_sha256": "819b620859d6bf3adff83a297540836b1dc618ba8b73bc669f2bc064d8766a63"
     },
     "erpnext/stock/doctype/stock_entry/stock_entry.py": {
       "base_sha256": "d3b32c0f711e12bc2dcab7367d13ab36252a6a67e3e14219a11ee9f003eae19d",

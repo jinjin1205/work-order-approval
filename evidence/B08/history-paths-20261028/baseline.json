@@ -1,0 +1,16 @@
+{
+  "checked_at": "2026-10-28T12:22:06.567263+08:00",
+  "publication_commit": "cec110a566304fb49b1eab4e65dad9d42c1e188b",
+  "remote_divergence": [
+    0,
+    0
+  ],
+  "maintenance_files_match": 25,
+  "source_patch_sha256": "ddc6efaf432e7fa1c0e2428d908b29a4e7789de6184646bdadd2357ef9794ad5",
+  "tools": {
+    "openspec": "1.15.0",
+    "playwright_cli": "0.1.22",
+    "project_initialization_complete": true
+  },
+  "business_tests_rerun": false
+}

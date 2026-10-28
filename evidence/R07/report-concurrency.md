@@ -233,3 +233,37 @@ docker exec xgd-b08-check env/bin/python /b01/b08_followup_tests.py \
 最终源码/补丁见 [source-manifest.json](../B08/followup-20261028/source-manifest.json)；源测试站11张业务表 data-before.json（仅本地保留；见 publication/evidence-index.json）/data-after.json（仅本地保留；见 publication/evidence-index.json）一致，新UI/HTTP合成站数据保留。本包一次独立审查无Critical/Important/Minor发现，证据边界与未判事项不因此消失。
 
 上述是原卡的运行回链，不是第二份任务清单。本包自动化已到停止点，不循环重跑。产品提交`d4d73f07c872fa05a1789618b534e6ab6ab44d3a`公开保存并重新克隆核对289文件/24份源码，缺失/多余/哈希不一致均0，见[远端回执](../发布/2026-10-28-d4d73f0-remote.json)；最终文档提交和CI在最终回复单独核对。后续只接现场人员/实际输入或原B08已绑定余项。B08/B09整卡、G1/G2/G3、手机、全部历史旁路/库存逆向和Z01门槛继续保留；OpenSpec未归档，后台周期未恢复。
+
+## 2026-10-28 原记录旁路续接绑定
+
+本轮用户授权继续原B08剩余已绑定项；只推进[原B08-06/B09当前有限矩阵](../../docs/任务卡/02-生产与物料闭环.md#2026-10-28-原记录旁路续接)。第6节普通/子行/批量旁路及第7节CASE-05已规定业务契约和原文件范围，完整G2尚未完成不阻止该限定子项。此次沿实施前绑定回填实际阶段结果，受控5个新增方法分批通过，限定13个不同HTTP写入及专用站最终保留已核；公开保存仍待核，本包未收口；不重开单价/效率包或新增任务卡。
+
+**当前复用与缺口：**原`TestProductionReportConfirmation.test_original_parent_and_child_protected`及`test_full_correction_retains_original_rule_and_fact`已验submitted原卡直接保存/取消/删除、时间行保存和cancelled原Job Card直接删除；原HTTP已验父/原卡/时间行PUT。本轮复用`JobCard.on_trash`及`JobCardTimeLog.validate_report_parent/on_trash`，未修改这两份产品控制器。两次真实反例表明原工序计价保护未覆盖无计价的历史关联；现仅原`WorkOrderOperation`按持久化name查询Job Card `docstatus>0`，挂before_validate、before_update_after_submit、on_trash，包含取消态引用且不信任新parent。受控反例修后通过不等于所有HTTP或完整G2通过。
+
+**本包允许文件：**沿原`.development/repos/erpnext/erpnext/manufacturing/doctype/`下`work_order_operation/work_order_operation.py`，确有本包真实失败时才最小修改`job_card/job_card.py`或`job_card_time_log/job_card_time_log.py`；测试仍在原`job_card/test_job_card.py`，必要原工单fixture/测试仍在原`work_order/test_work_order.py`。复用原metadata、请求身份、原生Document生命周期及权限，无新API、不改产品角色权限或Frappe。受控fixture的原角色授权变更仅在回滚事务内；真实HTTP新增独立测试角色和用户，专用站旧共享岗位未改。不以本包顺带改工单状态、计价规则、库存、父删除/复制全部路径或后台队列机制。
+
+| 已有原生入口指针 | 本包绑定用途及限制 |
+|---|---|
+| `PUT/DELETE /api/resource/Work Order Operation/{name}`；`frappe.client.save/set_value/delete` | 含已生效/已取消事实引用的原工序行改归属/删行；Resource与client的子行处理不同，分别取证，不拿一个入口成功拒绝代表另一个 |
+| `PUT/DELETE /api/resource/Job Card Time Log/{name}`；`frappe.client.save/set_value/delete` | 取消态原卡的时间行删除或改parent；同时检查原、新父关联，拒绝后原行/原事实完整保留 |
+| `frappe.client.bulk_update`；`frappe.desk.reportview.delete_items` → `delete_bulk` | 仅本包少量同步条目的保存/删除旁路；逐条状态和回读分别记录。原删除逐条commit，不能用事务内未提交fixture伪造HTTP/批量通过，也不能宣称整批原子回滚；后台分支另留未验 |
+| 原父文档合法save/删行及允许的无事实子行操作 | 合成无历史草稿正例，证明新增保护不一律封死草稿；仍遵守已有审批/计价冻结，不增加生产角色权限 |
+
+**实际测试与命令：**原`job_card/test_job_card.py`中的`TestProductionReportHistoryPaths`复用既有fixture，5个真实方法为`test_resource_operation_delete_keeps_reported_task`、`test_client_operation_reparent_keeps_reported_task`、`test_cancelled_time_log_native_delete_paths_keep_original`、`test_unreported_draft_operations_remain_editable_and_deletable`、`test_cancelled_only_operation_reference_stays_protected`。独立runner为`.development/checks/b08_history_paths_tests.py`（容器`/b01/b08_history_paths_tests.py`），限定原隔离站`xgd-test.localhost`。实际分批命令：
+
+```sh
+docker exec xgd-b08-check env/bin/python /b01/b08_history_paths_tests.py test_resource_operation_delete_keeps_reported_task
+docker exec xgd-b08-check env/bin/python /b01/b08_history_paths_tests.py test_client_operation_reparent_keeps_reported_task
+# 当时类只有4方法；不是当前5方法全类复跑。
+docker exec xgd-b08-check env/bin/python /b01/b08_history_paths_tests.py
+docker exec xgd-b08-check env/bin/python /b01/b08_history_paths_tests.py test_unreported_draft_operations_remain_editable_and_deletable
+docker exec xgd-b08-check env/bin/python /b01/b08_history_paths_tests.py test_cancelled_only_operation_reference_stays_protected
+```
+
+**阶段证据：**[运行记录](../B08/history-paths-20261028/run-record.md)和[结果摘要](../B08/history-paths-20261028/acceptance-summary.json)保留首次删工序10.103秒FAIL2、改挂8.935秒FAIL2；修后4方法36.400秒中3通过/1草稿fixture ERROR，删末尾的fixture定向修正1方法9.731秒OK，取消态唯一引用1方法10.351秒OK。仅取消态fixture经受控服务器上下文原生cancel构造，不新增外部取消入口。5个新增方法分批通过，每批源码清单分别留存，不倒填最终版本；一次独立定向审查证据缺口已补。
+
+本轮实际仅原工序控制器和原测试两份文件变化，累计25份源码，补丁`e15fba0d7e7272c8a311c5f272476e76325a690a2ad1dc3dbfc021836effc3f2`；测试/Web/构建镜像各33份指定文件匹配[清单](../B08/history-paths-20261028/source-manifest.json)。[源测试站11表保留](../B08/history-paths-20261028/source-retention-summary.json)已核；专用HTTP站另有最终保留证据，两者均不外推全库审计。
+
+真实HTTP使用`.development/checks/b08_history_paths_http_fixture.py`准备专用合成样例、`.development/checks/b08_history_paths_http.py`调用上述原生接口；站点限定`xgd-b08-http.localhost`。独立新测试角色/用户先核对象和操作权限，合法凭据只存本地私有路径，公开证据不含凭据。[最终HTTP汇总](../B08/history-paths-20261028/http-summary.json)记录7个不同拒绝写入（6次业务历史保护、1次原生取消态417）和6个无事实草稿合法写入/删除，13次不含读取/预检，重复写入为0。每次拒绝前后7对象全部字段/关联哈希不变；client.delete取消时间行命中原生状态，不能称新增保护。已删除草稿子行GET403由授权父读取及独立DB不存在共同证明删除成功。实际覆盖Resource/client及同步单项批量，不外推bulk_update、更多条目或后台分支；批量HTTP200须看逐项返回和回读，不能写整批原子性。原始[首批](../B08/history-paths-20261028/http-acceptance.json)、[续批](../B08/history-paths-20261028/http-remaining.json)和`http-finish.json`的3次脚本停止及1次未发请求的本地语法错误均保留，属于脚本边界而非产品失败；未为修断言重放写入。
+
+[专用站最终保留](../B08/history-paths-20261028/http-retention-final.json)核旧11业务表及5安全配置表原有行/捕获列无缺失、无改写，库存3表新增0；仅删除本轮2个无事实工序及3个空白时间行，受保护取消态时间行仍在。产品无页面变化，未重跑价格或旧页面验收。公开保存仍待核，本包未收口。有限矩阵只维护在原卡，完整G2/G3、现场、手机、Z01、整卡及OpenSpec未归档状态不变。

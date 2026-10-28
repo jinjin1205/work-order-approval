@@ -2,6 +2,26 @@
   "scope": "Separate executed batches; exact patches where captured, explicit null otherwise with product hash. No cumulative full-suite result; publication does not rerun tests",
   "tests": [
     {
+      "local_log": "evidence/B08/history-paths-20261028/draft-fixed.log",
+      "sha256": "75ca946a5930fa8195e2aaf786dc11ad9697ddd21eed78fc7b769dbcf22de7c5",
+      "tests": 1,
+      "seconds": "9.731",
+      "result": "OK",
+      "executed_on": "2026-10-28",
+      "group": "B08 history paths corrected draft fixture",
+      "source_patch_sha256": "8407d841552bb4383ee8ad4120921d707fc9e469071505255433a7a3504913be"
+    },
+    {
+      "local_log": "evidence/B08/history-paths-20261028/cancelled-only.log",
+      "sha256": "5044f2b8e89a8d7d76feca7ba6b3f674c3926e8e4f02b179d4c989efbe6b60ef",
+      "tests": 1,
+      "seconds": "10.351",
+      "result": "OK",
+      "executed_on": "2026-10-28",
+      "group": "B08 history paths cancelled-only reference; controlled native cancellation fixture",
+      "source_patch_sha256": "e15fba0d7e7272c8a311c5f272476e76325a690a2ad1dc3dbfc021836effc3f2"
+    },
+    {
       "local_log": "evidence/B08/metrics-20261028/server-fixed-second.log",
       "sha256": "40e0c68314d4ddb4cbf2fecd57551b0ce4d857cf2d81859374015427aee10b11",
       "tests": 4,
@@ -339,5 +359,5 @@
     "verified_after_all_requests": true,
     "publication_note": "Only assertions/counts retained; runtime business_state and raw responses remain local."
   },
-  "current_patch_sha256": "ddc6efaf432e7fa1c0e2428d908b29a4e7789de6184646bdadd2357ef9794ad5"
+  "current_patch_sha256": "e15fba0d7e7272c8a311c5f272476e76325a690a2ad1dc3dbfc021836effc3f2"
 }

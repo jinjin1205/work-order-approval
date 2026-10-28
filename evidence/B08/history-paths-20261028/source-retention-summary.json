@@ -1,0 +1,6 @@
+{
+  "source_11_business_tables_unchanged": true,
+  "workflow_count": 0,
+  "comparison_baseline": "evidence/B08/metrics-20261028/source-retention.json",
+  "scope": "Same documented schema-column exclusions; no whole-database audit"
+}

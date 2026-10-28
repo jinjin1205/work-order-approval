@@ -1,0 +1,102 @@
+{
+  "date": "2026-10-28",
+  "scope": "Original B08-06/B09 bounded child history paths, not full G2",
+  "baseline_commit": "cec110a566304fb49b1eab4e65dad9d42c1e188b",
+  "product_files_changed_this_round": 2,
+  "cumulative_source_files": 25,
+  "runtime_files_checked": 33,
+  "patch_sha256": "e15fba0d7e7272c8a311c5f272476e76325a690a2ad1dc3dbfc021836effc3f2",
+  "batches": [
+    {
+      "log": "first-test.log",
+      "log_sha256": "92a9b038b8a94668cb9e967171f078645f1cbd5e2dcbd59febb451dc74515151",
+      "methods_run": 1,
+      "seconds": "10.103",
+      "result": "FAILED (failures=2)",
+      "methods": [
+        "test_resource_operation_delete_keeps_reported_task"
+      ],
+      "source_patch_sha256": "c1af367433c89eb50666a1d88cea48c230be15f171816e8d922580da2f7f5410"
+    },
+    {
+      "log": "reparent-first.log",
+      "log_sha256": "2e414d1ffed50f379e18bc08e068e59fc4d8cc82789ce324adcaf25774f66673",
+      "methods_run": 1,
+      "seconds": "8.935",
+      "result": "FAILED (failures=2)",
+      "methods": [
+        "test_client_operation_reparent_keeps_reported_task"
+      ],
+      "source_patch_sha256": "31edafd4eb8ffae8daa78a7246ea1a494f2687addfa7b2d37ccfe5269e9f740e"
+    },
+    {
+      "log": "fixed-tests.log",
+      "log_sha256": "2857482770e4f6a12a278200d97bec5b3c6640500e279f85febfdf3f835f75e2",
+      "methods_run": 4,
+      "seconds": "36.400",
+      "result": "FAILED (errors=1)",
+      "methods": [
+        "test_cancelled_time_log_native_delete_paths_keep_original",
+        "test_client_operation_reparent_keeps_reported_task",
+        "test_resource_operation_delete_keeps_reported_task",
+        "test_unreported_draft_operations_remain_editable_and_deletable"
+      ],
+      "source_patch_sha256": "28cbb04b3bc67ef8d43b1cfe377e2a8a705f7a7bcbc9ce65729f7dad0161981f"
+    },
+    {
+      "log": "draft-fixed.log",
+      "log_sha256": "75ca946a5930fa8195e2aaf786dc11ad9697ddd21eed78fc7b769dbcf22de7c5",
+      "methods_run": 1,
+      "seconds": "9.731",
+      "result": "OK",
+      "methods": [
+        "test_unreported_draft_operations_remain_editable_and_deletable"
+      ],
+      "source_patch_sha256": "8407d841552bb4383ee8ad4120921d707fc9e469071505255433a7a3504913be"
+    },
+    {
+      "log": "cancelled-only.log",
+      "log_sha256": "5044f2b8e89a8d7d76feca7ba6b3f674c3926e8e4f02b179d4c989efbe6b60ef",
+      "methods_run": 1,
+      "seconds": "10.351",
+      "result": "OK",
+      "methods": [
+        "test_cancelled_only_operation_reference_stays_protected"
+      ],
+      "source_patch_sha256": "e15fba0d7e7272c8a311c5f272476e76325a690a2ad1dc3dbfc021836effc3f2"
+    }
+  ],
+  "new_test_methods_eventually_passed": 5,
+  "full_new_class_rerun": false,
+  "first_failures": "Resource operation delete and client operation reparent each really succeeded before fix; both guards and unchanged-state assertions failed; rollback retained old data.",
+  "fixed_batch": "3 passed; draft positive errored on native operation sequence after deleting first row. Fixture deletion order corrected, only that case rerun.",
+  "cancelled_only_limit": "Controlled server context calls native cancel inside rollback fixture; no new client cancel API. Ordinary creator subsequent deletion/reparent denied.",
+  "http_status": "passed bounded matrix; 13 distinct mutation requests, 7 refusals and 6 legal positives; separate batches with retained harness failures",
+  "source_data_retained": true,
+  "unverified": [
+    "Full G1/G2/G3",
+    "Background bulk >10",
+    "Full parent deletion/copy/rename and stock reversal paths",
+    "Mobile/weak network/real workshop acceptance",
+    "Z01 clean-environment and independent handover"
+  ],
+  "background_automation_resumed": false,
+  "http_evidence": "http-summary.json",
+  "http_mutation_requests": {
+    "distinct_negative": 7,
+    "distinct_positive": 6,
+    "repeated": 0,
+    "browser_acceptance": false
+  },
+  "dedicated_site_retention": {
+    "evidence": "http-retention-final.json",
+    "old_business_tables": 11,
+    "old_security_tables": 5,
+    "all_old_captured_rows_unchanged": true,
+    "new_stock_rows": 0,
+    "only_new_disposable_rows_deleted": {
+      "Work Order Operation": 2,
+      "Job Card Time Log": 3
+    }
+  }
+}

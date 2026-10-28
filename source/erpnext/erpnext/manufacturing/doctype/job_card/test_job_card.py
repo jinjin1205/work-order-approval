@@ -2535,3 +2535,138 @@ class TestProductionReportMetrics(FrappeTestCase):
 			frappe.defaults.clear_defaults_cache("__default")
 		self.assertEqual(frappe.db.get_value("Company",self.order.company,"default_currency"),old_currency)
 		self.assertEqual(frappe.as_json(frappe.get_all("DefaultValue",filters={"defkey":"currency_precision"},fields=["*"],order_by="name")),defaults_before)
+
+
+class TestProductionReportHistoryPaths(FrappeTestCase):
+	"""Previously uncovered native child/history paths; real DB, rollback-only fixture."""
+	setUp = TestProductionReportConfirmation.setUp
+	method = TestProductionReportConfirmation.method
+	report = TestProductionReportConfirmation.report
+	draft = TestProductionReportMetrics.draft
+
+	def snapshot(self, *orders):
+		names = [self.order.name, *orders]
+		cards = frappe.get_all("Job Card", filters={"work_order": ["in", names]}, pluck="name")
+		return frappe.as_json({
+			"orders": frappe.get_all("Work Order", filters={"name": ["in", names]}, fields=["*"], order_by="name"),
+			"operations": frappe.get_all("Work Order Operation", filters={"parent": ["in", names]}, fields=["*"], order_by="name"),
+			"cards": frappe.get_all("Job Card", filters={"name": ["in", cards]}, fields=["*"], order_by="name"),
+			"logs": frappe.get_all("Job Card Time Log", filters={"parent": ["in", cards]}, fields=["*"], order_by="name"),
+		})
+
+	def as_creator_with_delete(self):
+		from frappe.permissions import update_permission_property
+		frappe.set_user("Administrator")
+		update_permission_property("Work Order", "生产工单发起", 0, "delete", 1)
+		frappe.set_user(self.approval.users["operator"])
+		self.assertNotEqual(frappe.session.user, "Administrator")
+
+	def test_resource_operation_delete_keeps_reported_task(self):
+		from frappe.api.v1 import delete_doc
+		self.report(1, 0)
+		self.as_creator_with_delete()
+		row = frappe.get_doc("Work Order Operation", self.operation_id)
+		self.assertFalse(row.report_wage_mode, "Do not rely on the already-tested pricing guard")
+		self.assertTrue(row.has_permission("delete"))
+		before = self.snapshot()
+		with self.subTest(check="history_guard"), self.assertRaises(frappe.PermissionError):
+			delete_doc("Work Order Operation", self.operation_id)
+		with self.subTest(check="history_unchanged"):
+			self.assertEqual(self.snapshot(), before)
+
+
+	def test_client_operation_reparent_keeps_reported_task(self):
+		from frappe.client import save
+		self.report(1, 0)
+		draft = self.draft().insert()
+		row = frappe.get_doc("Work Order Operation", self.operation_id)
+		self.assertTrue(row.has_permission("write"))
+		self.assertTrue(row.has_permission("submit"))
+		before = self.snapshot(draft.name)
+		row.parent = draft.name
+		with self.subTest(check="history_guard"), self.assertRaises(frappe.PermissionError):
+			save(row.as_dict())
+		with self.subTest(check="history_unchanged"):
+			self.assertEqual(self.snapshot(draft.name), before)
+
+
+	def test_cancelled_time_log_native_delete_paths_keep_original(self):
+		from frappe.api.v1 import delete_doc as resource_delete
+		from frappe.client import delete as client_delete, save
+		from frappe.permissions import update_permission_property
+		frappe.set_user("Administrator")
+		for ptype in ("cancel", "delete"):
+			update_permission_property("Job Card", "生产报工", 0, ptype, 1)
+		frappe.set_user(self.user)
+		first = self.report(2, 0)
+		corrected = self.method("correct_production_report")(first["name"], frappe.generate_hash(length=32), 1, 0, "校验取消态历史入口")
+		original = frappe.get_doc("Job Card", first["name"])
+		self.assertEqual(original.docstatus, 2)
+		row = frappe.get_doc("Job Card Time Log", original.time_logs[0].name)
+		self.assertTrue(row.has_permission("delete"))
+		self.assertTrue(original.has_permission("write"))
+		for action in ("resource_delete", "client_delete", "reparent"):
+			before = self.snapshot()
+			with self.subTest(action=action), self.assertRaises((frappe.PermissionError, frappe.ValidationError)):
+				if action == "resource_delete":
+					resource_delete("Job Card Time Log", row.name)
+				elif action == "client_delete":
+					client_delete("Job Card Time Log", row.name)
+				else:
+					payload = row.as_dict()
+					payload.parent = corrected["name"]
+					save(payload)
+			self.assertEqual(self.snapshot(), before)
+		self.assertEqual(frappe.db.get_value("Job Card", corrected["name"], "total_completed_qty"), 1)
+
+	def test_unreported_draft_operations_remain_editable_and_deletable(self):
+		from frappe.api.v1 import delete_doc as resource_delete
+		from frappe.client import delete as client_delete, save
+		draft = self.draft().insert()
+		self.as_creator_with_delete()
+		row = frappe.get_doc("Work Order Operation", draft.operations[0].name)
+		self.assertFalse(frappe.db.exists("Job Card", {"operation_id":row.name,"docstatus":[">",0]}))
+		self.assertTrue(row.has_permission("write"))
+		self.assertTrue(row.has_permission("delete"))
+		row.time_in_mins = 2
+		save(row.as_dict())
+		self.assertEqual(frappe.db.get_value("Work Order Operation", row.name, "time_in_mins"), 2)
+		last = draft.operations[2].name
+		resource_delete("Work Order Operation", last)
+		self.assertFalse(frappe.db.exists("Work Order Operation", last))
+		client_delete("Work Order Operation", draft.operations[1].name)
+		draft.reload()
+		self.assertEqual([r.name for r in draft.operations], [row.name])
+
+
+	def test_cancelled_only_operation_reference_stays_protected(self):
+		from frappe.api.v1 import delete_doc
+		from frappe.client import save
+		from frappe.permissions import update_permission_property
+		frappe.set_user("Administrator")
+		update_permission_property("Job Card", "生产报工", 0, "cancel", 1)
+		frappe.set_user(self.user)
+		original = frappe.get_doc("Job Card", self.report(1, 0)["name"])
+		# Controlled server-side cancellation creates a cancelled-only history fixture.
+		# This is not a new client cancel API or authority supplied in document flags.
+		previous = getattr(frappe.local, "production_report_context", None)
+		frappe.local.production_report_context = frappe._dict(
+			card=original, user=self.user, order=None, operation_id=self.operation_id)
+		try:
+			original.cancel()
+		finally:
+			frappe.local.production_report_context = previous
+		self.assertEqual(original.docstatus, 2)
+		self.assertFalse(frappe.db.exists("Job Card", {"operation_id":self.operation_id,"docstatus":1}))
+		self.assertTrue(frappe.db.exists("Job Card", {"operation_id":self.operation_id,"docstatus":2}))
+		draft = self.draft().insert()
+		self.as_creator_with_delete()
+		row = frappe.get_doc("Work Order Operation", self.operation_id)
+		self.assertTrue(row.has_permission("delete"))
+		before = self.snapshot(draft.name)
+		with self.assertRaisesRegex(frappe.PermissionError, "工序已有报工历史"):
+			delete_doc("Work Order Operation", row.name)
+		row.parent = draft.name
+		with self.assertRaisesRegex(frappe.PermissionError, "工序已有报工历史"):
+			save(row.as_dict())
+		self.assertEqual(self.snapshot(draft.name), before)

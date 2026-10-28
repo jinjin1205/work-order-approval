@@ -51,7 +51,7 @@
     "source": ".development/repos/erpnext/erpnext/manufacturing/doctype/job_card/test_job_card.py",
     "public_path": "source/erpnext/erpnext/manufacturing/doctype/job_card/test_job_card.py",
     "treatment": "unchanged",
-    "source_sha256": "1801d93f351e493ed7012a85b43f2704cba98bb29f0cb47c127e88c4241157e0"
+    "source_sha256": "c4409c953f6bd167c94bbfb72e5397f30d3f902f7c1fd75f4cc2b64a86a849fc"
   },
   {
     "source": ".development/repos/erpnext/erpnext/manufacturing/doctype/job_card_time_log/job_card_time_log.py",
@@ -129,7 +129,7 @@
     "source": ".development/repos/erpnext/erpnext/manufacturing/doctype/work_order_operation/work_order_operation.py",
     "public_path": "source/erpnext/erpnext/manufacturing/doctype/work_order_operation/work_order_operation.py",
     "treatment": "unchanged",
-    "source_sha256": "40a0fd24acbfe3fd6e46a10a082c2a1b84907bd72f6958c0b80d984ec8517969"
+    "source_sha256": "819b620859d6bf3adff83a297540836b1dc618ba8b73bc669f2bc064d8766a63"
   },
   {
     "source": ".development/repos/erpnext/erpnext/stock/doctype/stock_entry/stock_entry.py",
@@ -258,6 +258,18 @@
     "source_sha256": "5bee9404560bcbe9ad1a40d03d87a3efb4a41359d1d97d638ca299cbf495bb1d"
   },
   {
+    "source": "evidence/B08/history-paths-20261028/implementation.patch",
+    "public_path": "evidence/B08/history-paths-20261028/implementation.patch",
+    "treatment": "unchanged",
+    "source_sha256": "e15fba0d7e7272c8a311c5f272476e76325a690a2ad1dc3dbfc021836effc3f2"
+  },
+  {
+    "source": "evidence/B08/history-paths-20261028/history-paths-only.patch",
+    "public_path": "evidence/B08/history-paths-20261028/history-paths-only.patch",
+    "treatment": "unchanged",
+    "source_sha256": "5c3bb51abca5f3d42a362ff5a66a1e07563e6d0a7ea2f5ea6d585c1288a7c627"
+  },
+  {
     "source": "AGENTS.md",
     "public_path": "AGENTS.md",
     "treatment": "unchanged",
@@ -273,7 +285,7 @@
     "source": "docs/任务卡/02-生产与物料闭环.md",
     "public_path": "docs/任务卡/02-生产与物料闭环.md",
     "treatment": "personal paths/runtime identifiers removed",
-    "source_sha256": "a2f40cf3c4881464610feb934f9d49908c0ea51b78089d9523e60129d17225dc"
+    "source_sha256": "cc74113c787c150c3167bc8be6e46d6e61de4d1e65b1bee67987dd527494a4ef"
   },
   {
     "source": "docs/任务卡/03-AI与交付.md",
@@ -291,7 +303,7 @@
     "source": "docs/开发TODO.md",
     "public_path": "docs/开发TODO.md",
     "treatment": "unchanged",
-    "source_sha256": "6cc4d9c6c4981b6b158f0c7eb13aa22e724f8a5541b741612c49882b351572fb"
+    "source_sha256": "8bffac81ad279bbb06291e88224e293bb7c362c8bef381f04da7e5ee12b5bf8d"
   },
   {
     "source": "docs/验收样例.md",
@@ -346,6 +358,12 @@
     "public_path": "evidence/B08/followup-20261028/run-record.md",
     "treatment": "unchanged",
     "source_sha256": "6a601a65fd09e3382535f7f3b94ba78a6629a38deb527d765f3d96f1f9452df9"
+  },
+  {
+    "source": "evidence/B08/history-paths-20261028/run-record.md",
+    "public_path": "evidence/B08/history-paths-20261028/run-record.md",
+    "treatment": "unchanged",
+    "source_sha256": "dba711dc7080c2a145586fe855413230265ec36bb2041a11f5c5b4af2ddc149f"
   },
   {
     "source": "evidence/B08/implementation/review-package.md",
@@ -627,7 +645,7 @@
     "source": "evidence/R07/report-concurrency.md",
     "public_path": "evidence/R07/report-concurrency.md",
     "treatment": "unchanged",
-    "source_sha256": "b0701d4cffe397bef305721d97a55420dbc363e8892da14971aa4327a59e3f1e"
+    "source_sha256": "e2849ad41e02c31bd44eea4a74869c75bfcbd6246a11dd8af61830199275f875"
   },
   {
     "source": "evidence/R07/task-card-refresh-2026-10-28.md",
@@ -657,19 +675,19 @@
     "source": "openspec/changes/b08-followup-20261028/design.md",
     "public_path": "openspec/changes/b08-followup-20261028/design.md",
     "treatment": "unchanged",
-    "source_sha256": "11907a84c5e7164a3100281eb381fb1071f4bcdcb62c1b83699a8b6111b03224"
+    "source_sha256": "ab926217cc111bc1d1eab9465601c8bfb395dcb71028c72dcf415fb44c9cd9ce"
   },
   {
     "source": "openspec/changes/b08-followup-20261028/proposal.md",
     "public_path": "openspec/changes/b08-followup-20261028/proposal.md",
     "treatment": "unchanged",
-    "source_sha256": "288f863b083a1d50db367fbf14616d10d70e16e987147ec04afb0c92977973fd"
+    "source_sha256": "3678f56e8e69fe6ae0e71a563b83c0057d301aed40ccb5276cb4c94620fd105f"
   },
   {
     "source": "openspec/changes/b08-followup-20261028/tasks.md",
     "public_path": "openspec/changes/b08-followup-20261028/tasks.md",
     "treatment": "unchanged",
-    "source_sha256": "0f3d021333671a2405a7b949d7518a5143cd36eb11ed8c1a7285a655a097986b"
+    "source_sha256": "b8f6f43e7aeae70ba09d7dac7a688f042648607271c71042b47eb0ba7560ce30"
   },
   {
     "source": "openspec/changes/b08-followup-20261028/.openspec.yaml",
@@ -693,7 +711,7 @@
     "source": ".development/README.md",
     "public_path": ".development/README.md",
     "treatment": "unchanged",
-    "source_sha256": "0577d948473e1765232f6a658e0487dd0d4517ece747cc3b411e43288fed1651"
+    "source_sha256": "2c3a917c58b0609dad4f33af5fafbab906c8ed99999a76c40a12f289680bd39d"
   },
   {
     "source": ".development/.dockerignore",
@@ -790,6 +808,24 @@
     "public_path": ".development/checks/b08_followup_ui_fixture.py",
     "treatment": "unchanged",
     "source_sha256": "ccd038b35c2d0028c5da89cf1d5039adeca84c3647052b661ca1cd2afc476551"
+  },
+  {
+    "source": ".development/checks/b08_history_paths_http.py",
+    "public_path": ".development/checks/b08_history_paths_http.py",
+    "treatment": "unchanged",
+    "source_sha256": "4d83d5f38adf24b1568a0e3cc42f3ac67933739860c5f9233b7080f085a042c5"
+  },
+  {
+    "source": ".development/checks/b08_history_paths_http_fixture.py",
+    "public_path": ".development/checks/b08_history_paths_http_fixture.py",
+    "treatment": "unchanged",
+    "source_sha256": "096b4a7f59d8c0fd4d2ec7fa0b13e7b15cef86caa3351a74a45b652626f4e7d5"
+  },
+  {
+    "source": ".development/checks/b08_history_paths_tests.py",
+    "public_path": ".development/checks/b08_history_paths_tests.py",
+    "treatment": "unchanged",
+    "source_sha256": "39dc0d0164d2ab2aa6211465977ea05f03fbaf8289e7e8185a55c057eb4b59ef"
   },
   {
     "source": ".development/checks/b08_http.py",
@@ -1098,6 +1134,12 @@
     "source_sha256": "3369f0c6080ae8fc5e046015a90b964d9cd37a32d57c8201b67e3cf77e173712"
   },
   {
+    "source": ".development/checks/b08-history-paths-source-manifest.json",
+    "public_path": ".development/checks/b08-history-paths-source-manifest.json",
+    "treatment": "unchanged",
+    "source_sha256": "62d15604f2eb6387164b3c2585bb22d287b1975a2d35aa109fab2a3c8dc8e80c"
+  },
+  {
     "source": ".development/checks/b08-metrics-source-manifest.json",
     "public_path": ".development/checks/b08-metrics-source-manifest.json",
     "treatment": "unchanged",
@@ -1282,6 +1324,156 @@
     "public_path": "evidence/R05/r02-probe-attempt5.py",
     "treatment": "unchanged",
     "source_sha256": "bebd418f53e027db69fc9888dfc4bf01fc162aab71394832e1e2572c6d9cd774"
+  },
+  {
+    "source": "evidence/B08/history-paths-20261028/http-summary.json",
+    "public_path": "evidence/B08/history-paths-20261028/http-summary.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "871624e711c8b9f8e0b4751cdec94ca1734a0b0912d9a143c732047561035268"
+  },
+  {
+    "source": "evidence/B08/history-paths-20261028/http-fixture.json",
+    "public_path": "evidence/B08/history-paths-20261028/http-fixture.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "2b3f2944d2f1dc093d9b7ef50dbc124b8acd3e58713a6aef4c51b6ea979799f5"
+  },
+  {
+    "source": "evidence/B08/history-paths-20261028/http-preflight.json",
+    "public_path": "evidence/B08/history-paths-20261028/http-preflight.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "3949758af08672cdb6eb1abbc0a81db86adb0188876c0e64123d4bd67a2bae8f"
+  },
+  {
+    "source": "evidence/B08/history-paths-20261028/http-acceptance.json",
+    "public_path": "evidence/B08/history-paths-20261028/http-acceptance.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "e7c58b7b8bfa0151ee2289ab715324ea71368c3b08686ae675daad6d5e3e0430"
+  },
+  {
+    "source": "evidence/B08/history-paths-20261028/http-remaining.json",
+    "public_path": "evidence/B08/history-paths-20261028/http-remaining.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "dfc59c527f9c726991e97e45772b12cd7534f29e99afa1b2b768ce4e7e706835"
+  },
+  {
+    "source": "evidence/B08/history-paths-20261028/http-finish.json",
+    "public_path": "evidence/B08/history-paths-20261028/http-finish.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "341d7dc4b9ff67ebd5c796f13948c124b10e641e06d5b904053e21d66478c579"
+  },
+  {
+    "source": "evidence/B08/history-paths-20261028/http-empty-times.json",
+    "public_path": "evidence/B08/history-paths-20261028/http-empty-times.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "9f6cb38ec381eab547c04cb2be369d1da9789f89b0bb8e694aabc2ce16eec4ee"
+  },
+  {
+    "source": "evidence/B08/history-paths-20261028/http-retention-after-resource.json",
+    "public_path": "evidence/B08/history-paths-20261028/http-retention-after-resource.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "cd1580b4679fd899bf232d053fe09cb6665afd1a972043398cac9b294fd5c9ef"
+  },
+  {
+    "source": "evidence/B08/history-paths-20261028/http-retention-final.json",
+    "public_path": "evidence/B08/history-paths-20261028/http-retention-final.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "6e433595d94802f222e6384b3973695f3cdbb0a3c10e444f4290fe0554392888"
+  },
+  {
+    "source": "evidence/B08/history-paths-20261028/acceptance-summary.json",
+    "public_path": "evidence/B08/history-paths-20261028/acceptance-summary.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "27c67931df8bfb06555ea79c10f21b4314e080e3abdf2afb583b493ad876c313"
+  },
+  {
+    "source": "evidence/B08/history-paths-20261028/baseline.json",
+    "public_path": "evidence/B08/history-paths-20261028/baseline.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "62d12f5639ae147cdd82595779a23c5088a90d82c2cc0be9a7b84a3401e9196e"
+  },
+  {
+    "source": "evidence/B08/history-paths-20261028/source-manifest.json",
+    "public_path": "evidence/B08/history-paths-20261028/source-manifest.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "62d15604f2eb6387164b3c2585bb22d287b1975a2d35aa109fab2a3c8dc8e80c"
+  },
+  {
+    "source": "evidence/B08/history-paths-20261028/first-source.json",
+    "public_path": "evidence/B08/history-paths-20261028/first-source.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "5e81bfb75d87bb3c5035075f344ff23cb287cba6c7623adb4dd6048889ff606d"
+  },
+  {
+    "source": "evidence/B08/history-paths-20261028/first-runtime-source.json",
+    "public_path": "evidence/B08/history-paths-20261028/first-runtime-source.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "98d4725613515933a0704b5c83be789dd04a466d1336dbdaaa161acd7bd8dddc"
+  },
+  {
+    "source": "evidence/B08/history-paths-20261028/reparent-first-source.json",
+    "public_path": "evidence/B08/history-paths-20261028/reparent-first-source.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "0301c8a133ce84144d7cb7cf4467dc85f0c1cde0c55b2273ab854351db771ac7"
+  },
+  {
+    "source": "evidence/B08/history-paths-20261028/reparent-first-runtime.json",
+    "public_path": "evidence/B08/history-paths-20261028/reparent-first-runtime.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "af896b0d53f3766d9e07417ede2c9a28b7def151e0d79edeff27218be4ba02f5"
+  },
+  {
+    "source": "evidence/B08/history-paths-20261028/fixed-source.json",
+    "public_path": "evidence/B08/history-paths-20261028/fixed-source.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "e06ea5b6f72bae5adb88f2a78537ae9e2d790ff9d2fb47f80ec9e838f031c559"
+  },
+  {
+    "source": "evidence/B08/history-paths-20261028/fixed-runtime-source.json",
+    "public_path": "evidence/B08/history-paths-20261028/fixed-runtime-source.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "21c95bbfec05cc912c769cf048d724f10d1c15611918c7bbde084adec76d42f7"
+  },
+  {
+    "source": "evidence/B08/history-paths-20261028/draft-fixed-source.json",
+    "public_path": "evidence/B08/history-paths-20261028/draft-fixed-source.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "4ce2142e15524f89da9b3f6db65103b0ea179cf2337946ec749e85d9eb0029f1"
+  },
+  {
+    "source": "evidence/B08/history-paths-20261028/draft-fixed-runtime.json",
+    "public_path": "evidence/B08/history-paths-20261028/draft-fixed-runtime.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "8c50f1df7085e3cedaaec80020f1b402f401d311b726a6fbe6fb078b03e3d89f"
+  },
+  {
+    "source": "evidence/B08/history-paths-20261028/cancelled-only-source.json",
+    "public_path": "evidence/B08/history-paths-20261028/cancelled-only-source.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "62d15604f2eb6387164b3c2585bb22d287b1975a2d35aa109fab2a3c8dc8e80c"
+  },
+  {
+    "source": "evidence/B08/history-paths-20261028/cancelled-only-runtime.json",
+    "public_path": "evidence/B08/history-paths-20261028/cancelled-only-runtime.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "d9fd17067a6051db978acf9bcc862abf89c2d148aa11ae0d6ebd276eae5d8bf4"
+  },
+  {
+    "source": "evidence/B08/history-paths-20261028/web-source.json",
+    "public_path": "evidence/B08/history-paths-20261028/web-source.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "d9fd17067a6051db978acf9bcc862abf89c2d148aa11ae0d6ebd276eae5d8bf4"
+  },
+  {
+    "source": "evidence/B08/history-paths-20261028/built-source.json",
+    "public_path": "evidence/B08/history-paths-20261028/built-source.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "d9fd17067a6051db978acf9bcc862abf89c2d148aa11ae0d6ebd276eae5d8bf4"
+  },
+  {
+    "source": "evidence/B08/history-paths-20261028/source-retention-summary.json",
+    "public_path": "evidence/B08/history-paths-20261028/source-retention-summary.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "21bc33fe5537c5cf3a254d12ce88c0951bc9b60040d861eeb2b58e2f0bec0271"
   },
   {
     "source": "evidence/发布/2026-10-28-d90f568-remote.json",

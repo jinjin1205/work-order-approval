@@ -1,0 +1,114 @@
+{
+  "business": {
+    "Work Order": {
+      "old_rows": 14,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 4
+    },
+    "Work Order Item": {
+      "old_rows": 14,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 4
+    },
+    "Work Order Operation": {
+      "old_rows": 34,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 10
+    },
+    "Job Card": {
+      "old_rows": 39,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 8
+    },
+    "Job Card Time Log": {
+      "old_rows": 15,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 2
+    },
+    "Stock Entry": {
+      "old_rows": 2,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 0
+    },
+    "Stock Entry Detail": {
+      "old_rows": 2,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 0
+    },
+    "Stock Ledger Entry": {
+      "old_rows": 2,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 0
+    },
+    "Workflow Action": {
+      "old_rows": 34,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 10
+    },
+    "Version": {
+      "old_rows": 89,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 19
+    },
+    "Comment": {
+      "old_rows": 216,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 16
+    }
+  },
+  "security": {
+    "User": {
+      "old_rows": 22,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 1
+    },
+    "Role": {
+      "old_rows": 60,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 1
+    },
+    "Has Role": {
+      "old_rows": 682,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 4
+    },
+    "User Permission": {
+      "old_rows": 29,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 6
+    },
+    "Custom DocPerm": {
+      "old_rows": 67,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 2
+    }
+  },
+  "all_old_rows_unchanged": true,
+  "disposable_operation_rows_existing": [
+    true,
+    false,
+    false
+  ],
+  "disposable_time_rows_existing": [
+    false,
+    false,
+    false
+  ],
+  "protected_cancelled_time_exists": true
+}

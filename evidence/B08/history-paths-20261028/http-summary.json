@@ -1,0 +1,425 @@
+{
+  "complete": true,
+  "scope": "dedicated synthetic site; actual HTTP plus independent read-only database checks; not browser acceptance",
+  "distinct_negative_mutation_requests": 7,
+  "distinct_positive_mutation_requests": 6,
+  "repeated_mutation_requests": 0,
+  "cases": [
+    {
+      "evidence": "http-acceptance.json",
+      "case": "operation-client-save-parent",
+      "status": 403,
+      "exception_type": "PermissionError",
+      "expected_guard_message_matched": true,
+      "all_original_fields_and_links_unchanged": true,
+      "before_sha256": "593edecffebee8fd9a17549c6a6f9230c548893beba4f277ddde6d3020d085ec",
+      "after_sha256": "593edecffebee8fd9a17549c6a6f9230c548893beba4f277ddde6d3020d085ec",
+      "passed": true,
+      "guard": "business_history",
+      "business_guard_hit": true
+    },
+    {
+      "evidence": "http-acceptance.json",
+      "case": "operation-client-save-operation",
+      "status": 403,
+      "exception_type": "PermissionError",
+      "expected_guard_message_matched": true,
+      "all_original_fields_and_links_unchanged": true,
+      "before_sha256": "593edecffebee8fd9a17549c6a6f9230c548893beba4f277ddde6d3020d085ec",
+      "after_sha256": "593edecffebee8fd9a17549c6a6f9230c548893beba4f277ddde6d3020d085ec",
+      "passed": true,
+      "guard": "business_history",
+      "business_guard_hit": true
+    },
+    {
+      "evidence": "http-acceptance.json",
+      "case": "operation-resource-delete",
+      "status": 403,
+      "exception_type": "PermissionError",
+      "expected_guard_message_matched": true,
+      "all_original_fields_and_links_unchanged": true,
+      "before_sha256": "593edecffebee8fd9a17549c6a6f9230c548893beba4f277ddde6d3020d085ec",
+      "after_sha256": "593edecffebee8fd9a17549c6a6f9230c548893beba4f277ddde6d3020d085ec",
+      "passed": true,
+      "guard": "business_history",
+      "business_guard_hit": true
+    },
+    {
+      "evidence": "http-acceptance.json",
+      "case": "cancelled-time-resource-delete",
+      "status": 403,
+      "exception_type": "PermissionError",
+      "expected_guard_message_matched": true,
+      "all_original_fields_and_links_unchanged": true,
+      "before_sha256": "593edecffebee8fd9a17549c6a6f9230c548893beba4f277ddde6d3020d085ec",
+      "after_sha256": "593edecffebee8fd9a17549c6a6f9230c548893beba4f277ddde6d3020d085ec",
+      "passed": true,
+      "guard": "business_history",
+      "business_guard_hit": true
+    },
+    {
+      "evidence": "http-remaining.json",
+      "case": "cancelled-time-client-delete",
+      "status": 417,
+      "exception_type": "ValidationError",
+      "expected_guard_message_matched": true,
+      "all_original_fields_and_links_unchanged": true,
+      "before_sha256": "593edecffebee8fd9a17549c6a6f9230c548893beba4f277ddde6d3020d085ec",
+      "after_sha256": "593edecffebee8fd9a17549c6a6f9230c548893beba4f277ddde6d3020d085ec",
+      "passed": true,
+      "guard": "native_cancelled_state",
+      "reviewed_saved_response_only": true,
+      "new_http_request": false,
+      "initial_parser_failure_retained": true,
+      "business_guard_hit": false,
+      "native_state_guard_hit": true
+    },
+    {
+      "evidence": "http-remaining.json",
+      "case": "cancelled-time-sync-bulk-delete",
+      "status": 200,
+      "exception_type": null,
+      "expected_guard_message_matched": true,
+      "all_original_fields_and_links_unchanged": true,
+      "before_sha256": "593edecffebee8fd9a17549c6a6f9230c548893beba4f277ddde6d3020d085ec",
+      "after_sha256": "593edecffebee8fd9a17549c6a6f9230c548893beba4f277ddde6d3020d085ec",
+      "passed": true,
+      "guard": "business_history",
+      "business_guard_hit": true
+    },
+    {
+      "evidence": "http-finish.json",
+      "case": "operation-resource-put-parent",
+      "status": 403,
+      "exception_type": "PermissionError",
+      "expected_guard_message_matched": true,
+      "all_original_fields_and_links_unchanged": true,
+      "before_sha256": "593edecffebee8fd9a17549c6a6f9230c548893beba4f277ddde6d3020d085ec",
+      "after_sha256": "593edecffebee8fd9a17549c6a6f9230c548893beba4f277ddde6d3020d085ec",
+      "passed": true,
+      "guard": "business_history",
+      "business_guard_hit": true
+    },
+    {
+      "evidence": "http-remaining.json",
+      "case": "draft-operation-client-save",
+      "status": 200,
+      "value_saved": true,
+      "parent_unchanged": true,
+      "passed": true,
+      "business_guard_hit": false
+    },
+    {
+      "evidence": "http-finish.json",
+      "case": "draft-operation-resource-delete",
+      "status": 202,
+      "child_readback_status": 403,
+      "new_empty_child_deleted": true,
+      "parent_retained": true,
+      "historical_cards_unchanged": true,
+      "passed": true,
+      "independent_database_check": {
+        "doctype": "Work Order Operation",
+        "fixture_row_index": 2,
+        "exists": false,
+        "protected_cancelled_time_exists": true
+      },
+      "reviewed_prior_delete_only": true,
+      "new_delete_request": false,
+      "initial_404_expectation_failure_retained": true,
+      "business_guard_hit": false
+    },
+    {
+      "evidence": "http-finish.json",
+      "case": "draft-operation-client-delete",
+      "status": 200,
+      "child_readback_status": 403,
+      "new_empty_child_deleted": true,
+      "parent_retained": true,
+      "independent_database_check": {
+        "doctype": "Work Order Operation",
+        "fixture_row_index": 1,
+        "exists": false,
+        "protected_cancelled_time_exists": true
+      },
+      "historical_cards_unchanged": true,
+      "passed": true,
+      "business_guard_hit": false
+    },
+    {
+      "evidence": "http-empty-times.json",
+      "case": "empty-time-resource-delete",
+      "status": 202,
+      "child_readback_status": 403,
+      "new_empty_child_deleted": true,
+      "parent_retained": true,
+      "independent_database_check": {
+        "doctype": "Job Card Time Log",
+        "fixture_row_index": 0,
+        "exists": false,
+        "protected_cancelled_time_exists": true
+      },
+      "historical_cards_unchanged": true,
+      "passed": true,
+      "business_guard_hit": false
+    },
+    {
+      "evidence": "http-empty-times.json",
+      "case": "empty-time-client-delete",
+      "status": 200,
+      "child_readback_status": 403,
+      "new_empty_child_deleted": true,
+      "parent_retained": true,
+      "independent_database_check": {
+        "doctype": "Job Card Time Log",
+        "fixture_row_index": 1,
+        "exists": false,
+        "protected_cancelled_time_exists": true
+      },
+      "historical_cards_unchanged": true,
+      "passed": true,
+      "business_guard_hit": false
+    },
+    {
+      "evidence": "http-empty-times.json",
+      "case": "empty-time-bulk-delete",
+      "status": 200,
+      "child_readback_status": 403,
+      "new_empty_child_deleted": true,
+      "parent_retained": true,
+      "independent_database_check": {
+        "doctype": "Job Card Time Log",
+        "fixture_row_index": 2,
+        "exists": false,
+        "protected_cancelled_time_exists": true
+      },
+      "historical_cards_unchanged": true,
+      "passed": true,
+      "business_guard_hit": false
+    },
+    {
+      "evidence": "http-empty-times.json",
+      "case": "final-original-history",
+      "passed": true,
+      "all_fields_and_links_unchanged": true,
+      "before_sha256": "59e5af10eb02628e120054aad3eb220cc4bbca632f3e895b26212ad956074c3c",
+      "after_sha256": "59e5af10eb02628e120054aad3eb220cc4bbca632f3e895b26212ad956074c3c",
+      "business_guard_hit": false
+    }
+  ],
+  "initial_harness_stops_preserved": [
+    {
+      "evidence": "http-acceptance.json",
+      "failure_type": "AssertionError"
+    },
+    {
+      "evidence": "http-remaining.json",
+      "failure_type": "AssertionError"
+    },
+    {
+      "evidence": "http-finish.json",
+      "failure_type": "KeyError"
+    }
+  ],
+  "additional_local_syntax_error": "http-empty-times.raw.log in private; no HTTP request executed",
+  "readback_note": "Deleted child GET returned masked 403; deletion proved by authorized parent read and independent database absence.",
+  "bulk_scope": "Single-item synchronous rejection and positive deletion in separate requests; no all-or-nothing batch claim; >10/background untested",
+  "scripts": {
+    "b08_history_paths_http_fixture.py": "096b4a7f59d8c0fd4d2ec7fa0b13e7b15cef86caa3351a74a45b652626f4e7d5",
+    "b08_history_paths_http.py": "4d83d5f38adf24b1568a0e3cc42f3ac67933739860c5f9233b7080f085a042c5"
+  },
+  "credentials_published": false,
+  "final_retention": {
+    "business": {
+      "Work Order": {
+        "old_rows": 14,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 4
+      },
+      "Work Order Item": {
+        "old_rows": 14,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 4
+      },
+      "Work Order Operation": {
+        "old_rows": 34,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 10
+      },
+      "Job Card": {
+        "old_rows": 39,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 8
+      },
+      "Job Card Time Log": {
+        "old_rows": 15,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 2
+      },
+      "Stock Entry": {
+        "old_rows": 2,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 0
+      },
+      "Stock Entry Detail": {
+        "old_rows": 2,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 0
+      },
+      "Stock Ledger Entry": {
+        "old_rows": 2,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 0
+      },
+      "Workflow Action": {
+        "old_rows": 34,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 10
+      },
+      "Version": {
+        "old_rows": 89,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 19
+      },
+      "Comment": {
+        "old_rows": 216,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 16
+      }
+    },
+    "security": {
+      "User": {
+        "old_rows": 22,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 1
+      },
+      "Role": {
+        "old_rows": 60,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 1
+      },
+      "Has Role": {
+        "old_rows": 682,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 4
+      },
+      "User Permission": {
+        "old_rows": 29,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 6
+      },
+      "Custom DocPerm": {
+        "old_rows": 67,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 2
+      }
+    },
+    "all_old_rows_unchanged": true,
+    "disposable_operation_rows_existing": [
+      true,
+      false,
+      false
+    ],
+    "disposable_time_rows_existing": [
+      false,
+      false,
+      false
+    ],
+    "protected_cancelled_time_exists": true
+  },
+  "old_business_rows_preserved": 461,
+  "old_security_rows_preserved": 860,
+  "commands": [
+    {
+      "command": "docker exec xgd-b08-check env/bin/python /b01/b08_history_paths_http_fixture.py setup",
+      "exit_code": 0,
+      "effect": "new isolated fixture only; baseline before creation"
+    },
+    {
+      "command": "python3 .development/checks/b08_history_paths_http.py",
+      "exit_code": 0,
+      "effect": "read-only HTTP preflight"
+    },
+    {
+      "command": "python3 .development/checks/b08_history_paths_http.py --run --deployment-confirmed",
+      "exit_code": 1,
+      "effect": "5 negative requests; parser missed native exception field"
+    },
+    {
+      "command": "python3 .development/checks/b08_history_paths_http.py --run --deployment-confirmed --remaining",
+      "exit_code": 1,
+      "effect": "bulk refusal, draft save and first disposable delete; missing-child GET expectation stopped"
+    },
+    {
+      "command": "python3 .development/checks/b08_history_paths_http.py --run --deployment-confirmed --finish",
+      "exit_code": 1,
+      "effect": "Resource PUT refusal and second disposable operation delete; nullable field lookup stopped before any time-row delete"
+    },
+    {
+      "command": "python3 .development/checks/b08_history_paths_http.py --run --deployment-confirmed --empty-times",
+      "exit_code": 0,
+      "effect": "3 previously unexecuted disposable time-row deletes and final history comparison"
+    },
+    {
+      "command": "docker exec xgd-b08-check env/bin/python /b01/b08_history_paths_http_fixture.py preserve",
+      "exit_code": 0,
+      "effect": "independent old-row preservation and disposable-row existence checks"
+    }
+  ],
+  "public_evidence_whitelist": [
+    "http-fixture.json",
+    "http-preflight.json",
+    "http-acceptance.json",
+    "http-remaining.json",
+    "http-finish.json",
+    "http-empty-times.json",
+    "http-retention-after-resource.json",
+    "http-retention-final.json",
+    "http-summary.json"
+  ],
+  "publication_boundary": "Only these sanitized evidence files and the two reviewed source scripts. Exclude private fixture/baselines/raw responses/logs, credentials, live database and synthetic document IDs.",
+  "script_version_binding": {
+    "per_batch_start_hashes_recorded": false,
+    "final_hash_scope": "The scripts mapping describes files at closeout only. It is not an execution hash for every earlier batch.",
+    "http_hash_first_captured_after_last_actual_batch": "f31a764b5a9b394443c29531c42990c07c4ee12a0b3fd1bddd41f79052f84201",
+    "post_execution_changes": [
+      "Added the separately exercised Resource PUT refusal to the future complete --run path.",
+      "Changed final_history_check to prefer current in-memory readback records, falling back to the preserved first-batch file during continuation."
+    ],
+    "post_execution_validation": "AST parsing only; no HTTP mutation repeated.",
+    "fixture_hash_scope": "Final fixture source includes read-only preserve/exists inspection modes added after setup. No per-setup starting source hash was recorded."
+  },
+  "unverified": [
+    "Final complete single-invocation --run flow after the two closeout changes; individual bounded HTTP actions are evidenced in the recorded batches.",
+    "More than 10 items/background deletion.",
+    "Mixed-success bulk atomicity; this acceptance used separate synchronous negative and positive requests.",
+    "Browser interaction, mobile, customer production environment."
+  ],
+  "per_batch_script_hash_captured": false,
+  "final_script_changes_after_last_http": {
+    "changes": [
+      "Added the separately exercised Resource PUT refusal to the future complete --run path.",
+      "Changed final_history_check to prefer current in-memory readback records, falling back to the preserved first-batch file during continuation."
+    ],
+    "verification": "AST only; no subsequent HTTP execution",
+    "complete_run_verified": false,
+    "result_binding": "Recorded actual batches and their preserved HTTP responses; final script hash identifies only the public closeout source.",
+    "f31_hash_meaning": "Captured after the last actual HTTP batch, not a per-batch start hash."
+  }
+}
