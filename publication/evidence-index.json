@@ -2437,7 +2437,7 @@
   },
   {
     "path": "evidence/B08/metrics-20261028/run-record.md",
-    "original_sha256": "34ec211730ceb276eca9e21518ad49b5c7b9e340ce5d03157acff6680b274309",
+    "original_sha256": "eb54c647528263a188c02ac5c3c30ffbe18eb798bd4943cab1bd471afe40d7dd",
     "published": true,
     "reason": "public copy"
   },
@@ -5113,7 +5113,7 @@
   },
   {
     "path": "evidence/R07/time-config-binding.md",
-    "original_sha256": "7f5ef1f55643a6fab18a404869749831db87f5247e69cb666d6650a0ea26607f",
+    "original_sha256": "3b853465a99ae002a0df0bce17290a452490dd97861bc18c7ec6ea2d87c4756f",
     "published": true,
     "reason": "public copy"
   },
@@ -5144,6 +5144,12 @@
   {
     "path": "evidence/发布/2026-10-28-d4d73f0-remote.json",
     "original_sha256": "172794787e2401146071a7b89d67e3bc42bbbf0313fc0b79e1221a4a50e5e197",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/发布/2026-10-28-d90f568-remote.json",
+    "original_sha256": "09d2e23eef858e8a5f773dc15d7fe1d494c21cc48dbb3f53b55fa5439cbfa232",
     "published": true,
     "reason": "public copy"
   },
