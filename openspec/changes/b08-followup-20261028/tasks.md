@@ -2,7 +2,9 @@
 
 ## Authoritative task source
 
-当前唯一任务/验收入口为[原B08原记录旁路子节](../../../docs/任务卡/02-生产与物料闭环.md#2026-10-28-原记录旁路续接)，技术范围/实际方法/原生HTTP入口见[原R07续接绑定](../../../evidence/R07/report-concurrency.md#2026-10-28-原记录旁路续接绑定)。本包4组有限矩阵仅在原卡跟踪；5个新增受控方法已分批通过，真实失败与fixture ERROR保留，详见[本包记录](../../../evidence/B08/history-paths-20261028/run-record.md)。[限定HTTP](../../../evidence/B08/history-paths-20261028/http-summary.json)核7个不同拒绝写入（6业务历史保护、1原生取消态417）及6个合法草稿操作，无重复写入；[专用站最终保留](../../../evidence/B08/history-paths-20261028/http-retention-final.json)核旧11业务表/5安全表原行与捕获列未变、库存新增0。本包已随产品提交`00cfbfc`推送并fresh clone回读，344文件/343内容哈希、25份源码一致，见[回执](../../../evidence/发布/2026-10-28-00cfbfc-remote.json)；仅此有限包收口；不为CLI复制清单，不预先勾选。HTTP的独立测试角色/用户不属于产品或旧共享岗位授权变更。
+当前唯一任务/验收入口为[原B08不同请求并发余量子节](../../../docs/任务卡/02-生产与物料闭环.md#2026-10-28-不同请求并发余量续接)，技术范围/真实API/实际脚本和命令见[原R07本轮绑定](../../../evidence/R07/report-concurrency.md#2026-10-28-不同请求并发余量续接绑定)。I03/I04两行各一次有限HTTP通过，仅在原卡跟踪；[I03](../../../evidence/B08/distinct-concurrency-20261028/http-i03.json)/[I04](../../../evidence/B08/distinct-concurrency-20261028/http-i04.json)共4次并发确认3成功/1预期冲突，未重放，setup两笔基线另计。[20表保留](../../../evidence/B08/distinct-concurrency-20261028/http-retention-final.json)已核，产品源码完全未改。公开保存仍待核，本包未收口；不为CLI复制清单，不提前关闭整卡。
+
+上一包原记录旁路的5方法分批、13个不同HTTP写入及保留/公开回读已限定收口，沿[历史记录](../../../evidence/B08/history-paths-20261028/run-record.md)和[回执](../../../evidence/发布/2026-10-28-00cfbfc-remote.json)保留，不把旧同键并发、顺序异键或历史旁路重计为本包验证。
 
 单价/效率包已限定收口，证据沿[metrics记录](../../../evidence/B08/metrics-20261028/run-record.md)；10方法分批、中文PC/独立HTTP、源码/数据保留及公开回读不重开，不把旧结果算作本次执行。当前submitted直接方法及cancelled原Job Card直接delete已有证据，按原卡明确排除重复验证。
 
@@ -14,4 +16,4 @@
 
 ## Workflow follow-up
 
-- 本次原记录旁路包只按原卡有限矩阵推进，完成后也仅关闭对应子项；原B08/B09整卡仍部分完成，本change保持活动引用记录、不归档。人工现场未验证、完整G1/G2/G3和Z01/CASE-11边界继续保留。
+- 原卡I03/I04两行的有限HTTP及保留已有证据，当前仅待公开保存/远端回读；不重放已通过项，最终也只关闭对应子项。B08/B09整卡仍部分完成，本change保持活动引用记录、不归档；现场、手机、完整G1/G2/G3和Z01边界保留，不恢复后台周期。

@@ -1,0 +1,15 @@
+{
+  "command": [
+    "docker",
+    "exec",
+    "xgd-b08-check",
+    "env/bin/python",
+    "/b01/b08_distinct_concurrency_fixture.py",
+    "setup"
+  ],
+  "started_utc": "2026-10-28T05:09:30.379726+00:00",
+  "scripts_before_setup": {
+    "b08_distinct_concurrency_fixture.py": "756b7f1f5b1f19fd326952a56ca583ecc3e2f7f79ab5e98cc5e5b3c5ac61bac8",
+    "b08_distinct_concurrency_http.py": "edb40d5981f1d5d8a40fcaae6545b75e16ed00b528c58c5420e8352640805ad3"
+  }
+}

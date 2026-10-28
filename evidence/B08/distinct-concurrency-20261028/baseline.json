@@ -1,0 +1,22 @@
+{
+  "checked_at": "2026-10-28T13:00:04.844553+08:00",
+  "public_head": "b8e1def2f6ec7446539bc35dc57606c0831f66bd",
+  "remote_fetch": "origin/main",
+  "ahead": 0,
+  "behind": 0,
+  "public_worktree_clean": true,
+  "maintenance_branch": "codex/xgd-maintenance",
+  "maintenance_base": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+  "cumulative_changed_source_files": 25,
+  "source_lock_mismatches": 0,
+  "patch_sha256": "e15fba0d7e7272c8a311c5f272476e76325a690a2ad1dc3dbfc021836effc3f2",
+  "tools": {
+    "openspec": "1.15.0",
+    "playwright-cli": "0.1.22",
+    "openspec_skills": 6,
+    "playwright_skill_present": true,
+    "initialization_changed": false
+  },
+  "old_successful_business_tests_rerun": false,
+  "automation_resumed": false
+}

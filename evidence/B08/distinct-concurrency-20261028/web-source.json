@@ -1,0 +1,12 @@
+{
+  "command": "docker exec xgd-b08-ui env/bin/python /b01/check_source.py /b01/b08-history-paths-source-manifest.json",
+  "exit_code": 0,
+  "recorded_from_actual_command_output": true,
+  "files_match": true,
+  "checked_file_count": 33,
+  "patch_sha256": "e15fba0d7e7272c8a311c5f272476e76325a690a2ad1dc3dbfc021836effc3f2",
+  "erpnext_version": "15.124.1",
+  "frappe_version": "15.124.0",
+  "same_manifest_as": "source-manifest.json",
+  "limit": "Listed disk/module source verification only; no browser or full image acceptance"
+}

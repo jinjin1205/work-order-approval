@@ -1,0 +1,168 @@
+{
+  "case": "I04",
+  "passed": true,
+  "http_confirmations_sent": 2,
+  "scripts_before_batch": {
+    "b08_distinct_concurrency_fixture.py": "756b7f1f5b1f19fd326952a56ca583ecc3e2f7f79ab5e98cc5e5b3c5ac61bac8",
+    "b08_distinct_concurrency_http.py": "edb40d5981f1d5d8a40fcaae6545b75e16ed00b528c58c5420e8352640805ad3"
+  },
+  "scope": "real HTTP; no browser actions",
+  "requests": [
+    {
+      "actor": "A",
+      "status": 200,
+      "exception_type": null,
+      "start_utc": "2026-10-28T05:10:13.939824+00:00",
+      "end_utc": "2026-10-28T05:10:14.076113+00:00",
+      "elapsed_ms": 136.280542,
+      "request_key_sha256": "cf59293e4a22dc74354137374697dd154aa442171420d8caa1b0cf5e7fb974c5",
+      "business_content_sha256": "d744ee7016deae775b7d3e942793bb151a10cdda598eab8483b9d3d8c32baab2",
+      "result_card_sha256": "f20650f67eca8edb66f9b5476b584582cec306af34e441893442c2aa07ac82c1",
+      "specific_quantity_or_completed_conflict": false,
+      "permission_or_overlap_or_server_error": false
+    },
+    {
+      "actor": "B",
+      "status": 200,
+      "exception_type": null,
+      "start_utc": "2026-10-28T05:10:13.939664+00:00",
+      "end_utc": "2026-10-28T05:10:14.180192+00:00",
+      "elapsed_ms": 240.5265,
+      "request_key_sha256": "1f1f91b5d03ef642f6bc40afc3b2baf866e6c2c7e6c5296d0e83b6a56667474b",
+      "business_content_sha256": "1a3b06ee75840efb02bfb42e38e7fb4c51d8c8b5dac28a5b5d22e30eb265a895",
+      "result_card_sha256": "0a3fb3f06e1b9f470b0847bd9aeb57dc6fa3cad42a9982177a9ee1d01abc0620",
+      "specific_quantity_or_completed_conflict": false,
+      "permission_or_overlap_or_server_error": false
+    }
+  ],
+  "previews": [
+    {
+      "actor": "A",
+      "permissions": [
+        {
+          "doctype": "Work Order",
+          "permission": "read",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "doctype": "Work Order",
+          "permission": "write",
+          "actual": false,
+          "expected": false
+        },
+        {
+          "doctype": "Stock Entry",
+          "permission": "create",
+          "actual": false,
+          "expected": false
+        },
+        {
+          "doctype": "Job Card",
+          "permission": "write",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "doctype": "Job Card",
+          "permission": "submit",
+          "actual": true,
+          "expected": true
+        }
+      ],
+      "effective_seconds": 3600,
+      "business_time": {
+        "from": "2026-10-26 09:00:00",
+        "to": "2026-10-26 10:00:00"
+      },
+      "request_key_sha256": "cf59293e4a22dc74354137374697dd154aa442171420d8caa1b0cf5e7fb974c5",
+      "actor_identity_sha256": "236d2ac63abb7eecebf05d66b553f4112d7f82ac27cee786dbdf55871e97892b",
+      "task_identity_sha256": "6254f26c56f2da2293863c34d84e9a84fc8191b38371ef4485482d9da8a0a800",
+      "business_content_sha256": "d744ee7016deae775b7d3e942793bb151a10cdda598eab8483b9d3d8c32baab2"
+    },
+    {
+      "actor": "B",
+      "permissions": [
+        {
+          "doctype": "Work Order",
+          "permission": "read",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "doctype": "Work Order",
+          "permission": "write",
+          "actual": false,
+          "expected": false
+        },
+        {
+          "doctype": "Stock Entry",
+          "permission": "create",
+          "actual": false,
+          "expected": false
+        },
+        {
+          "doctype": "Job Card",
+          "permission": "write",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "doctype": "Job Card",
+          "permission": "submit",
+          "actual": true,
+          "expected": true
+        }
+      ],
+      "effective_seconds": 3600,
+      "business_time": {
+        "from": "2026-10-26 10:00:00",
+        "to": "2026-10-26 11:00:00"
+      },
+      "request_key_sha256": "1f1f91b5d03ef642f6bc40afc3b2baf866e6c2c7e6c5296d0e83b6a56667474b",
+      "actor_identity_sha256": "5add90eaff8ddbd55df6c74cb19052fb993e98cc55293bcf991a4e877623ff8f",
+      "task_identity_sha256": "6254f26c56f2da2293863c34d84e9a84fc8191b38371ef4485482d9da8a0a800",
+      "business_content_sha256": "1a3b06ee75840efb02bfb42e38e7fb4c51d8c8b5dac28a5b5d22e30eb265a895"
+    }
+  ],
+  "client_intervals_overlap": true,
+  "client_overlap_ms": 136.280542,
+  "independent_tcp_connections": true,
+  "verification": {
+    "passed": true,
+    "new_fact_count": 2,
+    "effective_fact_count": 3,
+    "new_time_rows": 2,
+    "new_orphan_time_rows": 0,
+    "rejected_request_partial_facts": 0,
+    "old_cards_and_time_rows_unchanged": true,
+    "plan_route_and_other_tasks_unchanged": true,
+    "stock_unchanged": true,
+    "owner_employee_request_task_binding": true,
+    "same_task_distinct_new_cards": true,
+    "final": {
+      "plan": 10,
+      "good": 10.0,
+      "bad": 0.0,
+      "remaining": 0,
+      "actual_operation_minutes": 180.0,
+      "lead_time_minutes": 180.0,
+      "locked_hour_rate": 0.0,
+      "independent_expected_task_cost": 0.0,
+      "cost_precision": 2,
+      "effective_seconds": 10800,
+      "task_actual_operating_cost": 0.0,
+      "work_order_actual_operating_cost": 0.0,
+      "work_order_total_operating_cost": 0.0,
+      "actual_start": "2026-10-26 08:00:00",
+      "actual_end": "2026-10-26 11:00:00",
+      "task_status": "Completed",
+      "work_order_status": "In Process"
+    }
+  },
+  "before_state_sha256": "b4cdf1aa30549b4881c3754ee05ad707fd9e48123a132d0a6552b6751938a10d",
+  "after_state_sha256": "9aa2f38987eb46ddf6d47709694e11f53dbbeb968816bdfdd7b1e0e405e204c1",
+  "runtime_source_before_batch_file": "http-i04-before.json",
+  "database_lock_overlap_observed": false,
+  "limit": "Two-thread-capable service and overlapping independent HTTP intervals; not a DB lock trace, not full G3 or browser acceptance. No retry occurred."
+}

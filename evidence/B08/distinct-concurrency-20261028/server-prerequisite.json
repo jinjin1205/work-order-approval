@@ -1,0 +1,24 @@
+{
+  "observed_container_command": [
+    "bench",
+    "--site",
+    "xgd-b08-http.localhost",
+    "serve",
+    "--port",
+    "8000",
+    "--noreload"
+  ],
+  "observed_frappe_serve_default_no_threading": false,
+  "observed_werkzeug_argument": "threaded=not no_threading",
+  "threading_disable_flag_present": false,
+  "commands": [
+    "docker inspect --format '{{json .Config.Cmd}}' xgd-b08-ui",
+    "docker exec xgd-b08-ui env/bin/python -c 'import inspect,frappe.app; print(inspect.getsource(frappe.app.serve))'"
+  ],
+  "exit_codes": [
+    0,
+    0
+  ],
+  "conclusion": "The retained native development server is configured to support threaded requests; no server restart or configuration change performed",
+  "limitation": "Runtime configuration evidence plus measured client HTTP overlap; not a DB lock trace or a production multi-worker/load test"
+}

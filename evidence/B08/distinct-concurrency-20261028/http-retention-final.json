@@ -1,0 +1,140 @@
+{
+  "groups": {
+    "business": {
+      "Work Order": {
+        "old_rows": 18,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 2
+      },
+      "Work Order Item": {
+        "old_rows": 18,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 2
+      },
+      "Work Order Operation": {
+        "old_rows": 44,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 6
+      },
+      "Job Card": {
+        "old_rows": 47,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 11
+      },
+      "Job Card Time Log": {
+        "old_rows": 17,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 5
+      },
+      "Stock Entry": {
+        "old_rows": 2,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 0
+      },
+      "Stock Entry Detail": {
+        "old_rows": 2,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 0
+      },
+      "Stock Ledger Entry": {
+        "old_rows": 2,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 0
+      },
+      "Workflow Action": {
+        "old_rows": 44,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 8
+      },
+      "Version": {
+        "old_rows": 108,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 20
+      },
+      "Comment": {
+        "old_rows": 232,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 14
+      }
+    },
+    "security": {
+      "User": {
+        "old_rows": 23,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 2
+      },
+      "Role": {
+        "old_rows": 61,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 0
+      },
+      "Has Role": {
+        "old_rows": 686,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 4
+      },
+      "User Permission": {
+        "old_rows": 35,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 8
+      },
+      "Custom DocPerm": {
+        "old_rows": 69,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 0
+      }
+    },
+    "extra": {
+      "Employee": {
+        "old_rows": 6,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 2
+      },
+      "Production Time Rule": {
+        "old_rows": 1,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 0
+      },
+      "Production Time Period": {
+        "old_rows": 2,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 0
+      },
+      "Workstation": {
+        "old_rows": 4,
+        "missing": 0,
+        "changed": 0,
+        "new_rows": 2
+      }
+    }
+  },
+  "all_old_rows_unchanged": true,
+  "actual_command": [
+    "docker",
+    "exec",
+    "xgd-b08-check",
+    "env/bin/python",
+    "/b01/b08_distinct_concurrency_fixture.py",
+    "preserve"
+  ],
+  "exit_code": 0
+}

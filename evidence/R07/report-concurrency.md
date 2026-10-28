@@ -267,3 +267,36 @@ docker exec xgd-b08-check env/bin/python /b01/b08_history_paths_tests.py test_ca
 真实HTTP使用`.development/checks/b08_history_paths_http_fixture.py`准备专用合成样例、`.development/checks/b08_history_paths_http.py`调用上述原生接口；站点限定`xgd-b08-http.localhost`。独立新测试角色/用户先核对象和操作权限，合法凭据只存本地私有路径，公开证据不含凭据。[最终HTTP汇总](../B08/history-paths-20261028/http-summary.json)记录7个不同拒绝写入（6次业务历史保护、1次原生取消态417）和6个无事实草稿合法写入/删除，13次不含读取/预检，重复写入为0。每次拒绝前后7对象全部字段/关联哈希不变；client.delete取消时间行命中原生状态，不能称新增保护。已删除草稿子行GET403由授权父读取及独立DB不存在共同证明删除成功。实际覆盖Resource/client及同步单项批量，不外推bulk_update、更多条目或后台分支；批量HTTP200须看逐项返回和回读，不能写整批原子性。原始[首批](../B08/history-paths-20261028/http-acceptance.json)、[续批](../B08/history-paths-20261028/http-remaining.json)和`http-finish.json`的3次脚本停止及1次未发请求的本地语法错误均保留，属于脚本边界而非产品失败；未为修断言重放写入。
 
 [专用站最终保留](../B08/history-paths-20261028/http-retention-final.json)核旧11业务表及5安全配置表原有行/捕获列无缺失、无改写，库存3表新增0；仅删除本轮2个无事实工序及3个空白时间行，受保护取消态时间行仍在。产品无页面变化，未重跑价格或旧页面验收。本包已随产品提交`00cfbfc`推送并fresh clone回读，344文件/343内容哈希、25份源码一致，见[回执](../发布/2026-10-28-00cfbfc-remote.json)；仅此有限包收口。有限矩阵只维护在原卡，完整G2/G3、现场、手机、Z01、整卡及OpenSpec未归档状态不变。
+
+## 2026-10-28 不同请求并发余量续接绑定
+
+本轮只接原第7节I03/I04及[原B08两行有限矩阵](../../docs/任务卡/02-生产与物料闭环.md#2026-10-28-不同请求并发余量续接)，I03/I04各一次有限HTTP通过；公开保存仍待核，本包未收口。原`.development/checks/b08_http.py`的barrier只用于同账号/同键并发，不同键调用为顺序；旧证据不覆盖本包，不重放已消耗样例。完整G3仍未关闭，但不阻止这一已绑定确认入口的限定验证。
+
+**入口、文件与复用：**通过原`erpnext.manufacturing.doctype.job_card.job_card`的`get_production_report_tasks`、`preview_production_report_time`、`confirm_production_report`及`get_production_report_result`，分别准备授权、预览、确认和读取。生产逻辑只允许在本包真实失败后最小修补`.development/repos/erpnext/erpnext/manufacturing/doctype/job_card/job_card.py`及原`test_job_card.py`；无失败则不改产品。复用原任务/Employee身份检查、同工单先锁后重读和原生事务，不改Frappe、库存、产品角色权限或新建API。本轮已实际核维护25份与运行33份指定文件，补丁仍`e15fba0d7e7272c8a311c5f272476e76325a690a2ad1dc3dbfc021836effc3f2`；源码完全未改，无产品失败驱动修补，不重跑旧回归、不build/重启，见[本包清单](../B08/distinct-concurrency-20261028/source-manifest.json)。
+
+**新样例与保留：**新增2个普通授权测试用户及各自Employee、2张已审批新单；I03/I04各用一张新单的同任务剩余2，旧业务数据和旧权限不改。另建2个合成Workstation，每张新单的工序共用对应的一个新工作站，避免原生正常状态回写改变旧工作站审计列；这是本包fixture隔离，不扩产品改动或宣称共享工作站完整并发已验。两身份须分别预览成功且自身输入合法，不能用权限或时段错误替代余量竞争结果。只连现有专用合成HTTP站`xgd-b08-http.localhost`；准备/独立DB回读沿原check容器。至少保存11张业务表及5类安全配置表旧行/捕获列基线与最终比较；fixture还捕获Employee、时段规则/子表和Workstation旧行。新增样例保留，密钥/原始响应只在本地私有路径，不进入公开证据。
+
+**实际脚本与命令：**`.development/checks/b08_distinct_concurrency_fixture.py`实际参数为：`source`、`setup`、`snapshot I03|I04 before|after`、`preserve`；仅`setup`写数据库，其余为源码或DB只读核对，setup拒绝重建已使用/失败样例。证据目录为`evidence/B08/distinct-concurrency-20261028/`。source/setup/snapshot/preserve已有本轮执行证据；下面列实际调用语法，快照由HTTP脚本按各组实际请求前后时点调用，不能按代码块顺序重放已完成样例：
+
+```sh
+docker exec xgd-b08-check env/bin/python /b01/b08_distinct_concurrency_fixture.py source
+docker exec xgd-b08-check env/bin/python /b01/b08_distinct_concurrency_fixture.py setup
+docker exec xgd-b08-check env/bin/python /b01/b08_distinct_concurrency_fixture.py snapshot I03 before
+docker exec xgd-b08-check env/bin/python /b01/b08_distinct_concurrency_fixture.py snapshot I03 after
+docker exec xgd-b08-check env/bin/python /b01/b08_distinct_concurrency_fixture.py snapshot I04 before
+docker exec xgd-b08-check env/bin/python /b01/b08_distinct_concurrency_fixture.py snapshot I04 after
+docker exec xgd-b08-check env/bin/python /b01/b08_distinct_concurrency_fixture.py preserve
+```
+
+HTTP脚本`.development/checks/b08_distinct_concurrency_http.py`复用既有HTTP/barrier/单调时钟及保存模式；两场景各执行一次的实际命令：
+
+```sh
+python3 .development/checks/b08_distinct_concurrency_http.py I03
+python3 .development/checks/b08_distinct_concurrency_http.py I04
+```
+
+[I03](../B08/distinct-concurrency-20261028/http-i03.json)：A200/B417，拒绝为特定完成/余量冲突而非无权/时段/服务错误；两独立连接区间重叠169.344167毫秒，只新增1事实/1时间行，失败键无卡或孤儿。良8→10、不良0/余0，累计原生120分钟、有效7200秒，整单In Process。[I04](../B08/distinct-concurrency-20261028/http-i04.json)：2×200生成两张独立事实/时间行，区间重叠136.280542毫秒，良8→10、不良0/余0，累计原生180分钟、有效10800秒，整单仍In Process。共4次并发确认、3成功/1预期拒绝，未重放；setup正常确认的2笔良8基线另计。
+
+[最终保留](../B08/distinct-concurrency-20261028/http-retention-final.json)核11业务+5安全配置+4额外共20表，旧行/捕获列不变，库存新增0。新Workstation的hour_rate=0，成本仅本样例0值符合，不证明非零成本并发。一次脚本定向审查在执行前补输入时间/数量及派生状态/成本断言，未产生产品失败；各批发前脚本hash与33文件清单分别绑定于HTTP摘要。实际记录Barrier(2)同步方式及每请求发送/返回时刻，未单独采集屏障释放事件时间戳；原I03/I04要求的实际请求区间重叠已核，不为补释放时间戳重放。线程配置及客户端区间重叠不等于DB锁轨迹、压力测试或完整G3，不称页面、单测或客户验收通过。
+
+每组两普通授权身份、独立连接、不同键；记录各请求发送/返回时刻并证明实际区间重叠，不仅记录“使用了线程”。通过条件只在原卡两行维护：I03余2各2仅一笔2且失败无残留，I04余2各1两笔1；独立连接回读事实/关联/累计、原计划和库存。不用同账号同键、顺序异键或只有源码锁字样代替；首次失败和恢复分别保存，不无限重试。I05/I06新故障、跨工单/库存/共享工作站完整并发、后台队列、页面/现场/手机、导航/图片/自定义字段、Z01及周期均排除。本包有限HTTP及保留已核，公开保存仍待核，本包未收口；不提前关闭整卡/G1/G2/G3/Z01或归档。

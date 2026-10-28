@@ -1590,6 +1590,90 @@
     "reason": "local raw execution evidence; not uploaded"
   },
   {
+    "path": "evidence/B08/distinct-concurrency-20261028/baseline.json",
+    "original_sha256": "45277afffcaa7414ff6e561ce6b2061701dc8a442f102670ed0dd25cc5efe025",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/distinct-concurrency-20261028/http-i03-before.json",
+    "original_sha256": "429ed068864556a8f6440c112e2266fd58ccebd554cff585d01965544804b78f",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/distinct-concurrency-20261028/http-i03.json",
+    "original_sha256": "c0bf32c7cd077b266c63a85ff05c4d5fe0bd051f2da28e57b624dcd2aa3ea090",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/distinct-concurrency-20261028/http-i04-before.json",
+    "original_sha256": "0f3ad17d5f96ebcabbdd675b23d7540f86b8652b4847101fcb6d0f665a944cc7",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/distinct-concurrency-20261028/http-i04.json",
+    "original_sha256": "d4fdbdac7cb8e64d6b145c01f43a1bc6a05adad53bc369b35121d0a45d9f382c",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/distinct-concurrency-20261028/http-retention-final.json",
+    "original_sha256": "cdde11507504dcf5fcf65f1409febd0eba444d5f40329108374f8ee75601f7f4",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/distinct-concurrency-20261028/http-setup-before.json",
+    "original_sha256": "7064628fd2d4095d722162b66701bf9da6f57cf8e166ad54955aee81bc92bbb3",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/distinct-concurrency-20261028/http-setup.json",
+    "original_sha256": "e67eb65bd4fb57fdd8fd7979f802012a145666f95be64f6f043c2ac3a68403aa",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/distinct-concurrency-20261028/http-summary.json",
+    "original_sha256": "3691d42aa175f3c3d2b0bf649ee8119696960a2421c242381b119542c2a453c2",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/distinct-concurrency-20261028/run-record.md",
+    "original_sha256": "4aa55b620f49e26655912903d07402c70a5e5a5bfbf91abcb38eee6748a06708",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/distinct-concurrency-20261028/runtime-source.json",
+    "original_sha256": "d9fd17067a6051db978acf9bcc862abf89c2d148aa11ae0d6ebd276eae5d8bf4",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/distinct-concurrency-20261028/server-prerequisite.json",
+    "original_sha256": "bd507002ebe1fb1bbf85d949f9452720804f60a78cd534725c72354e688868b5",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/distinct-concurrency-20261028/source-manifest.json",
+    "original_sha256": "62d15604f2eb6387164b3c2585bb22d287b1975a2d35aa109fab2a3c8dc8e80c",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/distinct-concurrency-20261028/web-source.json",
+    "original_sha256": "0b389a3be082517d34610a0d763786d9a7cb0168d1eabccb6f9f10b3ae254960",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
     "path": "evidence/B08/followup-20261028/acceptance-summary.json",
     "original_sha256": "cfde55358a91a5913b20c3107a5c1ac2993613374ab0d2d016717597c0bb5abc",
     "published": true,
@@ -5299,7 +5383,7 @@
   },
   {
     "path": "evidence/R07/report-concurrency.md",
-    "original_sha256": "660e26dad790d0d84d81a3dd6b350ce7b2319535e939bcd5e0751078969b0d51",
+    "original_sha256": "a5cebaad200731213d7989c6a8cd95bc1d5ac870fec205bf017e7f99e64cf32e",
     "published": true,
     "reason": "public copy"
   },
@@ -5354,6 +5438,18 @@
   {
     "path": "evidence/发布/2026-10-28-afe5eb8-remote.json",
     "original_sha256": "e43e2520ae264aa2ed2b86a2b10aa441c46d6e40ed583f4b27f30a843d3b08da",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/发布/2026-10-28-b8e1def-ci.json",
+    "original_sha256": "28628ccb4bc85f0c7a833eccd2033c6a41cf9ee3aeeb476bc6d0f88705247a09",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/发布/2026-10-28-b8e1def-remote.json",
+    "original_sha256": "c29181c6cf868e73df7a27f89933563344fc83baedc3232d1c24a484170c766e",
     "published": false,
     "reason": "local raw execution evidence; not uploaded"
   },

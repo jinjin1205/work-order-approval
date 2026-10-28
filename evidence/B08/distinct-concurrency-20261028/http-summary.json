@@ -1,0 +1,247 @@
+{
+  "scope": "B08-04/B09 I03/I04 distinct-request concurrency; real HTTP on the existing dedicated synthetic site",
+  "passed": true,
+  "product_files_changed": 0,
+  "scripts_sha256": {
+    "b08_distinct_concurrency_fixture.py": "756b7f1f5b1f19fd326952a56ca583ecc3e2f7f79ab5e98cc5e5b3c5ac61bac8",
+    "b08_distinct_concurrency_http.py": "edb40d5981f1d5d8a40fcaae6545b75e16ed00b528c58c5420e8352640805ad3"
+  },
+  "scripts_changed_after_execution": false,
+  "per_batch_script_hash_captured_before_http": true,
+  "source_files_verified_before_each_batch": 33,
+  "source_patch_sha256": "e15fba0d7e7272c8a311c5f272476e76325a690a2ad1dc3dbfc021836effc3f2",
+  "actual_commands": [
+    {
+      "command": "docker exec xgd-b08-check env/bin/python /b01/b08_distinct_concurrency_fixture.py setup",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 .development/checks/b08_distinct_concurrency_http.py I03",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 .development/checks/b08_distinct_concurrency_http.py I04",
+      "exit_code": 0
+    },
+    {
+      "command": "docker exec xgd-b08-check env/bin/python /b01/b08_distinct_concurrency_fixture.py preserve",
+      "exit_code": 0
+    }
+  ],
+  "internal_readonly_commands_per_case": [
+    "docker exec xgd-b08-check env/bin/python /b01/b08_distinct_concurrency_fixture.py source",
+    "docker exec xgd-b08-ui env/bin/python /b01/b08_distinct_concurrency_fixture.py source",
+    "docker exec xgd-b08-check env/bin/python /b01/b08_distinct_concurrency_fixture.py snapshot <case> before",
+    "docker exec xgd-b08-check env/bin/python /b01/b08_distinct_concurrency_fixture.py snapshot <case> after"
+  ],
+  "fixture": {
+    "new_users": 2,
+    "new_employees": 2,
+    "new_work_orders": 2,
+    "new_workstations": 2,
+    "plan_each": 10,
+    "operations_each": 3,
+    "scope": "DEPT",
+    "baseline_good_each": 8,
+    "baseline_facts_created_via_normal_confirm": 2,
+    "wage_basis": "unconfigured",
+    "work_order_read": true,
+    "work_order_write": false,
+    "stock_entry_create": false,
+    "system_manager": false
+  },
+  "concurrent_confirmations_sent": 4,
+  "successful_new_facts": 3,
+  "explicit_business_conflict_rejections": 1,
+  "automatic_retries": 0,
+  "request_replays": 0,
+  "script_stops": 0,
+  "historical_tests_rerun": 0,
+  "cases": {
+    "I03": {
+      "evidence": "http-i03.json",
+      "before_evidence": "http-i03-before.json",
+      "requests": [
+        {
+          "actor": "A",
+          "status": 200,
+          "exception_type": null,
+          "start_utc": "2026-10-28T05:09:56.589324+00:00",
+          "end_utc": "2026-10-28T05:09:56.758671+00:00",
+          "elapsed_ms": 169.344167,
+          "request_key_sha256": "9f4a0b59ccb95b1e92ac4578fab0bd22cdb31a154808305f5d9870d5f2e668ba",
+          "business_content_sha256": "3c182fa15778a536778eae2ac8c5fc41551e4d6a754dc9b7c79c3c9279c3fef3",
+          "result_card_sha256": "6fe19d6c2d41db229cf592dbac3d1fe8ce3ada5b32875df5f4702c47239d2555",
+          "specific_quantity_or_completed_conflict": false,
+          "permission_or_overlap_or_server_error": false
+        },
+        {
+          "actor": "B",
+          "status": 417,
+          "exception_type": "ValidationError",
+          "start_utc": "2026-10-28T05:09:56.589104+00:00",
+          "end_utc": "2026-10-28T05:09:56.775790+00:00",
+          "elapsed_ms": 186.683875,
+          "request_key_sha256": "9ee387b1362194f25d6937eb1c04aeb3edb8b170d019cf6d63fd4cb94aa22031",
+          "business_content_sha256": "7ff8bd99e2854c95af8b73d4b8e37aaf6fce8d8f1eaecde346064034e8cef014",
+          "result_card_sha256": null,
+          "specific_quantity_or_completed_conflict": true,
+          "permission_or_overlap_or_server_error": false
+        }
+      ],
+      "independent_tcp_connections": true,
+      "client_overlap_ms": 169.344167,
+      "verification": {
+        "passed": true,
+        "new_fact_count": 1,
+        "effective_fact_count": 2,
+        "new_time_rows": 1,
+        "new_orphan_time_rows": 0,
+        "rejected_request_partial_facts": 0,
+        "old_cards_and_time_rows_unchanged": true,
+        "plan_route_and_other_tasks_unchanged": true,
+        "stock_unchanged": true,
+        "owner_employee_request_task_binding": true,
+        "same_task_distinct_new_cards": true,
+        "final": {
+          "plan": 10,
+          "good": 10.0,
+          "bad": 0.0,
+          "remaining": 0,
+          "actual_operation_minutes": 120.0,
+          "lead_time_minutes": 120.0,
+          "locked_hour_rate": 0.0,
+          "independent_expected_task_cost": 0.0,
+          "cost_precision": 2,
+          "effective_seconds": 7200,
+          "task_actual_operating_cost": 0.0,
+          "work_order_actual_operating_cost": 0.0,
+          "work_order_total_operating_cost": 0.0,
+          "actual_start": "2026-10-25 08:00:00",
+          "actual_end": "2026-10-25 10:00:00",
+          "task_status": "Completed",
+          "work_order_status": "In Process"
+        }
+      }
+    },
+    "I04": {
+      "evidence": "http-i04.json",
+      "before_evidence": "http-i04-before.json",
+      "requests": [
+        {
+          "actor": "A",
+          "status": 200,
+          "exception_type": null,
+          "start_utc": "2026-10-28T05:10:13.939824+00:00",
+          "end_utc": "2026-10-28T05:10:14.076113+00:00",
+          "elapsed_ms": 136.280542,
+          "request_key_sha256": "cf59293e4a22dc74354137374697dd154aa442171420d8caa1b0cf5e7fb974c5",
+          "business_content_sha256": "d744ee7016deae775b7d3e942793bb151a10cdda598eab8483b9d3d8c32baab2",
+          "result_card_sha256": "f20650f67eca8edb66f9b5476b584582cec306af34e441893442c2aa07ac82c1",
+          "specific_quantity_or_completed_conflict": false,
+          "permission_or_overlap_or_server_error": false
+        },
+        {
+          "actor": "B",
+          "status": 200,
+          "exception_type": null,
+          "start_utc": "2026-10-28T05:10:13.939664+00:00",
+          "end_utc": "2026-10-28T05:10:14.180192+00:00",
+          "elapsed_ms": 240.5265,
+          "request_key_sha256": "1f1f91b5d03ef642f6bc40afc3b2baf866e6c2c7e6c5296d0e83b6a56667474b",
+          "business_content_sha256": "1a3b06ee75840efb02bfb42e38e7fb4c51d8c8b5dac28a5b5d22e30eb265a895",
+          "result_card_sha256": "0a3fb3f06e1b9f470b0847bd9aeb57dc6fa3cad42a9982177a9ee1d01abc0620",
+          "specific_quantity_or_completed_conflict": false,
+          "permission_or_overlap_or_server_error": false
+        }
+      ],
+      "independent_tcp_connections": true,
+      "client_overlap_ms": 136.280542,
+      "verification": {
+        "passed": true,
+        "new_fact_count": 2,
+        "effective_fact_count": 3,
+        "new_time_rows": 2,
+        "new_orphan_time_rows": 0,
+        "rejected_request_partial_facts": 0,
+        "old_cards_and_time_rows_unchanged": true,
+        "plan_route_and_other_tasks_unchanged": true,
+        "stock_unchanged": true,
+        "owner_employee_request_task_binding": true,
+        "same_task_distinct_new_cards": true,
+        "final": {
+          "plan": 10,
+          "good": 10.0,
+          "bad": 0.0,
+          "remaining": 0,
+          "actual_operation_minutes": 180.0,
+          "lead_time_minutes": 180.0,
+          "locked_hour_rate": 0.0,
+          "independent_expected_task_cost": 0.0,
+          "cost_precision": 2,
+          "effective_seconds": 10800,
+          "task_actual_operating_cost": 0.0,
+          "work_order_actual_operating_cost": 0.0,
+          "work_order_total_operating_cost": 0.0,
+          "actual_start": "2026-10-26 08:00:00",
+          "actual_end": "2026-10-26 11:00:00",
+          "task_status": "Completed",
+          "work_order_status": "In Process"
+        }
+      }
+    }
+  },
+  "retention": {
+    "evidence": "http-retention-final.json",
+    "business_tables": 11,
+    "security_tables": 5,
+    "additional_tables": 4,
+    "all_old_rows_and_captured_columns_unchanged": true,
+    "stock_rows_added": 0,
+    "new_samples_retained": true
+  },
+  "cost_boundary": {
+    "hour_rate_each": 0,
+    "observed_costs_each": 0,
+    "zero_cost_formula_and_preservation_checked": true,
+    "nonzero_cost_concurrency_verified": false,
+    "sample_not_changed_or_rerun_for_nonzero_cost": true
+  },
+  "concurrency_boundary": {
+    "server_evidence": "server-prerequisite.json",
+    "threaded_runtime_configuration_verified": true,
+    "barrier_participants": 2,
+    "each_request_start_recorded_after_barrier": true,
+    "separate_barrier_release_timestamp_captured": false,
+    "actual_client_request_intervals_overlap": true,
+    "database_lock_overlap_observed": false,
+    "production_multiworker_or_load_test": false
+  },
+  "not_covered": [
+    "browser or mobile interaction",
+    "manual on-site acceptance",
+    "full G1/G2/G3",
+    "I05/I06",
+    "cross-work-order or shared-workstation concurrency",
+    "stock concurrency",
+    "nonzero operating cost concurrency",
+    "Z01 delivery"
+  ],
+  "private": {
+    "raw_responses_baselines_and_credentials": "excluded from public artifacts",
+    "all_local_private_files_mode": "0600",
+    "raw_identity_and_secret_values_public_scan": "passed"
+  },
+  "public_file_whitelist": [
+    ".development/checks/b08_distinct_concurrency_fixture.py",
+    ".development/checks/b08_distinct_concurrency_http.py",
+    "evidence/B08/distinct-concurrency-20261028/http-i03-before.json",
+    "evidence/B08/distinct-concurrency-20261028/http-i03.json",
+    "evidence/B08/distinct-concurrency-20261028/http-i04-before.json",
+    "evidence/B08/distinct-concurrency-20261028/http-i04.json",
+    "evidence/B08/distinct-concurrency-20261028/http-retention-final.json",
+    "evidence/B08/distinct-concurrency-20261028/http-setup-before.json",
+    "evidence/B08/distinct-concurrency-20261028/http-setup.json",
+    "evidence/B08/distinct-concurrency-20261028/http-summary.json"
+  ]
+}
