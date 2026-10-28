@@ -1201,8 +1201,8 @@ erpnext.work_order.open_production_report = async function (frm) {
 				options: menu.tasks.map((t) => ({ value: t.name, label: t.operation })), default: menu.tasks[0].name,
 				onchange: () => { update_task(); update_preview(); } },
 			{ fieldname: "summary", fieldtype: "HTML" },
-			{ fieldname: "good_quantity", label: "本次良品数量", fieldtype: "Data", reqd: 1 },
-			{ fieldname: "bad_quantity", label: "本次不良数量", fieldtype: "Data", default: "0", reqd: 1 },
+			{ fieldname: "good_quantity", label: "本次良品数量", fieldtype: "Data", reqd: 1, onchange: () => update_preview() },
+			{ fieldname: "bad_quantity", label: "本次不良数量", fieldtype: "Data", default: "0", reqd: 1, onchange: () => update_preview() },
 			{ fieldname: "from_time", label: "实际开始时间", fieldtype: "Datetime", reqd: 1, onchange: () => update_preview() },
 			{ fieldname: "to_time", label: "实际结束时间", fieldtype: "Datetime", reqd: 1, default: frappe.datetime.now_datetime(), onchange: () => update_preview() },
 			{ fieldname: "shutdown_seconds", label: "停工秒数", fieldtype: "Int", default: 0, onchange: () => update_preview() },
@@ -1212,7 +1212,7 @@ erpnext.work_order.open_production_report = async function (frm) {
 		],
 		primary_action_label: "确认报工",
 		primary_action: async (values) => {
-			if (!fingerprint) { frappe.msgprint("请先填写起止时间并核对工时预览。"); return; }
+			if (!fingerprint) { frappe.msgprint("请先填写数量和起止时间，并核对工时、预计工资与效率预览。"); return; }
 			if (localStorage.getItem(storage_key)) {
 				frappe.msgprint("上次提交结果尚未核对，请先使用“查询或重试上次报工”，不要重复创建新记录。"); return;
 			}
@@ -1237,15 +1237,35 @@ erpnext.work_order.open_production_report = async function (frm) {
 	async function update_preview() {
 		const generation = ++preview_generation;
 		fingerprint = null;
+		dialog.fields_dict.time_preview.$wrapper.html("<p>请填写数量和实际起止时间，核对服务器预览后确认。</p>");
 		const start = dialog.get_value("from_time"), end = dialog.get_value("to_time");
-		if (!start || !end) return;
-		const { message: result } = await frappe.call(api + "preview_production_report_time", {
-			work_order: frm.doc.name, operation_id: dialog.get_value("task"), from_time: start, to_time: end,
-			shutdown_seconds: dialog.get_value("shutdown_seconds"), overtime_seconds: dialog.get_value("overtime_seconds"),
-		});
+		const good = dialog.get_value("good_quantity"), bad = dialog.get_value("bad_quantity");
+		if (!start || !end || good == null || good === "" || bad == null || bad === "") return;
+		dialog.fields_dict.time_preview.$wrapper.html("<p>正在核对工时、预计工资与效率……</p>");
+		let result;
+		try {
+			({ message: result } = await frappe.call(api + "preview_production_report_time", {
+				work_order: frm.doc.name, operation_id: dialog.get_value("task"), from_time: start, to_time: end,
+				good_quantity: good, bad_quantity: bad,
+				shutdown_seconds: dialog.get_value("shutdown_seconds"), overtime_seconds: dialog.get_value("overtime_seconds"),
+			}));
+		} catch (error) {
+			if (generation === preview_generation) {
+				dialog.fields_dict.time_preview.$wrapper.html("<p>预览未完成，请按错误提示修正或重试，重新核对后才能确认。</p>");
+			}
+			return;
+		}
 		if (generation !== preview_generation) return;
 		fingerprint = result.context_fingerprint;
-		dialog.fields_dict.time_preview.$wrapper.html(`<p>经过 ${escape(result.reported_seconds)} 秒，休息 ${escape(result.rest_seconds)} 秒，有效工时 <b>${escape(result.effective_seconds)} 秒</b>。${escape(result.rule_message)}</p>`);
+		const { source, result: metrics } = result.metrics;
+		const value = (input, missing = "—") => input == null ? missing : escape(input);
+		const mode = source.wage_mode === "hourly" ? "计时" : source.wage_mode === "piece" ? "计件" : "未配置";
+		const rate_unit = source.wage_mode === "hourly" ? "小时" : value(source.unit);
+		dialog.fields_dict.time_preview.$wrapper.html(
+			`<p>经过 ${escape(result.reported_seconds)} 秒，休息 ${escape(result.rest_seconds)} 秒，有效工时 <b>${escape(result.effective_seconds)} 秒</b>。${escape(result.rule_message)}</p>` +
+			`<p>计价方式：${mode}；单价：${source.wage_rate == null ? "未配置" : `${value(source.wage_rate)} ${value(source.currency)}/${rate_unit}`}；预计工资：<b>${value(metrics.estimated_wage)} ${value(source.currency, "")}</b>（仅预计，非工资结算）。</p>` +
+			`<p>标准效率：${value(source.standard_efficiency, "未配置")} ${value(source.unit)}/小时；实际效率：${value(metrics.actual_efficiency)} ${value(source.unit)}/小时；达标率：${metrics.efficiency_percent == null ? "—" : `${value(metrics.efficiency_percent)}%`}。</p>` +
+			`<p>来源：工单 ${value(source.work_order)}，工序 ${value(source.operation)}（${value(source.operation_id)}）；计算版本 ${value(source.calculation_version)}。</p>`);
 	}
 	async function submit(args) {
 		dialog.get_primary_btn().prop("disabled", true);

@@ -81,7 +81,9 @@
   "report_effective_seconds",
   "report_time_rule",
   "report_time_context",
-  "correction_reason"
+  "correction_reason",
+  "report_metrics_context",
+  "report_estimated_wage"
  ],
  "fields": [
   {
@@ -579,6 +581,21 @@
    "fieldname": "correction_reason",
    "fieldtype": "Small Text",
    "label": "更正原因",
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "report_metrics_context",
+   "fieldtype": "Code",
+   "options": "JSON",
+   "label": "报工计价与效率依据",
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "report_estimated_wage",
+   "fieldtype": "Data",
+   "label": "预计工资（仅预计）",
    "read_only": 1,
    "no_copy": 1
   }

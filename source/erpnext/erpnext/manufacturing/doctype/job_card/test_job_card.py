@@ -1818,7 +1818,7 @@ class TestProductionTimeMetrics(FrappeTestCase):
 class TestProductionReportConfirmation(FrappeTestCase):
 	"""B08: real workflow fixture, narrow operator, native per-confirmation cards."""
 
-	def setUp(self, report_scope="PERSON"):
+	def setUp(self, report_scope="PERSON", report_values=None):
 		from frappe.permissions import add_permission, add_user_permission, update_permission_property
 		from erpnext.manufacturing.doctype.work_order.test_work_order import TestWorkOrderApproval
 		self.approval = TestWorkOrderApproval()
@@ -1847,6 +1847,8 @@ class TestProductionReportConfirmation(FrappeTestCase):
 		f.order.operations[0].report_scope = report_scope
 		f.order.operations[0].report_employee = self.employee if report_scope == "PERSON" else None
 		f.order.operations[0].report_department = f.teams[0] if report_scope == "DEPT" else None
+		if report_values:
+			f.order.operations[0].update(report_values)
 		f.order.operations[1].report_scope = "ALL" if self._testMethodName == "test_correction_rejects_existing_downstream_facts" else ""
 		f.order.operations[2].report_scope = "ALL"
 		f.order.save()
@@ -2311,3 +2313,225 @@ class TestProductionReportFollowup(FrappeTestCase):
 		original.reload(); second_doc.reload()
 		self.assertEqual((original.report_effective_seconds,original.report_time_context),(25200,old_snapshot))
 		self.assertEqual((second_doc.report_effective_seconds,second_doc.report_time_context),(28800,second_snapshot))
+
+
+class TestProductionReportMetrics(FrappeTestCase):
+	"""B08 pricing integration, using native approval and rollback-only fixtures."""
+	method = TestProductionReportConfirmation.method
+	fact_state = TestProductionReportFollowup.fact_state
+
+	def setUp(self):
+		values = dict(report_wage_mode="piece" if "piece" in self._testMethodName else "hourly",
+			report_wage_rate="0" if "zero" in self._testMethodName else "10", report_standard_efficiency="10")
+		if "unconfigured" in self._testMethodName:
+			values = {}
+		if "zero" in self._testMethodName:
+			values["report_standard_efficiency"] = "0"
+		TestProductionReportConfirmation.setUp(self, report_values=values)
+		frappe.set_user("Administrator")
+		for name in frappe.get_all("Production Time Rule", filters={"company":self.order.company,"enabled":1}, pluck="name"):
+			rule = frappe.get_doc("Production Time Rule", name)
+			rule.enabled = 0
+			rule.save()
+		frappe.set_user(self.user)
+
+	def args(self, good=8, bad=2, end="11:00"):
+		return dict(work_order=self.order.name, operation_id=self.operation_id,
+			from_time="2026-10-20 09:00", to_time="2026-10-20 " + end,
+			good_quantity=good, bad_quantity=bad)
+
+	def save_report(self, args):
+		preview = self.method("preview_production_report_time")(**args)
+		self.assertIn("metrics", preview, "Preview must expose server-priced metrics")
+		payload = dict(**args, request_id=frappe.generate_hash(length=32), context_fingerprint=preview["context_fingerprint"])
+		result = self.method("confirm_production_report")(**payload)
+		return frappe.get_doc("Job Card", result["name"]), preview, payload
+
+	def draft(self):
+		frappe.set_user(self.approval.users["operator"])
+		doc = frappe.copy_doc(self.order)
+		doc.docstatus = 0
+		doc.workflow_state = "草稿"
+		doc.approval_requested_by = doc.approval_reviewed_by = doc.approval_note = None
+		for row in doc.operations:
+			row.status = "Pending"
+			for name in ("completed_qty", "process_loss_qty", "actual_operation_time", "actual_operating_cost"):
+				row.set(name, 0)
+			row.actual_start_time = row.actual_end_time = None
+		return doc
+
+	def test_hourly_preview_confirm_and_reopen_use_frozen_source(self):
+		before = self.fact_state()
+		preview = self.method("preview_production_report_time")(**self.args())
+		self.assertIn("metrics", preview, "Current time-only API lacks wage and efficiency")
+		self.assertEqual(self.fact_state(), before)
+		result = preview["metrics"]["result"]
+		self.assertEqual((result["estimated_wage"], result["actual_efficiency"], result["efficiency_percent"]), ("20.00", "5", "50"))
+		doc, preview, payload = self.save_report(self.args())
+		source = frappe.parse_json(doc.report_metrics_context)
+		self.assertEqual((source["work_order"], source["operation_id"], source["wage_mode"], source["wage_rate"]), (self.order.name, self.operation_id, "hourly", "10"))
+		self.assertEqual(source["unit"], self.order.stock_uom)
+		self.assertEqual(doc.report_estimated_wage, "20.00")
+		self.assertNotIn("efficiency_percent", source)
+		doc.onload()
+		self.assertEqual(doc.get_onload()["report_metrics"]["result"], result)
+		found = self.method("get_production_report_result")(payload["request_id"])
+		self.assertEqual(found["metrics"]["result"], result)
+		self.assertEqual(self.method("confirm_production_report")(**payload)["name"], doc.name)
+		self.assertEqual(frappe.db.count("Job Card", {"work_order":self.order.name,"report_request_id":["is","set"]}), 1)
+		for field, value in (("report_metrics_context", "{}"), ("report_estimated_wage", "999.00")):
+			changed = frappe.get_doc("Job Card", doc.name)
+			changed.set(field, value)
+			changed.flags.ignore_validate_update_after_submit = True
+			with self.assertRaises(frappe.PermissionError): changed.save()
+		# Controlled storage drift, not an allowed edit: old results never consult current terms.
+		frappe.db.savepoint("changed_terms")
+		frappe.db.set_value("Work Order Operation", self.operation_id,
+			{"report_wage_rate":"25", "report_standard_efficiency":"20", "report_wage_currency":"CNY"}, update_modified=False)
+		doc.reload(); doc.onload()
+		self.assertEqual(doc.get_onload()["report_metrics"]["source"], source)
+		self.assertEqual(doc.get_onload()["report_metrics"]["result"], result)
+		frappe.db.rollback(save_point="changed_terms")
+
+	def test_piece_rounding_captures_native_currency_precision(self):
+		# Same frozen fixture, explicit 0.005 piece price gives 0.01 at native 2-place precision.
+		frappe.db.set_value("Work Order Operation", self.operation_id, "report_wage_rate", "0.005", update_modified=False)
+		doc, preview, payload = self.save_report(self.args(good=1, bad=0))
+		self.assertEqual(preview["metrics"]["source"]["currency_precision"], 2)
+		self.assertEqual(doc.report_estimated_wage, "0.01")
+		self.assertEqual(frappe.parse_json(doc.report_metrics_context)["wage_rate"], "0.005")
+
+	def test_piece_correction_recalculates_with_original_price(self):
+		from frappe.permissions import update_permission_property
+		doc, preview, payload = self.save_report(self.args())
+		self.assertEqual(preview["metrics"]["result"]["estimated_wage"], "80.00")
+		original_context = doc.report_metrics_context
+		frappe.set_user("Administrator")
+		update_permission_property("Job Card", "生产报工", 0, "cancel", 1)
+		frappe.set_user(self.user)
+		new = self.method("correct_production_report")(doc.name, frappe.generate_hash(length=32), 6, 2, "合成样例：更正良品数量")
+		replacement = frappe.get_doc("Job Card", new["name"])
+		doc.reload()
+		self.assertEqual((doc.docstatus, doc.total_completed_qty, doc.report_estimated_wage, doc.report_metrics_context), (2, 8, "80.00", original_context))
+		self.assertEqual((replacement.amended_from, replacement.report_estimated_wage, replacement.report_metrics_context), (doc.name, "60.00", original_context))
+		replacement.onload()
+		self.assertEqual(replacement.get_onload()["report_metrics"]["result"]["efficiency_percent"], "40")
+
+	def test_unconfigured_is_unknown_and_legacy_snapshot_not_backfilled(self):
+		doc, preview, payload = self.save_report(self.args())
+		self.assertIsNone(preview["metrics"]["result"]["estimated_wage"])
+		self.assertIsNone(preview["metrics"]["source"]["wage_mode"])
+		self.assertIsNone(preview["metrics"]["source"]["standard_efficiency"])
+		self.assertIsNone(preview["metrics"]["result"]["efficiency_percent"])
+		self.assertIn(doc.report_estimated_wage, (None, ""))
+		# A pre-feature record has no source. Read it without inventing today's terms.
+		frappe.db.set_value("Job Card", doc.name, {"report_metrics_context":None,"report_estimated_wage":None}, update_modified=False)
+		doc.reload(); doc.onload()
+		self.assertIsNone(doc.get_onload()["report_metrics"])
+		self.assertIsNone(self.method("get_production_report_result")(payload["request_id"])["metrics"])
+
+	def test_zero_rate_and_zero_seconds_remain_explicit(self):
+		doc, preview, payload = self.save_report(self.args(good=1, bad=0, end="09:00"))
+		self.assertEqual(preview["metrics"]["source"]["wage_rate"], "0")
+		self.assertEqual(doc.report_estimated_wage, "0.00")
+		self.assertIsNone(preview["metrics"]["result"]["actual_efficiency"])
+		self.assertIsNone(preview["metrics"]["result"]["efficiency_percent"])
+
+	def test_source_validation_and_approval_freeze(self):
+		for field,value in (("report_wage_rate","-1"),("report_wage_rate","NaN"),("report_wage_rate","0.0000001"),
+			("report_wage_rate",""),("report_wage_mode","other"),("report_standard_efficiency","Infinity")):
+			with self.subTest(field=field, value=value):
+				draft = self.draft(); draft.operations[0].set(field, value)
+				with self.assertRaises(frappe.ValidationError): draft.insert()
+		frappe.set_user(self.approval.users["operator"])
+		order = frappe.get_doc("Work Order", self.order.name)
+		order.operations[0].report_wage_rate = "99"
+		with self.assertRaises(frappe.PermissionError): order.save()
+		self.assertEqual(frappe.db.get_value("Work Order Operation", self.operation_id, "report_wage_rate"), "10")
+
+	def test_stale_source_forgery_and_revoked_access_reject_without_facts(self):
+		args = self.args(good=1, bad=0)
+		preview = self.method("preview_production_report_time")(**args)
+		self.assertIn("metrics", preview)
+		payload = dict(**args, request_id=frappe.generate_hash(length=32), context_fingerprint=preview["context_fingerprint"])
+		before = self.fact_state()
+		with self.assertRaises(TypeError): self.method("confirm_production_report")(**payload, wage_rate="1")
+		self.assertEqual(self.fact_state(), before)
+		# Controlled source drift: prove fingerprints bind the price; not a legal edit path.
+		frappe.db.savepoint("metrics_drift")
+		frappe.db.set_value("Work Order Operation", self.operation_id, "report_wage_rate", "11", update_modified=False)
+		drifted = self.fact_state()
+		with self.assertRaises(frappe.ValidationError): self.method("confirm_production_report")(**payload)
+		self.assertEqual(self.fact_state(), drifted)
+		frappe.db.rollback(save_point="metrics_drift")
+		frappe.set_user(self.approval.users["other"])
+		with self.assertRaises(frappe.PermissionError): self.method("preview_production_report_time")(**args)
+		frappe.set_user(self.user)
+		self.assertEqual(self.fact_state(), before)
+
+	def test_amount_precision_and_unrelated_metrics_are_not_invented(self):
+		calc = self.method("calculate_report_metrics")
+		result = calc(plan_quantity=10, good_quantity=8, bad_quantity=2, effective_seconds=7200,
+			wage_mode="hourly", wage_rate="10", standard_efficiency=10)
+		self.assertEqual(result["estimated_wage"], 20)
+		self.assertIsNone(result["material_issue_percent"])
+		self.assertIsNone(result["task_completion_percent"])
+		with self.assertRaises(frappe.ValidationError): calc(plan_quantity=10,good_quantity=1,bad_quantity=0,effective_seconds=1,issued_quantity=1)
+		draft = self.draft(); draft.operations[0].report_wage_rate = "0.123456"
+		draft.operations[0].report_wage_mode = "piece"; draft.insert()
+		self.assertEqual(frappe.db.get_value("Work Order Operation", draft.operations[0].name,"report_wage_rate"), "0.123456")
+
+	def test_direct_child_save_cannot_bypass_pricing_freeze_or_validation(self):
+		from frappe.client import save
+		from erpnext.manufacturing.doctype.work_order.work_order import apply_production_approval
+		draft = self.draft(); draft.insert()
+		child = frappe.get_doc("Work Order Operation", draft.operations[0].name)
+		child.report_wage_rate = "-1"
+		frappe.db.savepoint("child_invalid")
+		with self.subTest(path="draft invalid price"), self.assertRaises((frappe.PermissionError, frappe.ValidationError)):
+			save(frappe.as_json(child.as_dict()))
+		frappe.db.rollback(save_point="child_invalid")
+		draft.reload()
+		apply_production_approval(draft.name, "送审", str(draft.modified)); draft.reload()
+		before = frappe.as_json(draft.as_dict())
+		child = frappe.get_doc("Work Order Operation", draft.operations[0].name)
+		child.report_wage_rate = "99"
+		with self.subTest(path="submitted for review"), self.assertRaises(frappe.PermissionError): save(frappe.as_json(child.as_dict()))
+		for path in ("insert", "operation", "clear"):
+			child = frappe.get_doc("Work Order Operation", draft.operations[0].name)
+			if path == "insert": child = frappe.copy_doc(child)
+			elif path == "operation": child.operation = draft.operations[1].operation
+			else:
+				for field in ("report_wage_mode", "report_wage_rate", "report_wage_currency", "report_standard_efficiency"):
+					child.set(field, None)
+			with self.subTest(path=path), self.assertRaises(frappe.PermissionError): save(frappe.as_json(child.as_dict()))
+		draft.reload()
+		self.assertEqual(frappe.as_json(draft.as_dict()), before)
+
+	def test_saved_currency_precision_survive_current_settings_changes(self):
+		doc, preview, payload = self.save_report(self.args(good=1, bad=0))
+		source = frappe.parse_json(doc.report_metrics_context)
+		old_currency = frappe.db.get_value("Company", self.order.company, "default_currency")
+		defaults_before = frappe.as_json(frappe.get_all("DefaultValue", filters={"defkey":"currency_precision"},fields=["*"],order_by="name"))
+		frappe.db.savepoint("currency_settings")
+		try:
+			# Controlled current-setting change; the approved row and original report stay frozen.
+			frappe.db.set_value("Company", self.order.company, "default_currency", "USD" if old_currency != "USD" else "CNY", update_modified=False)
+			frappe.db.set_default("currency_precision", "3")
+			current = self.method("preview_production_report_time")(**self.args(good=1,bad=0))
+			self.assertEqual(current["metrics"]["source"]["currency"], source["currency"])
+			self.assertEqual(current["metrics"]["source"]["currency_precision"], 3)
+			self.assertEqual(current["metrics"]["result"]["estimated_wage"], "20.000")
+			doc.reload();doc.onload()
+			self.assertEqual(doc.get_onload()["report_metrics"]["source"],source)
+			self.assertEqual(doc.get_onload()["report_metrics"]["result"]["estimated_wage"],"20.00")
+			self.assertEqual(doc.report_estimated_wage,"20.00")
+			before = self.fact_state()
+			with self.assertRaises(frappe.ValidationError):
+				self.method("confirm_production_report")(**{**payload,"request_id":frappe.generate_hash(length=32)})
+			self.assertEqual(self.fact_state(),before)
+		finally:
+			frappe.db.rollback(save_point="currency_settings")
+			frappe.defaults.clear_defaults_cache("__default")
+		self.assertEqual(frappe.db.get_value("Company",self.order.company,"default_currency"),old_currency)
+		self.assertEqual(frappe.as_json(frappe.get_all("DefaultValue",filters={"defkey":"currency_precision"},fields=["*"],order_by="name")),defaults_before)

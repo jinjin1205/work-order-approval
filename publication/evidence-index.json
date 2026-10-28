@@ -2298,6 +2298,324 @@
     "reason": "local raw execution evidence; not uploaded"
   },
   {
+    "path": "evidence/B08/metrics-20261028/acceptance-summary.json",
+    "original_sha256": "c6fce14a3c1cfe55b35b28cfa5949cd0bb367970818a45a14c1d2299d5a14d70",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/affected-regression.log",
+    "original_sha256": "de345520b1408c6e8fd75f510d8b0d0a081204faecac9a1afc8637cafe429c08",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/baseline-http.json",
+    "original_sha256": "b8fe8eae2fb2251221740121215d1051041d8088db7113111fd37cf0ee63933e",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/baseline.json",
+    "original_sha256": "c2bbaa72179184431c5551cf21cbf355b8df08bf6b4de03345d95c2c39892a92",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/built-source.json",
+    "original_sha256": "428f5a5d84ffc1d43d97dd93a71bb5a50c63e1241bdf81b0ac177cf2fa99a95b",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/child-both-first.log",
+    "original_sha256": "4a21e0cf5e41d1499838fc6ddb5262509b6699f860b5dbf382f9749053633eca",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/child-entry-boundaries.log",
+    "original_sha256": "2936f34cebc9700a7e76471d4c0a5578f83b805a3265998225bb39dfc7bc3f93",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/child-first.log",
+    "original_sha256": "62df3ec451260588d4526dbd290f58466a990ca7eea541c42df95a91a1170172",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/child-fixed.log",
+    "original_sha256": "507559625b71e2bbd13326e437250710aaf94f7aa2fc07e1cc0d1cc1a7c462f9",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/config-before.png",
+    "original_sha256": "360e67574c09bed03572e3acf313ebeb4657aa174e440c265b70bde8abc5ccfc",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/config-currency.json",
+    "original_sha256": "115f2f3aff32e8c0e0379cbdcbd76a3811bcfab50db4b25550ef8287c1a39964",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/config-fixture.log",
+    "original_sha256": "6573bad6c51c2de276939764e83354112630572d941dd5e155c5818ae852539b",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/config-http.json",
+    "original_sha256": "13f04ee77addf46cb6229046e70521cb2ff840a4bb2d94fa130b8a4ba27a9432",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/config-mode.json",
+    "original_sha256": "551b79d21ce416a897017eefc96016e323ad7c27a3314c7f412985b9867b92fa",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/config-rate.json",
+    "original_sha256": "2248a59ee73338bea2cbc3c4134b756a6380a4fcc6bd07d43b2a7d4e2479425a",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/config-saved.png",
+    "original_sha256": "370dd2e59238149d2ed1c0c2d999b79f1b602574702255094faab7efc290d01a",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/config-standard.json",
+    "original_sha256": "2248a59ee73338bea2cbc3c4134b756a6380a4fcc6bd07d43b2a7d4e2479425a",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/config-ui.json",
+    "original_sha256": "9b0331dcca4b21ece18c51dbfe8f2aa78704dda512e5ead89bcfa60882f7b4d8",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/final-build-with-tests.log",
+    "original_sha256": "1b7e25f1fc0cc9de90c0bf4a67f22f1762f9cec2c0c209e9d4a212efa292769e",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/final-build.log",
+    "original_sha256": "ceb103288c1118dfca625c2f1c5f32b4124b16d0b5d290cc8ebf7a455c9468bc",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/implementation.patch",
+    "original_sha256": "ddc6efaf432e7fa1c0e2428d908b29a4e7789de6184646bdadd2357ef9794ad5",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/metrics-only.patch",
+    "original_sha256": "5bee9404560bcbe9ad1a40d03d87a3efb4a41359d1d97d638ca299cbf495bb1d",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/openspec-final-validation.json",
+    "original_sha256": "d8f55ee32730feec66b908ba69585d922bef64418b33a3841a858982220873b3",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/run-record.md",
+    "original_sha256": "34ec211730ceb276eca9e21518ad49b5c7b9e340ce5d03157acff6680b274309",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/runtime-final-source.json",
+    "original_sha256": "428f5a5d84ffc1d43d97dd93a71bb5a50c63e1241bdf81b0ac177cf2fa99a95b",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/runtime-source.json",
+    "original_sha256": "7df8962e5a74a1bf5dbd4a7119a7b494cfad97a4a38160b632073293f0f3e9e1",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/server-first.log",
+    "original_sha256": "87c8f0ce713097aca0a3f8613c32078981a2474cf2222488af083940f8279ed1",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/server-fixed-first.log",
+    "original_sha256": "065485a8da380258af83fc2047b667140ddc3cff978b3b8ddfbf015027eb024d",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/server-fixed-second.log",
+    "original_sha256": "40e0c68314d4ddb4cbf2fecd57551b0ce4d857cf2d81859374015427aee10b11",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/settings-history.log",
+    "original_sha256": "58d266b45548a942de155a936e09474deab3039f3d8525ac84490a1b1b988797",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/source-manifest.json",
+    "original_sha256": "4509c93f6d4faf3fe9131c3f0dadd1b003e9896fd9adf3c03d1dc2078047cc93",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/source-retention.json",
+    "original_sha256": "30ecec23b36224945d6e3b7aa5031b5c6c9ff68da50b20bd9646e20f4629adcf",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/tests-first-source.json",
+    "original_sha256": "cf5fb383b9431e42a8696c0e43e2b901a98f22a07c67aa970c5dcf51b34426b6",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/ui-final-check.log",
+    "original_sha256": "c5e21c397b7c0f9b86fff48956ccfcc4861a3937b1efc38da447f18127493b95",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/ui-final.log",
+    "original_sha256": "10e53230377c284498b3e498d9578bc87952163a7a1f040c418cd5475a54bf3e",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/ui-first.log",
+    "original_sha256": "34a6f18cdf3c35ec4d82b0c60720e27785753be210986bd2463ad1986b1fd3dc",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/ui-fixture.log",
+    "original_sha256": "5c0cf93b962b39c599876e093eeabd45c3fff7b9c5edfe6bcfbdc1d5b7ca4b5f",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/ui-hourly-before.yml",
+    "original_sha256": "ab88278dd6fb38c5b385ab263809d5312559b0e9a522a190efbb45cbe916c4ec",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/ui-hourly-preview.log",
+    "original_sha256": "f14193026e9bbdea74367d46c5c3c561bfacbb01041235cec6b46381b696f829",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/ui-hourly-preview.png",
+    "original_sha256": "4d46ef1842ea9e7cc0c57ba551433e71ee28f178363cc24865778e6ed35599c9",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/ui-hourly-saved.log",
+    "original_sha256": "594cdb4ae7818fe44349248ac4112cbb69dc6c5fa129a048d3b9be5063f3b774",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/ui-hourly-saved.png",
+    "original_sha256": "040e9bd8309679f77e75cfba6a9cd626c25617032f5d8d3a854f64289295720d",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/ui-intermediate.log",
+    "original_sha256": "50bedc42134ab9f2e0add01bc1f99313faf9cd7d76edec7add4e85b3b3808368",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/ui-legacy.log",
+    "original_sha256": "5363c8f6b8df48a88ebdddc5d1cd21f1a7aa6a443334c3beb7435cc23c9a86a5",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/ui-piece-quantity-change.png",
+    "original_sha256": "bbe4e9800b1b9aa313a240167627afbaf936fbf7e04b90feea42dae484e3af17",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/ui-piece-saved-stable.png",
+    "original_sha256": "d623a1b8ac3d5fa02747fbc5977dbdba2f95c9b583c561163eb2ed71f9c3bed8",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/ui-piece-saved.png",
+    "original_sha256": "a14d0b45832276e73e0712fb9d17df72f4a45cefc2e0eede09710824b1a59cd9",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/ui-piece.log",
+    "original_sha256": "5fed9bd275c0a5c798172dce5b9310d5da012531cb83dce408bc27b779476821",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/ui-regression-check.log",
+    "original_sha256": "672e19f8e27f6757bc6be3999da5a57b0ed7208e265957339a5995ca36884797",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/ui-regression.log",
+    "original_sha256": "672e19f8e27f6757bc6be3999da5a57b0ed7208e265957339a5995ca36884797",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/ui-retention-summary.json",
+    "original_sha256": "ad889a4d4a100cd954976a73ef8887d2e5821508ea7ef5f5ad31aaaeaf1a3457",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/web-final-source.json",
+    "original_sha256": "428f5a5d84ffc1d43d97dd93a71bb5a50c63e1241bdf81b0ac177cf2fa99a95b",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/metrics-20261028/web-source.json",
+    "original_sha256": "7df8962e5a74a1bf5dbd4a7119a7b494cfad97a4a38160b632073293f0f3e9e1",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
     "path": "evidence/B08/native-fact/native-probe.jsonl",
     "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "published": false,
@@ -4795,7 +5113,7 @@
   },
   {
     "path": "evidence/R07/time-config-binding.md",
-    "original_sha256": "a5ecf4880acd4aa1fca3909ea9999a6702ac46ac28ba3a058929f1097a505860",
+    "original_sha256": "7f5ef1f55643a6fab18a404869749831db87f5247e69cb666d6650a0ea26607f",
     "published": true,
     "reason": "public copy"
   },
@@ -4810,6 +5128,12 @@
     "original_sha256": "7767723c87d434eca6ce6430e41d148de02d4d31ca68579486cdd12059bf9d75",
     "published": true,
     "reason": "public copy"
+  },
+  {
+    "path": "evidence/发布/2026-10-28-35d6332-remote.json",
+    "original_sha256": "c6af60ff2060b77073ce9a4f1c837f394a79e46861351a6089fc48b9e07b43ed",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
   },
   {
     "path": "evidence/发布/2026-10-28-afe5eb8-remote.json",

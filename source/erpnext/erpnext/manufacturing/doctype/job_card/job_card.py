@@ -5,7 +5,7 @@ import hashlib
 import json
 import re
 from collections import OrderedDict
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from zoneinfo import ZoneInfo
 
 import frappe
@@ -131,6 +131,8 @@ class JobCard(Document):
 	# end: auto-generated types
 
 	def onload(self):
+		if self.get("report_request_id"):
+			self.set_onload("report_metrics", _saved_report_metrics(self))
 		excess_transfer = frappe.db.get_single_value("Manufacturing Settings", "job_card_excess_transfer")
 		self.set_onload("job_card_excess_transfer", excess_transfer)
 		self.set_onload("work_order_closed", self.is_work_order_closed())
@@ -148,7 +150,8 @@ class JobCard(Document):
 		context = getattr(frappe.local, "production_report_context", None)
 		trusted = context and context.card is self and context.user == frappe.session.user
 		if (old_key or any(self.get(f) for f in ("report_request_id", "report_payload_hash", "report_time_context",
-			"report_effective_seconds", "report_time_rule", "report_shutdown_seconds", "report_overtime_seconds"))) and not trusted:
+			"report_effective_seconds", "report_time_rule", "report_shutdown_seconds", "report_overtime_seconds",
+			"report_metrics_context", "report_estimated_wage"))) and not trusted:
 			frappe.throw("报工事实只能通过确认或关联更正保存，原记录不能改写", frappe.PermissionError)
 		if not trusted and not self.get("report_request_id") and self.work_order:
 			order = frappe.get_doc("Work Order", self.work_order)
@@ -1542,22 +1545,31 @@ def calculate_report_time(start, end, *, rules, operation=None, shutdown_seconds
 		"rule_message": "已匹配时段规则。" if matched else "未匹配时段规则：休息为0，加班上限为报工时长。"}
 
 
-def calculate_report_metrics(*, plan_quantity, good_quantity, bad_quantity, effective_seconds,
-	completed_tasks, total_tasks, issued_quantity, required_quantity, rework_quantity=0,
+def calculate_report_metrics(*, plan_quantity=None, good_quantity, bad_quantity, effective_seconds,
+	completed_tasks=None, total_tasks=None, issued_quantity=None, required_quantity=None, rework_quantity=0,
 	standard_efficiency=None, wage_mode=None, wage_rate=None):
 	"""Calculate from authorized effective facts; never infer defects or post wages."""
 	from erpnext.manufacturing.doctype.bom.bom import validate_quantity_input
 
 	quantities = {}
-	for key, value, label in (("plan", plan_quantity, "计划数量"), ("good", good_quantity, "良品数量"),
-		("bad", bad_quantity, "不良数量"), ("rework", rework_quantity, "返工数量"),
-		("issued", issued_quantity, "生效累计领料"), ("required", required_quantity, "需求数量")):
+	for key, value, label in (("good", good_quantity, "良品数量"),
+		("bad", bad_quantity, "不良数量"), ("rework", rework_quantity, "返工数量")):
 		quantities[key] = Decimal(str(validate_quantity_input(value, label, allow_zero=True)))
+	plan = None if plan_quantity is None else Decimal(str(validate_quantity_input(plan_quantity, "计划数量", allow_zero=True)))
 	seconds = _whole_non_negative(effective_seconds, "有效工时秒数")
-	done = _whole_non_negative(completed_tasks, "已完成任务数")
-	total = _whole_non_negative(total_tasks, "任务总数")
-	if done > total:
-		frappe.throw("已完成任务数不能超过任务总数。")
+	completion = material = None
+	if (completed_tasks is None) != (total_tasks is None) or (issued_quantity is None) != (required_quantity is None):
+		frappe.throw("任务或领料指标的分子与分母必须同时提供。")
+	if total_tasks is not None:
+		done = _whole_non_negative(completed_tasks, "已完成任务数")
+		total = _whole_non_negative(total_tasks, "任务总数")
+		if done > total:
+			frappe.throw("已完成任务数不能超过任务总数。")
+		completion = Decimal(done) * 100 / total if total else None
+	if required_quantity is not None:
+		issued = Decimal(str(validate_quantity_input(issued_quantity, "生效累计领料", allow_zero=True)))
+		required = Decimal(str(validate_quantity_input(required_quantity, "需求数量", allow_zero=True)))
+		material = issued * 100 / required if required else None
 	standard = None if standard_efficiency is None else _non_negative_number(standard_efficiency, "标准效率")
 	actual = quantities["good"] + quantities["bad"]
 	efficiency = actual * 3600 / seconds if seconds else None
@@ -1571,12 +1583,59 @@ def calculate_report_metrics(*, plan_quantity, good_quantity, bad_quantity, effe
 		frappe.throw("填写工资单价时必须明确计价方式。")
 	return {"quality_percent": quantities["good"] * 100 / actual if actual else None,
 		"quality_numerator": quantities["good"], "quality_denominator": actual,
-		"unfinished_quantity": max(Decimal(0), quantities["plan"] - actual),
-		"task_completion_percent": Decimal(done) * 100 / total if total else None,
-		"material_issue_percent": quantities["issued"] * 100 / quantities["required"] if quantities["required"] else None,
+		"unfinished_quantity": max(Decimal(0), plan - actual) if plan is not None else None,
+		"task_completion_percent": completion,
+		"material_issue_percent": material,
 		"actual_efficiency": efficiency,
 		"efficiency_percent": efficiency * 100 / standard if efficiency is not None and standard else None,
 		"estimated_wage": estimated_wage}
+
+
+def _report_metrics_source(order, operation):
+	from frappe.model.meta import get_field_precision
+	from erpnext.manufacturing.doctype.bom.bom import validate_quantity_input
+
+	mode = operation.get("report_wage_mode") or None
+	rate, standard = operation.get("report_wage_rate"), operation.get("report_standard_efficiency")
+	if mode not in (None, "hourly", "piece") or bool(mode) != (rate not in (None, "")):
+		frappe.throw("工序计价配置不完整，请核对已批准的工单依据")
+	values = []
+	for value, label in ((rate, "工资单价"), (standard, "标准效率")):
+		if value in (None, ""):
+			values.append(None)
+		else:
+			validate_quantity_input(value, label, allow_zero=True)
+			values.append(format(Decimal(str(value)).normalize(), "f"))
+	currency = operation.get("report_wage_currency") if mode else None
+	if mode and not currency:
+		frappe.throw("缺少工序计价币种，不能用当前公司设置替代已批准依据")
+	return {"calculation_version": "B08-metrics-v1", "work_order": order.name,
+		"operation_id": operation.name, "operation": operation.operation, "unit": order.stock_uom,
+		"wage_mode": mode, "wage_rate": values[0], "currency": currency,
+		"currency_precision": get_field_precision(frappe._dict(fieldtype="Currency"), currency=currency),
+		"standard_efficiency": values[1]}
+
+
+def _report_metrics(source, good, bad, seconds):
+	# Only this report's metrics are requested; no fabricated task or material totals.
+	result = calculate_report_metrics(good_quantity=good,
+		bad_quantity=bad, effective_seconds=seconds, standard_efficiency=source["standard_efficiency"],
+		wage_mode=source["wage_mode"], wage_rate=source["wage_rate"])
+	wage = result["estimated_wage"]
+	result = {key: None if result[key] is None else format(result[key].quantize(Decimal("0.0001"), rounding=ROUND_HALF_UP).normalize(), "f")
+		for key in ("actual_efficiency", "efficiency_percent")}
+	result["estimated_wage"] = None if wage is None else format(wage.quantize(Decimal(1).scaleb(-source["currency_precision"]), rounding=ROUND_HALF_UP), "f")
+	return {"source": source, "result": result}
+
+
+def _saved_report_metrics(doc):
+	if not doc.get("report_metrics_context"):
+		return None
+	metrics = _report_metrics(frappe.parse_json(doc.report_metrics_context), Decimal(str(doc.total_completed_qty or 0)),
+		Decimal(str(doc.process_loss_qty or 0)), doc.report_effective_seconds)
+	# Reopening displays the saved amount. Derived percentages use saved facts and basis only.
+	metrics["result"]["estimated_wage"] = doc.get("report_estimated_wage") or None
+	return metrics
 
 
 def _report_scope_allows(operation, employee):
@@ -1636,7 +1695,7 @@ def get_production_report_result(request_id):
 	_report_context(doc.work_order, history=True)
 	doc.check_permission("read")
 	return {"name": doc.name, "docstatus": doc.docstatus, "good": doc.total_completed_qty, "bad": doc.process_loss_qty,
-		"time_context": frappe.parse_json(doc.report_time_context)}
+		"time_context": frappe.parse_json(doc.report_time_context), "metrics": _saved_report_metrics(doc)}
 
 
 def _report_time_context(order, operation, from_time, to_time, shutdown_seconds, overtime_seconds):
@@ -1654,10 +1713,20 @@ def _report_time_context(order, operation, from_time, to_time, shutdown_seconds,
 
 
 @frappe.whitelist()
-def preview_production_report_time(work_order, operation_id, from_time, to_time, shutdown_seconds=0, overtime_seconds=0):
+def preview_production_report_time(work_order, operation_id, from_time, to_time, shutdown_seconds=0, overtime_seconds=0,
+	good_quantity=None, bad_quantity=None):
+	from erpnext.manufacturing.doctype.bom.bom import validate_quantity_input
+
 	order, operation, employee = _report_task(work_order, operation_id)
 	context, fingerprint = _report_time_context(order, operation, from_time, to_time, shutdown_seconds, overtime_seconds)
-	return {"context_fingerprint": fingerprint, **context["result"]}
+	source = _report_metrics_source(order, operation)
+	fingerprint = hashlib.sha256(frappe.as_json({"time":context,"metrics_source":source}).encode()).hexdigest()
+	metrics = None
+	if good_quantity is not None or bad_quantity is not None:
+		good = Decimal(str(validate_quantity_input(good_quantity, "良品数量", allow_zero=True)))
+		bad = Decimal(str(validate_quantity_input(bad_quantity, "不良数量", allow_zero=True)))
+		metrics = _report_metrics(source, good, bad, context["result"]["effective_seconds"])
+	return {"context_fingerprint": fingerprint, "metrics": metrics, **context["result"]}
 
 
 @frappe.whitelist()
@@ -1723,11 +1792,15 @@ def _confirm_production_report(work_order, operation_id, request_id, good_quanti
 		context = frappe.parse_json(original.report_time_context)
 		context["original_report"] = original.name
 		context["rule_basis"] = "沿用原报工时段依据，起止时间不变"
+		source = frappe.parse_json(original.report_metrics_context) if original.get("report_metrics_context") else None
 	else:
 		context, fingerprint = _report_time_context(order, operation, from_time, to_time, shutdown_seconds, overtime_seconds)
+		source = _report_metrics_source(order, operation)
+		fingerprint = hashlib.sha256(frappe.as_json({"time":context,"metrics_source":source}).encode()).hexdigest()
 		if fingerprint != context_fingerprint:
 			frappe.throw("时段依据已变化，请重新核对工时后确认")
 	context["confirmed_at"] = frappe.utils.now()
+	metrics = _report_metrics(source, good, bad, context["result"]["effective_seconds"]) if source else None
 	doc = frappe.get_doc({"doctype": "Job Card", "amended_from": original.name if original else None, "correction_reason": correction_reason,
 		"work_order": work_order, "operation_id": operation_id,
 		"operation": operation.operation, "sequence_id": operation.sequence_id, "workstation": operation.workstation,
@@ -1736,6 +1809,8 @@ def _confirm_production_report(work_order, operation_id, request_id, good_quanti
 		"report_request_id": request_id, "report_payload_hash": payload_hash, "report_time_context": frappe.as_json(context),
 		"report_shutdown_seconds": payload["shutdown"], "report_overtime_seconds": payload["overtime"],
 		"report_effective_seconds": context["result"]["effective_seconds"], "report_time_rule": context["result"]["matched_rule"],
+		"report_metrics_context": frappe.as_json(source) if source else None,
+		"report_estimated_wage": metrics["result"]["estimated_wage"] if metrics else None,
 		"time_logs": [{"from_time": start.replace(tzinfo=None), "to_time": end.replace(tzinfo=None),
 			"completed_qty": float(good), "employee": employee.name}]})
 	previous = getattr(frappe.local, "production_report_context", None)

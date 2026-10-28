@@ -1,4 +1,4 @@
-> 公开归档副本（2026-10-27）：保留结论、方法与限制；个人路径/运行编号已移除。原始运行单据、响应、截图和日志不上传，原件索引见 `publication/evidence-index.json`。本页历史结果不是发布日重测。
+> 公开归档副本（2026-10-28）：保留结论、方法与限制；个人路径/运行编号已移除。原始运行单据、响应、截图和日志不上传，原件索引见 `publication/evidence-index.json`。本页历史结果不是发布日重测。
 
 # R07｜B14最小时段配置、权限读取与B08确认衔接
 
@@ -141,3 +141,48 @@ B08拟新增有限类放原`job_card/test_job_card.py`，名称`TestProductionRe
 实际入口均在`job_card.py`：`get_production_report_tasks`、`preview_production_report_time`、`confirm_production_report`、`get_production_report_result`、`correct_production_report`；内部`_report_task/_report_context`复用原公司/班组/状态检查，`_report_time_context`复用B04计算和B14读取。中文原WorkOrder弹窗及JobCard依据查看，不另建页面系统。`work_order.py:validate_production_execution_state`由原判定拆出复用，旧请求找回先查历史权限，新事实仍查执行状态。
 
 实际最小更正为原生cancel/amend，起止不变沿用原时段依据；有提交库存单或后工序事实即拒绝。原生子工序配置明确拒绝，不新增子工序业务。三笔、窄回写、同键真实HTTP、快照旧新、原卡/子行保护及受控回滚已有证据；全部权限组合、完整逆向/跨对象并发、现场10秒及G1/G2/G3未通过。旧节中的“拟新增/当前不存在”为实施前历史，不代表本批状态。
+
+<a id="2026-10-28-b08-单价与效率续接来源待确认"></a>
+
+## 2026-10-28 B08 单价与效率续接：来源与实施绑定
+
+**用户确认：**选择“按工单工序填写并随审批冻结”，见[C16](../../docs/决策与范围.md#c16--报工单价与标准效率来源2026-10-28)。此前来源待定和未绑定的描述是历史缺口；本包已实施，并按下述原卡/记录回填受控和真实PC证据，尚未完成全部收口。C13公式不变，`hour_rate`仍为作业成本，`production_capacity`仍为并行卡数，排程分钟不替代标准效率。维护沿现有工单发起人草稿/退回权限，不自动赋予时段配置管理员或普通报工人员工单write。
+
+以下字段、存储和舍入是本轮技术选择；用户确认的是来源，不表述为用户另外指定了实现类型或舍入规则。只在原生文档增加必要字段，不建主数据计价平台、工资账或配置发布框架。
+
+| 原生对象/字段 | 类型与语义 | 写入和冻结边界 |
+|---|---|---|
+| Work Order Operation `report_wage_mode` | Select：空、`hourly`、`piece`；中文显示未配置/计时/计件 | 沿工单发起人草稿/退回编辑；送审后冻结 |
+| Work Order Operation `report_wage_rate` | Data：有限非负、小于1,000,000,000、最多六位小数；空与明确0不同。计时为币种/小时，计件为币种/工单库存单位；模式和单价须成对 | 与模式一起冻结；不修改原`hour_rate`成本 |
+| Work Order Operation `report_standard_efficiency` | Data：可空或0，有限非负；单位为本工单库存单位/小时。缺失或0不产生达标率 | 沿原草稿/退回权限填写，随送审冻结；不从成本/排程字段推算 |
+| Work Order Operation `report_wage_currency` | 只读币种字段，来源`Company.default_currency` | 工单草稿由服务器带入，送审冻结；客户端不得指定另一币种，当前公司币种改变不改已冻结工序 |
+| Job Card `report_metrics_context` | 只读JSON：保存当笔来源对象/工序行、版本`B08-metrics-v1`、模式、单价、标准、库存单位、币种及实际采用的金额精度 | 确认服务器写入；按既有快照/原记录保护拒绝通用改写，不回填旧笔 |
+| Job Card `report_estimated_wage` | 只读Data：按该笔币种精度保存的预计金额；缺配置为缺失，明确零价为0 | 与依据同一确认事务写入；不形成工资结算账，不接受客户端金额 |
+
+**计算和精度：**继续只用`job_card.py:calculate_report_metrics`的C13公式。实际效率/达标率不存百分比字段，从当笔良/不良、有效秒及保存的标准依据计算。`plan_quantity`可为None，无计划上下文时未清数量/比例为None；无关的`completed_tasks/total_tasks`、`issued_quantity/required_quantity`可缺省，每对须同时提供或同时缺省。未清/任务/物料缺上下文均不计算，不塞虚构0，不复制公式。预计金额精度按Frappe `model/meta.py:get_field_precision`的Currency口径取得：字段显式precision优先，其次系统currency_precision，再由币种/系统数字格式取得；确认时捕获币种及实际采用精度，历史沿保存精度。只复用该精度入口，不改Frappe；预计金额采用Decimal `ROUND_HALF_UP`显示和落快照，单价保持六位输入能力，不先按金额精度截断单价。
+
+**原API和页面：**`preview_production_report_time`保留现有时间参数，增加可选成对良/不良数量并返回metrics；旧的纯工时调用仍可使用。`confirm_production_report`继续从服务器授权任务及工序取得来源；`context_fingerprint`覆盖时段、价格、标准、库存单位、币种和金额精度依据。良/不良变化触发重新预览；旧依据确认被拒绝且不部分保存，不接受客户端工资/标准/币种/精度作为权威输入。`get_production_report_result`及原Job Card依据弹窗按保存依据重读，旧记录无指标依据显示“未记录”，不使用当前配置填补历史。仍保留原公司/班组/Employee/对象read/审批状态边界，不通过本包放宽权限。
+
+**更正：**沿`correct_production_report`和现有cancel/amend门槛，仅同工单同工序，沿原报工单价/标准/币种/精度及C15时段依据，按更正后数量重算新预计金额；原记录与原金额保留，不复制旧金额，不因当前配置变化改旧笔。完整库存/后工序逆向和G3并发不在本包增加。
+
+**允许文件：**只沿`.development/repos/erpnext/erpnext/manufacturing/doctype/`下原`job_card/job_card.py`、`job_card.json`、`job_card.js`、`test_job_card.py`，原`work_order/work_order.py`、`work_order.js`、`work_order_operation/work_order_operation.json`；确需中文显示时沿原`erpnext/translations/zh.csv`。上述文件沿累计交付白名单；因下述子行冻结真实失败，本次补入原`work_order_operation/work_order_operation.py`，仅保护本轮新增计价来源。最终交付源码清单须纳入该原控制器，不沿用旧24文件数冒称完整。本包不改Frappe、Operation/BOM Operation主数据、库存成本或排程。保留已有维护checkout及累计补丁；每次运行前核对实际源码清单，不能把旧交付SHA当新实现证据。
+
+**子行保存绕过的实际失败及最小范围：**`TestProductionReportMetrics.test_direct_child_save_cannot_bypass_pricing_freeze_or_validation`调用真实`frappe.client.save`保存Work Order Operation，草稿`report_wage_rate=-1`及送审待审核`report_wage_rate=99`均未拒绝；待审核样例父修改版本不变、子行变化。先1项16.647秒FAIL，扩展后1项18.458秒FAIL3（2个拒绝断言和保存前后差异），最终事务回滚，日志见child-first.log（仅本地保留；见 publication/evidence-index.json）、child-both-first.log（仅本地保留；见 publication/evidence-index.json）。这是本次新增字段校验/审批冻结的实证缺口，不是旧任意子行/完整G2验收。
+
+原`work_order_operation.py`已补最小入口保护：直接子行save/insert改变`report_wage_mode/report_wage_rate/report_wage_currency/report_standard_efficiency`，或带这些来源的子行改变parent/operation关联时拒绝，中文提示通过父工单工序表编辑。父单原生保存路径继续执行现有`validate_report_pricing`和审批规则，不复制公式/校验框架，不修改Frappe。修后子行拒绝、父单来源校验/审批冻结、正常计时确认共3项28.415秒通过；扩展insert/改工序/清空来源的同一方法1项11.041秒通过，父单前后及四张规则/员工/权限表回滚一致，见child-fixed.log（仅本地保留；见 publication/evidence-index.json）、child-entry-boundaries.log（仅本地保留；见 publication/evidence-index.json）。另以配置浏览器同cookie及合法CSRF执行独立真实HTTP，将子行单价改为-1返回403/PermissionError并命中计价保护，原值及父子修改时间不变，见[config-http.json](../B08/metrics-20261028/config-http.json)；此项独立于内部client.save测试和页面操作。
+
+**验证入口与实际批次：**原`test_job_card.py`的`TestProductionReportMetrics`由本地`.development/checks/b08_metrics_tests.py`（容器`/b01/b08_metrics_tests.py`）仅连接隔离测试站`xgd-test.localhost`运行，可指定方法或默认运行该类。当前10个真实方法名：`test_hourly_preview_confirm_and_reopen_use_frozen_source`、`test_piece_correction_recalculates_with_original_price`、`test_unconfigured_is_unknown_and_legacy_snapshot_not_backfilled`、`test_zero_rate_and_zero_seconds_remain_explicit`、`test_source_validation_and_approval_freeze`、`test_stale_source_forgery_and_revoked_access_reject_without_facts`、`test_amount_precision_and_unrelated_metrics_are_not_invented`、`test_piece_rounding_captures_native_currency_precision`、`test_direct_child_save_cannot_bypass_pricing_freeze_or_validation`、`test_saved_currency_precision_survive_current_settings_changes`。10方法已分批覆盖通过，未声称最终10方法一次全类通过；具体参数、源码清单及原始输出以[本轮记录](../B08/metrics-20261028/run-record.md)为准。
+
+```sh
+# 默认全类是runner用法；本轮实际分批方法与日志沿运行记录，不累加重复批次。
+docker exec xgd-b08-check env/bin/python /b01/b08_metrics_tests.py
+# 已运行的子行定向入口；后续扩展仍为同一方法，不计新增方法。
+docker exec xgd-b08-check env/bin/python /b01/b08_metrics_tests.py test_direct_child_save_cannot_bypass_pricing_freeze_or_validation
+docker exec xgd-b08-check env/bin/python /b01/b08_metrics_tests.py test_saved_currency_precision_survive_current_settings_changes
+```
+
+必要元数据加载沿原`reload-doc manufacturing doctype work_order_operation`及`reload-doc manufacturing doctype job_card`，不重做全量依赖初始化；加载命令、前后状态和真实结果必须记录。普通账号HTTP及Playwright CLI中文PC使用本包新合成样例，脚本/动作名实际存在后记录，不虚构已运行命令。
+
+**已核结果与剩余：**首次接口缺参、首批复制草稿fixture错误及子行真实失败均保留。修后接入/舍入、子行/父保存、实际当前公司币种/原生金额精度变化的历史保持分批通过；设置变化时旧笔币种/精度2/20.00保持、新预览20.000、旧指纹拒绝且设置回滚一致。受影响原指标/规则快照/跨用户结果5项18.687秒通过。前端6红→6绿和刷新回归通过，重复最终check不计新覆盖；Chrome计时20.00、计件80.00的确认/重开、数量刷新及旧记录历史未记录已有页面证据。新增窄角色发起人从中文原生配置页保存/重开独立草稿，计时10/标准10/CNY与公司一致，清缓存后计时/计件选项中文生效，见[config-ui.json](../B08/metrics-20261028/config-ui.json)；同账号独立HTTP拒绝已验。构建/测试/网页三处最终源码清单均33份一致，累计25份修改源码及镜像build已核，见[built-source.json](../B08/metrics-20261028/built-source.json)、[runtime-final-source.json](../B08/metrics-20261028/runtime-final-source.json)、[web-final-source.json](../B08/metrics-20261028/web-final-source.json)。源测试站11表哈希保持；UI站11表全部原有行/捕获列保持，库存3表无新增，新增合成样例及报工保留，见[ui-retention-summary.json](../B08/metrics-20261028/ui-retention-summary.json)。仅公开发布仍待结果，不据限定11表核对宣称全库审计。
+
+**本包做/不做/通过条件和8组必要验收只维护在[原B08当前子节](../../docs/任务卡/02-生产与物料闭环.md#2026-10-28-单价与效率来源核对)**；本节不复制第二份清单。历史缺口与执行证据沿[本轮记录](../B08/metrics-20261028/run-record.md)。尚未完成的收口不提前勾选；34卡统计、人工现场、手机、G1/G2/G3、Z01及后台周期边界不变，未变化旧项不重跑。

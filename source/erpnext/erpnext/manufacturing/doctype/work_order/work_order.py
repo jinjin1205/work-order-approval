@@ -305,6 +305,7 @@ class WorkOrder(Document):
 
 	def validate(self):
 		self.validate_production_approval()
+		self.validate_report_pricing()
 		self.validate_production_item()
 		if self.bom_no:
 			validate_bom_no(self.production_item, self.bom_no)
@@ -333,6 +334,26 @@ class WorkOrder(Document):
 			self.set_required_items(reset_only_qty=len(self.get("required_items")))
 
 		self.validate_operations_sequence()
+
+	def validate_report_pricing(self):
+		from decimal import Decimal
+
+		editable = self.docstatus == 0 and self.get("workflow_state") in (None, "", "草稿", "退回")
+		for row in self.operations:
+			mode, rate = row.get("report_wage_mode"), row.get("report_wage_rate")
+			if mode not in (None, "", "hourly", "piece"):
+				frappe.throw("报工计价方式必须为计时或计件")
+			if bool(mode) != (rate not in (None, "")):
+				frappe.throw("计价方式和工资单价必须同时填写；未知单价请保持两项为空")
+			for field, label in (("report_wage_rate", "工资单价"), ("report_standard_efficiency", "标准效率")):
+				value = row.get(field)
+				if value not in (None, ""):
+					validate_quantity_input(value, label, allow_zero=True)
+					row.set(field, format(Decimal(str(value)).normalize(), "f"))
+			if editable:
+				row.report_wage_currency = frappe.db.get_value("Company", self.company, "default_currency") if mode else None
+			if mode and not row.get("report_wage_currency"):
+				frappe.throw("缺少工序计价币种，请在草稿中核对公司币种并保存")
 
 	def validate_production_approval(self):
 		from frappe.model.workflow import get_workflow_name

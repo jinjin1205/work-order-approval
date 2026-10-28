@@ -1,0 +1,32 @@
+{
+  "test_kind": "real HTTP with the configuration browser cookie and valid CSRF; not a UI action",
+  "role": "生产工单发起",
+  "parent_get_status": 200,
+  "child_get_status": 200,
+  "attempted_change": {
+    "report_wage_rate": "-1"
+  },
+  "http_status": 403,
+  "exception_type": "PermissionError",
+  "matched_pricing_guard": true,
+  "readback_statuses": [
+    200,
+    200
+  ],
+  "before": {
+    "mode": "hourly",
+    "rate": "10",
+    "standard": "10",
+    "currency": "CNY"
+  },
+  "after": {
+    "mode": "hourly",
+    "rate": "10",
+    "standard": "10",
+    "currency": "CNY"
+  },
+  "child_modified_unchanged": true,
+  "parent_modified_unchanged": true,
+  "remains_draft": true,
+  "passed": true
+}

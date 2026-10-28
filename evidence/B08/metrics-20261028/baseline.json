@@ -1,0 +1,8 @@
+{
+  "checked_at": "2026-10-28T11:37:22.762889+08:00",
+  "publication_commit": "35d63323659089eb9142cd8a7046ae1ec64bfb01",
+  "upstream_commit": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+  "source_patch_sha256": "4ee93837ff7dfefa99d8a6481584c3b3c58cb42a90d2656f95d951832b220c52",
+  "maintenance_files_exact": 24,
+  "scope": "Read-only baseline for B08 pricing and efficiency; no new implementation or acceptance claim"
+}

@@ -2,6 +2,61 @@
   "scope": "Separate executed batches; exact patches where captured, explicit null otherwise with product hash. No cumulative full-suite result; publication does not rerun tests",
   "tests": [
     {
+      "local_log": "evidence/B08/metrics-20261028/server-fixed-second.log",
+      "sha256": "40e0c68314d4ddb4cbf2fecd57551b0ce4d857cf2d81859374015427aee10b11",
+      "tests": 4,
+      "seconds": "38.290",
+      "result": "OK",
+      "executed_on": "2026-10-28",
+      "group": "B08 metrics fixture fix and additions",
+      "source_patch_sha256": "d847ab9a6ece69eb9f9f52c763aa28d2753c5d4b022de15c74656496d2531272",
+      "product_job_card_sha256": "2c3357e38c1657d03ed929851630c0a65cd32015db125ab4c5b08e88844680cb"
+    },
+    {
+      "local_log": "evidence/B08/metrics-20261028/affected-regression.log",
+      "sha256": "de345520b1408c6e8fd75f510d8b0d0a081204faecac9a1afc8637cafe429c08",
+      "tests": 5,
+      "seconds": "18.687",
+      "result": "OK",
+      "executed_on": "2026-10-28",
+      "group": "B08 metrics affected old regression",
+      "source_patch_sha256": "d847ab9a6ece69eb9f9f52c763aa28d2753c5d4b022de15c74656496d2531272",
+      "product_job_card_sha256": "2c3357e38c1657d03ed929851630c0a65cd32015db125ab4c5b08e88844680cb"
+    },
+    {
+      "local_log": "evidence/B08/metrics-20261028/child-fixed.log",
+      "sha256": "507559625b71e2bbd13326e437250710aaf94f7aa2fc07e1cc0d1cc1a7c462f9",
+      "tests": 3,
+      "seconds": "28.415",
+      "result": "OK",
+      "executed_on": "2026-10-28",
+      "group": "B08 metrics child guard and source/history; intermediate whole-patch digest not captured",
+      "source_patch_sha256": null,
+      "product_job_card_sha256": "2c3357e38c1657d03ed929851630c0a65cd32015db125ab4c5b08e88844680cb"
+    },
+    {
+      "local_log": "evidence/B08/metrics-20261028/child-entry-boundaries.log",
+      "sha256": "2936f34cebc9700a7e76471d4c0a5578f83b805a3265998225bb39dfc7bc3f93",
+      "tests": 1,
+      "seconds": "11.041",
+      "result": "OK",
+      "executed_on": "2026-10-28",
+      "group": "B08 metrics child guard and source/history; intermediate whole-patch digest not captured",
+      "source_patch_sha256": null,
+      "product_job_card_sha256": "2c3357e38c1657d03ed929851630c0a65cd32015db125ab4c5b08e88844680cb"
+    },
+    {
+      "local_log": "evidence/B08/metrics-20261028/settings-history.log",
+      "sha256": "58d266b45548a942de155a936e09474deab3039f3d8525ac84490a1b1b988797",
+      "tests": 1,
+      "seconds": "17.173",
+      "result": "OK",
+      "executed_on": "2026-10-28",
+      "group": "B08 metrics child guard and source/history; intermediate whole-patch digest not captured",
+      "source_patch_sha256": null,
+      "product_job_card_sha256": "2c3357e38c1657d03ed929851630c0a65cd32015db125ab4c5b08e88844680cb"
+    },
+    {
       "local_log": "evidence/B08/followup-20261028/permissions-fixed.log",
       "sha256": "bcc84deae2a8408bf24b15c097b337cb748a6dc2d8cb2a82b34f801baac5e93b",
       "tests": 4,
@@ -284,5 +339,5 @@
     "verified_after_all_requests": true,
     "publication_note": "Only assertions/counts retained; runtime business_state and raw responses remain local."
   },
-  "current_patch_sha256": "4ee93837ff7dfefa99d8a6481584c3b3c58cb42a90d2656f95d951832b220c52"
+  "current_patch_sha256": "ddc6efaf432e7fa1c0e2428d908b29a4e7789de6184646bdadd2357ef9794ad5"
 }

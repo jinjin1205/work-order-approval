@@ -33,7 +33,12 @@
   "actual_operating_cost",
   "report_scope",
   "report_department",
-  "report_employee"
+  "report_employee",
+  "report_metrics_section",
+  "report_wage_mode",
+  "report_wage_rate",
+  "report_wage_currency",
+  "report_standard_efficiency"
  ],
  "fields": [
   {
@@ -243,6 +248,37 @@
    "label": "报工人员",
    "fieldtype": "Link",
    "options": "Employee"
+  },
+  {
+   "fieldname": "report_metrics_section",
+   "fieldtype": "Section Break",
+   "label": "报工计价与效率"
+  },
+  {
+   "fieldname": "report_wage_mode",
+   "fieldtype": "Select",
+   "label": "报工计价方式",
+   "options": "\nhourly\npiece",
+   "description": "计时按有效小时；计件仅按良品数量。空值表示未配置。"
+  },
+  {
+   "fieldname": "report_wage_rate",
+   "fieldtype": "Data",
+   "label": "工资单价",
+   "description": "非负数，最多6位小数；计时为币种/小时，计件为币种/库存单位。0为明确零价。"
+  },
+  {
+   "fieldname": "report_wage_currency",
+   "fieldtype": "Link",
+   "options": "Currency",
+   "label": "计价币种",
+   "read_only": 1
+  },
+  {
+   "fieldname": "report_standard_efficiency",
+   "fieldtype": "Data",
+   "label": "标准效率（库存单位/小时）",
+   "description": "非负数，最多6位小数；空或0时不计算达标率。送审后随工序依据冻结。"
   }
  ],
  "grid_page_length": 50,

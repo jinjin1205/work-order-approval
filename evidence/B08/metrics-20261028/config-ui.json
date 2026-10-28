@@ -1,0 +1,61 @@
+{
+  "captured_at": "2026-10-28T04:04:45.837463+00:00",
+  "test_kind": "real Playwright CLI native-form UI; independent configuration session",
+  "role": "生产工单发起",
+  "new_fixture": {
+    "users": 1,
+    "independent_drafts": 1,
+    "old_accounts_modified": false
+  },
+  "actions": [
+    "登录新增窄角色发起人",
+    "打开新增独立草稿",
+    "操作页展开第一工序",
+    "选择hourly、填写工资单价10和标准效率10",
+    "Esc关闭原生行编辑浮层",
+    "点击原生保存",
+    "重新加载并展开同一工序核对"
+  ],
+  "actual": {
+    "mode_value": "hourly",
+    "mode_label": "计时",
+    "options": [
+      {
+        "value": "",
+        "text": ""
+      },
+      {
+        "value": "hourly",
+        "text": "计时"
+      },
+      {
+        "value": "piece",
+        "text": "计件"
+      }
+    ],
+    "wage_rate": "10",
+    "standard_efficiency": "10",
+    "currency": "CNY",
+    "currency_matches_company": true,
+    "saved_and_reopened": true,
+    "remains_draft": true
+  },
+  "intermediate_observations": [
+    "首次保存点击被原生行编辑浮层拦截，未提交；Esc关闭后保存成功",
+    "首次选项显示hourly/piece；专用站清缓存后真实reload显示计时/计件"
+  ],
+  "http_test": {
+    "separate_from_ui": true,
+    "status": 403,
+    "exception_type": "PermissionError",
+    "matched_pricing_guard": true,
+    "original_values_unchanged": true,
+    "parent_modified_unchanged": true
+  },
+  "limits": [
+    "仅新增合成草稿，不送审、不报工、不调用库存",
+    "控制台存在socket.io轮询404；本次保存和重开实际通过，未验实时通知",
+    "未发布，未替代客户现场验收"
+  ],
+  "passed": true
+}

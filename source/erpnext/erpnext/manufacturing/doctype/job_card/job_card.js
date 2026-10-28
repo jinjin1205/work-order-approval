@@ -64,11 +64,24 @@ frappe.ui.form.on("Job Card", {
 				const saved = JSON.parse(frm.doc.report_time_context);
 				const escape = (value) => frappe.utils.escape_html(String(value ?? ""));
 				const rule = saved.rule;
+				const metrics = frm.doc.__onload?.report_metrics;
+				let metrics_html = "<p>历史未记录工资与效率依据。</p>";
+				if (metrics) {
+					const { source, result } = metrics;
+					const value = (input, missing = "—") => input == null ? missing : escape(input);
+					const mode = source.wage_mode === "hourly" ? "计时" : source.wage_mode === "piece" ? "计件" : "未配置";
+					const rate_unit = source.wage_mode === "hourly" ? "小时" : value(source.unit);
+					metrics_html =
+						`<p>计价方式：${mode}；单价：${source.wage_rate == null ? "未配置" : `${value(source.wage_rate)} ${value(source.currency)}/${rate_unit}`}；预计工资：<b>${value(result.estimated_wage)} ${value(source.currency, "")}</b>（仅预计，非工资结算）。</p>` +
+						`<p>标准效率：${value(source.standard_efficiency, "未配置")} ${value(source.unit)}/小时；实际效率：${value(result.actual_efficiency)} ${value(source.unit)}/小时；达标率：${result.efficiency_percent == null ? "—" : `${value(result.efficiency_percent)}%`}。</p>` +
+						`<p>来源：工单 ${value(source.work_order)}，工序 ${value(source.operation)}（${value(source.operation_id)}）；计算版本 ${value(source.calculation_version)}。</p>`;
+				}
 				frappe.msgprint({ title: "本笔报工确认依据", message:
 					`<p>良品 ${escape(frm.doc.total_completed_qty)}；不良 ${escape(frm.doc.process_loss_qty)}。有效工时 ${escape(saved.result.effective_seconds)} 秒。</p>` +
 					`<p>规则：${escape(rule ? rule.rule_name : "未匹配规则")}；当时版本：${escape(rule?.modified || "无")}。</p>` +
 					`<p>休息时段：${escape(JSON.stringify(rule?.rest_periods || []))}；可加班时段：${escape(JSON.stringify(rule?.overtime_periods || []))}。</p>` +
 					`<p>停工 ${escape(saved.result.shutdown_seconds)} 秒；加班 ${escape(saved.result.overtime_seconds)} 秒；计算版本 ${escape(saved.calculation_version)}；时区 ${escape(saved.result.timezone)}。</p>` +
+					metrics_html +
 					`<p>确认时间 ${escape(saved.confirmed_at)}。此处展示保存时的依据，不按当前配置重算。</p>` });
 			});
 		}

@@ -1,0 +1,85 @@
+{
+  "test_kind": "read-only comparison of all captured rows and columns on the retained synthetic UI site",
+  "old_rows_unchanged": true,
+  "tables": {
+    "Work Order": {
+      "old_rows": 10,
+      "missing_old_rows": 0,
+      "changed_old_rows": 0,
+      "new_rows": 4,
+      "captured_columns": 66
+    },
+    "Work Order Item": {
+      "old_rows": 10,
+      "missing_old_rows": 0,
+      "changed_old_rows": 0,
+      "new_rows": 4,
+      "captured_columns": 26
+    },
+    "Work Order Operation": {
+      "old_rows": 22,
+      "missing_old_rows": 0,
+      "changed_old_rows": 0,
+      "new_rows": 12,
+      "captured_columns": 36
+    },
+    "Job Card": {
+      "old_rows": 31,
+      "missing_old_rows": 0,
+      "changed_old_rows": 0,
+      "new_rows": 8,
+      "captured_columns": 63
+    },
+    "Job Card Time Log": {
+      "old_rows": 13,
+      "missing_old_rows": 0,
+      "changed_old_rows": 0,
+      "new_rows": 2,
+      "captured_columns": 16
+    },
+    "Stock Entry": {
+      "old_rows": 2,
+      "missing_old_rows": 0,
+      "changed_old_rows": 0,
+      "new_rows": 0,
+      "captured_columns": 64
+    },
+    "Stock Entry Detail": {
+      "old_rows": 2,
+      "missing_old_rows": 0,
+      "changed_old_rows": 0,
+      "new_rows": 0,
+      "captured_columns": 59
+    },
+    "Stock Ledger Entry": {
+      "old_rows": 2,
+      "missing_old_rows": 0,
+      "changed_old_rows": 0,
+      "new_rows": 0,
+      "captured_columns": 42
+    },
+    "Workflow Action": {
+      "old_rows": 24,
+      "missing_old_rows": 0,
+      "changed_old_rows": 0,
+      "new_rows": 10,
+      "captured_columns": 18
+    },
+    "Version": {
+      "old_rows": 78,
+      "missing_old_rows": 0,
+      "changed_old_rows": 0,
+      "new_rows": 11,
+      "captured_columns": 14
+    },
+    "Comment": {
+      "old_rows": 203,
+      "missing_old_rows": 0,
+      "changed_old_rows": 0,
+      "new_rows": 13,
+      "captured_columns": 22
+    }
+  },
+  "no_new_inventory_rows": true,
+  "limits": "11 listed business tables only; new synthetic fixture/report rows retained. Not a whole-database or customer-data audit."
+}

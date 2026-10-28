@@ -1,0 +1,687 @@
+--- a/erpnext/manufacturing/doctype/job_card/job_card.js
++++ b/erpnext/manufacturing/doctype/job_card/job_card.js
+@@ -64,11 +64,24 @@
+ 				const saved = JSON.parse(frm.doc.report_time_context);
+ 				const escape = (value) => frappe.utils.escape_html(String(value ?? ""));
+ 				const rule = saved.rule;
++				const metrics = frm.doc.__onload?.report_metrics;
++				let metrics_html = "<p>历史未记录工资与效率依据。</p>";
++				if (metrics) {
++					const { source, result } = metrics;
++					const value = (input, missing = "—") => input == null ? missing : escape(input);
++					const mode = source.wage_mode === "hourly" ? "计时" : source.wage_mode === "piece" ? "计件" : "未配置";
++					const rate_unit = source.wage_mode === "hourly" ? "小时" : value(source.unit);
++					metrics_html =
++						`<p>计价方式：${mode}；单价：${source.wage_rate == null ? "未配置" : `${value(source.wage_rate)} ${value(source.currency)}/${rate_unit}`}；预计工资：<b>${value(result.estimated_wage)} ${value(source.currency, "")}</b>（仅预计，非工资结算）。</p>` +
++						`<p>标准效率：${value(source.standard_efficiency, "未配置")} ${value(source.unit)}/小时；实际效率：${value(result.actual_efficiency)} ${value(source.unit)}/小时；达标率：${result.efficiency_percent == null ? "—" : `${value(result.efficiency_percent)}%`}。</p>` +
++						`<p>来源：工单 ${value(source.work_order)}，工序 ${value(source.operation)}（${value(source.operation_id)}）；计算版本 ${value(source.calculation_version)}。</p>`;
++				}
+ 				frappe.msgprint({ title: "本笔报工确认依据", message:
+ 					`<p>良品 ${escape(frm.doc.total_completed_qty)}；不良 ${escape(frm.doc.process_loss_qty)}。有效工时 ${escape(saved.result.effective_seconds)} 秒。</p>` +
+ 					`<p>规则：${escape(rule ? rule.rule_name : "未匹配规则")}；当时版本：${escape(rule?.modified || "无")}。</p>` +
+ 					`<p>休息时段：${escape(JSON.stringify(rule?.rest_periods || []))}；可加班时段：${escape(JSON.stringify(rule?.overtime_periods || []))}。</p>` +
+ 					`<p>停工 ${escape(saved.result.shutdown_seconds)} 秒；加班 ${escape(saved.result.overtime_seconds)} 秒；计算版本 ${escape(saved.calculation_version)}；时区 ${escape(saved.result.timezone)}。</p>` +
++					metrics_html +
+ 					`<p>确认时间 ${escape(saved.confirmed_at)}。此处展示保存时的依据，不按当前配置重算。</p>` });
+ 			});
+ 		}
+--- a/erpnext/manufacturing/doctype/job_card/job_card.json
++++ b/erpnext/manufacturing/doctype/job_card/job_card.json
+@@ -81,7 +81,9 @@
+   "report_effective_seconds",
+   "report_time_rule",
+   "report_time_context",
+-  "correction_reason"
++  "correction_reason",
++  "report_metrics_context",
++  "report_estimated_wage"
+  ],
+  "fields": [
+   {
+@@ -579,6 +581,21 @@
+    "fieldname": "correction_reason",
+    "fieldtype": "Small Text",
+    "label": "更正原因",
++   "read_only": 1,
++   "no_copy": 1
++  },
++  {
++   "fieldname": "report_metrics_context",
++   "fieldtype": "Code",
++   "options": "JSON",
++   "label": "报工计价与效率依据",
++   "read_only": 1,
++   "no_copy": 1
++  },
++  {
++   "fieldname": "report_estimated_wage",
++   "fieldtype": "Data",
++   "label": "预计工资（仅预计）",
+    "read_only": 1,
+    "no_copy": 1
+   }
+--- a/erpnext/manufacturing/doctype/job_card/job_card.py
++++ b/erpnext/manufacturing/doctype/job_card/job_card.py
+@@ -5,7 +5,7 @@
+ import json
+ import re
+ from collections import OrderedDict
+-from decimal import Decimal, InvalidOperation
++from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
+ from zoneinfo import ZoneInfo
+ 
+ import frappe
+@@ -131,6 +131,8 @@
+ 	# end: auto-generated types
+ 
+ 	def onload(self):
++		if self.get("report_request_id"):
++			self.set_onload("report_metrics", _saved_report_metrics(self))
+ 		excess_transfer = frappe.db.get_single_value("Manufacturing Settings", "job_card_excess_transfer")
+ 		self.set_onload("job_card_excess_transfer", excess_transfer)
+ 		self.set_onload("work_order_closed", self.is_work_order_closed())
+@@ -148,7 +150,8 @@
+ 		context = getattr(frappe.local, "production_report_context", None)
+ 		trusted = context and context.card is self and context.user == frappe.session.user
+ 		if (old_key or any(self.get(f) for f in ("report_request_id", "report_payload_hash", "report_time_context",
+-			"report_effective_seconds", "report_time_rule", "report_shutdown_seconds", "report_overtime_seconds"))) and not trusted:
++			"report_effective_seconds", "report_time_rule", "report_shutdown_seconds", "report_overtime_seconds",
++			"report_metrics_context", "report_estimated_wage"))) and not trusted:
+ 			frappe.throw("报工事实只能通过确认或关联更正保存，原记录不能改写", frappe.PermissionError)
+ 		if not trusted and not self.get("report_request_id") and self.work_order:
+ 			order = frappe.get_doc("Work Order", self.work_order)
+@@ -1542,22 +1545,31 @@
+ 		"rule_message": "已匹配时段规则。" if matched else "未匹配时段规则：休息为0，加班上限为报工时长。"}
+ 
+ 
+-def calculate_report_metrics(*, plan_quantity, good_quantity, bad_quantity, effective_seconds,
+-	completed_tasks, total_tasks, issued_quantity, required_quantity, rework_quantity=0,
++def calculate_report_metrics(*, plan_quantity=None, good_quantity, bad_quantity, effective_seconds,
++	completed_tasks=None, total_tasks=None, issued_quantity=None, required_quantity=None, rework_quantity=0,
+ 	standard_efficiency=None, wage_mode=None, wage_rate=None):
+ 	"""Calculate from authorized effective facts; never infer defects or post wages."""
+ 	from erpnext.manufacturing.doctype.bom.bom import validate_quantity_input
+ 
+ 	quantities = {}
+-	for key, value, label in (("plan", plan_quantity, "计划数量"), ("good", good_quantity, "良品数量"),
+-		("bad", bad_quantity, "不良数量"), ("rework", rework_quantity, "返工数量"),
+-		("issued", issued_quantity, "生效累计领料"), ("required", required_quantity, "需求数量")):
++	for key, value, label in (("good", good_quantity, "良品数量"),
++		("bad", bad_quantity, "不良数量"), ("rework", rework_quantity, "返工数量")):
+ 		quantities[key] = Decimal(str(validate_quantity_input(value, label, allow_zero=True)))
++	plan = None if plan_quantity is None else Decimal(str(validate_quantity_input(plan_quantity, "计划数量", allow_zero=True)))
+ 	seconds = _whole_non_negative(effective_seconds, "有效工时秒数")
+-	done = _whole_non_negative(completed_tasks, "已完成任务数")
+-	total = _whole_non_negative(total_tasks, "任务总数")
+-	if done > total:
+-		frappe.throw("已完成任务数不能超过任务总数。")
++	completion = material = None
++	if (completed_tasks is None) != (total_tasks is None) or (issued_quantity is None) != (required_quantity is None):
++		frappe.throw("任务或领料指标的分子与分母必须同时提供。")
++	if total_tasks is not None:
++		done = _whole_non_negative(completed_tasks, "已完成任务数")
++		total = _whole_non_negative(total_tasks, "任务总数")
++		if done > total:
++			frappe.throw("已完成任务数不能超过任务总数。")
++		completion = Decimal(done) * 100 / total if total else None
++	if required_quantity is not None:
++		issued = Decimal(str(validate_quantity_input(issued_quantity, "生效累计领料", allow_zero=True)))
++		required = Decimal(str(validate_quantity_input(required_quantity, "需求数量", allow_zero=True)))
++		material = issued * 100 / required if required else None
+ 	standard = None if standard_efficiency is None else _non_negative_number(standard_efficiency, "标准效率")
+ 	actual = quantities["good"] + quantities["bad"]
+ 	efficiency = actual * 3600 / seconds if seconds else None
+@@ -1571,12 +1583,59 @@
+ 		frappe.throw("填写工资单价时必须明确计价方式。")
+ 	return {"quality_percent": quantities["good"] * 100 / actual if actual else None,
+ 		"quality_numerator": quantities["good"], "quality_denominator": actual,
+-		"unfinished_quantity": max(Decimal(0), quantities["plan"] - actual),
+-		"task_completion_percent": Decimal(done) * 100 / total if total else None,
+-		"material_issue_percent": quantities["issued"] * 100 / quantities["required"] if quantities["required"] else None,
++		"unfinished_quantity": max(Decimal(0), plan - actual) if plan is not None else None,
++		"task_completion_percent": completion,
++		"material_issue_percent": material,
+ 		"actual_efficiency": efficiency,
+ 		"efficiency_percent": efficiency * 100 / standard if efficiency is not None and standard else None,
+ 		"estimated_wage": estimated_wage}
++
++
++def _report_metrics_source(order, operation):
++	from frappe.model.meta import get_field_precision
++	from erpnext.manufacturing.doctype.bom.bom import validate_quantity_input
++
++	mode = operation.get("report_wage_mode") or None
++	rate, standard = operation.get("report_wage_rate"), operation.get("report_standard_efficiency")
++	if mode not in (None, "hourly", "piece") or bool(mode) != (rate not in (None, "")):
++		frappe.throw("工序计价配置不完整，请核对已批准的工单依据")
++	values = []
++	for value, label in ((rate, "工资单价"), (standard, "标准效率")):
++		if value in (None, ""):
++			values.append(None)
++		else:
++			validate_quantity_input(value, label, allow_zero=True)
++			values.append(format(Decimal(str(value)).normalize(), "f"))
++	currency = operation.get("report_wage_currency") if mode else None
++	if mode and not currency:
++		frappe.throw("缺少工序计价币种，不能用当前公司设置替代已批准依据")
++	return {"calculation_version": "B08-metrics-v1", "work_order": order.name,
++		"operation_id": operation.name, "operation": operation.operation, "unit": order.stock_uom,
++		"wage_mode": mode, "wage_rate": values[0], "currency": currency,
++		"currency_precision": get_field_precision(frappe._dict(fieldtype="Currency"), currency=currency),
++		"standard_efficiency": values[1]}
++
++
++def _report_metrics(source, good, bad, seconds):
++	# Only this report's metrics are requested; no fabricated task or material totals.
++	result = calculate_report_metrics(good_quantity=good,
++		bad_quantity=bad, effective_seconds=seconds, standard_efficiency=source["standard_efficiency"],
++		wage_mode=source["wage_mode"], wage_rate=source["wage_rate"])
++	wage = result["estimated_wage"]
++	result = {key: None if result[key] is None else format(result[key].quantize(Decimal("0.0001"), rounding=ROUND_HALF_UP).normalize(), "f")
++		for key in ("actual_efficiency", "efficiency_percent")}
++	result["estimated_wage"] = None if wage is None else format(wage.quantize(Decimal(1).scaleb(-source["currency_precision"]), rounding=ROUND_HALF_UP), "f")
++	return {"source": source, "result": result}
++
++
++def _saved_report_metrics(doc):
++	if not doc.get("report_metrics_context"):
++		return None
++	metrics = _report_metrics(frappe.parse_json(doc.report_metrics_context), Decimal(str(doc.total_completed_qty or 0)),
++		Decimal(str(doc.process_loss_qty or 0)), doc.report_effective_seconds)
++	# Reopening displays the saved amount. Derived percentages use saved facts and basis only.
++	metrics["result"]["estimated_wage"] = doc.get("report_estimated_wage") or None
++	return metrics
+ 
+ 
+ def _report_scope_allows(operation, employee):
+@@ -1636,7 +1695,7 @@
+ 	_report_context(doc.work_order, history=True)
+ 	doc.check_permission("read")
+ 	return {"name": doc.name, "docstatus": doc.docstatus, "good": doc.total_completed_qty, "bad": doc.process_loss_qty,
+-		"time_context": frappe.parse_json(doc.report_time_context)}
++		"time_context": frappe.parse_json(doc.report_time_context), "metrics": _saved_report_metrics(doc)}
+ 
+ 
+ def _report_time_context(order, operation, from_time, to_time, shutdown_seconds, overtime_seconds):
+@@ -1654,10 +1713,20 @@
+ 
+ 
+ @frappe.whitelist()
+-def preview_production_report_time(work_order, operation_id, from_time, to_time, shutdown_seconds=0, overtime_seconds=0):
++def preview_production_report_time(work_order, operation_id, from_time, to_time, shutdown_seconds=0, overtime_seconds=0,
++	good_quantity=None, bad_quantity=None):
++	from erpnext.manufacturing.doctype.bom.bom import validate_quantity_input
++
+ 	order, operation, employee = _report_task(work_order, operation_id)
+ 	context, fingerprint = _report_time_context(order, operation, from_time, to_time, shutdown_seconds, overtime_seconds)
+-	return {"context_fingerprint": fingerprint, **context["result"]}
++	source = _report_metrics_source(order, operation)
++	fingerprint = hashlib.sha256(frappe.as_json({"time":context,"metrics_source":source}).encode()).hexdigest()
++	metrics = None
++	if good_quantity is not None or bad_quantity is not None:
++		good = Decimal(str(validate_quantity_input(good_quantity, "良品数量", allow_zero=True)))
++		bad = Decimal(str(validate_quantity_input(bad_quantity, "不良数量", allow_zero=True)))
++		metrics = _report_metrics(source, good, bad, context["result"]["effective_seconds"])
++	return {"context_fingerprint": fingerprint, "metrics": metrics, **context["result"]}
+ 
+ 
+ @frappe.whitelist()
+@@ -1723,11 +1792,15 @@
+ 		context = frappe.parse_json(original.report_time_context)
+ 		context["original_report"] = original.name
+ 		context["rule_basis"] = "沿用原报工时段依据，起止时间不变"
++		source = frappe.parse_json(original.report_metrics_context) if original.get("report_metrics_context") else None
+ 	else:
+ 		context, fingerprint = _report_time_context(order, operation, from_time, to_time, shutdown_seconds, overtime_seconds)
++		source = _report_metrics_source(order, operation)
++		fingerprint = hashlib.sha256(frappe.as_json({"time":context,"metrics_source":source}).encode()).hexdigest()
+ 		if fingerprint != context_fingerprint:
+ 			frappe.throw("时段依据已变化，请重新核对工时后确认")
+ 	context["confirmed_at"] = frappe.utils.now()
++	metrics = _report_metrics(source, good, bad, context["result"]["effective_seconds"]) if source else None
+ 	doc = frappe.get_doc({"doctype": "Job Card", "amended_from": original.name if original else None, "correction_reason": correction_reason,
+ 		"work_order": work_order, "operation_id": operation_id,
+ 		"operation": operation.operation, "sequence_id": operation.sequence_id, "workstation": operation.workstation,
+@@ -1736,6 +1809,8 @@
+ 		"report_request_id": request_id, "report_payload_hash": payload_hash, "report_time_context": frappe.as_json(context),
+ 		"report_shutdown_seconds": payload["shutdown"], "report_overtime_seconds": payload["overtime"],
+ 		"report_effective_seconds": context["result"]["effective_seconds"], "report_time_rule": context["result"]["matched_rule"],
++		"report_metrics_context": frappe.as_json(source) if source else None,
++		"report_estimated_wage": metrics["result"]["estimated_wage"] if metrics else None,
+ 		"time_logs": [{"from_time": start.replace(tzinfo=None), "to_time": end.replace(tzinfo=None),
+ 			"completed_qty": float(good), "employee": employee.name}]})
+ 	previous = getattr(frappe.local, "production_report_context", None)
+--- a/erpnext/manufacturing/doctype/job_card/test_job_card.py
++++ b/erpnext/manufacturing/doctype/job_card/test_job_card.py
+@@ -1818,7 +1818,7 @@
+ class TestProductionReportConfirmation(FrappeTestCase):
+ 	"""B08: real workflow fixture, narrow operator, native per-confirmation cards."""
+ 
+-	def setUp(self, report_scope="PERSON"):
++	def setUp(self, report_scope="PERSON", report_values=None):
+ 		from frappe.permissions import add_permission, add_user_permission, update_permission_property
+ 		from erpnext.manufacturing.doctype.work_order.test_work_order import TestWorkOrderApproval
+ 		self.approval = TestWorkOrderApproval()
+@@ -1847,6 +1847,8 @@
+ 		f.order.operations[0].report_scope = report_scope
+ 		f.order.operations[0].report_employee = self.employee if report_scope == "PERSON" else None
+ 		f.order.operations[0].report_department = f.teams[0] if report_scope == "DEPT" else None
++		if report_values:
++			f.order.operations[0].update(report_values)
+ 		f.order.operations[1].report_scope = "ALL" if self._testMethodName == "test_correction_rejects_existing_downstream_facts" else ""
+ 		f.order.operations[2].report_scope = "ALL"
+ 		f.order.save()
+@@ -2311,3 +2313,225 @@
+ 		original.reload(); second_doc.reload()
+ 		self.assertEqual((original.report_effective_seconds,original.report_time_context),(25200,old_snapshot))
+ 		self.assertEqual((second_doc.report_effective_seconds,second_doc.report_time_context),(28800,second_snapshot))
++
++
++class TestProductionReportMetrics(FrappeTestCase):
++	"""B08 pricing integration, using native approval and rollback-only fixtures."""
++	method = TestProductionReportConfirmation.method
++	fact_state = TestProductionReportFollowup.fact_state
++
++	def setUp(self):
++		values = dict(report_wage_mode="piece" if "piece" in self._testMethodName else "hourly",
++			report_wage_rate="0" if "zero" in self._testMethodName else "10", report_standard_efficiency="10")
++		if "unconfigured" in self._testMethodName:
++			values = {}
++		if "zero" in self._testMethodName:
++			values["report_standard_efficiency"] = "0"
++		TestProductionReportConfirmation.setUp(self, report_values=values)
++		frappe.set_user("Administrator")
++		for name in frappe.get_all("Production Time Rule", filters={"company":self.order.company,"enabled":1}, pluck="name"):
++			rule = frappe.get_doc("Production Time Rule", name)
++			rule.enabled = 0
++			rule.save()
++		frappe.set_user(self.user)
++
++	def args(self, good=8, bad=2, end="11:00"):
++		return dict(work_order=self.order.name, operation_id=self.operation_id,
++			from_time="2026-10-20 09:00", to_time="2026-10-20 " + end,
++			good_quantity=good, bad_quantity=bad)
++
++	def save_report(self, args):
++		preview = self.method("preview_production_report_time")(**args)
++		self.assertIn("metrics", preview, "Preview must expose server-priced metrics")
++		payload = dict(**args, request_id=frappe.generate_hash(length=32), context_fingerprint=preview["context_fingerprint"])
++		result = self.method("confirm_production_report")(**payload)
++		return frappe.get_doc("Job Card", result["name"]), preview, payload
++
++	def draft(self):
++		frappe.set_user(self.approval.users["operator"])
++		doc = frappe.copy_doc(self.order)
++		doc.docstatus = 0
++		doc.workflow_state = "草稿"
++		doc.approval_requested_by = doc.approval_reviewed_by = doc.approval_note = None
++		for row in doc.operations:
++			row.status = "Pending"
++			for name in ("completed_qty", "process_loss_qty", "actual_operation_time", "actual_operating_cost"):
++				row.set(name, 0)
++			row.actual_start_time = row.actual_end_time = None
++		return doc
++
++	def test_hourly_preview_confirm_and_reopen_use_frozen_source(self):
++		before = self.fact_state()
++		preview = self.method("preview_production_report_time")(**self.args())
++		self.assertIn("metrics", preview, "Current time-only API lacks wage and efficiency")
++		self.assertEqual(self.fact_state(), before)
++		result = preview["metrics"]["result"]
++		self.assertEqual((result["estimated_wage"], result["actual_efficiency"], result["efficiency_percent"]), ("20.00", "5", "50"))
++		doc, preview, payload = self.save_report(self.args())
++		source = frappe.parse_json(doc.report_metrics_context)
++		self.assertEqual((source["work_order"], source["operation_id"], source["wage_mode"], source["wage_rate"]), (self.order.name, self.operation_id, "hourly", "10"))
++		self.assertEqual(source["unit"], self.order.stock_uom)
++		self.assertEqual(doc.report_estimated_wage, "20.00")
++		self.assertNotIn("efficiency_percent", source)
++		doc.onload()
++		self.assertEqual(doc.get_onload()["report_metrics"]["result"], result)
++		found = self.method("get_production_report_result")(payload["request_id"])
++		self.assertEqual(found["metrics"]["result"], result)
++		self.assertEqual(self.method("confirm_production_report")(**payload)["name"], doc.name)
++		self.assertEqual(frappe.db.count("Job Card", {"work_order":self.order.name,"report_request_id":["is","set"]}), 1)
++		for field, value in (("report_metrics_context", "{}"), ("report_estimated_wage", "999.00")):
++			changed = frappe.get_doc("Job Card", doc.name)
++			changed.set(field, value)
++			changed.flags.ignore_validate_update_after_submit = True
++			with self.assertRaises(frappe.PermissionError): changed.save()
++		# Controlled storage drift, not an allowed edit: old results never consult current terms.
++		frappe.db.savepoint("changed_terms")
++		frappe.db.set_value("Work Order Operation", self.operation_id,
++			{"report_wage_rate":"25", "report_standard_efficiency":"20", "report_wage_currency":"CNY"}, update_modified=False)
++		doc.reload(); doc.onload()
++		self.assertEqual(doc.get_onload()["report_metrics"]["source"], source)
++		self.assertEqual(doc.get_onload()["report_metrics"]["result"], result)
++		frappe.db.rollback(save_point="changed_terms")
++
++	def test_piece_rounding_captures_native_currency_precision(self):
++		# Same frozen fixture, explicit 0.005 piece price gives 0.01 at native 2-place precision.
++		frappe.db.set_value("Work Order Operation", self.operation_id, "report_wage_rate", "0.005", update_modified=False)
++		doc, preview, payload = self.save_report(self.args(good=1, bad=0))
++		self.assertEqual(preview["metrics"]["source"]["currency_precision"], 2)
++		self.assertEqual(doc.report_estimated_wage, "0.01")
++		self.assertEqual(frappe.parse_json(doc.report_metrics_context)["wage_rate"], "0.005")
++
++	def test_piece_correction_recalculates_with_original_price(self):
++		from frappe.permissions import update_permission_property
++		doc, preview, payload = self.save_report(self.args())
++		self.assertEqual(preview["metrics"]["result"]["estimated_wage"], "80.00")
++		original_context = doc.report_metrics_context
++		frappe.set_user("Administrator")
++		update_permission_property("Job Card", "生产报工", 0, "cancel", 1)
++		frappe.set_user(self.user)
++		new = self.method("correct_production_report")(doc.name, frappe.generate_hash(length=32), 6, 2, "合成样例：更正良品数量")
++		replacement = frappe.get_doc("Job Card", new["name"])
++		doc.reload()
++		self.assertEqual((doc.docstatus, doc.total_completed_qty, doc.report_estimated_wage, doc.report_metrics_context), (2, 8, "80.00", original_context))
++		self.assertEqual((replacement.amended_from, replacement.report_estimated_wage, replacement.report_metrics_context), (doc.name, "60.00", original_context))
++		replacement.onload()
++		self.assertEqual(replacement.get_onload()["report_metrics"]["result"]["efficiency_percent"], "40")
++
++	def test_unconfigured_is_unknown_and_legacy_snapshot_not_backfilled(self):
++		doc, preview, payload = self.save_report(self.args())
++		self.assertIsNone(preview["metrics"]["result"]["estimated_wage"])
++		self.assertIsNone(preview["metrics"]["source"]["wage_mode"])
++		self.assertIsNone(preview["metrics"]["source"]["standard_efficiency"])
++		self.assertIsNone(preview["metrics"]["result"]["efficiency_percent"])
++		self.assertIn(doc.report_estimated_wage, (None, ""))
++		# A pre-feature record has no source. Read it without inventing today's terms.
++		frappe.db.set_value("Job Card", doc.name, {"report_metrics_context":None,"report_estimated_wage":None}, update_modified=False)
++		doc.reload(); doc.onload()
++		self.assertIsNone(doc.get_onload()["report_metrics"])
++		self.assertIsNone(self.method("get_production_report_result")(payload["request_id"])["metrics"])
++
++	def test_zero_rate_and_zero_seconds_remain_explicit(self):
++		doc, preview, payload = self.save_report(self.args(good=1, bad=0, end="09:00"))
++		self.assertEqual(preview["metrics"]["source"]["wage_rate"], "0")
++		self.assertEqual(doc.report_estimated_wage, "0.00")
++		self.assertIsNone(preview["metrics"]["result"]["actual_efficiency"])
++		self.assertIsNone(preview["metrics"]["result"]["efficiency_percent"])
++
++	def test_source_validation_and_approval_freeze(self):
++		for field,value in (("report_wage_rate","-1"),("report_wage_rate","NaN"),("report_wage_rate","0.0000001"),
++			("report_wage_rate",""),("report_wage_mode","other"),("report_standard_efficiency","Infinity")):
++			with self.subTest(field=field, value=value):
++				draft = self.draft(); draft.operations[0].set(field, value)
++				with self.assertRaises(frappe.ValidationError): draft.insert()
++		frappe.set_user(self.approval.users["operator"])
++		order = frappe.get_doc("Work Order", self.order.name)
++		order.operations[0].report_wage_rate = "99"
++		with self.assertRaises(frappe.PermissionError): order.save()
++		self.assertEqual(frappe.db.get_value("Work Order Operation", self.operation_id, "report_wage_rate"), "10")
++
++	def test_stale_source_forgery_and_revoked_access_reject_without_facts(self):
++		args = self.args(good=1, bad=0)
++		preview = self.method("preview_production_report_time")(**args)
++		self.assertIn("metrics", preview)
++		payload = dict(**args, request_id=frappe.generate_hash(length=32), context_fingerprint=preview["context_fingerprint"])
++		before = self.fact_state()
++		with self.assertRaises(TypeError): self.method("confirm_production_report")(**payload, wage_rate="1")
++		self.assertEqual(self.fact_state(), before)
++		# Controlled source drift: prove fingerprints bind the price; not a legal edit path.
++		frappe.db.savepoint("metrics_drift")
++		frappe.db.set_value("Work Order Operation", self.operation_id, "report_wage_rate", "11", update_modified=False)
++		drifted = self.fact_state()
++		with self.assertRaises(frappe.ValidationError): self.method("confirm_production_report")(**payload)
++		self.assertEqual(self.fact_state(), drifted)
++		frappe.db.rollback(save_point="metrics_drift")
++		frappe.set_user(self.approval.users["other"])
++		with self.assertRaises(frappe.PermissionError): self.method("preview_production_report_time")(**args)
++		frappe.set_user(self.user)
++		self.assertEqual(self.fact_state(), before)
++
++	def test_amount_precision_and_unrelated_metrics_are_not_invented(self):
++		calc = self.method("calculate_report_metrics")
++		result = calc(plan_quantity=10, good_quantity=8, bad_quantity=2, effective_seconds=7200,
++			wage_mode="hourly", wage_rate="10", standard_efficiency=10)
++		self.assertEqual(result["estimated_wage"], 20)
++		self.assertIsNone(result["material_issue_percent"])
++		self.assertIsNone(result["task_completion_percent"])
++		with self.assertRaises(frappe.ValidationError): calc(plan_quantity=10,good_quantity=1,bad_quantity=0,effective_seconds=1,issued_quantity=1)
++		draft = self.draft(); draft.operations[0].report_wage_rate = "0.123456"
++		draft.operations[0].report_wage_mode = "piece"; draft.insert()
++		self.assertEqual(frappe.db.get_value("Work Order Operation", draft.operations[0].name,"report_wage_rate"), "0.123456")
++
++	def test_direct_child_save_cannot_bypass_pricing_freeze_or_validation(self):
++		from frappe.client import save
++		from erpnext.manufacturing.doctype.work_order.work_order import apply_production_approval
++		draft = self.draft(); draft.insert()
++		child = frappe.get_doc("Work Order Operation", draft.operations[0].name)
++		child.report_wage_rate = "-1"
++		frappe.db.savepoint("child_invalid")
++		with self.subTest(path="draft invalid price"), self.assertRaises((frappe.PermissionError, frappe.ValidationError)):
++			save(frappe.as_json(child.as_dict()))
++		frappe.db.rollback(save_point="child_invalid")
++		draft.reload()
++		apply_production_approval(draft.name, "送审", str(draft.modified)); draft.reload()
++		before = frappe.as_json(draft.as_dict())
++		child = frappe.get_doc("Work Order Operation", draft.operations[0].name)
++		child.report_wage_rate = "99"
++		with self.subTest(path="submitted for review"), self.assertRaises(frappe.PermissionError): save(frappe.as_json(child.as_dict()))
++		for path in ("insert", "operation", "clear"):
++			child = frappe.get_doc("Work Order Operation", draft.operations[0].name)
++			if path == "insert": child = frappe.copy_doc(child)
++			elif path == "operation": child.operation = draft.operations[1].operation
++			else:
++				for field in ("report_wage_mode", "report_wage_rate", "report_wage_currency", "report_standard_efficiency"):
++					child.set(field, None)
++			with self.subTest(path=path), self.assertRaises(frappe.PermissionError): save(frappe.as_json(child.as_dict()))
++		draft.reload()
++		self.assertEqual(frappe.as_json(draft.as_dict()), before)
++
++	def test_saved_currency_precision_survive_current_settings_changes(self):
++		doc, preview, payload = self.save_report(self.args(good=1, bad=0))
++		source = frappe.parse_json(doc.report_metrics_context)
++		old_currency = frappe.db.get_value("Company", self.order.company, "default_currency")
++		defaults_before = frappe.as_json(frappe.get_all("DefaultValue", filters={"defkey":"currency_precision"},fields=["*"],order_by="name"))
++		frappe.db.savepoint("currency_settings")
++		try:
++			# Controlled current-setting change; the approved row and original report stay frozen.
++			frappe.db.set_value("Company", self.order.company, "default_currency", "USD" if old_currency != "USD" else "CNY", update_modified=False)
++			frappe.db.set_default("currency_precision", "3")
++			current = self.method("preview_production_report_time")(**self.args(good=1,bad=0))
++			self.assertEqual(current["metrics"]["source"]["currency"], source["currency"])
++			self.assertEqual(current["metrics"]["source"]["currency_precision"], 3)
++			self.assertEqual(current["metrics"]["result"]["estimated_wage"], "20.000")
++			doc.reload();doc.onload()
++			self.assertEqual(doc.get_onload()["report_metrics"]["source"],source)
++			self.assertEqual(doc.get_onload()["report_metrics"]["result"]["estimated_wage"],"20.00")
++			self.assertEqual(doc.report_estimated_wage,"20.00")
++			before = self.fact_state()
++			with self.assertRaises(frappe.ValidationError):
++				self.method("confirm_production_report")(**{**payload,"request_id":frappe.generate_hash(length=32)})
++			self.assertEqual(self.fact_state(),before)
++		finally:
++			frappe.db.rollback(save_point="currency_settings")
++			frappe.defaults.clear_defaults_cache("__default")
++		self.assertEqual(frappe.db.get_value("Company",self.order.company,"default_currency"),old_currency)
++		self.assertEqual(frappe.as_json(frappe.get_all("DefaultValue",filters={"defkey":"currency_precision"},fields=["*"],order_by="name")),defaults_before)
+--- a/erpnext/manufacturing/doctype/work_order/work_order.js
++++ b/erpnext/manufacturing/doctype/work_order/work_order.js
+@@ -1201,8 +1201,8 @@
+ 				options: menu.tasks.map((t) => ({ value: t.name, label: t.operation })), default: menu.tasks[0].name,
+ 				onchange: () => { update_task(); update_preview(); } },
+ 			{ fieldname: "summary", fieldtype: "HTML" },
+-			{ fieldname: "good_quantity", label: "本次良品数量", fieldtype: "Data", reqd: 1 },
+-			{ fieldname: "bad_quantity", label: "本次不良数量", fieldtype: "Data", default: "0", reqd: 1 },
++			{ fieldname: "good_quantity", label: "本次良品数量", fieldtype: "Data", reqd: 1, onchange: () => update_preview() },
++			{ fieldname: "bad_quantity", label: "本次不良数量", fieldtype: "Data", default: "0", reqd: 1, onchange: () => update_preview() },
+ 			{ fieldname: "from_time", label: "实际开始时间", fieldtype: "Datetime", reqd: 1, onchange: () => update_preview() },
+ 			{ fieldname: "to_time", label: "实际结束时间", fieldtype: "Datetime", reqd: 1, default: frappe.datetime.now_datetime(), onchange: () => update_preview() },
+ 			{ fieldname: "shutdown_seconds", label: "停工秒数", fieldtype: "Int", default: 0, onchange: () => update_preview() },
+@@ -1212,7 +1212,7 @@
+ 		],
+ 		primary_action_label: "确认报工",
+ 		primary_action: async (values) => {
+-			if (!fingerprint) { frappe.msgprint("请先填写起止时间并核对工时预览。"); return; }
++			if (!fingerprint) { frappe.msgprint("请先填写数量和起止时间，并核对工时、预计工资与效率预览。"); return; }
+ 			if (localStorage.getItem(storage_key)) {
+ 				frappe.msgprint("上次提交结果尚未核对，请先使用“查询或重试上次报工”，不要重复创建新记录。"); return;
+ 			}
+@@ -1237,15 +1237,35 @@
+ 	async function update_preview() {
+ 		const generation = ++preview_generation;
+ 		fingerprint = null;
++		dialog.fields_dict.time_preview.$wrapper.html("<p>请填写数量和实际起止时间，核对服务器预览后确认。</p>");
+ 		const start = dialog.get_value("from_time"), end = dialog.get_value("to_time");
+-		if (!start || !end) return;
+-		const { message: result } = await frappe.call(api + "preview_production_report_time", {
+-			work_order: frm.doc.name, operation_id: dialog.get_value("task"), from_time: start, to_time: end,
+-			shutdown_seconds: dialog.get_value("shutdown_seconds"), overtime_seconds: dialog.get_value("overtime_seconds"),
+-		});
++		const good = dialog.get_value("good_quantity"), bad = dialog.get_value("bad_quantity");
++		if (!start || !end || good == null || good === "" || bad == null || bad === "") return;
++		dialog.fields_dict.time_preview.$wrapper.html("<p>正在核对工时、预计工资与效率……</p>");
++		let result;
++		try {
++			({ message: result } = await frappe.call(api + "preview_production_report_time", {
++				work_order: frm.doc.name, operation_id: dialog.get_value("task"), from_time: start, to_time: end,
++				good_quantity: good, bad_quantity: bad,
++				shutdown_seconds: dialog.get_value("shutdown_seconds"), overtime_seconds: dialog.get_value("overtime_seconds"),
++			}));
++		} catch (error) {
++			if (generation === preview_generation) {
++				dialog.fields_dict.time_preview.$wrapper.html("<p>预览未完成，请按错误提示修正或重试，重新核对后才能确认。</p>");
++			}
++			return;
++		}
+ 		if (generation !== preview_generation) return;
+ 		fingerprint = result.context_fingerprint;
+-		dialog.fields_dict.time_preview.$wrapper.html(`<p>经过 ${escape(result.reported_seconds)} 秒，休息 ${escape(result.rest_seconds)} 秒，有效工时 <b>${escape(result.effective_seconds)} 秒</b>。${escape(result.rule_message)}</p>`);
++		const { source, result: metrics } = result.metrics;
++		const value = (input, missing = "—") => input == null ? missing : escape(input);
++		const mode = source.wage_mode === "hourly" ? "计时" : source.wage_mode === "piece" ? "计件" : "未配置";
++		const rate_unit = source.wage_mode === "hourly" ? "小时" : value(source.unit);
++		dialog.fields_dict.time_preview.$wrapper.html(
++			`<p>经过 ${escape(result.reported_seconds)} 秒，休息 ${escape(result.rest_seconds)} 秒，有效工时 <b>${escape(result.effective_seconds)} 秒</b>。${escape(result.rule_message)}</p>` +
++			`<p>计价方式：${mode}；单价：${source.wage_rate == null ? "未配置" : `${value(source.wage_rate)} ${value(source.currency)}/${rate_unit}`}；预计工资：<b>${value(metrics.estimated_wage)} ${value(source.currency, "")}</b>（仅预计，非工资结算）。</p>` +
++			`<p>标准效率：${value(source.standard_efficiency, "未配置")} ${value(source.unit)}/小时；实际效率：${value(metrics.actual_efficiency)} ${value(source.unit)}/小时；达标率：${metrics.efficiency_percent == null ? "—" : `${value(metrics.efficiency_percent)}%`}。</p>` +
++			`<p>来源：工单 ${value(source.work_order)}，工序 ${value(source.operation)}（${value(source.operation_id)}）；计算版本 ${value(source.calculation_version)}。</p>`);
+ 	}
+ 	async function submit(args) {
+ 		dialog.get_primary_btn().prop("disabled", true);
+--- a/erpnext/manufacturing/doctype/work_order/work_order.py
++++ b/erpnext/manufacturing/doctype/work_order/work_order.py
+@@ -305,6 +305,7 @@
+ 
+ 	def validate(self):
+ 		self.validate_production_approval()
++		self.validate_report_pricing()
+ 		self.validate_production_item()
+ 		if self.bom_no:
+ 			validate_bom_no(self.production_item, self.bom_no)
+@@ -333,6 +334,26 @@
+ 			self.set_required_items(reset_only_qty=len(self.get("required_items")))
+ 
+ 		self.validate_operations_sequence()
++
++	def validate_report_pricing(self):
++		from decimal import Decimal
++
++		editable = self.docstatus == 0 and self.get("workflow_state") in (None, "", "草稿", "退回")
++		for row in self.operations:
++			mode, rate = row.get("report_wage_mode"), row.get("report_wage_rate")
++			if mode not in (None, "", "hourly", "piece"):
++				frappe.throw("报工计价方式必须为计时或计件")
++			if bool(mode) != (rate not in (None, "")):
++				frappe.throw("计价方式和工资单价必须同时填写；未知单价请保持两项为空")
++			for field, label in (("report_wage_rate", "工资单价"), ("report_standard_efficiency", "标准效率")):
++				value = row.get(field)
++				if value not in (None, ""):
++					validate_quantity_input(value, label, allow_zero=True)
++					row.set(field, format(Decimal(str(value)).normalize(), "f"))
++			if editable:
++				row.report_wage_currency = frappe.db.get_value("Company", self.company, "default_currency") if mode else None
++			if mode and not row.get("report_wage_currency"):
++				frappe.throw("缺少工序计价币种，请在草稿中核对公司币种并保存")
+ 
+ 	def validate_production_approval(self):
+ 		from frappe.model.workflow import get_workflow_name
+--- a/erpnext/manufacturing/doctype/work_order_operation/work_order_operation.json
++++ b/erpnext/manufacturing/doctype/work_order_operation/work_order_operation.json
+@@ -33,7 +33,12 @@
+   "actual_operating_cost",
+   "report_scope",
+   "report_department",
+-  "report_employee"
++  "report_employee",
++  "report_metrics_section",
++  "report_wage_mode",
++  "report_wage_rate",
++  "report_wage_currency",
++  "report_standard_efficiency"
+  ],
+  "fields": [
+   {
+@@ -243,6 +248,37 @@
+    "label": "报工人员",
+    "fieldtype": "Link",
+    "options": "Employee"
++  },
++  {
++   "fieldname": "report_metrics_section",
++   "fieldtype": "Section Break",
++   "label": "报工计价与效率"
++  },
++  {
++   "fieldname": "report_wage_mode",
++   "fieldtype": "Select",
++   "label": "报工计价方式",
++   "options": "\nhourly\npiece",
++   "description": "计时按有效小时；计件仅按良品数量。空值表示未配置。"
++  },
++  {
++   "fieldname": "report_wage_rate",
++   "fieldtype": "Data",
++   "label": "工资单价",
++   "description": "非负数，最多6位小数；计时为币种/小时，计件为币种/库存单位。0为明确零价。"
++  },
++  {
++   "fieldname": "report_wage_currency",
++   "fieldtype": "Link",
++   "options": "Currency",
++   "label": "计价币种",
++   "read_only": 1
++  },
++  {
++   "fieldname": "report_standard_efficiency",
++   "fieldtype": "Data",
++   "label": "标准效率（库存单位/小时）",
++   "description": "非负数，最多6位小数；空或0时不计算达标率。送审后随工序依据冻结。"
+   }
+  ],
+  "grid_page_length": 50,
+--- a/erpnext/manufacturing/doctype/work_order_operation/work_order_operation.py
++++ b/erpnext/manufacturing/doctype/work_order_operation/work_order_operation.py
+@@ -2,6 +2,7 @@
+ # For license information, please see license.txt
+ 
+ 
++import frappe
+ from frappe.model.document import Document
+ 
+ 
+@@ -38,4 +39,13 @@
+ 		workstation_type: DF.Link | None
+ 	# end: auto-generated types
+ 
+-	pass
++	def before_validate(self):
++		# Parent saves validate and freeze these terms together; direct child saves do not.
++		before = self.get_doc_before_save()
++		fields = ("report_wage_mode", "report_wage_rate", "report_wage_currency", "report_standard_efficiency")
++		terms = any(record.get(field) not in (None, "") for record in (before, self) if record for field in fields)
++		if not terms:
++			return
++		protected = fields + ("parent", "parenttype", "parentfield", "operation")
++		if not before or any(self.get(field) != before.get(field) for field in protected):
++			frappe.throw("计价和标准效率依据必须从工单工序表修改，并遵守送审冻结；不能直接保存工序子行", frappe.PermissionError)
+--- a/erpnext/translations/zh.csv
++++ b/erpnext/translations/zh.csv
+@@ -2,3 +2,5 @@
+ Production Time Period,报工规则时段
+ Rest,休息
+ Overtime,可加班
++hourly,计时,
++piece,计件,

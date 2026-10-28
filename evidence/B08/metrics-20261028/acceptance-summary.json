@@ -1,0 +1,193 @@
+{
+  "date": "2026-10-28",
+  "scope": "B08 original card and R07 bound pricing source, estimated wage and efficiency only",
+  "user_decision": "按工单工序填写并随审批冻结",
+  "upstream_commit": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+  "public_baseline_commit": "35d63323659089eb9142cd8a7046ae1ec64bfb01",
+  "final_patch_sha256": "ddc6efaf432e7fa1c0e2428d908b29a4e7789de6184646bdadd2357ef9794ad5",
+  "source_files_cumulative": 25,
+  "runtime_files_verified": 33,
+  "source_boundary": "Final manifest is not retroactively assigned to batches whose whole-patch hash was not captured. Intermediate successful/failing evidence retained; null means not captured.",
+  "batches": [
+    {
+      "local_log": "server-first.log",
+      "sha256": "87c8f0ce713097aca0a3f8613c32078981a2474cf2222488af083940f8279ed1",
+      "methods_run": 1,
+      "seconds": "10.390",
+      "result": "FAILED (errors=1)",
+      "test_names": [
+        "test_hourly_preview_confirm_and_reopen_use_frozen_source"
+      ],
+      "source_patch_sha256": null
+    },
+    {
+      "local_log": "server-fixed-first.log",
+      "sha256": "065485a8da380258af83fc2047b667140ddc3cff978b3b8ddfbf015027eb024d",
+      "methods_run": 7,
+      "seconds": "69.050",
+      "result": "FAILED (errors=7)",
+      "test_names": [
+        "test_amount_precision_and_unrelated_metrics_are_not_invented",
+        "test_hourly_preview_confirm_and_reopen_use_frozen_source",
+        "test_piece_correction_recalculates_with_original_price",
+        "test_source_validation_and_approval_freeze",
+        "test_stale_source_forgery_and_revoked_access_reject_without_facts",
+        "test_unconfigured_is_unknown_and_legacy_snapshot_not_backfilled",
+        "test_zero_rate_and_zero_seconds_remain_explicit"
+      ],
+      "source_patch_sha256": null
+    },
+    {
+      "local_log": "server-fixed-second.log",
+      "sha256": "40e0c68314d4ddb4cbf2fecd57551b0ce4d857cf2d81859374015427aee10b11",
+      "methods_run": 4,
+      "seconds": "38.290",
+      "result": "OK",
+      "test_names": [
+        "test_amount_precision_and_unrelated_metrics_are_not_invented",
+        "test_source_validation_and_approval_freeze",
+        "test_hourly_preview_confirm_and_reopen_use_frozen_source",
+        "test_piece_rounding_captures_native_currency_precision"
+      ],
+      "source_patch_sha256": "d847ab9a6ece69eb9f9f52c763aa28d2753c5d4b022de15c74656496d2531272"
+    },
+    {
+      "local_log": "child-first.log",
+      "sha256": "62df3ec451260588d4526dbd290f58466a990ca7eea541c42df95a91a1170172",
+      "methods_run": 1,
+      "seconds": "16.647",
+      "result": "FAILED (failures=1)",
+      "test_names": [
+        "test_direct_child_save_cannot_bypass_pricing_freeze_or_validation"
+      ],
+      "source_patch_sha256": null
+    },
+    {
+      "local_log": "child-both-first.log",
+      "sha256": "4a21e0cf5e41d1499838fc6ddb5262509b6699f860b5dbf382f9749053633eca",
+      "methods_run": 1,
+      "seconds": "18.458",
+      "result": "FAILED (failures=3)",
+      "test_names": [
+        "test_direct_child_save_cannot_bypass_pricing_freeze_or_validation",
+        "test_direct_child_save_cannot_bypass_pricing_freeze_or_validation"
+      ],
+      "source_patch_sha256": null
+    },
+    {
+      "local_log": "child-fixed.log",
+      "sha256": "507559625b71e2bbd13326e437250710aaf94f7aa2fc07e1cc0d1cc1a7c462f9",
+      "methods_run": 3,
+      "seconds": "28.415",
+      "result": "OK",
+      "test_names": [
+        "test_direct_child_save_cannot_bypass_pricing_freeze_or_validation",
+        "test_source_validation_and_approval_freeze",
+        "test_hourly_preview_confirm_and_reopen_use_frozen_source"
+      ],
+      "source_patch_sha256": null
+    },
+    {
+      "local_log": "child-entry-boundaries.log",
+      "sha256": "2936f34cebc9700a7e76471d4c0a5578f83b805a3265998225bb39dfc7bc3f93",
+      "methods_run": 1,
+      "seconds": "11.041",
+      "result": "OK",
+      "test_names": [
+        "test_direct_child_save_cannot_bypass_pricing_freeze_or_validation"
+      ],
+      "source_patch_sha256": null
+    },
+    {
+      "local_log": "settings-history.log",
+      "sha256": "58d266b45548a942de155a936e09474deab3039f3d8525ac84490a1b1b988797",
+      "methods_run": 1,
+      "seconds": "17.173",
+      "result": "OK",
+      "test_names": [
+        "test_saved_currency_precision_survive_current_settings_changes"
+      ],
+      "source_patch_sha256": null
+    },
+    {
+      "local_log": "affected-regression.log",
+      "sha256": "de345520b1408c6e8fd75f510d8b0d0a081204faecac9a1afc8637cafe429c08",
+      "methods_run": 5,
+      "seconds": "18.687",
+      "result": "OK",
+      "test_names": [
+        "test_metrics_m01_m02_efficiency_and_pay",
+        "test_metrics_zero_denominators_and_decimal_quantity",
+        "test_metrics_reject_invalid_inputs",
+        "test_rule_snapshot_and_stale_preview",
+        "test_task_menu_and_saved_result_are_scoped"
+      ],
+      "source_patch_sha256": "d847ab9a6ece69eb9f9f52c763aa28d2753c5d4b022de15c74656496d2531272"
+    }
+  ],
+  "new_methods_with_eventual_pass": 10,
+  "single_full_suite_run": false,
+  "affected_old_tests": 5,
+  "fixture_failure_note": "First fixed batch: 7 methods, 5 passed; 2 methods hit copied docstatus=1 fixture errors, including 6 subtests; raw errors=7. Fixed fixture and reran affected cases only.",
+  "frontend": {
+    "new_contract_tests": 6,
+    "initial_fail": 6,
+    "final_pass": 6,
+    "refresh_failure_regression_pass": true,
+    "redundant_check_logs_not_additional_coverage": true
+  },
+  "real_browser": {
+    "tool": "Playwright CLI 0.1.22 / Chrome",
+    "environment": "retained dedicated local synthetic site",
+    "reports_confirmed": 2,
+    "hourly": {
+      "good": 8,
+      "bad": 2,
+      "effective_seconds": 7200,
+      "rate": "10",
+      "wage": "20.00",
+      "currency": "CNY",
+      "standard": "10",
+      "actual": "5",
+      "percent": "50"
+    },
+    "piece": {
+      "good": 8,
+      "bad": 2,
+      "effective_seconds": 7200,
+      "rate": "10",
+      "wage": "80.00",
+      "changed_good_6_preview": "60.00",
+      "saved_and_reopened": true
+    },
+    "legacy": "历史未记录",
+    "configuration_ui": "independent narrow-role draft: hourly/10/10 saved and reopened CNY; Chinese options after clear-cache"
+  },
+  "http_separate": {
+    "same_configuration_browser_cookie_valid_csrf": true,
+    "direct_child_negative_price_status": 403,
+    "specific_pricing_permission_guard": true,
+    "parent_child_values_modified_times_unchanged": true
+  },
+  "controlled_correction": {
+    "original_wage": "80.00",
+    "corrected_wage": "60.00",
+    "original_retained": true
+  },
+  "preservation": {
+    "source_test_11_tables_unchanged_with_documented_schema_exclusions": true,
+    "ui_old_rows_and_captured_columns_11_tables_unchanged": true,
+    "ui_new_inventory_rows": 0,
+    "all_synthetic_samples_retained": true,
+    "not_whole_database_audit": true
+  },
+  "limitations": [
+    "G1/G2/G3 and entire B08/B09 remain open",
+    "Z01 clean environment, backup restore and independent handover not done",
+    "No customer/site/mobile/weak-network/PDA/touchscreen acceptance",
+    "No real-time notification acceptance; local socket.io polling404 observed",
+    "No full ERPNext suite or remote CI pass claim",
+    "No wage settlement",
+    "Background automation not resumed"
+  ]
+}

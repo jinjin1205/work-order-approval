@@ -5,7 +5,7 @@
 ## 实际包含的第三方源码
 
 - 上游：[frappe/erpnext](https://github.com/frappe/erpnext)，v15.124.1，提交`4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e`。
-- `source/erpnext/`共24个修改或新增文件；其中16个源自该版本、8个为维护分支新增，在原文件上局部修改辅助读取权限、库存单位汇总/限额、B19审批核心、任务/库存执行门槛及审批历史保护（原hooks扩展点）及B08逐笔事实/历史结果查询与其测试。保留原版权头；上游GPL文本原样附于[license.txt](source/erpnext/license.txt)。修改日期2026-10-26至2026-10-28，差异见本仓补丁与文件哈希。
+- `source/erpnext/`共25个修改或新增文件；其中17个源自该版本、8个为维护分支新增，在原文件上局部修改辅助读取权限、库存单位汇总/限额、B19审批核心、任务/库存执行门槛及审批历史保护（原hooks扩展点）及B08逐笔事实、历史结果查询、工序计价冻结与金额/效率来源快照及其测试。本包增加原Work Order Operation控制器的计价子行入口保护，不修改Frappe框架。保留原版权头；上游GPL文本原样附于[license.txt](source/erpnext/license.txt)。修改日期2026-10-26至2026-10-28，当前差异见[metrics补丁](evidence/B08/metrics-20261028/implementation.patch)与文件哈希。
 - 未修改文件按锁定上游SHA获取。运行依赖Frappe v15.124.0；本归档不复制Frappe源码，也不宣称已完成全部容器/依赖许可证兼容核验。
 
 ## 要持续核对的参考产品
