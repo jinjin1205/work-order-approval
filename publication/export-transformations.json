@@ -255,7 +255,7 @@
     "source": "docs/任务卡/02-生产与物料闭环.md",
     "public_path": "docs/任务卡/02-生产与物料闭环.md",
     "treatment": "personal paths/runtime identifiers removed",
-    "source_sha256": "2148cc1df2c6fc1445cb47f68c02bd98cf561f1fcc49761033ac5c327e32f9ed"
+    "source_sha256": "53e72663ddd2c75d8e2b7006c82f4f8a951e2f91f184125651a0d81c1e6dbb69"
   },
   {
     "source": "docs/任务卡/03-AI与交付.md",
@@ -273,7 +273,7 @@
     "source": "docs/开发TODO.md",
     "public_path": "docs/开发TODO.md",
     "treatment": "unchanged",
-    "source_sha256": "d54d49ce19362d0d3e0fc6f1bd532ae38c916ad0d09ea3f4c6896322461bacb5"
+    "source_sha256": "7d4b77e09321ed9bb4631f5466beaee52fec74948b6ec9384df759d056302599"
   },
   {
     "source": "docs/验收样例.md",
@@ -327,7 +327,7 @@
     "source": "evidence/B08/followup-20261028/run-record.md",
     "public_path": "evidence/B08/followup-20261028/run-record.md",
     "treatment": "unchanged",
-    "source_sha256": "dadb8ff0a2868c0355bc48db893dbd61121e12d43f6bc38f8ad3e1783321a96c"
+    "source_sha256": "6a601a65fd09e3382535f7f3b94ba78a6629a38deb527d765f3d96f1f9452df9"
   },
   {
     "source": "evidence/B08/implementation/review-package.md",
@@ -603,7 +603,7 @@
     "source": "evidence/R07/report-concurrency.md",
     "public_path": "evidence/R07/report-concurrency.md",
     "treatment": "unchanged",
-    "source_sha256": "fa4615cac755aa9e70767345dde085da741d725f13e2872285ebe763d12de2c5"
+    "source_sha256": "b0701d4cffe397bef305721d97a55420dbc363e8892da14971aa4327a59e3f1e"
   },
   {
     "source": "evidence/R07/task-card-refresh-2026-10-28.md",
@@ -1216,6 +1216,12 @@
     "public_path": "evidence/R05/r02-probe-attempt5.py",
     "treatment": "unchanged",
     "source_sha256": "bebd418f53e027db69fc9888dfc4bf01fc162aab71394832e1e2572c6d9cd774"
+  },
+  {
+    "source": "evidence/发布/2026-10-28-d4d73f0-remote.json",
+    "public_path": "evidence/发布/2026-10-28-d4d73f0-remote.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "172794787e2401146071a7b89d67e3bc42bbbf0313fc0b79e1221a4a50e5e197"
   },
   {
     "source": "evidence/B08/followup-20261028/acceptance-summary.json",

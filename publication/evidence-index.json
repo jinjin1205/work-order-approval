@@ -1699,7 +1699,7 @@
   },
   {
     "path": "evidence/B08/followup-20261028/run-record.md",
-    "original_sha256": "dadb8ff0a2868c0355bc48db893dbd61121e12d43f6bc38f8ad3e1783321a96c",
+    "original_sha256": "6a601a65fd09e3382535f7f3b94ba78a6629a38deb527d765f3d96f1f9452df9",
     "published": true,
     "reason": "public copy"
   },
@@ -4771,7 +4771,7 @@
   },
   {
     "path": "evidence/R07/report-concurrency.md",
-    "original_sha256": "fa4615cac755aa9e70767345dde085da741d725f13e2872285ebe763d12de2c5",
+    "original_sha256": "b0701d4cffe397bef305721d97a55420dbc363e8892da14971aa4327a59e3f1e",
     "published": true,
     "reason": "public copy"
   },
@@ -4816,6 +4816,12 @@
     "original_sha256": "e43e2520ae264aa2ed2b86a2b10aa441c46d6e40ed583f4b27f30a843d3b08da",
     "published": false,
     "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/发布/2026-10-28-d4d73f0-remote.json",
+    "original_sha256": "172794787e2401146071a7b89d67e3bc42bbbf0313fc0b79e1221a4a50e5e197",
+    "published": true,
+    "reason": "public copy"
   },
   {
     "path": "evidence/发布/B04-B19-ui-2026-10-27-remote.json",

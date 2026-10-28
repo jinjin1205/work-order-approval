@@ -232,4 +232,4 @@ docker exec xgd-b08-check env/bin/python /b01/b08_followup_tests.py \
 
 最终源码/补丁见 [source-manifest.json](../B08/followup-20261028/source-manifest.json)；源测试站11张业务表 data-before.json（仅本地保留；见 publication/evidence-index.json）/data-after.json（仅本地保留；见 publication/evidence-index.json）一致，新UI/HTTP合成站数据保留。本包一次独立审查无Critical/Important/Minor发现，证据边界与未判事项不因此消失。
 
-上述是原卡的运行回链，不是第二份任务清单。本包自动化已到停止点，不循环重跑；公开保存和远端回读按原卡最后过程项另验。后续只接现场人员/实际输入或原B08已绑定余项。B08/B09整卡、G1/G2/G3、手机、全部历史旁路/库存逆向和Z01门槛继续保留；OpenSpec未归档，后台周期未恢复。
+上述是原卡的运行回链，不是第二份任务清单。本包自动化已到停止点，不循环重跑。产品提交`d4d73f07c872fa05a1789618b534e6ab6ab44d3a`公开保存并重新克隆核对289文件/24份源码，缺失/多余/哈希不一致均0，见[远端回执](../发布/2026-10-28-d4d73f0-remote.json)；最终文档提交和CI在最终回复单独核对。后续只接现场人员/实际输入或原B08已绑定余项。B08/B09整卡、G1/G2/G3、手机、全部历史旁路/库存逆向和Z01门槛继续保留；OpenSpec未归档，后台周期未恢复。
