@@ -114,5 +114,13 @@
     "20 captured table/column baselines are bounded retention checks, not an entire-database audit.",
     "Full cards, G1/G2/G3, onsite/mobile, Z01 and background cycles remain unchanged."
   ],
-  "publication_status": "pending whitelist push and fresh remote readback"
+  "publication_status": "Verification package pushed and independently cloned; limited package closed; final documentation commit is reported separately",
+  "remote_verification": {
+    "verified_commit": "83aaf4e1c23c1cdfa50d4a634cc28168a4c76c1c",
+    "receipt": "evidence/发布/2026-10-28-83aaf4e-remote.json",
+    "tracked_files": 380,
+    "content_hashes_verified": 379,
+    "source_files_exact": 25,
+    "missing_extra_or_mismatched": 0
+  }
 }

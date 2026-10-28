@@ -51,4 +51,4 @@ docker exec xgd-b08-check env/bin/python /b01/b08_correction_rollback.py
 
 新增3个Python检查脚本AST通过；相关7份文档239个本地链接均存在。`openspec validate b08-followup-20261028 --type change --json`返回valid=true、failed=0，并保留引用模式0任务警告；没有复制任务或归档。`python3 .publication/export_public.py`及`python3 .publication/check_public.py`实际通过，380文件/25源码一致、已知凭据及原始运行JSON匹配0；`git diff --check`无空白错误。26个待保存路径均在白名单内，产品source与旧补丁文件变化0；该扫描是有边界的公开检查，不是通用密钥或许可审计。
 
-有限运行验证已通过，白名单公开推送与远端回读尚待完成；仅实际回读后关闭本包保存过程。
+本包验证提交`83aaf4e1c23c1cdfa50d4a634cc28168a4c76c1c`已推送，并从远端fresh clone回读：380个跟踪文件、379个内容哈希和25份源码全部一致，manifest自身由Git提交核验，缺失/多余/哈希不一致均0，见[回执](../../发布/2026-10-28-83aaf4e-remote.json)。仅收口本包I05真实HTTP、I06更正断点受控验证及对应公开保存；整卡和其他门槛不变。本次状态回填另作文档保存，最终文档SHA/CI在最终回复说明，不循环回填。
