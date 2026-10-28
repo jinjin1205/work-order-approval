@@ -1,4 +1,4 @@
-> 公开归档副本（2026-10-27）：保留结论、方法与限制；个人路径/运行编号已移除。原始运行单据、响应、截图和日志不上传，原件索引见 `publication/evidence-index.json`。本页历史结果不是发布日重测。
+> 公开归档副本（2026-10-28）：保留结论、方法与限制；个人路径/运行编号已移除。原始运行单据、响应、截图和日志不上传，原件索引见 `publication/evidence-index.json`。本页历史结果不是发布日重测。
 
 # R07｜报工事实保留与请求并发绑定
 
@@ -190,3 +190,46 @@ bench --site xgd-test.localhost run-tests --app erpnext --module erpnext.manufac
 实际入口均在`job_card.py`：`get_production_report_tasks`、`preview_production_report_time`、`confirm_production_report`、`get_production_report_result`、`correct_production_report`；内部`_report_task/_report_context`复用原公司/班组/状态检查，`_report_time_context`复用B04计算和B14读取。中文原WorkOrder弹窗及JobCard依据查看，不另建页面系统。`work_order.py:validate_production_execution_state`由原判定拆出复用，旧请求找回先查历史权限，新事实仍查执行状态。
 
 实际最小更正为原生cancel/amend，起止不变沿用原时段依据；有提交库存单或后工序事实即拒绝。原生子工序配置明确拒绝，不新增子工序业务。三笔、窄回写、同键真实HTTP、快照旧新、原卡/子行保护及受控回滚已有证据；全部权限组合、完整逆向/跨对象并发、现场10秒及G1/G2/G3未通过。旧节中的“拟新增/当前不存在”为实施前历史，不代表本批状态。
+
+## 2026-10-28 B08 续接包命令绑定
+
+仅续接[原 B08 下一包](../../docs/任务卡/02-生产与物料闭环.md#2026-10-28-下一包详细执行卡沿原编号尚未运行)的 B08-02、B08-05、B08-07；样例和结束条件不另复制。开工基线、OpenSpec 引用模式及后续实际输出见[本包记录](../B08/followup-20261028/run-record.md)。历史主批 14 项、回滚单测 1 项与原受影响回归 3 项分别沿旧记录，不称本次已重跑。
+
+复用 `.development/repos/erpnext/erpnext/manufacturing/doctype/job_card/test_job_card.py` 的 `TestProductionReportConfirmation`、原 B19 审批 fixture 和 B14 规则对象。原 fixture 的 `setUp(report_scope)` 只增加审批前 scope 测试参数，新增类为同文件 `TestProductionReportFollowup`；独立 runner `.development/checks/b08_followup_tests.py` 固定 `xgd-test.localhost`、检查允许测试且无原 Work Order Workflow。参数可为本类短方法名或完整方法名，未提供参数会运行整类；本包只按下述分批命令执行，未运行整类全量。
+
+**方法名与历史批次区分：**当前类实际有7个权限方法：`test_dept_same_department_can_confirm`、`test_dept_changed_employee_denies_new_but_preserves_history_read`、`test_person_other_employee_denied`、`test_all_other_employee_can_confirm`、`test_all_still_requires_company_team_and_work_order_read`、`test_employee_state_binding_and_company_are_current`、`test_duplicate_active_employee_rejected_by_native_constraint`；另有规则方法`test_rules_disable_stale_preview_reenable_keep_snapshots`。首轮旧方法`test_person_other_employee_denied_and_all_allowed`已拆为上列PERSON/ALL两项，不能将旧名称写成现可执行方法。
+
+首次6项69.461秒，3通过/3ERROR，保留 permissions-first.log（仅本地保留；见 publication/evidence-index.json）。其中两项ALL样例被第三工序顺序限制拒绝，属于fixture问题；改为审批前首工序ALL，不放宽原生顺序。另一项为本人仍有当前对象read时，历史结果接口错误使用新报工scope；仅在`get_production_report_result`把`_report_task`替为`_report_context(history=True)`，其他权限检查保留。以下修后4项实际43.964秒OK，见 permissions-fixed.log（仅本地保留；见 publication/evidence-index.json）：
+
+```sh
+docker exec xgd-b08-check env/bin/python /b01/b08_followup_tests.py \
+  test_dept_changed_employee_denies_new_but_preserves_history_read \
+  test_person_other_employee_denied \
+  test_all_other_employee_can_confirm \
+  test_all_still_requires_company_team_and_work_order_read
+```
+
+员工样例进一步补“先有历史再改变员工状态/绑定/公司”，连同原跨用户结果回归2项21.945秒OK，见 permissions-history-regression.log（仅本地保留；见 publication/evidence-index.json）：
+
+```sh
+docker exec xgd-b08-check env/bin/python /b01/b08_followup_tests.py \
+  test_employee_state_binding_and_company_are_current \
+  erpnext.manufacturing.doctype.job_card.test_job_card.TestProductionReportConfirmation.test_task_menu_and_saved_result_are_scoped
+```
+
+规则方法首次1项11.448秒被已有全工序规则打断，见 rules-first.log（仅本地保留；见 publication/evidence-index.json）。使用原生save在测试回滚事务内隔离其他匹配规则后，以下1项10.495秒OK，见 rules-isolated.log（仅本地保留；见 publication/evidence-index.json）：
+
+```sh
+docker exec xgd-b08-check env/bin/python /b01/b08_followup_tests.py \
+  test_rules_disable_stale_preview_reenable_keep_snapshots
+```
+
+该项验证25200→停用无匹配28800→重启25200，旧快照保持、停/启陈旧指纹拒绝及零部分保存；runner回滚后逐行核对Production Time Rule、Production Time Period、Employee、User Permission四表一致。DEPT同部正例和原生重复有效员工约束保留首轮通过证据；各批不能相加冒充整类或全部原生回归。
+
+真实HTTP通过`.development/checks/b08_followup_http.py`对本次独立合成样例执行，13个请求均符合预期，见 http-run.log（仅本地保留；见 publication/evidence-index.json）与 [http-results.json](../B08/followup-20261028/http-results.json)。同token换部门拒绝新预览/确认而本人有权历史200；撤公司/班组后三接口403，恢复后200；3组拒绝前后事实哈希一致，仍1笔良1。旧HTTP批与fixture未重放。
+
+普通中文PC用Playwright CLI＋Chrome156，原`work_order.js`弹窗、`job_card.js`快照入口未重做。列表到成功3211毫秒，就绪后1134毫秒（含截图291毫秒）、单击确认843毫秒，4点击/1手输真实样例起点；结束默认当前时间。重开累计10/0/剩0及169秒快照可查，见 ui-timing.json（仅本地保留；见 publication/evidence-index.json）。自动化预先已知输入、不含人工阅读思考，人工现场10秒仍未验证；原18.015秒记录保留，不能由新自动化数据覆盖。
+
+最终源码/补丁见 [source-manifest.json](../B08/followup-20261028/source-manifest.json)；源测试站11张业务表 data-before.json（仅本地保留；见 publication/evidence-index.json）/data-after.json（仅本地保留；见 publication/evidence-index.json）一致，新UI/HTTP合成站数据保留。本包一次独立审查无Critical/Important/Minor发现，证据边界与未判事项不因此消失。
+
+上述是原卡的运行回链，不是第二份任务清单。本包自动化已到停止点，不循环重跑；公开保存和远端回读按原卡最后过程项另验。后续只接现场人员/实际输入或原B08已绑定余项。B08/B09整卡、G1/G2/G3、手机、全部历史旁路/库存逆向和Z01门槛继续保留；OpenSpec未归档，后台周期未恢复。

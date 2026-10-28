@@ -1,6 +1,39 @@
 {
-  "scope": "Separate executed batches tied to their own source patches; no cumulative full-suite result; publication itself does not rerun tests",
+  "scope": "Separate executed batches; exact patches where captured, explicit null otherwise with product hash. No cumulative full-suite result; publication does not rerun tests",
   "tests": [
+    {
+      "local_log": "evidence/B08/followup-20261028/permissions-fixed.log",
+      "sha256": "bcc84deae2a8408bf24b15c097b337cb748a6dc2d8cb2a82b34f801baac5e93b",
+      "tests": 4,
+      "seconds": "43.964",
+      "result": "OK",
+      "executed_on": "2026-10-28",
+      "group": "B08 followup fixed permissions",
+      "source_patch_sha256": "90c74a231bce4b0a82f47e715587fec16f7694c77e683ccec7804016115d4ecc",
+      "product_job_card_sha256": "8a2c92371e18f0f049536a418190fe93817c87f274f4ce05b266c27242f9db5e"
+    },
+    {
+      "local_log": "evidence/B08/followup-20261028/permissions-history-regression.log",
+      "sha256": "b96851b92fa2d17f800946f2b8474d80b3fc2ddb91188998e096c219f3318d28",
+      "tests": 2,
+      "seconds": "21.945",
+      "result": "OK",
+      "executed_on": "2026-10-28",
+      "group": "B08 followup history regression; intermediate whole-patch digest not captured; product file matches final",
+      "source_patch_sha256": null,
+      "product_job_card_sha256": "8a2c92371e18f0f049536a418190fe93817c87f274f4ce05b266c27242f9db5e"
+    },
+    {
+      "local_log": "evidence/B08/followup-20261028/rules-isolated.log",
+      "sha256": "6d624ef4e9e5a3e09905cfd1383aca976cbf27f1c49acf9380bd25dd79c625de",
+      "tests": 1,
+      "seconds": "10.495",
+      "result": "OK",
+      "executed_on": "2026-10-28",
+      "group": "B08 followup rules",
+      "source_patch_sha256": "4ee93837ff7dfefa99d8a6481584c3b3c58cb42a90d2656f95d951832b220c52",
+      "product_job_card_sha256": "8a2c92371e18f0f049536a418190fe93817c87f274f4ce05b266c27242f9db5e"
+    },
     {
       "local_log": "evidence/B08/implementation/final-confirmation-tests.log",
       "sha256": "1a3baa63cea294d3f15b3e2a275796f979649fcc95302b74f2aa3c04d37817f5",
@@ -251,5 +284,5 @@
     "verified_after_all_requests": true,
     "publication_note": "Only assertions/counts retained; runtime business_state and raw responses remain local."
   },
-  "current_patch_sha256": "f732c73a905b77d9f8b8a40d31c1956be918cd7edbc4f7d84e86102ba48ace83"
+  "current_patch_sha256": "4ee93837ff7dfefa99d8a6481584c3b3c58cb42a90d2656f95d951832b220c52"
 }

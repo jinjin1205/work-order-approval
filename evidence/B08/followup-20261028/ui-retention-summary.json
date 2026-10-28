@@ -1,0 +1,61 @@
+{
+  "tables": {
+    "Work Order": {
+      "original_rows": 8,
+      "original_rows_unchanged": true,
+      "new_rows": 2
+    },
+    "Work Order Item": {
+      "original_rows": 8,
+      "original_rows_unchanged": true,
+      "new_rows": 2
+    },
+    "Work Order Operation": {
+      "original_rows": 16,
+      "original_rows_unchanged": true,
+      "new_rows": 6
+    },
+    "Job Card": {
+      "original_rows": 23,
+      "original_rows_unchanged": true,
+      "new_rows": 8
+    },
+    "Job Card Time Log": {
+      "original_rows": 11,
+      "original_rows_unchanged": true,
+      "new_rows": 2
+    },
+    "Stock Entry": {
+      "original_rows": 2,
+      "original_rows_unchanged": true,
+      "new_rows": 0
+    },
+    "Stock Entry Detail": {
+      "original_rows": 2,
+      "original_rows_unchanged": true,
+      "new_rows": 0
+    },
+    "Stock Ledger Entry": {
+      "original_rows": 2,
+      "original_rows_unchanged": true,
+      "new_rows": 0
+    },
+    "Workflow Action": {
+      "original_rows": 16,
+      "original_rows_unchanged": true,
+      "new_rows": 8
+    },
+    "Version": {
+      "original_rows": 64,
+      "original_rows_unchanged": true,
+      "new_rows": 14
+    },
+    "Comment": {
+      "original_rows": 188,
+      "original_rows_unchanged": true,
+      "new_rows": 15
+    }
+  },
+  "all_original_records_unchanged": true,
+  "limits": "Only the 11 listed tables; not a full database audit. New synthetic records retained."
+}

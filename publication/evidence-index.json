@@ -1590,6 +1590,246 @@
     "reason": "local raw execution evidence; not uploaded"
   },
   {
+    "path": "evidence/B08/followup-20261028/acceptance-summary.json",
+    "original_sha256": "cfde55358a91a5913b20c3107a5c1ac2993613374ab0d2d016717597c0bb5abc",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/baseline.patch",
+    "original_sha256": "f732c73a905b77d9f8b8a40d31c1956be918cd7edbc4f7d84e86102ba48ace83",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/built-source.json",
+    "original_sha256": "eaceeeb997edb2be7e2f802df53a5f3248eeb222e56726f9f452248547eda05b",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/built-source.stderr.log",
+    "original_sha256": "0f4683019a2399ff05fbd70141c7d35d05a49873b9d16195fcf26b5bdbd4f8bb",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/data-after.json",
+    "original_sha256": "239d0a361ae9740533e073f91b8cb472451442564e3ede497bf24588e76a79e9",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/data-before.json",
+    "original_sha256": "239d0a361ae9740533e073f91b8cb472451442564e3ede497bf24588e76a79e9",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/final-build.log",
+    "original_sha256": "cd5c4ba34c00ecc5e5d54d077ed889fdcaaedc26100b8135018115164e4cbe72",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/followup-only.patch",
+    "original_sha256": "c90710edab6b47d4e5004b65337ee7af3ea622bc310b0520cb7c9c953871f4d1",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/http-fixture.log",
+    "original_sha256": "31f25ac73ca30a70bc12d7ed1e456ace94933cff754cb3818ea5fd54986f79d8",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/http-results.json",
+    "original_sha256": "deb3879ffd6a160ca6ad3e8abbeaa5c62872dc6112627d545fb066992d19f8b1",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/http-run.log",
+    "original_sha256": "5a710b630e0f88be4e9e8ed303f67d52b95c20af1fba73021d6b9f84a7b36a83",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/implementation.patch",
+    "original_sha256": "4ee93837ff7dfefa99d8a6481584c3b3c58cb42a90d2656f95d951832b220c52",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/permissions-first.log",
+    "original_sha256": "aba80b5f5f5f95be7c565b860a63c7eeaf58700dfc3f9a9bc289a0be46abfcf4",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/permissions-fixed.log",
+    "original_sha256": "bcc84deae2a8408bf24b15c097b337cb748a6dc2d8cb2a82b34f801baac5e93b",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/permissions-history-regression.log",
+    "original_sha256": "b96851b92fa2d17f800946f2b8474d80b3fc2ddb91188998e096c219f3318d28",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/review-package.md",
+    "original_sha256": "cba6824f0c8f5665766f0b00945603873ec9f7ba44eb42568a87a7d36ca69037",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/rules-first.log",
+    "original_sha256": "6bdd3604de1fe6aeb31e6041ff8316c2cd96546430986414e503915c0214d9e2",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/rules-isolated.log",
+    "original_sha256": "6d624ef4e9e5a3e09905cfd1383aca976cbf27f1c49acf9380bd25dd79c625de",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/run-record.md",
+    "original_sha256": "dadb8ff0a2868c0355bc48db893dbd61121e12d43f6bc38f8ad3e1783321a96c",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/runtime-final-source.json",
+    "original_sha256": "eaceeeb997edb2be7e2f802df53a5f3248eeb222e56726f9f452248547eda05b",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/runtime-fixed-source.json",
+    "original_sha256": "9eb43626208a4325dbabb9ea06e25caab5c65ca06a8ea5a3a17c0d3c7a3253c0",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/source-manifest.json",
+    "original_sha256": "3369f0c6080ae8fc5e046015a90b964d9cd37a32d57c8201b67e3cf77e173712",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/tests-first-source-manifest.json",
+    "original_sha256": "f9794f8801a3d77fa5d4a1217334a9dd5b32fde2fa5ce6185e7d4596f873935f",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/ui-card.yml",
+    "original_sha256": "53ce07c99dba84fb006db0c65dad5507ddaa10cd117f190fefe27cb9433f0234",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/ui-data-before.json",
+    "original_sha256": "6677b3a5c3394745ddcd5d8a928506275070a632c95733c0fc71f5cc2c2c096b",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/ui-dialog-before.yml",
+    "original_sha256": "288fb3aa54eadde654be008bebed0e04023edbe9de88e6410eb578045c39b6c7",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/ui-fixture.log",
+    "original_sha256": "0ab4b89c89b2c844924b1ce98817c005f0fffd938259d7d9c35bc3076bf59ab1",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/ui-history.yml",
+    "original_sha256": "4c5c1678a576a28d8cd5fc8f31be3156eb8ee3cf32c027f3f08fd5d91e0efd21",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/ui-list.yml",
+    "original_sha256": "b49e134c6cc23fdea99548e946e83ff9fd3421fa9978f782fc58c2f1f4c7a016",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/ui-login.yml",
+    "original_sha256": "50f51f2fda9a9811b0db7fb44dd6ebd0d4edd748fc654e1471d7b95bb46229e4",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/ui-measure.log",
+    "original_sha256": "3a19716380ada0f87ca79bac0f99d7f1c0fc065a1acd6976e9d39ea6ef24f6f9",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/ui-order.yml",
+    "original_sha256": "3faef64811239109285e72961f3e2ca1cbca7e20977593efc398ab5b950c328e",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/ui-ready.png",
+    "original_sha256": "44d79f8162f886c8096435e1f3362a810055159a0c79455d5301b1f56643a356",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/ui-retention-summary.json",
+    "original_sha256": "26a8ad4b60250f99caa14de70cb1b3efc8295a8275ecb711bcc60ae2d323bf4b",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/ui-saved.png",
+    "original_sha256": "d2dcab6d3f10b3f582e05bd52cc5e1c89bbc9cc5d4e01dd66ce5be8baf5a39ac",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/ui-snapshot.png",
+    "original_sha256": "af6d29b18176a61e1b970cfc16b8fe9ffcb3952de0c5e94ef0af26fb2a1d70be",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/ui-snapshot.yml",
+    "original_sha256": "e50dd3888e4b03ab768a23fc9bedd5b95a38632fe2c4c4a4ac97dd1cffc4cdca",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/ui-source-precheck.log",
+    "original_sha256": "4d115ac929ac0e886f964e9d55a35e4f65d1352299dd831fb1d9a5585a8d95b0",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/ui-timing.json",
+    "original_sha256": "000f1bee3f563ad211c8caf1386a016707d74d0e83a8a2191a208ff2766e2f55",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B08/followup-20261028/web-final-source.json",
+    "original_sha256": "eaceeeb997edb2be7e2f802df53a5f3248eeb222e56726f9f452248547eda05b",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
     "path": "evidence/B08/implementation/acceptance-summary.json",
     "original_sha256": "7654cb570b831cd7863587053c28042aa08e0c8b20e13c6c56abc15fe2dbc78e",
     "published": true,
@@ -4531,7 +4771,7 @@
   },
   {
     "path": "evidence/R07/report-concurrency.md",
-    "original_sha256": "a42cd1cbca7cb15fca009eb3072cd1df87883900c4d7e697a6621da222e26bc4",
+    "original_sha256": "fa4615cac755aa9e70767345dde085da741d725f13e2872285ebe763d12de2c5",
     "published": true,
     "reason": "public copy"
   },
@@ -4570,6 +4810,12 @@
     "original_sha256": "7767723c87d434eca6ce6430e41d148de02d4d31ca68579486cdd12059bf9d75",
     "published": true,
     "reason": "public copy"
+  },
+  {
+    "path": "evidence/发布/2026-10-28-afe5eb8-remote.json",
+    "original_sha256": "e43e2520ae264aa2ed2b86a2b10aa441c46d6e40ed583f4b27f30a843d3b08da",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
   },
   {
     "path": "evidence/发布/B04-B19-ui-2026-10-27-remote.json",

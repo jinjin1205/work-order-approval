@@ -1,0 +1,120 @@
+{
+  "date": "2026-10-28",
+  "status": "Bounded automated followup complete; full cards and human on-site acceptance open",
+  "base_public_commit": "afe5eb894be759fd094f56910058bdb84fa2f24f",
+  "upstream_commit": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+  "final_patch_sha256": "4ee93837ff7dfefa99d8a6481584c3b3c58cb42a90d2656f95d951832b220c52",
+  "product_delta_files": 1,
+  "test_delta_files": 1,
+  "modified_product": "get_production_report_result uses current object visibility instead of new-work task scope; other guards retained",
+  "new_test_methods": 8,
+  "affected_original_regression_methods": 1,
+  "single_full_suite_run": false,
+  "batches": [
+    {
+      "log": "permissions-first.log",
+      "tests": 6,
+      "seconds": 69.461,
+      "result": "FAILED: 3 passed, 3 errors",
+      "failures": [
+        "History lookup incorrectly requires new-work DEPT scope",
+        "Two ALL fixture attempts hit prior-operation sequence constraint"
+      ],
+      "log_sha256": "aba80b5f5f5f95be7c565b860a63c7eeaf58700dfc3f9a9bc289a0be46abfcf4"
+    },
+    {
+      "log": "permissions-fixed.log",
+      "tests": 4,
+      "seconds": 43.964,
+      "result": "OK",
+      "log_sha256": "bcc84deae2a8408bf24b15c097b337cb748a6dc2d8cb2a82b34f801baac5e93b"
+    },
+    {
+      "log": "permissions-history-regression.log",
+      "tests": 2,
+      "seconds": 21.945,
+      "result": "OK",
+      "scope": "Employee history denial plus one original cross-user/result regression",
+      "log_sha256": "b96851b92fa2d17f800946f2b8474d80b3fc2ddb91188998e096c219f3318d28"
+    },
+    {
+      "log": "rules-first.log",
+      "tests": 1,
+      "seconds": 11.448,
+      "result": "FAILED: existing global rule invalidated empty-candidate fixture assumption",
+      "log_sha256": "6bdd3604de1fe6aeb31e6041ff8316c2cd96546430986414e503915c0214d9e2"
+    },
+    {
+      "log": "rules-isolated.log",
+      "tests": 1,
+      "seconds": 10.495,
+      "result": "OK",
+      "scope": "Native save isolation inside rolled-back fixture; four pre-existing config/identity tables unchanged",
+      "log_sha256": "6d624ef4e9e5a3e09905cfd1383aca976cbf27f1c49acf9380bd25dd79c625de"
+    }
+  ],
+  "http": {
+    "requests": 13,
+    "statuses_as_expected": 13,
+    "denial_groups_without_partial_writes": 3,
+    "same_token_reused": true,
+    "only_new_synthetic_actor_modified": true,
+    "configuration_restored": true,
+    "facts_retained": 1
+  },
+  "rules": {
+    "enabled_seconds": 25200,
+    "disabled_no_match_seconds": 28800,
+    "reenabled_seconds": 25200,
+    "original_snapshots_unchanged": true,
+    "both_stale_fingerprints_rejected": true
+  },
+  "ui": {
+    "browser": "156.0.8078.48",
+    "list_to_success_ms": 3211,
+    "context_ready_to_success_ms": 1134,
+    "confirmation_action_ms": 843,
+    "list_to_dialog_ms": 867,
+    "input_and_preview_ms": 1210,
+    "screenshot_before_confirmation_ms": 291,
+    "external_tool_or_model_wait_ms": 0,
+    "pointer_clicks": 4,
+    "confirmation_clicks": 1,
+    "typed_fields": 1,
+    "typing_delay_per_character_ms": 40,
+    "ordinary_role": true,
+    "real_pc": true,
+    "saved_record_and_snapshot_reopened": true,
+    "human_on_site": "UNVERIFIED",
+    "business_fixture": "Synthetic remaining quantity 10, no bad quantity, recorded preparation clock start, default current end confirmed"
+  },
+  "retention": {
+    "source_test_site_11_tables_unchanged": true,
+    "b08_synthetic_site_original_rows_in_11_tables_unchanged": true,
+    "new_synthetic_orders": 2,
+    "no_stock_facts_added": true,
+    "full_database_audit": false
+  },
+  "verification": {
+    "new_image_build": true,
+    "built_test_web_source_files_matched": 32,
+    "independent_code_review": "No Critical/Important/Minor findings; read-only review"
+  },
+  "open": [
+    "B08/B09 full cards",
+    "Human on-site 10-second acceptance",
+    "Mobile/PDA/weak network",
+    "Existing history-list filtering behavior",
+    "G1",
+    "G2",
+    "G3",
+    "Z01/CASE-11 clean deployment backup restore and independent handoff",
+    "Full production services/CI"
+  ],
+  "background_automation": "Not resumed",
+  "limitations": [
+    "Automated UI knows the target and input; excludes human reading/thinking; not comparable performance improvement versus old 18.015-second sample",
+    "Existing development web socket.io 404 errors remain; synchronous reporting and reopening verified only",
+    "Native date display remains DD-MM-YYYY on retained site; full date-default delivery not accepted"
+  ]
+}

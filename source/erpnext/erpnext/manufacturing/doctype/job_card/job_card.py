@@ -1632,7 +1632,8 @@ def get_production_report_result(request_id):
 	doc = frappe.get_doc("Job Card", name)
 	if doc.owner != frappe.session.user:
 		frappe.throw("不能查询他人的报工请求", frappe.PermissionError)
-	_report_task(doc.work_order, doc.operation_id, history=True)
+	# Existing evidence follows current object visibility, not new-work task assignment.
+	_report_context(doc.work_order, history=True)
 	doc.check_permission("read")
 	return {"name": doc.name, "docstatus": doc.docstatus, "good": doc.total_completed_qty, "bad": doc.process_loss_qty,
 		"time_context": frappe.parse_json(doc.report_time_context)}

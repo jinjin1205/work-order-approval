@@ -4,7 +4,7 @@
   "version": "15.124.1",
   "frappe_version": "15.124.0",
   "frappe_commit": "f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab",
-  "patch_sha256": "f732c73a905b77d9f8b8a40d31c1956be918cd7edbc4f7d84e86102ba48ace83",
+  "patch_sha256": "4ee93837ff7dfefa99d8a6481584c3b3c58cb42a90d2656f95d951832b220c52",
   "files": {
     "erpnext/hooks.py": {
       "base_sha256": "e9d55d583820c5411a2133754362e2bf0b8f24ca48bf236ae27460af7fdf66bc",
@@ -36,11 +36,11 @@
     },
     "erpnext/manufacturing/doctype/job_card/job_card.py": {
       "base_sha256": "5d7f77cea9046aaca47ae81e19ebb9766a78a06823dfdf6d392dbab869ba9779",
-      "modified_sha256": "d33238b5eb85ed1a7641fb279797922076fdde061c22681e835072de9f31e7f2"
+      "modified_sha256": "8a2c92371e18f0f049536a418190fe93817c87f274f4ce05b266c27242f9db5e"
     },
     "erpnext/manufacturing/doctype/job_card/test_job_card.py": {
       "base_sha256": "2947cbe40ebc044332a8a5802568c2ee1d782a8609cb6e35848b9a844dd84020",
-      "modified_sha256": "9172253ebed2166809c6f0593a2622990e9a8f6d7ba0c75e03190f88e6334cc8"
+      "modified_sha256": "f5a8943856d75a33d7e64f1c1ccdc2d3e06056b5b10455b0e8962352adb1e3c3"
     },
     "erpnext/manufacturing/doctype/job_card_time_log/job_card_time_log.py": {
       "base_sha256": "1466e3819e8598968c8af885bd31a4c3bf5e1a1c7503975f740bfd20fc50ebcc",

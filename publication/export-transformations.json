@@ -45,13 +45,13 @@
     "source": ".development/repos/erpnext/erpnext/manufacturing/doctype/job_card/job_card.py",
     "public_path": "source/erpnext/erpnext/manufacturing/doctype/job_card/job_card.py",
     "treatment": "unchanged",
-    "source_sha256": "d33238b5eb85ed1a7641fb279797922076fdde061c22681e835072de9f31e7f2"
+    "source_sha256": "8a2c92371e18f0f049536a418190fe93817c87f274f4ce05b266c27242f9db5e"
   },
   {
     "source": ".development/repos/erpnext/erpnext/manufacturing/doctype/job_card/test_job_card.py",
     "public_path": "source/erpnext/erpnext/manufacturing/doctype/job_card/test_job_card.py",
     "treatment": "unchanged",
-    "source_sha256": "9172253ebed2166809c6f0593a2622990e9a8f6d7ba0c75e03190f88e6334cc8"
+    "source_sha256": "f5a8943856d75a33d7e64f1c1ccdc2d3e06056b5b10455b0e8962352adb1e3c3"
   },
   {
     "source": ".development/repos/erpnext/erpnext/manufacturing/doctype/job_card_time_log/job_card_time_log.py",
@@ -228,6 +228,18 @@
     "source_sha256": "f732c73a905b77d9f8b8a40d31c1956be918cd7edbc4f7d84e86102ba48ace83"
   },
   {
+    "source": "evidence/B08/followup-20261028/implementation.patch",
+    "public_path": "evidence/B08/followup-20261028/implementation.patch",
+    "treatment": "unchanged",
+    "source_sha256": "4ee93837ff7dfefa99d8a6481584c3b3c58cb42a90d2656f95d951832b220c52"
+  },
+  {
+    "source": "evidence/B08/followup-20261028/followup-only.patch",
+    "public_path": "evidence/B08/followup-20261028/followup-only.patch",
+    "treatment": "unchanged",
+    "source_sha256": "c90710edab6b47d4e5004b65337ee7af3ea622bc310b0520cb7c9c953871f4d1"
+  },
+  {
     "source": "AGENTS.md",
     "public_path": "AGENTS.md",
     "treatment": "unchanged",
@@ -243,7 +255,7 @@
     "source": "docs/任务卡/02-生产与物料闭环.md",
     "public_path": "docs/任务卡/02-生产与物料闭环.md",
     "treatment": "personal paths/runtime identifiers removed",
-    "source_sha256": "1000a06352da49b034b7f8b19404471bcd332a854b8c31a80ec5b7dd666ae3a5"
+    "source_sha256": "2148cc1df2c6fc1445cb47f68c02bd98cf561f1fcc49761033ac5c327e32f9ed"
   },
   {
     "source": "docs/任务卡/03-AI与交付.md",
@@ -261,7 +273,7 @@
     "source": "docs/开发TODO.md",
     "public_path": "docs/开发TODO.md",
     "treatment": "unchanged",
-    "source_sha256": "59b1daa9d26b74d0b3acaa74774abef407babf69968247787a855f7fd166d722"
+    "source_sha256": "d54d49ce19362d0d3e0fc6f1bd532ae38c916ad0d09ea3f4c6896322461bacb5"
   },
   {
     "source": "docs/验收样例.md",
@@ -304,6 +316,18 @@
     "public_path": "evidence/B04/time-metrics/run-record.md",
     "treatment": "unchanged",
     "source_sha256": "c26f3020f183f70550a56e09947b5f081dbafb153638e026b18de21dc47812a8"
+  },
+  {
+    "source": "evidence/B08/followup-20261028/review-package.md",
+    "public_path": "evidence/B08/followup-20261028/review-package.md",
+    "treatment": "unchanged",
+    "source_sha256": "cba6824f0c8f5665766f0b00945603873ec9f7ba44eb42568a87a7d36ca69037"
+  },
+  {
+    "source": "evidence/B08/followup-20261028/run-record.md",
+    "public_path": "evidence/B08/followup-20261028/run-record.md",
+    "treatment": "unchanged",
+    "source_sha256": "dadb8ff0a2868c0355bc48db893dbd61121e12d43f6bc38f8ad3e1783321a96c"
   },
   {
     "source": "evidence/B08/implementation/review-package.md",
@@ -579,7 +603,7 @@
     "source": "evidence/R07/report-concurrency.md",
     "public_path": "evidence/R07/report-concurrency.md",
     "treatment": "unchanged",
-    "source_sha256": "a42cd1cbca7cb15fca009eb3072cd1df87883900c4d7e697a6621da222e26bc4"
+    "source_sha256": "fa4615cac755aa9e70767345dde085da741d725f13e2872285ebe763d12de2c5"
   },
   {
     "source": "evidence/R07/task-card-refresh-2026-10-28.md",
@@ -598,6 +622,36 @@
     "public_path": "evidence/发布/2026-10-27.md",
     "treatment": "unchanged",
     "source_sha256": "7767723c87d434eca6ce6430e41d148de02d4d31ca68579486cdd12059bf9d75"
+  },
+  {
+    "source": "openspec/config.yaml",
+    "public_path": "openspec/config.yaml",
+    "treatment": "unchanged",
+    "source_sha256": "a08b75732124eeb50af5b38346418afa5bf4a52f801f9877c57fc55a302935d3"
+  },
+  {
+    "source": "openspec/changes/b08-followup-20261028/design.md",
+    "public_path": "openspec/changes/b08-followup-20261028/design.md",
+    "treatment": "unchanged",
+    "source_sha256": "2a8ed35da05b3f7e8114ba11e7a21188d73210c24ddc6592f0596c2c35c9d1ec"
+  },
+  {
+    "source": "openspec/changes/b08-followup-20261028/proposal.md",
+    "public_path": "openspec/changes/b08-followup-20261028/proposal.md",
+    "treatment": "unchanged",
+    "source_sha256": "27b86df42b6984a8100c1841d25fc07f2bb31ef9724fa36b6d8e7955fbe56776"
+  },
+  {
+    "source": "openspec/changes/b08-followup-20261028/tasks.md",
+    "public_path": "openspec/changes/b08-followup-20261028/tasks.md",
+    "treatment": "unchanged",
+    "source_sha256": "b3ae802e186afea385ee3bf202c402b06fc065193cb5fec477a23ff125cba146"
+  },
+  {
+    "source": "openspec/changes/b08-followup-20261028/.openspec.yaml",
+    "public_path": "openspec/changes/b08-followup-20261028/.openspec.yaml",
+    "treatment": "unchanged",
+    "source_sha256": "3e106cef4c976d96c04efe8bcf9122fa4c128e42e0304cae42d33e6167ef3402"
   },
   {
     "source": ".development/Dockerfile",
@@ -682,6 +736,36 @@
     "public_path": ".development/checks/b08_clone.py",
     "treatment": "unchanged",
     "source_sha256": "432a22de146df023e7be08746949cfa5f3db47b1a4d10d0c4f9950991b399c2c"
+  },
+  {
+    "source": ".development/checks/b08_followup_http.py",
+    "public_path": ".development/checks/b08_followup_http.py",
+    "treatment": "unchanged",
+    "source_sha256": "ceb3316fd830c9ee5a0a27f197b8acf603f5ea4d637d9ebdb02de69a88590b05"
+  },
+  {
+    "source": ".development/checks/b08_followup_http_fixture.py",
+    "public_path": ".development/checks/b08_followup_http_fixture.py",
+    "treatment": "unchanged",
+    "source_sha256": "ddde7c16b33ff57a4a4852291072ebbf0102f9b0fb73f125cec50475a837004f"
+  },
+  {
+    "source": ".development/checks/b08_followup_preserve.py",
+    "public_path": ".development/checks/b08_followup_preserve.py",
+    "treatment": "unchanged",
+    "source_sha256": "3ba5f235cd58758910429f4d20105cdb562c5f7bb7784bd8852428f0752a19b7"
+  },
+  {
+    "source": ".development/checks/b08_followup_tests.py",
+    "public_path": ".development/checks/b08_followup_tests.py",
+    "treatment": "unchanged",
+    "source_sha256": "aba6454740939c8d7e9358c567e4bd55b5a27b3230c456d3d21641065584c024"
+  },
+  {
+    "source": ".development/checks/b08_followup_ui_fixture.py",
+    "public_path": ".development/checks/b08_followup_ui_fixture.py",
+    "treatment": "unchanged",
+    "source_sha256": "ccd038b35c2d0028c5da89cf1d5039adeca84c3647052b661ca1cd2afc476551"
   },
   {
     "source": ".development/checks/b08_http.py",
@@ -948,6 +1032,12 @@
     "source_sha256": "b83f3812106b9475312cb760879501adee89d471831bb3b7936efd0b7c26f93f"
   },
   {
+    "source": ".development/checks/b08-followup-source-manifest.json",
+    "public_path": ".development/checks/b08-followup-source-manifest.json",
+    "treatment": "unchanged",
+    "source_sha256": "3369f0c6080ae8fc5e046015a90b964d9cd37a32d57c8201b67e3cf77e173712"
+  },
+  {
     "source": ".development/checks/b08-source-manifest.json",
     "public_path": ".development/checks/b08-source-manifest.json",
     "treatment": "unchanged",
@@ -1126,6 +1216,48 @@
     "public_path": "evidence/R05/r02-probe-attempt5.py",
     "treatment": "unchanged",
     "source_sha256": "bebd418f53e027db69fc9888dfc4bf01fc162aab71394832e1e2572c6d9cd774"
+  },
+  {
+    "source": "evidence/B08/followup-20261028/acceptance-summary.json",
+    "public_path": "evidence/B08/followup-20261028/acceptance-summary.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "cfde55358a91a5913b20c3107a5c1ac2993613374ab0d2d016717597c0bb5abc"
+  },
+  {
+    "source": "evidence/B08/followup-20261028/source-manifest.json",
+    "public_path": "evidence/B08/followup-20261028/source-manifest.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "3369f0c6080ae8fc5e046015a90b964d9cd37a32d57c8201b67e3cf77e173712"
+  },
+  {
+    "source": "evidence/B08/followup-20261028/runtime-final-source.json",
+    "public_path": "evidence/B08/followup-20261028/runtime-final-source.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "eaceeeb997edb2be7e2f802df53a5f3248eeb222e56726f9f452248547eda05b"
+  },
+  {
+    "source": "evidence/B08/followup-20261028/web-final-source.json",
+    "public_path": "evidence/B08/followup-20261028/web-final-source.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "eaceeeb997edb2be7e2f802df53a5f3248eeb222e56726f9f452248547eda05b"
+  },
+  {
+    "source": "evidence/B08/followup-20261028/built-source.json",
+    "public_path": "evidence/B08/followup-20261028/built-source.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "eaceeeb997edb2be7e2f802df53a5f3248eeb222e56726f9f452248547eda05b"
+  },
+  {
+    "source": "evidence/B08/followup-20261028/http-results.json",
+    "public_path": "evidence/B08/followup-20261028/http-results.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "deb3879ffd6a160ca6ad3e8abbeaa5c62872dc6112627d545fb066992d19f8b1"
+  },
+  {
+    "source": "evidence/B08/followup-20261028/ui-retention-summary.json",
+    "public_path": "evidence/B08/followup-20261028/ui-retention-summary.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "26a8ad4b60250f99caa14de70cb1b3efc8295a8275ecb711bcc60ae2d323bf4b"
   },
   {
     "source": "evidence/B08/implementation/pause-code-ci.json",

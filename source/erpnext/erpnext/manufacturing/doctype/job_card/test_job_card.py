@@ -1818,7 +1818,7 @@ class TestProductionTimeMetrics(FrappeTestCase):
 class TestProductionReportConfirmation(FrappeTestCase):
 	"""B08: real workflow fixture, narrow operator, native per-confirmation cards."""
 
-	def setUp(self):
+	def setUp(self, report_scope="PERSON"):
 		from frappe.permissions import add_permission, add_user_permission, update_permission_property
 		from erpnext.manufacturing.doctype.work_order.test_work_order import TestWorkOrderApproval
 		self.approval = TestWorkOrderApproval()
@@ -1844,8 +1844,9 @@ class TestProductionReportConfirmation(FrappeTestCase):
 		add_user_permission("Department", f.teams[0], self.user, applicable_for="Work Order")
 		add_user_permission("Work Order", f.order.name, self.user)
 		frappe.set_user(f.users["operator"])
-		f.order.operations[0].report_scope = "PERSON"
-		f.order.operations[0].report_employee = self.employee
+		f.order.operations[0].report_scope = report_scope
+		f.order.operations[0].report_employee = self.employee if report_scope == "PERSON" else None
+		f.order.operations[0].report_department = f.teams[0] if report_scope == "DEPT" else None
 		f.order.operations[1].report_scope = "ALL" if self._testMethodName == "test_correction_rejects_existing_downstream_facts" else ""
 		f.order.operations[2].report_scope = "ALL"
 		f.order.save()
@@ -2109,3 +2110,204 @@ class TestProductionReportConfirmation(FrappeTestCase):
 		self.assertFalse(frappe.db.exists("Job Card Time Log", {"parent": seen[0]}))
 		self.order.reload()
 		self.assertEqual((self.order.qty, self.order.operations[0].completed_qty), (10, 0))
+
+
+class TestProductionReportFollowup(FrappeTestCase):
+	"""B08-02/05 missing combinations; reuse the existing rollback-only fixture."""
+
+	method = TestProductionReportConfirmation.method
+	report = TestProductionReportConfirmation.report
+
+	def setUp(self):
+		scope = "DEPT" if "dept" in self._testMethodName else "ALL" if self._testMethodName.startswith("test_all_") else "PERSON"
+		TestProductionReportConfirmation.setUp(self, report_scope=scope)
+
+	def args(self, operation_id=None, day=20):
+		return dict(work_order=self.order.name, operation_id=operation_id or self.operation_id,
+			from_time=f"2026-10-{day} 09:00", to_time=f"2026-10-{day} 17:00")
+
+	def prepare(self, args):
+		preview = self.method("preview_production_report_time")(**args)
+		return dict(**args, request_id=frappe.generate_hash(length=32), good_quantity=1, bad_quantity=0,
+			context_fingerprint=preview["context_fingerprint"])
+
+	def fact_state(self):
+		cards = frappe.get_all("Job Card", filters={"work_order":self.order.name}, fields=["*"], order_by="name")
+		rows = frappe.get_all("Job Card Time Log", filters={"parent":["in",[c.name for c in cards]]}, fields=["*"], order_by="name")
+		order = frappe.get_doc("Work Order", self.order.name)
+		return frappe.as_json(dict(cards=cards, rows=rows, order=order.as_dict(),
+			stock=frappe.db.count("Stock Entry"), ledger=frappe.db.count("Stock Ledger Entry")))
+
+	def assert_new_denied(self, args, *, existing_request=None):
+		before = self.fact_state()
+		with self.assertRaises(frappe.PermissionError):
+			self.method("preview_production_report_time")(**{k:args[k] for k in self.args()})
+		with self.assertRaises(frappe.PermissionError):
+			self.method("confirm_production_report")(**args)
+		if existing_request:
+			with self.assertRaises(frappe.PermissionError):
+				self.method("get_production_report_result")(existing_request)
+		self.assertEqual(self.fact_state(), before, "Denied request must not partially write facts or totals")
+
+	def test_dept_same_department_can_confirm(self):
+		args = self.prepare(self.args())
+		result = self.method("confirm_production_report")(**args)
+		self.assertEqual(self.method("get_production_report_result")(args["request_id"])["name"], result["name"])
+		self.assertEqual(frappe.db.get_value("Job Card",result["name"],"total_completed_qty"),1)
+		self.assertFalse(frappe.has_permission("Work Order","write"))
+
+	def test_dept_changed_employee_denies_new_but_preserves_history_read(self):
+		args = self.prepare(self.args())
+		result = self.method("confirm_production_report")(**args)
+		stale = self.prepare(self.args(day=21))
+		frappe.set_user("Administrator")
+		employee = frappe.get_doc("Employee",self.employee)
+		employee.department = self.approval.teams[1]
+		employee.save()
+		frappe.set_user(self.user)
+		self.assert_new_denied(stale)
+		# Scope determines new work, while current object read authorizes existing evidence.
+		frappe.get_doc("Job Card",result["name"]).check_permission("read")
+		self.assertEqual(self.method("get_production_report_result")(args["request_id"])["name"],result["name"])
+
+	def other_reporter(self):
+		from frappe.permissions import add_user_permission
+		frappe.set_user("Administrator")
+		other = self.approval.prefix.lower()+"-second-report@example.invalid"
+		frappe.get_doc({"doctype":"User","email":other,"first_name":"报工对照","language":"zh",
+			"send_welcome_email":0,"roles":[{"role":"生产报工"}]}).insert()
+		frappe.get_doc({"doctype":"Employee","first_name":"报工对照","gender":"Male",
+			"date_of_birth":"1990-01-01","date_of_joining":"2020-01-01","company":self.order.company,
+			"department":self.approval.teams[0],"status":"Active","user_id":other,"create_user_permission":0}).insert()
+		add_user_permission("Company",self.order.company,other)
+		add_user_permission("Department",self.approval.teams[0],other,applicable_for="Work Order")
+		add_user_permission("Work Order",self.order.name,other)
+		frappe.set_user(other)
+		return other
+
+	def test_person_other_employee_denied(self):
+		stale = self.prepare(self.args())
+		self.other_reporter()
+		self.assert_new_denied(stale)
+
+	def test_all_other_employee_can_confirm(self):
+		self.other_reporter()
+		args = self.prepare(self.args())
+		result = self.method("confirm_production_report")(**args)
+		self.assertEqual(self.method("get_production_report_result")(args["request_id"])["name"], result["name"])
+		self.assertFalse(frappe.has_permission("Work Order","write"))
+
+	def test_all_still_requires_company_team_and_work_order_read(self):
+		from frappe.permissions import remove_user_permission, add_user_permission, update_permission_property
+		args = self.prepare(self.args())
+		first = self.method("confirm_production_report")(**args)
+		stale = self.prepare(self.args(day=21))
+		for boundary in ("Company", "Department", "Work Order read", "other team", "other company"):
+			with self.subTest(boundary=boundary):
+				frappe.db.savepoint("scope_boundary")
+				frappe.set_user("Administrator")
+				if boundary == "Work Order read":
+					update_permission_property("Work Order","生产报工",0,"read",0)
+				elif boundary in ("Company","Department"):
+					value = self.order.company if boundary == "Company" else self.approval.teams[0]
+					remove_user_permission(boundary,value,self.user)
+				elif boundary == "other team":
+					remove_user_permission("Department",self.approval.teams[0],self.user)
+					add_user_permission("Department",self.approval.teams[1],self.user,applicable_for="Work Order")
+				else:
+					remove_user_permission("Company",self.order.company,self.user)
+					other = frappe.db.get_value("Company",{"name":["!=",self.order.company]},"name")
+					self.assertTrue(other,"A second synthetic company is required")
+					add_user_permission("Company",other,self.user)
+				frappe.clear_cache(user=self.user)
+				frappe.set_user(self.user)
+				self.assert_new_denied(stale,existing_request=args["request_id"])
+				frappe.db.rollback(save_point="scope_boundary")
+				frappe.clear_cache()
+				frappe.set_user(self.user)
+		self.assertEqual(self.method("get_production_report_result")(args["request_id"])["name"], first["name"])
+
+	def test_employee_state_binding_and_company_are_current(self):
+		original = self.prepare(self.args())
+		self.method("confirm_production_report")(**original)
+		args = self.prepare(self.args(day=21))
+		for boundary in ("Inactive", "unbound", "other company"):
+			with self.subTest(boundary=boundary):
+				frappe.db.savepoint("employee_boundary")
+				frappe.set_user("Administrator")
+				employee = frappe.get_doc("Employee",self.employee)
+				if boundary == "Inactive":
+					employee.status = "Inactive"
+				elif boundary == "unbound":
+					employee.user_id = None
+				else:
+					employee.company = frappe.db.get_value("Company",{"name":["!=",self.order.company]},"name")
+					employee.department = None
+				employee.save()
+				frappe.set_user(self.user)
+				self.assert_new_denied(args,existing_request=original["request_id"])
+				frappe.db.rollback(save_point="employee_boundary")
+				frappe.clear_cache()
+				frappe.set_user(self.user)
+
+	def test_duplicate_active_employee_rejected_by_native_constraint(self):
+		frappe.set_user("Administrator")
+		before = frappe.db.count("Employee",{"user_id":self.user,"status":"Active"})
+		other = frappe.copy_doc(frappe.get_doc("Employee",self.employee))
+		with self.assertRaises(frappe.DuplicateEntryError):
+			other.insert()
+		self.assertEqual(frappe.db.count("Employee",{"user_id":self.user,"status":"Active"}),before)
+
+	def test_rules_disable_stale_preview_reenable_keep_snapshots(self):
+		from erpnext.manufacturing.doctype.production_time_rule.production_time_rule import load_report_time_rules
+		frappe.set_user("Administrator")
+		# Isolate existing synthetic rules inside this fixture's rolled-back transaction.
+		for candidate in load_report_time_rules(self.order.company,self.order.operations[0].operation):
+			previous = frappe.get_doc("Production Time Rule",candidate["name"])
+			previous.enabled = 0
+			previous.save()
+		self.assertEqual(load_report_time_rules(self.order.company,self.order.operations[0].operation),[],
+			"Fixture must isolate other matching rules before expecting an unmatched result")
+		rule = frappe.get_doc({"doctype":"Production Time Rule","rule_name":self.approval.prefix+"停启",
+			"company":self.order.company,"enabled":1,"priority":0,"operation":self.order.operations[0].operation,
+			"periods":[{"period_type":"Rest","start_time":"12:00","end_time":"13:00"}]}).insert()
+		frappe.set_user(self.user)
+		args = self.prepare(self.args())
+		old = self.method("confirm_production_report")(**args)
+		original = frappe.get_doc("Job Card",old["name"])
+		old_snapshot = original.report_time_context
+		self.assertEqual(original.report_effective_seconds,25200)
+		stale = self.prepare(self.args(day=21))
+		frappe.set_user("Administrator")
+		rule.enabled = 0
+		rule.save()
+		frappe.set_user(self.user)
+		before = self.fact_state()
+		with self.assertRaisesRegex(frappe.ValidationError,"时段依据已变化"):
+			self.method("confirm_production_report")(**stale)
+		self.assertEqual(self.fact_state(),before)
+		unmatched = self.method("preview_production_report_time")(**self.args(day=21))
+		self.assertIsNone(unmatched["matched_rule"])
+		self.assertEqual(unmatched["effective_seconds"],28800)
+		second = self.method("confirm_production_report")(**{**stale,"context_fingerprint":unmatched["context_fingerprint"]})
+		second_doc = frappe.get_doc("Job Card",second["name"])
+		second_snapshot = second_doc.report_time_context
+		self.assertEqual(second_doc.report_effective_seconds,28800)
+		stale_disabled = self.prepare(self.args(day=22))
+		frappe.set_user("Administrator")
+		rule.enabled = 1
+		rule.save()
+		frappe.set_user(self.user)
+		before = self.fact_state()
+		with self.assertRaisesRegex(frappe.ValidationError,"时段依据已变化"):
+			self.method("confirm_production_report")(**stale_disabled)
+		self.assertEqual(self.fact_state(),before)
+		third_args = self.prepare(self.args(day=22))
+		third = self.method("confirm_production_report")(**third_args)
+		third_doc = frappe.get_doc("Job Card",third["name"])
+		self.assertEqual(third_doc.report_effective_seconds,25200)
+		self.assertNotEqual(args["context_fingerprint"],third_args["context_fingerprint"])
+		self.assertEqual(frappe.parse_json(third_doc.report_time_context)["rule"]["modified"],str(rule.modified))
+		original.reload(); second_doc.reload()
+		self.assertEqual((original.report_effective_seconds,original.report_time_context),(25200,old_snapshot))
+		self.assertEqual((second_doc.report_effective_seconds,second_doc.report_time_context),(28800,second_snapshot))

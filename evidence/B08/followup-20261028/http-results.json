@@ -1,0 +1,111 @@
+[
+  {
+    "case": "DEPT same department preview",
+    "status": 200,
+    "expected": 200,
+    "exception": null,
+    "seconds": 0.199
+  },
+  {
+    "case": "DEPT same department confirm",
+    "status": 200,
+    "expected": 200,
+    "exception": null,
+    "seconds": 0.186
+  },
+  {
+    "case": "capture old page preview",
+    "status": 200,
+    "expected": 200,
+    "exception": null,
+    "seconds": 0.025
+  },
+  {
+    "case": "DEPT employee moved preview",
+    "status": 403,
+    "expected": 403,
+    "exception": "PermissionError",
+    "seconds": 0.292
+  },
+  {
+    "case": "DEPT employee moved confirm stale page",
+    "status": 403,
+    "expected": 403,
+    "exception": "PermissionError",
+    "seconds": 0.039
+  },
+  {
+    "case": "DEPT employee moved result",
+    "status": 200,
+    "expected": 200,
+    "exception": null,
+    "seconds": 0.05
+  },
+  {
+    "case": "DEPT employee moved zero partial write",
+    "passed": true,
+    "facts": 1,
+    "good": 1.0
+  },
+  {
+    "case": "revoke_company preview",
+    "status": 403,
+    "expected": 403,
+    "exception": "PermissionError",
+    "seconds": 0.136
+  },
+  {
+    "case": "revoke_company confirm stale page",
+    "status": 403,
+    "expected": 403,
+    "exception": "PermissionError",
+    "seconds": 0.04
+  },
+  {
+    "case": "revoke_company result",
+    "status": 403,
+    "expected": 403,
+    "exception": "PermissionError",
+    "seconds": 0.033
+  },
+  {
+    "case": "revoke_company zero partial write",
+    "passed": true,
+    "facts": 1,
+    "good": 1.0
+  },
+  {
+    "case": "revoke_team preview",
+    "status": 403,
+    "expected": 403,
+    "exception": "PermissionError",
+    "seconds": 0.076
+  },
+  {
+    "case": "revoke_team confirm stale page",
+    "status": 403,
+    "expected": 403,
+    "exception": "PermissionError",
+    "seconds": 0.018
+  },
+  {
+    "case": "revoke_team result",
+    "status": 403,
+    "expected": 403,
+    "exception": "PermissionError",
+    "seconds": 0.023
+  },
+  {
+    "case": "revoke_team zero partial write",
+    "passed": true,
+    "facts": 1,
+    "good": 1.0
+  },
+  {
+    "case": "restored authorization reads original",
+    "status": 200,
+    "expected": 200,
+    "exception": null,
+    "seconds": 0.098
+  }
+]
