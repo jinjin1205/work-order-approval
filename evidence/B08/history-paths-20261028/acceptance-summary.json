@@ -98,5 +98,16 @@
       "Work Order Operation": 2,
       "Job Card Time Log": 3
     }
-  }
+  },
+  "publication": {
+    "product_commit": "00cfbfc2644a24e758b3021982fb78769b166fc3",
+    "remote_receipt": "../../发布/2026-10-28-00cfbfc-remote.json",
+    "tracked_files": 344,
+    "content_hashes_verified": 343,
+    "source_files_exact": 25,
+    "missing_or_extra_files": 0,
+    "hash_mismatches": 0
+  },
+  "bounded_package_complete": true,
+  "full_card_complete": false
 }

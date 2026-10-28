@@ -236,7 +236,7 @@ docker exec xgd-b08-check env/bin/python /b01/b08_followup_tests.py \
 
 ## 2026-10-28 原记录旁路续接绑定
 
-本轮用户授权继续原B08剩余已绑定项；只推进[原B08-06/B09当前有限矩阵](../../docs/任务卡/02-生产与物料闭环.md#2026-10-28-原记录旁路续接)。第6节普通/子行/批量旁路及第7节CASE-05已规定业务契约和原文件范围，完整G2尚未完成不阻止该限定子项。此次沿实施前绑定回填实际阶段结果，受控5个新增方法分批通过，限定13个不同HTTP写入及专用站最终保留已核；公开保存仍待核，本包未收口；不重开单价/效率包或新增任务卡。
+本轮用户授权继续原B08剩余已绑定项；只推进[原B08-06/B09当前有限矩阵](../../docs/任务卡/02-生产与物料闭环.md#2026-10-28-原记录旁路续接)。第6节普通/子行/批量旁路及第7节CASE-05已规定业务契约和原文件范围，完整G2尚未完成不阻止该限定子项。此次沿实施前绑定回填实际阶段结果，受控5个新增方法分批通过，限定13个不同HTTP写入及专用站最终保留已核；本包已随产品提交`00cfbfc`推送并fresh clone回读，344文件/343内容哈希、25份源码一致，见[回执](../发布/2026-10-28-00cfbfc-remote.json)；仅此有限包收口；不重开单价/效率包或新增任务卡。
 
 **当前复用与缺口：**原`TestProductionReportConfirmation.test_original_parent_and_child_protected`及`test_full_correction_retains_original_rule_and_fact`已验submitted原卡直接保存/取消/删除、时间行保存和cancelled原Job Card直接删除；原HTTP已验父/原卡/时间行PUT。本轮复用`JobCard.on_trash`及`JobCardTimeLog.validate_report_parent/on_trash`，未修改这两份产品控制器。两次真实反例表明原工序计价保护未覆盖无计价的历史关联；现仅原`WorkOrderOperation`按持久化name查询Job Card `docstatus>0`，挂before_validate、before_update_after_submit、on_trash，包含取消态引用且不信任新parent。受控反例修后通过不等于所有HTTP或完整G2通过。
 
@@ -266,4 +266,4 @@ docker exec xgd-b08-check env/bin/python /b01/b08_history_paths_tests.py test_ca
 
 真实HTTP使用`.development/checks/b08_history_paths_http_fixture.py`准备专用合成样例、`.development/checks/b08_history_paths_http.py`调用上述原生接口；站点限定`xgd-b08-http.localhost`。独立新测试角色/用户先核对象和操作权限，合法凭据只存本地私有路径，公开证据不含凭据。[最终HTTP汇总](../B08/history-paths-20261028/http-summary.json)记录7个不同拒绝写入（6次业务历史保护、1次原生取消态417）和6个无事实草稿合法写入/删除，13次不含读取/预检，重复写入为0。每次拒绝前后7对象全部字段/关联哈希不变；client.delete取消时间行命中原生状态，不能称新增保护。已删除草稿子行GET403由授权父读取及独立DB不存在共同证明删除成功。实际覆盖Resource/client及同步单项批量，不外推bulk_update、更多条目或后台分支；批量HTTP200须看逐项返回和回读，不能写整批原子性。原始[首批](../B08/history-paths-20261028/http-acceptance.json)、[续批](../B08/history-paths-20261028/http-remaining.json)和`http-finish.json`的3次脚本停止及1次未发请求的本地语法错误均保留，属于脚本边界而非产品失败；未为修断言重放写入。
 
-[专用站最终保留](../B08/history-paths-20261028/http-retention-final.json)核旧11业务表及5安全配置表原有行/捕获列无缺失、无改写，库存3表新增0；仅删除本轮2个无事实工序及3个空白时间行，受保护取消态时间行仍在。产品无页面变化，未重跑价格或旧页面验收。公开保存仍待核，本包未收口。有限矩阵只维护在原卡，完整G2/G3、现场、手机、Z01、整卡及OpenSpec未归档状态不变。
+[专用站最终保留](../B08/history-paths-20261028/http-retention-final.json)核旧11业务表及5安全配置表原有行/捕获列无缺失、无改写，库存3表新增0；仅删除本轮2个无事实工序及3个空白时间行，受保护取消态时间行仍在。产品无页面变化，未重跑价格或旧页面验收。本包已随产品提交`00cfbfc`推送并fresh clone回读，344文件/343内容哈希、25份源码一致，见[回执](../发布/2026-10-28-00cfbfc-remote.json)；仅此有限包收口。有限矩阵只维护在原卡，完整G2/G3、现场、手机、Z01、整卡及OpenSpec未归档状态不变。
