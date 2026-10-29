@@ -4,6 +4,8 @@ import base64
 import hashlib
 import json
 import re
+from datetime import datetime
+from zoneinfo import ZoneInfo
 from pathlib import Path
 from urllib.parse import quote
 
@@ -17,7 +19,7 @@ unexpected = sorted(set(files) - allowed)
 assert not unexpected, "Unexpected files: " + str(unexpected)
 
 secrets = set()
-credential_sources = [root / ".development/private/b08-metrics/config-access.json", root / ".development/private/b08-followup/http-fixture.json",root / ".development/private/b08-http/fixture.json", root / ".development/private/b14-ui/access.json", root / ".development/private/b04-bom-ui/access.json", root / ".development/.env", root / ".development/private/b02-http.json",
+credential_sources = [root / ".development/private/b05-details-20261029/access.json", root / ".development/private/b08-metrics/config-access.json", root / ".development/private/b08-followup/http-fixture.json",root / ".development/private/b08-http/fixture.json", root / ".development/private/b14-ui/access.json", root / ".development/private/b04-bom-ui/access.json", root / ".development/.env", root / ".development/private/b02-http.json",
                       root / ".development/private/b19-http/fixture.json",
                       root / ".development/private/b19-http/ui-access.json",
                       root / ".evaluation/r05-erpnext/.env", root / ".evaluation/r05-erpnext/access-secrets.json"]
@@ -76,7 +78,7 @@ assert not raw_data_hits, "Runtime-data JSON in paths: " + str(raw_data_hits)
 lock = json.loads(files["source/source-lock.json"].read_text())
 for name, entry in lock["files"].items():
     assert hashlib.sha256(files["source/erpnext/" + name].read_bytes()).hexdigest() == entry["modified_sha256"]
-report = {"date": "2026-10-28", "scope": "Explicit public snapshot only; application test receipts retain their execution batch and source hash; publication does not rerun application tests",
+report = {"date": datetime.now(ZoneInfo("Asia/Shanghai")).date().isoformat(), "scope": "Explicit public snapshot only; application test receipts retain their execution batch and source hash; publication does not rerun application tests",
           "allowlist_passed": True, "known_credential_literal_matches": 0,
           "credential_pattern_matches": 0, "raw_runtime_json_matches": 0,
           "personal_host_paths": 0, "python_sources_parse": True, "modified_source_files_exact": len(lock["files"]),

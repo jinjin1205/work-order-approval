@@ -1590,6 +1590,144 @@
     "reason": "local raw execution evidence; not uploaded"
   },
   {
+    "path": "evidence/B05/explicit-details-20261029/acceptance-summary.json",
+    "original_sha256": "78a629b40604895781452c5d52bcd69359f861490e777a5f857ab85590d77302",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/explicit-details-20261029/affected-regression.log",
+    "original_sha256": "eff333fcedc38ca4e153270242921712f023d0f4b45d3a02fee4fd3f3db54e64",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/explicit-details-20261029/before-revocation-implementation.patch",
+    "original_sha256": "882e7710bde98dae5dde9f4ea5c0a961ea8ec6ef4019ba3c32fa5825cbf035c8",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/explicit-details-20261029/before-revocation-source-manifest.json",
+    "original_sha256": "ff078d1bad435f5273713b38897ba57eea41e16d99ccf8a1390d1142d3d89d4e",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/explicit-details-20261029/before-revocation-test-runtime-source.json",
+    "original_sha256": "93661ab9b7ad4d7995d64724c8bdc00610099f18791858ee720bca2b13bbf381",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/explicit-details-20261029/before-revocation-ui-runtime-source.json",
+    "original_sha256": "93661ab9b7ad4d7995d64724c8bdc00610099f18791858ee720bca2b13bbf381",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/explicit-details-20261029/bounded-change.patch",
+    "original_sha256": "0cf31aa9c28ced1913497ff296b5da6dc2a0dd839aa88d27991d3d7b1999cc7a",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/explicit-details-20261029/final-tests.log",
+    "original_sha256": "52844f02ab7276b567b7245af8bda7f2d7acd6ca658d6ee3bc4f05c1be9aa0be",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/explicit-details-20261029/final-with-revocation.log",
+    "original_sha256": "ec1a5e8548b472c0ef52b179db41a7d812742cd48cd7bea10f4883b337753a2f",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/explicit-details-20261029/first-source.json",
+    "original_sha256": "54576fc8f248f4d0bfe07d1eedfd6f0bbd259a49e201476374f9d3bc2713701f",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/explicit-details-20261029/green-first.log",
+    "original_sha256": "d4843ea1b38e67908313bbc479cba2b1a2565f76b0aaea527ae02398d2d867ae",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/explicit-details-20261029/implementation.patch",
+    "original_sha256": "5823ca570ba376fd8af67d386dd2898c987cd56f3655686c9f9a6b9256aa356e",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/explicit-details-20261029/red-behavior.log",
+    "original_sha256": "27da36f12931998391e5ce8c15ad0ea15dd35147276cdb2255315c1910af77fc",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/explicit-details-20261029/red-empty.log",
+    "original_sha256": "beb1fd9ffcefa98c55a06ffb151da95873c2b1d006ceb90979f753e8677d084b",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/explicit-details-20261029/review-notes.md",
+    "original_sha256": "bb6af837f9135f0f31947db8d5169bdd3436c7236903b8da7d57ddc3487b7bbe",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/explicit-details-20261029/review-red-fixture-fixed.log",
+    "original_sha256": "4a5ecfc0d792f634d9860eef28582702f583f1ea7c8b0d49e83f87010dc3a10d",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/explicit-details-20261029/review-red.log",
+    "original_sha256": "09f972e06a4fef346de170eb1f828e6a869d4c35de65896f09ccd8737b2065c4",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/explicit-details-20261029/run-record.md",
+    "original_sha256": "dd91d86cd344dc9f229e1a2230cdb207a02644ed0b00a9b47b6894d6b832efa3",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/explicit-details-20261029/source-manifest.json",
+    "original_sha256": "8a84a6dadc3046835bf2c53f0bae392a8f2f1730e2977d7cd704cf1fca207705",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/explicit-details-20261029/test-runtime-source.json",
+    "original_sha256": "efd9ea51a19dd9a2340e443ad31b61c7b155c27d133a845b1b632fc8a9c898ad",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/explicit-details-20261029/ui-preserve.json",
+    "original_sha256": "3f336035dd02cc0ca6dd0c97395579900ca0774e60bb9018e95b2b5286d5e0a6",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/explicit-details-20261029/ui-runtime-source.json",
+    "original_sha256": "efd9ea51a19dd9a2340e443ad31b61c7b155c27d133a845b1b632fc8a9c898ad",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/explicit-details-20261029/ui-setup.log",
+    "original_sha256": "f1420596df4a27c26a5464ba6d68e83306691e6e53d5cc891afe671761a65c0b",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
     "path": "evidence/B08/distinct-concurrency-20261028/baseline.json",
     "original_sha256": "45277afffcaa7414ff6e561ce6b2061701dc8a442f102670ed0dd25cc5efe025",
     "published": true,
@@ -5431,7 +5569,7 @@
   },
   {
     "path": "evidence/R07/card-binding.md",
-    "original_sha256": "c654d10d8237ca519c82aade0b9b6d260cf7ca947c635e2834ff6bd5382962ec",
+    "original_sha256": "4793e8f0e1a029e563de73ee2e7a576dacff4b23f0dfd9ea41e6125ff731fdf2",
     "published": true,
     "reason": "public copy"
   },
@@ -5612,6 +5750,12 @@
   {
     "path": "evidence/发布/2026-10-28-dcbd494-remote.json",
     "original_sha256": "66c8477579be1abb3183ac505ec877735bc7d6f1a1f694ca0353095cf34259e1",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/发布/2026-10-29-4925f5b-remote.json",
+    "original_sha256": "50eb412ac5e7a9f99be62cb231e888f994a2a7815fe4915eca56a8cdfd228210",
     "published": false,
     "reason": "local raw execution evidence; not uploaded"
   },

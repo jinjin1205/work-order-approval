@@ -1,4 +1,4 @@
-> 公开归档副本（2026-10-27）：保留结论、方法与限制；个人路径/运行编号已移除。原始运行单据、响应、截图和日志不上传，原件索引见 `publication/evidence-index.json`。本页历史结果不是发布日重测。
+> 公开归档副本（2026-10-29）：保留结论、方法与限制；个人路径/运行编号已移除。原始运行单据、响应、截图和日志不上传，原件索引见 `publication/evidence-index.json`。本页历史结果不是发布日重测。
 
 # R07｜首批代码入口、改动范围与验收绑定
 
@@ -118,3 +118,28 @@ B01实际显示：新站点用`--module`未准备所需fixture，改原生`--doc
 独立只读复核已纳入两项实质修正：最小操作工无父工单write与原`wo.save()`的冲突；直接Work Order Operation子行改删的保护入口。它们仍在G2/G3及对应测试门槛内，不称已经解决。`docker ps -a`按R05项目过滤回读，web/db/两项Redis均为exited；本轮未启动这些业务服务、未连接数据库。
 
 **本次语义审查补充：**修正B02整卡等待下游的反向依赖，以及G3要求先有实现后测试结果才允许实现的自锁；并明确选型回退只记录受影响差异，无新依据不重启比较。结果见[本次任务卡审查](scope-review.json)。当时仍是7完成、R07部分完成、25未完成；未新增产品完成结论。
+
+
+## 2026-10-29 B05/B06/B07空明细与人工确认生成绑定
+
+用户已明确授权本绑定完成后连续实施及验收。固定ERPNext/Frappe基线沿第2节，开工公开main为4925f5bf14d94338ef4b305a41c63c1dd54a915d，维护累计25份/e15fba；保留维护分支及全部旧数据，不另建worktree或安装依赖。
+
+**做什么：**仅对本流程新审批工单，建单保存为空工序/用料；草稿/退回发起人预览原BOM展开，确认后生成计划行。**不做什么：**不接活动计时收尾、结束差额、完整任务编辑/复制、全局BOM回写、库存链、AI、手机、客户配置或后台周期。**通过：**原CASE-01的0/0→3任务/1用料行/需求5，重复不追加；权限、陈旧预览/来源、冻结及失败零副作用；普通岗位中文PC保存/预览/确认/重开。
+
+| 归属 | 真实入口与限定改动 | 验收 |
+|---|---|---|
+| B05空明细 | `erpnext/manufacturing/doctype/work_order/work_order.py:WorkOrder.validate`不为审批工单空表自动补用料；`work_order.js:bom_no/qty/use_multi_level_bom`在本Workflow不自动生成；原非审批调用保持 | 新建保存重开0/0；必填/数量及审批校验保留，空明细不能送审 |
+| B06/B07计划生成 | 拟新增同模块`preview_production_order_details(work_order, expected_modified)`、`confirm_production_order_details(work_order, expected_modified, fingerprint)`；复用`get_items_and_operations_from_bom/set_work_order_operations/set_required_items`，不复制数量算法或加元数据/事实表 | 两入口必须read/write及原公司/班组授权，当前草稿/退回且本人发起；BOM需read。预览不保存；确认工单先锁并重读，按原save事务保存 |
+| 陈旧/防重复 | 预览指纹为已保存输入、BOM版本及原算法生成的相关计划字段；确认重新展开核指纹。当前明细与该预览相同时返回同单/同明细且不再次save；已有不同明细拒绝自动覆盖；空表时核modified后首次生成 | 拒绝量/BOM/路线/状态/权限变化；重复不追加；原生Job Card/Stock Entry不生成，不把该有限幂等当完整G3 |
+| 页面 | 原`work_order.js`增加中文预览及确认操作，要求先保存；展示工序/用料及数量、单位。只给本人草稿/退回显示，但后端也检查；已有不同明细须先人工核对，不隐式替换 | 普通发起人中文PC新建/保存/预览/确认/重开；取消预览无变化；送审后入口拒绝 |
+
+**允许产品文件仅3份：**原`work_order.py`、`work_order.js`、`test_work_order.py`；不改Frappe、BOM算法、Job Card或库存。检查脚本仅`.development/checks/b05_details_tests.py`与`b05_details_ui_fixture.py`及本包页面脚本；本地凭据另放private排除公开。无元数据变更，不reload-doc/全量迁移。测试容器`xgd-b08-check`和网页`xgd-b08-ui`复用；只启动本项目既有DB/Redis/保留容器。真实运行源文件逐份核哈希，不以镜像tag当证据。
+
+**测试与命令（拟新增测试先红后绿）：**原`test_work_order.py`新增`TestWorkOrderExplicitDetails`，复用`TestWorkOrderApproval`的真实合成fixture/rollback。覆盖`test_empty_draft_stays_empty`、`test_preview_confirm_replay`、`test_stale_basis_and_order_rejected`、`test_scope_and_frozen_rejected`及确认写入失败回滚。命令为`docker exec xgd-b08-check env/bin/python /b01/b05_details_tests.py`；脚本直接加载该类，不递归装Payment Gateway，确认实际测试数且失败退出非0，最终rollback核旧11表。只补受影响原审批正常流程/数量保存回归，不重跑B08/I03～I06等不变子包。页面使用Playwright CLI独立会话和既有合成站，新样例不重放旧写入。
+
+**来源复用：**原R03～R06五项目固定来源及审批复用核查继续有效，不重装/重选。实际使用ERPNext原Work Order、BOM、权限、事务、表单和测试；t3rik/OpenMES仅原设计参考，快格云/qcadoo原许可/可取得性边界保留，未拷其他项目代码。纯配置不能阻止`WorkOrder.validate`空表补行与客户端事件，故只局部改造这3文件。
+
+**结束：**本绑定只关闭静态子项；实际红绿、受影响回归、页面、旧数据/源码保持、独立审查与公开回读分别留`evidence/B05/explicit-details-20261029/`。仅关闭本包B05/B06/B07子项；整卡/G1/G2/G3、现场/手机/Z01继续开放。
+
+
+**本包审查补绑（2026-10-29）：**现有`reset_use_multi_level_bom`仍会在保存切换时展开，属于同一确认边界；限定在原WorkOrder内禁用审批工单该自动路径。已有明细变更qty/BOM/展开开关/来源仓等计划依据时，拒绝携带旧计划保存，要求人工核对后清空草稿明细再改依据、重新确认；不实现自动替换/复杂调整。预览按`set_work_order_operations→validate_operations/validate_operations_sequence→set_required_items`建立稳定计划，不复制规则。原测试类新增`test_switch_explosion_does_not_generate`、`test_confirmed_basis_requires_clearing`、`test_unsequenced_route_replay`、`test_single_operation_replay`先核反例；仍只改原3文件，命令仍原b05 runner。

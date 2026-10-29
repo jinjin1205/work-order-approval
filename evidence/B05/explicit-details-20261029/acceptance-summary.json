@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-29",
+  "scope": "Only R07 explicit-details binding and B05/B06/B07 package; no full-card/customer acceptance",
+  "tests": {
+    "new_methods": 9,
+    "affected_original_methods": 2,
+    "final_tests": 11,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 63.418,
+    "old_test_tables_unchanged": 11,
+    "native_company_permission_revocation_rejected": true
+  },
+  "real_chinese_pc": {
+    "savedEmpty": {
+      "operations": 0,
+      "items": 0
+    },
+    "confirmedOperations": 3,
+    "confirmedItems": 1,
+    "required": 5,
+    "reopenedSameRows": true,
+    "replaySameRowsAndModified": true
+  },
+  "preservation": {
+    "old_tables_preserved": 21,
+    "old_row_mismatches": 0,
+    "new_browser_orders": 1,
+    "operations": 3,
+    "material_rows": 1,
+    "required_qty": 5,
+    "job_cards": 0,
+    "stock_entries": 0,
+    "draft_not_approved": true
+  },
+  "source_files_verified_per_runtime": 33,
+  "product_files_changed_in_package": 3,
+  "metadata_or_dependencies_changed": false,
+  "unchanged_old_batches_rerun": false,
+  "review": {
+    "critical": 0,
+    "important": 3,
+    "important_reproduced_and_fixed": 3,
+    "second_review_dispatched": false
+  },
+  "limits": [
+    "Controlled savepoint rollback does not prove HTTP crash recovery",
+    "Full B05/B06/B07 and G1/G2/G3 remain open",
+    "No phone, real workshop, customer deployment or Z01 acceptance"
+  ],
+  "source_patch_sha256": "5823ca570ba376fd8af67d386dd2898c987cd56f3655686c9f9a6b9256aa356e"
+}

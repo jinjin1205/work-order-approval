@@ -5549,3 +5549,191 @@ def make_wo_order_test_record(**args):
 
 
 test_records = frappe.get_test_records("Work Order")
+
+
+class TestWorkOrderExplicitDetails(FrappeTestCase):
+	"""CASE-01 default empty draft and real human-confirmation boundary."""
+
+	def setUp(self):
+		from frappe.permissions import add_permission
+		self.f = TestWorkOrderApproval("test_00_fixture_runnable")
+		self.addCleanup(self.f.doCleanups)
+		self.f.setUp()
+		frappe.set_user("Administrator")
+		add_permission("BOM", self.f.roles[0], ptype="read")
+		bom = frappe.copy_doc(frappe.get_doc("BOM", self.f.order_args["bom_no"]))
+		bom.docstatus = 0
+		bom.is_default = 0
+		bom.with_operations = 1
+		unit = frappe.get_doc({"doctype": "UOM", "uom_name": self.f.prefix + "-小数单位", "must_be_whole_number": 0}).insert().name
+		raw = create_item(self.f.prefix + "-decimal-raw", stock_uom=unit, company=bom.company, warehouse=self.f.order.source_warehouse)
+		for row in bom.items:
+			row.item_code = raw.name
+			row.uom = row.stock_uom = unit
+			row.conversion_factor = 1
+			row.qty = 0.5
+		bom.set("operations", [])
+		for i, operation in enumerate(self.f.operations, 1):
+			bom.append("operations", {"operation": operation, "workstation": self.f.workstation,
+				"time_in_mins": 1, "sequence_id": i})
+		bom.insert().submit()
+		self.bom = bom
+		frappe.set_user(self.f.users["operator"])
+		self.order = frappe.get_doc({"doctype": "Work Order", "production_item": bom.item,
+			"bom_no": bom.name, "qty": 10, "company": bom.company, "stock_uom": "Nos",
+			"production_team": self.f.teams[0], "planned_start_date": now(),
+			"source_warehouse": self.f.order.source_warehouse,
+			"wip_warehouse": self.f.order.wip_warehouse, "fg_warehouse": self.f.order.fg_warehouse,
+			"transfer_material_against": "Work Order"}).insert()
+
+	def preview(self, version=None):
+		from erpnext.manufacturing.doctype.work_order import work_order as api
+		self.assertTrue(callable(getattr(api, "preview_production_order_details", None)), "Missing read-only details preview")
+		return api.preview_production_order_details(self.order.name, str(version or self.order.modified))
+
+	def confirm(self, preview, version=None):
+		from erpnext.manufacturing.doctype.work_order import work_order as api
+		self.assertTrue(callable(getattr(api, "confirm_production_order_details", None)), "Missing human details confirmation")
+		return api.confirm_production_order_details(self.order.name, str(version or self.order.modified), preview["fingerprint"])
+
+	def test_empty_draft_stays_empty(self):
+		self.order.save().reload()
+		self.assertEqual(len(self.order.operations), 0)
+		self.assertEqual(len(self.order.required_items), 0)
+		self.assertFalse(frappe.db.exists("Job Card", {"work_order": self.order.name}))
+		self.assertFalse(frappe.db.exists("Stock Entry", {"work_order": self.order.name}))
+		self.f.order = self.order
+		with self.assertRaises(frappe.ValidationError):
+			self.f.act("operator", "送审")
+
+	def test_preview_confirm_replay(self):
+		preview = self.preview()
+		self.assertEqual(len(preview["operations"]), 3)
+		self.assertEqual(len(preview["items"]), 1)
+		self.assertEqual(preview["items"][0]["required_qty"], 5)
+		self.order.reload()
+		self.assertEqual((len(self.order.operations), len(self.order.required_items)), (0, 0))
+		version = str(self.order.modified)
+		self.confirm(preview, version)
+		self.order.reload()
+		self.assertEqual([r.operation for r in self.order.operations], self.f.operations)
+		self.assertEqual(self.order.required_items[0].required_qty, 5)
+		identities = ([r.name for r in self.order.operations], [r.name for r in self.order.required_items], self.order.modified)
+		self.confirm(preview, version)
+		self.order.reload()
+		self.assertEqual(identities, ([r.name for r in self.order.operations], [r.name for r in self.order.required_items], self.order.modified))
+		self.assertFalse(frappe.db.exists("Job Card", {"work_order": self.order.name}))
+		self.assertFalse(frappe.db.exists("Stock Entry", {"work_order": self.order.name}))
+
+	def test_stale_basis_and_order_rejected(self):
+		preview = self.preview()
+		version = str(self.order.modified)
+		self.order.qty = 11
+		self.order.save()
+		with self.assertRaises(frappe.TimestampMismatchError):
+			self.confirm(preview, version)
+		preview = self.preview()
+		frappe.set_user("Administrator")
+		frappe.db.set_value("BOM Operation", self.bom.operations[0].name, "time_in_mins", 2)
+		frappe.set_user(self.f.users["operator"])
+		with self.assertRaises(frappe.TimestampMismatchError):
+			self.confirm(preview)
+		self.order.reload()
+		self.assertEqual((len(self.order.operations), len(self.order.required_items)), (0, 0))
+
+	def test_scope_and_frozen_rejected(self):
+		from frappe.permissions import add_user_permission
+		preview = self.preview()
+		frappe.set_user("Administrator")
+		permission = frappe.db.get_value("User Permission", {
+			"user": self.f.users["operator"], "allow": "Company", "for_value": self.order.company,
+		}, "name")
+		frappe.delete_doc("User Permission", permission)
+		frappe.set_user(self.f.users["operator"])
+		with self.assertRaises(frappe.PermissionError):
+			self.preview()
+		with self.assertRaises(frappe.PermissionError):
+			self.confirm(preview)
+		self.order.reload()
+		self.assertEqual((len(self.order.operations), len(self.order.required_items)), (0, 0))
+		frappe.set_user("Administrator")
+		add_user_permission("Company", self.order.company, self.f.users["operator"])
+		frappe.set_user(self.f.users["other"])
+		with self.assertRaises(frappe.PermissionError):
+			self.confirm(preview)
+		frappe.set_user(self.f.users["operator"])
+		self.confirm(preview)
+		self.order.reload()
+		self.f.order = self.order
+		self.f.act("operator", "送审")
+		with self.assertRaises(frappe.PermissionError):
+			self.preview()
+		with self.assertRaises(frappe.PermissionError):
+			self.confirm(preview)
+		self.assertEqual(frappe.db.count("Work Order Operation", {"parent": self.order.name}), 3)
+
+	def test_confirmation_save_failure_rolls_back(self):
+		from erpnext.manufacturing.doctype.work_order.work_order import WorkOrder
+		preview = self.preview()
+		frappe.db.savepoint("details_failure")
+		original = WorkOrder.save
+		class InjectedDetailsFailure(Exception):
+			pass
+		def save_then_fail(doc, *args, **kwargs):
+			result = original(doc, *args, **kwargs)
+			self.assertEqual(frappe.db.count("Work Order Operation", {"parent": self.order.name}), 3)
+			raise InjectedDetailsFailure("after native save")
+		with patch.object(WorkOrder, "save", save_then_fail), self.assertRaises(InjectedDetailsFailure):
+			self.confirm(preview)
+		frappe.db.rollback(save_point="details_failure")
+		self.order.reload()
+		self.assertEqual((len(self.order.operations), len(self.order.required_items)), (0, 0))
+		self.confirm(self.preview())
+		self.order.reload()
+		self.assertEqual((len(self.order.operations), len(self.order.required_items)), (3, 1))
+
+	def test_switch_explosion_does_not_generate(self):
+		self.order.use_multi_level_bom = 1 - int(self.order.use_multi_level_bom or 0)
+		self.order.save().reload()
+		self.assertEqual((len(self.order.operations), len(self.order.required_items)), (0, 0))
+
+	def test_confirmed_basis_requires_clearing(self):
+		self.confirm(self.preview())
+		self.order.reload()
+		self.order.qty = 20
+		with self.assertRaises(frappe.ValidationError):
+			self.order.save()
+		self.order.reload()
+		self.assertEqual((self.order.qty, self.order.required_items[0].required_qty), (10, 5))
+		self.order.set("operations", [])
+		self.order.set("required_items", [])
+		self.order.qty = 20
+		self.order.save().reload()
+		self.confirm(self.preview())
+		self.order.reload()
+		self.assertEqual(self.order.required_items[0].required_qty, 10)
+
+	def test_unsequenced_route_replay(self):
+		for row in self.bom.operations:
+			frappe.db.set_value("BOM Operation", row.name, "sequence_id", 0)
+		preview = self.preview()
+		version = str(self.order.modified)
+		self.confirm(preview, version)
+		self.order.reload()
+		identities = [row.name for row in self.order.operations]
+		self.confirm(preview, version)
+		self.order.reload()
+		self.assertEqual([row.name for row in self.order.operations], identities)
+		self.assertEqual([row.sequence_id for row in self.order.operations], [1, 2, 3])
+
+	def test_single_operation_replay(self):
+		frappe.db.delete("BOM Operation", {"name": ["in", [row.name for row in self.bom.operations[1:]]]})
+		preview = self.preview()
+		version = str(self.order.modified)
+		self.confirm(preview, version)
+		self.order.reload()
+		identities = ([row.name for row in self.order.operations], [row.name for row in self.order.required_items])
+		self.confirm(preview, version)
+		self.order.reload()
+		self.assertEqual(([row.name for row in self.order.operations], [row.name for row in self.order.required_items]), identities)
+		self.assertEqual(self.order.required_items[0].operation, self.f.operations[0])

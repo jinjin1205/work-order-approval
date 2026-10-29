@@ -1,6 +1,7 @@
 # Copyright (c) 2021, Frappe Technologies Pvt. Ltd. and Contributors
 # License: GNU General Public License v3. See license.txt
 
+import hashlib
 import json
 
 import frappe
@@ -170,6 +171,8 @@ def apply_production_approval(work_order: str, action: str, expected_modified: s
 		frappe.throw("工单已变化，请刷新并查看最新依据后再处理", frappe.TimestampMismatchError)
 	if not doc.get("approval_requested_by"):
 		frappe.throw("存量工单尚未确认审批依据，不能作为新单送审", frappe.PermissionError)
+	if action == "送审" and (not doc.operations or not doc.required_items):
+		frappe.throw("请先预览并确认生成工序任务和用料计划，再送审")
 
 	stopping = action == "停止执行"
 	if stopping:
@@ -215,6 +218,95 @@ def apply_production_approval(work_order: str, action: str, expected_modified: s
 	finally:
 		# Request-local authority never comes from a client Document.flags value.
 		frappe.local.production_approval_context = previous_context
+
+
+_DETAIL_OPERATION_FIELDS = ("operation", "description", "workstation", "workstation_type", "bom", "sequence_id")
+_DETAIL_OPERATION_NUMBERS = ("time_in_mins", "hour_rate", "batch_size", "fixed_time")
+_DETAIL_ITEM_FIELDS = ("item_code", "stock_uom", "source_warehouse", "operation")
+_DETAIL_ITEM_NUMBERS = ("required_qty", "include_item_in_manufacturing", "allow_alternative_item")
+
+
+def _production_detail_rows(order):
+	def rows(table, fields, numbers):
+		return [dict(
+			**{field: row.get(field) or None for field in fields},
+			**{field: flt(row.get(field)) for field in numbers},
+		) for row in order.get(table)]
+	return {
+		"operations": rows("operations", _DETAIL_OPERATION_FIELDS, _DETAIL_OPERATION_NUMBERS),
+		"items": rows("required_items", _DETAIL_ITEM_FIELDS, _DETAIL_ITEM_NUMBERS),
+	}
+
+
+def _production_order_for_details(work_order, *, for_update=False):
+	order = frappe.get_doc("Work Order", work_order, for_update=for_update)
+	order.check_permission("read")
+	order.check_permission("write")
+	if (
+		order.docstatus != 0 or order.get("workflow_state") not in ("草稿", "退回")
+		or order.get("approval_requested_by") != frappe.session.user
+		or "生产工单发起" not in frappe.get_roles()
+	):
+		frappe.throw("仅当前有权发起人可在草稿或退回状态准备工单明细", frappe.PermissionError)
+	_check_production_approval_scope(order, team_required=True)
+	return order
+
+
+def _production_order_detail_plan(order):
+	if not order.bom_no:
+		frappe.throw("请先选择有效BOM并保存工单")
+	bom = frappe.get_doc("BOM", order.bom_no)
+	bom.check_permission("read")
+	validate_bom_no(order.production_item, order.bom_no)
+	plan = frappe.copy_doc(order)
+	# Establish the same normalized operation context used by native saving first.
+	plan.set_work_order_operations()
+	plan.validate_operations()
+	plan.validate_operations_sequence()
+	plan.set_required_items()
+	if not plan.operations or not plan.required_items:
+		frappe.throw("BOM缺少工序路线或用料，请先补齐再生成工单明细")
+	data = _production_detail_rows(plan)
+	basis = {field: order.get(field) for field in (
+		"production_item", "bom_no", "qty", "company", "source_warehouse", "wip_warehouse",
+		"fg_warehouse", "use_multi_level_bom", "project", "transfer_material_against",
+	)}
+	data["fingerprint"] = hashlib.sha256(frappe.as_json({
+		"basis": basis, "bom_modified": str(bom.modified), "details": data,
+	}).encode()).hexdigest()
+	return plan, data
+
+
+@frappe.whitelist()
+def preview_production_order_details(work_order, expected_modified):
+	order = _production_order_for_details(work_order)
+	if not expected_modified or get_datetime(order.modified) != get_datetime(expected_modified):
+		frappe.throw("工单已变化，请保存并刷新后重新预览", frappe.TimestampMismatchError)
+	_, data = _production_order_detail_plan(order)
+	return data
+
+
+@frappe.whitelist()
+def confirm_production_order_details(work_order, expected_modified, fingerprint):
+	# Authorize before taking the parent lock; re-read state and scope after locking.
+	_production_order_for_details(work_order)
+	order = _production_order_for_details(work_order, for_update=True)
+	plan, data = _production_order_detail_plan(order)
+	if not fingerprint or fingerprint != data["fingerprint"]:
+		frappe.throw("工单或BOM路线依据已变化，请重新预览后确认", frappe.TimestampMismatchError)
+	if order.operations or order.required_items:
+		if _production_detail_rows(order) != {key: data[key] for key in ("operations", "items")}:
+			frappe.throw("已有明细与本次预览不同，请先核对草稿明细；不会自动覆盖")
+		return {"work_order": order.name, "modified": str(order.modified)}
+	if not expected_modified or get_datetime(order.modified) != get_datetime(expected_modified):
+		frappe.throw("工单已变化，请刷新并重新预览后确认", frappe.TimestampMismatchError)
+	for table in ("operations", "required_items"):
+		order.set(table, [])
+		for row in plan.get(table):
+			order.append(table, {key: value for key, value in row.as_dict().items()
+				if key not in ("name", "parent", "parenttype", "parentfield")})
+	order.save()
+	return {"work_order": order.name, "modified": str(order.modified)}
 
 
 class WorkOrder(Document):
@@ -305,6 +397,13 @@ class WorkOrder(Document):
 
 	def validate(self):
 		self.validate_production_approval()
+		before = self.get_doc_before_save()
+		if (self.get("approval_requested_by") and before and self.docstatus == 0
+			and (before.operations or before.required_items) and (self.operations or self.required_items)):
+			basis_fields = ("production_item", "bom_no", "qty", "company", "use_multi_level_bom",
+				"source_warehouse", "wip_warehouse", "fg_warehouse", "project", "transfer_material_against")
+			if any((self.get(field) or None) != (before.get(field) or None) for field in basis_fields):
+				frappe.throw("已有任务和用料计划时不能直接改变展开依据；请先核对并清空草稿明细，再重新预览确认")
 		self.validate_report_pricing()
 		self.validate_production_item()
 		if self.bom_no:
@@ -328,8 +427,11 @@ class WorkOrder(Document):
 
 		validate_uom_is_integer(self, "stock_uom", ["required_qty"])
 
-		if not len(self.get("required_items")) or not frappe.db.get_single_value(
-			"Manufacturing Settings", "allow_editing_of_items_and_quantities_in_work_order"
+		# Approval drafts prepare their plan only after an explicit human confirmation.
+		if not self.get("approval_requested_by") and (
+			not len(self.get("required_items")) or not frappe.db.get_single_value(
+				"Manufacturing Settings", "allow_editing_of_items_and_quantities_in_work_order"
+			)
 		):
 			self.set_required_items(reset_only_qty=len(self.get("required_items")))
 
@@ -485,7 +587,7 @@ class WorkOrder(Document):
 				row.source_warehouse = self.source_warehouse
 
 	def reset_use_multi_level_bom(self):
-		if self.is_new():
+		if self.is_new() or self.get("approval_requested_by"):
 			return
 
 		before_save_obj = self.get_doc_before_save()

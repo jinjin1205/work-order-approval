@@ -4,7 +4,7 @@
   "version": "15.124.1",
   "frappe_version": "15.124.0",
   "frappe_commit": "f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab",
-  "patch_sha256": "e15fba0d7e7272c8a311c5f272476e76325a690a2ad1dc3dbfc021836effc3f2",
+  "patch_sha256": "5823ca570ba376fd8af67d386dd2898c987cd56f3655686c9f9a6b9256aa356e",
   "files": {
     "erpnext/hooks.py": {
       "base_sha256": "e9d55d583820c5411a2133754362e2bf0b8f24ca48bf236ae27460af7fdf66bc",
@@ -76,15 +76,15 @@
     },
     "erpnext/manufacturing/doctype/work_order/test_work_order.py": {
       "base_sha256": "7fee421acd6c7616c621a648d129df834ec09fbb62e7a814a556975961a82285",
-      "modified_sha256": "30905c7904d03d78e45e1c087d7a95a28e5e22ca84ebee70b8a9c7f5566db814"
+      "modified_sha256": "4d2c413b4672770da79f0326108ba9fa3d9d41df972d7fe5d481cad74dc87340"
     },
     "erpnext/manufacturing/doctype/work_order/work_order.js": {
       "base_sha256": "680f5c40b12430b1a511aeb7a981d06612309ee632c681b65793befc5b07d6a8",
-      "modified_sha256": "74fae07ae563621caec59928fea4179a80e335b095bb7155e90d4e288fc46b52"
+      "modified_sha256": "760e996d25deafc096c2254e38eba4ef94d294f3b74d15251e3e69c5d9a78b77"
     },
     "erpnext/manufacturing/doctype/work_order/work_order.py": {
       "base_sha256": "4592b2f82a9045c74dbfdb8ea1d82dbd5c39bedd1d4bb6d6c21158af63c9d546",
-      "modified_sha256": "1d4ea3e0b219451bc59884fdfe5c3b1f56e084d3d6b20c8268984f3d4f871682"
+      "modified_sha256": "1880cc94d0ef7d1a8e028d821af25cf602c81af5e0a3bced2d4da6fd50f5f3a6"
     },
     "erpnext/manufacturing/doctype/work_order_operation/work_order_operation.json": {
       "base_sha256": "40c67f07851e51dfa87ef4f019da471283f0609ca5e044b563ec6dc4b49b874a",

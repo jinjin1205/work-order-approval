@@ -167,6 +167,10 @@ frappe.ui.form.on("Work Order", {
 	},
 
 	refresh: function (frm) {
+		if (frm.doc.docstatus === 0 && ["草稿", "退回"].includes(frm.doc.workflow_state)
+			&& frm.doc.approval_requested_by === frappe.session.user) {
+			frm.add_custom_button("预览任务和用料", () => erpnext.work_order.preview_production_details(frm));
+		}
 		if (frm.doc.approval_requested_by && frm.doc.docstatus === 1 && frappe.user.has_role("生产报工")) {
 			frm.add_custom_button("逐笔报工", () => erpnext.work_order.open_production_report(frm));
 		}
@@ -591,6 +595,10 @@ frappe.ui.form.on("Work Order", {
 	},
 
 	bom_no: function (frm) {
+		if (frappe.workflow.workflows[frm.doctype]?.name === "生产工单两级审批") {
+			frm.set_intro("请先保存工单，再点击“预览任务和用料”，核对后确认生成。");
+			return;
+		}
 		return frm.call({
 			doc: frm.doc,
 			method: "get_items_and_operations_from_bom",
@@ -703,6 +711,37 @@ frappe.ui.form.on("Work Order Operation", {
 });
 
 erpnext.work_order = {
+	preview_production_details: async function (frm) {
+		if (frm.is_new() || frm.is_dirty()) {
+			frappe.msgprint("请先保存工单，再预览任务和用料");
+			return;
+		}
+		const version = frm.doc.modified;
+		const { message: plan } = await frappe.call({
+			method: "erpnext.manufacturing.doctype.work_order.work_order.preview_production_order_details",
+			args: { work_order: frm.doc.name, expected_modified: version }, freeze: true,
+		});
+		const escape = frappe.utils.escape_html;
+		const rows = plan.operations.map((row, index) => `<tr><td>${index + 1}</td><td>${escape(row.operation)}</td><td>${escape(String(frm.doc.qty))}</td></tr>`).join("");
+		const items = plan.items.map(row => `<tr><td>${escape(row.item_code)}</td><td>${escape(String(row.required_qty))}</td><td>${escape(row.stock_uom)}</td></tr>`).join("");
+		const dialog = new frappe.ui.Dialog({
+			title: "预览任务和用料", size: "large",
+			fields: [{ fieldtype: "HTML", fieldname: "preview", options:
+				`<p>确认后保存工序任务和用料计划，不生成报工或库存记录。</p><h5>工序任务</h5><table class="table table-bordered"><thead><tr><th>顺序</th><th>工序</th><th>计划数量</th></tr></thead><tbody>${rows}</tbody></table><h5>用料计划</h5><table class="table table-bordered"><thead><tr><th>物料</th><th>需求数量</th><th>库存单位</th></tr></thead><tbody>${items}</tbody></table>` }],
+			primary_action_label: "确认生成任务和用料",
+			primary_action: async () => {
+				await frappe.call({
+					method: "erpnext.manufacturing.doctype.work_order.work_order.confirm_production_order_details",
+					args: { work_order: frm.doc.name, expected_modified: version, fingerprint: plan.fingerprint }, freeze: true,
+				});
+				dialog.hide();
+				await frm.reload_doc();
+				frappe.show_alert({ message: "任务和用料计划已生成，请核对后送审", indicator: "green" });
+			},
+		});
+		dialog.show();
+	},
+
 	show_production_approval_actions: function (frm) {
 		if (frm.is_dirty()) return;
 		const work_order = frm.doc.name;

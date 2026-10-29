@@ -2,6 +2,16 @@
   "scope": "Separate executed batches; exact patches where captured, explicit null otherwise with product hash. No cumulative full-suite result; publication does not rerun tests",
   "tests": [
     {
+      "local_log": "evidence/B05/explicit-details-20261029/final-with-revocation.log",
+      "sha256": "ec1a5e8548b472c0ef52b179db41a7d812742cd48cd7bea10f4883b337753a2f",
+      "tests": 11,
+      "seconds": "63.418",
+      "result": "OK",
+      "executed_on": "2026-10-29",
+      "group": "B05 explicit details reviewed bounded suite and affected original cases",
+      "source_patch_sha256": "5823ca570ba376fd8af67d386dd2898c987cd56f3655686c9f9a6b9256aa356e"
+    },
+    {
       "local_log": "evidence/B08/history-paths-20261028/draft-fixed.log",
       "sha256": "75ca946a5930fa8195e2aaf786dc11ad9697ddd21eed78fc7b769dbcf22de7c5",
       "tests": 1,
@@ -359,5 +369,5 @@
     "verified_after_all_requests": true,
     "publication_note": "Only assertions/counts retained; runtime business_state and raw responses remain local."
   },
-  "current_patch_sha256": "e15fba0d7e7272c8a311c5f272476e76325a690a2ad1dc3dbfc021836effc3f2"
+  "current_patch_sha256": "5823ca570ba376fd8af67d386dd2898c987cd56f3655686c9f9a6b9256aa356e"
 }
