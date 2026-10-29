@@ -1,0 +1,27 @@
+{
+  "frozen_child_put": 403,
+  "frozen_child_delete": 403,
+  "frozen_zero_partial_write": true,
+  "task_plans": [
+    1,
+    2,
+    3
+  ],
+  "parent_plan": 10,
+  "over_report_status": 417,
+  "over_report_zero_partial_write": true,
+  "concurrent_statuses": [
+    200,
+    417
+  ],
+  "distinct_connections": 2,
+  "client_request_intervals_overlap": true,
+  "database_lock_overlap_observed": false,
+  "effective_reports": 1,
+  "task_good": 1,
+  "task_bad": 0,
+  "task_completed": true,
+  "other_tasks_pending": true,
+  "new_stock_entries": 0,
+  "scope": "New partial-task limit only; unchanged I03-I06 not rerun; not whole G2 acceptance"
+}

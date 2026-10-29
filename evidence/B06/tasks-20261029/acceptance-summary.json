@@ -1,0 +1,13 @@
+{
+  "implementation": "B06 seven-file bounded changes implemented",
+  "functional_validation": "20 distinct methods in documented batches; ordinary PC; HTTP partial-task limit",
+  "strict_old_row_retention": "FAILED: one shared synthetic workstation row differs; old field values not retained",
+  "change_archived": false,
+  "whole_B06_card": "PARTIAL",
+  "old_tables_exact_rows_preserved": 22,
+  "changed_old_tables": {
+    "Workstation": 1
+  },
+  "customer_deployment_mobile_full_G1_G2_G3": "UNVERIFIED",
+  "next": "Resolve this one retention-evidence boundary; do not rerun unchanged passed methods; then original B07"
+}

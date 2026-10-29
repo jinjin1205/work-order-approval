@@ -4,7 +4,7 @@
   "version": "15.124.1",
   "frappe_version": "15.124.0",
   "frappe_commit": "f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab",
-  "patch_sha256": "a3493e9f94f9ef5a0c37ca468014d88331e5f599bcb2574137f5ec01e9701a5c",
+  "patch_sha256": "5400304daea042a926dc99bd6b10b10be899e146db9971802a2a17cf72688cb8",
   "files": {
     "erpnext/hooks.py": {
       "base_sha256": "e9d55d583820c5411a2133754362e2bf0b8f24ca48bf236ae27460af7fdf66bc",
@@ -36,11 +36,11 @@
     },
     "erpnext/manufacturing/doctype/job_card/job_card.py": {
       "base_sha256": "5d7f77cea9046aaca47ae81e19ebb9766a78a06823dfdf6d392dbab869ba9779",
-      "modified_sha256": "200c00e3609522ccabd3940aee45adfdbc20f0b54c11b95cc17dfbe030ff5e1c"
+      "modified_sha256": "772f174672c2643ca0aae531b92eec875174a9707cd378376ce7df77eadc7d69"
     },
     "erpnext/manufacturing/doctype/job_card/test_job_card.py": {
       "base_sha256": "2947cbe40ebc044332a8a5802568c2ee1d782a8609cb6e35848b9a844dd84020",
-      "modified_sha256": "c4409c953f6bd167c94bbfb72e5397f30d3f902f7c1fd75f4cc2b64a86a849fc"
+      "modified_sha256": "e22712971bc8d3d8da530daa71b64f657c6662d6a307a6069dfda87f91f1b8b0"
     },
     "erpnext/manufacturing/doctype/job_card_time_log/job_card_time_log.py": {
       "base_sha256": "1466e3819e8598968c8af885bd31a4c3bf5e1a1c7503975f740bfd20fc50ebcc",
@@ -76,11 +76,11 @@
     },
     "erpnext/manufacturing/doctype/work_order/test_work_order.py": {
       "base_sha256": "7fee421acd6c7616c621a648d129df834ec09fbb62e7a814a556975961a82285",
-      "modified_sha256": "c8fffae256472958dc0387190eeee4b3debe66fb6e2cf759b261e1f4618034db"
+      "modified_sha256": "2c845b8f3f66cb30dbe7628fb31be06b9de644ad1c58848e8918743030d0fccc"
     },
     "erpnext/manufacturing/doctype/work_order/work_order.js": {
       "base_sha256": "680f5c40b12430b1a511aeb7a981d06612309ee632c681b65793befc5b07d6a8",
-      "modified_sha256": "d2a36dd7ac90912718ee4418dfd38e4c0ade41d1af585ff3a767b94fe20fc740"
+      "modified_sha256": "73cff0242459303c1f3991c5340c3c7a2edd33ffb66909d60a499dfa28737b39"
     },
     "erpnext/manufacturing/doctype/work_order/work_order.json": {
       "base_sha256": "a01750b9260cdb0a8ad89e280b9e95d215d38b5026b9461b970687e1e5b241fc",
@@ -88,15 +88,15 @@
     },
     "erpnext/manufacturing/doctype/work_order/work_order.py": {
       "base_sha256": "4592b2f82a9045c74dbfdb8ea1d82dbd5c39bedd1d4bb6d6c21158af63c9d546",
-      "modified_sha256": "a9d7bbbc8226cc4eafaeae1544eaec6118b9903e84ed4eb7f75bf2c1f27ecfb1"
+      "modified_sha256": "3f23d1cc7584ebfe002d0793f0353504460a55324e3c9d536ca43d189bcc02d6"
     },
     "erpnext/manufacturing/doctype/work_order_operation/work_order_operation.json": {
       "base_sha256": "40c67f07851e51dfa87ef4f019da471283f0609ca5e044b563ec6dc4b49b874a",
-      "modified_sha256": "2f3fdf26e05a0e67b0198b7873bf1ea5607bd58bf4874cec53c8b85fef2df1df"
+      "modified_sha256": "da35f538bb58534490cece8f803d1efbae1c1162344688f18e83bc22c5d962b6"
     },
     "erpnext/manufacturing/doctype/work_order_operation/work_order_operation.py": {
       "base_sha256": "6135963079dba860314b334cd8eaa32681bbb0e8765ade7cce9a7d118dd28d0a",
-      "modified_sha256": "819b620859d6bf3adff83a297540836b1dc618ba8b73bc669f2bc064d8766a63"
+      "modified_sha256": "6c6e1cc4002179244ecd24f768d02b22446eca37a338e41f4cf95dec9c8ebfcc"
     },
     "erpnext/stock/doctype/stock_entry/stock_entry.py": {
       "base_sha256": "d3b32c0f711e12bc2dcab7367d13ab36252a6a67e3e14219a11ee9f003eae19d",

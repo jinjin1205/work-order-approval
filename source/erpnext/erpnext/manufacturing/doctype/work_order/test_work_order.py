@@ -6131,6 +6131,181 @@ class TestWorkOrderHeader(FrappeTestCase):
 		self.assertEqual(self.f.order.reload().workflow_state,"草稿")
 
 
+class TestWorkOrderTaskAdjustments(FrappeTestCase):
+	def setUp(self):
+		self.f = TestWorkOrderApproval()
+		self.addCleanup(self.f.doCleanups)
+		self.f.setUp()
+		frappe.set_user(self.f.users["operator"])
+
+	def test_task_plan_metadata_and_default(self):
+		self.assertTrue(frappe.get_meta("Work Order Operation").has_field("report_plan_qty"))
+		self.assertEqual([float(r.report_plan_qty) for r in self.f.order.operations], [10, 10, 10])
+		self.assertEqual(self.f.order.qty, 10)
+
+	def test_insert_copy_reorder_delete_retains_row_identity(self):
+		order = self.f.order
+		original = [r.name for r in order.operations]
+		copied = frappe.copy_doc(order.operations[1])
+		copied.report_plan_qty = "2"
+		copied.report_scope = "ALL"
+		order.append("operations", copied)
+		order.set("operations", [order.operations[i] for i in (0, 3, 1, 2)])
+		for position, row in enumerate(order.operations, 1):
+			row.sequence_id = 0
+			row.idx = position
+		order.save().reload()
+		new = order.operations[1].name
+		self.assertNotIn(new, original)
+		self.assertEqual([r.name for r in order.operations], [original[0], new, original[1], original[2]])
+		self.assertEqual([r.sequence_id for r in order.operations], [1, 2, 3, 4])
+		order.remove(order.operations[2])
+		order.set("operations", [order.operations[i] for i in (2, 0, 1)])
+		for position, row in enumerate(order.operations, 1):
+			row.sequence_id = 0
+			row.idx = position
+		order.save().reload()
+		self.assertEqual([r.name for r in order.operations], [original[2], original[0], new])
+		self.assertEqual([r.idx for r in order.operations], [1, 2, 3])
+		self.assertEqual([r.sequence_id for r in order.operations], [1, 2, 3])
+		self.assertEqual(float(order.operations[-1].report_plan_qty), 2)
+		self.assertFalse(frappe.db.exists("Work Order Operation", original[1]))
+		self.assertFalse(frappe.db.exists("Job Card", {"work_order": order.name}))
+
+	def test_invalid_task_quantity_is_not_rounded_or_defaulted(self):
+		order = self.f.order
+		for value in ("0", "-1", "1.0000001", "NaN"):
+			with self.subTest(value=value):
+				order.operations[0].report_plan_qty = value
+				with self.assertRaises(frappe.ValidationError):
+					order.save()
+				self.assertEqual(float(frappe.db.get_value("Work Order Operation", order.operations[0].name, "report_plan_qty")), 10)
+
+	def test_frozen_parent_and_unreported_child_cannot_be_changed(self):
+		from frappe.client import save
+		self.f.act("operator", "送审")
+		row = frappe.get_doc("Work Order Operation", self.f.order.operations[0].name)
+		self.assertFalse(frappe.db.exists("Job Card", {"operation_id": row.name}))
+		row.time_in_mins = 20
+		with self.assertRaises(frappe.PermissionError):
+			save(row.as_dict())
+		self.f.order.operations[0].report_plan_qty = "1"
+		with self.assertRaises(frappe.PermissionError):
+			self.f.order.save()
+		self.assertEqual(float(frappe.db.get_value("Work Order Operation", row.name, "report_plan_qty")), 10)
+
+	def test_approved_unreported_child_delete_is_rejected(self):
+		from frappe.api.v1 import delete_doc
+		from frappe.permissions import update_permission_property
+		frappe.set_user("Administrator")
+		update_permission_property("Work Order", self.f.roles[0], 0, "delete", 1)
+		for actor, action in (("operator", "送审"), ("reviewer", "审核通过"), ("director", "签批通过")):
+			self.f.act(actor, action)
+		frappe.set_user(self.f.users["operator"])
+		row = self.f.order.operations[-1]
+		self.assertFalse(frappe.db.exists("Job Card", {"operation_id": row.name, "docstatus": [">", 0]}))
+		with self.assertRaises(frappe.PermissionError):
+			delete_doc("Work Order Operation", row.name)
+		self.assertTrue(frappe.db.exists("Work Order Operation", row.name))
+
+	def test_sensitive_child_edit_and_direct_insert_require_parent_save(self):
+		from frappe.client import save
+		for field, value in (("report_plan_qty", "1"), ("report_scope", "ALL"), ("sequence_id", 2), ("completed_qty", 1)):
+			with self.subTest(field=field):
+				row = frappe.get_doc("Work Order Operation", self.f.order.operations[0].name)
+				row.set(field, value)
+				with self.assertRaises(frappe.PermissionError):
+					save(row.as_dict())
+		row = frappe.copy_doc(self.f.order.operations[0])
+		row.parent = self.f.order.name
+		row.parenttype, row.parentfield = "Work Order", "operations"
+		with self.assertRaises(frappe.PermissionError):
+			row.insert()
+		self.assertEqual(frappe.db.count("Work Order Operation", {"parent": self.f.order.name}), 3)
+
+	def test_child_edit_rechecks_current_scope_and_revocation(self):
+		from frappe.client import save
+		name = self.f.order.operations[0].name
+		before = frappe.db.get_value("Work Order Operation", name, "time_in_mins")
+		frappe.set_user(self.f.users["other"])
+		row = frappe.get_doc("Work Order Operation", name)
+		row.time_in_mins = before + 1
+		with self.assertRaises(frappe.PermissionError):
+			save(row.as_dict())
+		frappe.set_user("Administrator")
+		for name_permission in frappe.get_all("User Permission", filters={"user": self.f.users["operator"], "allow": "Department"}, pluck="name"):
+			frappe.delete_doc("User Permission", name_permission)
+		frappe.clear_cache(user=self.f.users["operator"])
+		frappe.set_user(self.f.users["operator"])
+		with self.assertRaises(frappe.PermissionError):
+			save(row.as_dict())
+		self.assertEqual(frappe.db.get_value("Work Order Operation", name, "time_in_mins"), before)
+
+	def test_stale_parent_task_edit_cannot_overwrite_saved_change(self):
+		stale = frappe.get_doc("Work Order", self.f.order.name)
+		self.f.order.operations[0].report_plan_qty = "2"
+		self.f.order.save()
+		stale.operations[0].report_plan_qty = "3"
+		with self.assertRaises(frappe.TimestampMismatchError):
+			stale.save()
+		self.assertEqual(float(frappe.db.get_value("Work Order Operation", stale.operations[0].name, "report_plan_qty")), 2)
+
+	def test_disabled_workflow_cannot_be_bypassed_by_child_edit(self):
+		from frappe.client import save
+		frappe.set_user("Administrator")
+		workflow = frappe.get_doc("Workflow", "生产工单两级审批")
+		workflow.is_active = 0
+		workflow.save()
+		frappe.set_user(self.f.users["operator"])
+		row = frappe.get_doc("Work Order Operation", self.f.order.operations[0].name)
+		row.time_in_mins = 20
+		with self.assertRaises(frappe.PermissionError):
+			save(row.as_dict())
+
+	def test_parent_save_cannot_steal_task_identity_from_another_order(self):
+		fields = ("production_item", "bom_no", "qty", "company", "stock_uom", "production_team", "planned_start_date",
+			"expected_delivery_date", "source_warehouse", "wip_warehouse", "fg_warehouse")
+		target = frappe.get_doc({"doctype": "Work Order", **{f: self.f.order.get(f) for f in fields}}).insert()
+		target.append("operations", self.f.order.operations[0].as_dict())
+		with self.assertRaises(frappe.PermissionError):
+			target.save()
+		self.assertEqual(frappe.db.get_value("Work Order Operation", self.f.order.operations[0].name, "parent"), self.f.order.name)
+
+	def test_parent_save_cannot_repeat_existing_task_identity(self):
+		self.f.order.append("operations", self.f.order.operations[-1].as_dict())
+		with self.assertRaises(frappe.PermissionError):
+			self.f.order.save()
+		self.assertEqual(frappe.db.count("Work Order Operation", {"parent": self.f.order.name}), 3)
+
+	def test_revoked_editor_role_cannot_adjust_task_with_remaining_write(self):
+		from frappe.permissions import add_permission, update_permission_property
+		frappe.set_user("Administrator")
+		role = frappe.get_doc({"doctype": "Role", "role_name": self.f.prefix + "-write", "desk_access": 1}).insert().name
+		add_permission("Work Order", role, ptype="read")
+		update_permission_property("Work Order", role, 0, "write", 1)
+		user = frappe.get_doc("User", self.f.users["operator"])
+		user.add_roles(role)
+		user.reload().remove_roles("生产工单发起")
+		frappe.clear_cache(user=user.name)
+		frappe.set_user(user.name)
+		self.assertTrue(self.f.order.has_permission("write"))
+		self.f.order.operations[0].report_plan_qty = "2"
+		with self.assertRaises(frappe.PermissionError):
+			self.f.order.save()
+
+	def test_direct_delete_non_last_task_requires_parent_adjustment(self):
+		from frappe.api.v1 import delete_doc
+		from frappe.permissions import update_permission_property
+		frappe.set_user("Administrator")
+		update_permission_property("Work Order", self.f.roles[0], 0, "delete", 1)
+		frappe.set_user(self.f.users["operator"])
+		row = self.f.order.operations[0]
+		with self.assertRaises(frappe.PermissionError):
+			delete_doc("Work Order Operation", row.name)
+		self.f.order.reload()
+		self.assertEqual([r.sequence_id for r in self.f.order.operations], [1, 2, 3])
+
+
 class TestWorkOrderEntrances(FrappeTestCase):
 	"""Remaining B05 entry boundaries; reuse real approval and reporting fixtures."""
 

@@ -1,5 +1,5 @@
 {
-  "scope": "Separate executed batches; exact patches where captured, explicit null otherwise with product hash. No cumulative full-suite result; publication does not rerun tests",
+  "scope": "Separate executed batches; FAILED red/intermediate batches preserved. Exact source patch where captured, explicit null otherwise. No cumulative full-suite result; publication does not rerun tests",
   "tests": [
     {
       "local_log": "evidence/B05/entries-20261029/final-fixture.log",
@@ -432,6 +432,126 @@
       "executed_on": "2026-10-27",
       "group": "B04 time and metrics calculation layer",
       "source_patch_sha256": "fc68d4af7ab3c74ed84ca898bffebe36b24c5c66041b272ec851e241754214e3"
+    },
+    {
+      "local_log": ".development/private/b06-tasks-20261029/logs/red-p0.log",
+      "sha256": "88d45075f0ecd1e79b3067b3ac1b8cd69cf5f6e730181959112a7538711e7e06",
+      "tests": 1,
+      "seconds": "6.093",
+      "passed_methods": 0,
+      "failures": 1,
+      "errors": 0,
+      "result": "FAILED",
+      "source_patch_sha256": null,
+      "source_stage": "executed intermediate stage; exact full patch not captured, do not substitute final source",
+      "old_tables_rollback_unchanged": 15,
+      "executed_on": "2026-10-29",
+      "group": "B06 bounded task adjustments: red-p0"
+    },
+    {
+      "local_log": ".development/private/b06-tasks-20261029/logs/green-p0.log",
+      "sha256": "6fccf1c57aa28d1b7eb035afd1446c276ca9b5377ccdd6783c2754b4b731bb3c",
+      "tests": 1,
+      "seconds": "5.584",
+      "passed_methods": 1,
+      "failures": 0,
+      "errors": 0,
+      "result": "OK",
+      "source_patch_sha256": null,
+      "source_stage": "executed intermediate stage; exact full patch not captured, do not substitute final source",
+      "old_tables_rollback_unchanged": 15,
+      "executed_on": "2026-10-29",
+      "group": "B06 bounded task adjustments: green-p0"
+    },
+    {
+      "local_log": ".development/private/b06-tasks-20261029/logs/red-frozen-child.log",
+      "sha256": "ed78b7444cc95f9af580f736217b7bb06a9a4793848796b6229fd2b07420bf45",
+      "tests": 2,
+      "seconds": "12.746",
+      "passed_methods": 0,
+      "failures": 2,
+      "errors": 0,
+      "result": "FAILED",
+      "source_patch_sha256": null,
+      "source_stage": "executed intermediate stage; exact full patch not captured, do not substitute final source",
+      "old_tables_rollback_unchanged": 15,
+      "executed_on": "2026-10-29",
+      "group": "B06 bounded task adjustments: red-frozen-child"
+    },
+    {
+      "local_log": ".development/private/b06-tasks-20261029/logs/green-batch.log",
+      "sha256": "fabf5544906f907c657cfdfc42c8c730967b92b0c3ce3e0fbafcf02162596438",
+      "tests": 15,
+      "seconds": "111.566",
+      "passed_methods": 12,
+      "failures": 2,
+      "errors": 1,
+      "result": "FAILED",
+      "source_patch_sha256": null,
+      "source_stage": "executed intermediate stage; exact full patch not captured, do not substitute final source",
+      "old_tables_rollback_unchanged": 15,
+      "executed_on": "2026-10-29",
+      "group": "B06 bounded task adjustments: green-batch"
+    },
+    {
+      "local_log": ".development/private/b06-tasks-20261029/logs/red-parent-identity.log",
+      "sha256": "2e40ca2e80b47b06f0802f15b92b268ae37a4e532317f3492e90afbeba14916f",
+      "tests": 2,
+      "seconds": "12.835",
+      "passed_methods": 0,
+      "failures": 2,
+      "errors": 0,
+      "result": "FAILED",
+      "source_patch_sha256": null,
+      "source_stage": "executed intermediate stage; exact full patch not captured, do not substitute final source",
+      "old_tables_rollback_unchanged": 15,
+      "executed_on": "2026-10-29",
+      "group": "B06 bounded task adjustments: red-parent-identity"
+    },
+    {
+      "local_log": ".development/private/b06-tasks-20261029/logs/green-targeted.log",
+      "sha256": "a2b6cbb3a7ea2bdf9e8519f53c501f35794e4a0c307d8fe45c2621456b636d83",
+      "tests": 6,
+      "seconds": "44.595",
+      "passed_methods": 6,
+      "failures": 0,
+      "errors": 0,
+      "result": "OK",
+      "source_patch_sha256": null,
+      "source_stage": "executed intermediate stage; exact full patch not captured, do not substitute final source",
+      "old_tables_rollback_unchanged": 15,
+      "executed_on": "2026-10-29",
+      "group": "B06 bounded task adjustments: green-targeted"
+    },
+    {
+      "local_log": ".development/private/b06-tasks-20261029/logs/red-review.log",
+      "sha256": "2232c060154f674eee050aa52c2296d77e182eb2c408187ca529595abec9fbd0",
+      "tests": 2,
+      "seconds": "13.869",
+      "passed_methods": 0,
+      "failures": 2,
+      "errors": 0,
+      "result": "FAILED",
+      "source_patch_sha256": null,
+      "source_stage": "executed intermediate stage; exact full patch not captured, do not substitute final source",
+      "old_tables_rollback_unchanged": 15,
+      "executed_on": "2026-10-29",
+      "group": "B06 bounded task adjustments: red-review"
+    },
+    {
+      "local_log": ".development/private/b06-tasks-20261029/logs/green-review.log",
+      "sha256": "3b6aba19bf9ae05e35e96696f150ad86459605f0ac16d6130e0e6450637b0009",
+      "tests": 4,
+      "seconds": "27.651",
+      "passed_methods": 4,
+      "failures": 0,
+      "errors": 0,
+      "result": "OK",
+      "source_patch_sha256": "5400304daea042a926dc99bd6b10b10be899e146db9971802a2a17cf72688cb8",
+      "source_stage": "final bounded source",
+      "old_tables_rollback_unchanged": 15,
+      "executed_on": "2026-10-29",
+      "group": "B06 bounded task adjustments: green-review"
     }
   ],
   "http_B02_historical": {
@@ -443,5 +563,5 @@
     "verified_after_all_requests": true,
     "publication_note": "Only assertions/counts retained; runtime business_state and raw responses remain local."
   },
-  "current_patch_sha256": "a3493e9f94f9ef5a0c37ca468014d88331e5f599bcb2574137f5ec01e9701a5c"
+  "current_patch_sha256": "5400304daea042a926dc99bd6b10b10be899e146db9971802a2a17cf72688cb8"
 }

@@ -1818,7 +1818,7 @@ class TestProductionTimeMetrics(FrappeTestCase):
 class TestProductionReportConfirmation(FrappeTestCase):
 	"""B08: real workflow fixture, narrow operator, native per-confirmation cards."""
 
-	def setUp(self, report_scope="PERSON", report_values=None):
+	def setUp(self, report_scope="PERSON", report_values=None, before_approval=None):
 		from frappe.permissions import add_permission, add_user_permission, update_permission_property
 		from erpnext.manufacturing.doctype.work_order.test_work_order import TestWorkOrderApproval
 		self.approval = TestWorkOrderApproval()
@@ -1851,6 +1851,8 @@ class TestProductionReportConfirmation(FrappeTestCase):
 			f.order.operations[0].update(report_values)
 		f.order.operations[1].report_scope = "ALL" if self._testMethodName == "test_correction_rejects_existing_downstream_facts" else ""
 		f.order.operations[2].report_scope = "ALL"
+		if before_approval:
+			before_approval(f, self.employee)
 		f.order.save()
 		f.act("operator", "送审")
 		f.act("reviewer", "审核通过")
@@ -2112,6 +2114,88 @@ class TestProductionReportConfirmation(FrappeTestCase):
 		self.assertFalse(frappe.db.exists("Job Card Time Log", {"parent": seen[0]}))
 		self.order.reload()
 		self.assertEqual((self.order.qty, self.order.operations[0].completed_qty), (10, 0))
+
+
+class TestProductionTaskPlans(FrappeTestCase):
+	def setUp(self):
+		self.r = TestProductionReportConfirmation()
+		self.addCleanup(self.r.doCleanups)
+		def prepare(f, employee):
+			for row, plan, scope in zip(f.order.operations, (1, 2, 3), ("PERSON", "DEPT", "ALL")):
+				row.report_plan_qty = str(plan)
+				row.report_scope = scope
+				row.report_employee = employee if scope == "PERSON" else None
+				row.report_department = f.teams[0] if scope == "DEPT" else None
+		self.r.setUp(before_approval=prepare)
+
+	def test_task_cards_list_and_close_difference_use_independent_plan(self):
+		from erpnext.manufacturing.doctype.job_card.job_card import get_production_report_tasks
+		from erpnext.manufacturing.doctype.work_order.work_order import _production_close_snapshot
+		order = self.r.order
+		cards = frappe.get_all("Job Card", filters={"work_order": order.name}, fields=["operation_id", "for_quantity", "docstatus"])
+		self.assertEqual({r.operation_id: r.for_quantity for r in cards}, {r.name: i for i, r in enumerate(order.operations, 1)})
+		self.assertTrue(all(r.docstatus == 0 for r in cards))
+		tasks = get_production_report_tasks(order.name)["tasks"]
+		self.assertEqual([r["plan"] for r in tasks], [1, 2, 3])
+		self.assertEqual([r["unfinished"] for r in tasks], [1, 2, 3])
+		snapshot = _production_close_snapshot(order, [], "")
+		self.assertEqual([r["unfinished"] for r in snapshot["operations"]], [1, 2, 3])
+		self.assertEqual(snapshot["plan"], 10)
+		self.assertEqual(snapshot["stock_unfinished"], 10)
+
+	def test_partial_plan_good_and_bad_complete_each_task_without_inventory(self):
+		order = self.r.order
+		for row, good, bad, hour in zip(order.operations, (1, 1, 3), (0, 1, 0), (9, 10, 11)):
+			self.r.operation_id = row.name
+			self.r.report(good, bad, hour=hour)
+		order.reload()
+		self.assertEqual([r.status for r in order.operations], ["Completed"] * 3)
+		self.assertEqual([r.completed_qty for r in order.operations], [1, 1, 3])
+		self.assertEqual([r.process_loss_qty for r in order.operations], [0, 1, 0])
+		self.assertEqual(order.qty, 10)
+		self.assertEqual(order.produced_qty, 0)
+		self.assertEqual(order.status, "In Process")
+		self.assertEqual(frappe.db.count("Job Card", {"work_order": order.name, "docstatus": 1}), 3)
+		self.assertFalse(frappe.db.exists("Stock Entry", {"work_order": order.name}))
+
+	def test_own_task_limit_rejects_over_report_and_keeps_all_facts(self):
+		order = self.r.order
+		before = frappe.as_json(frappe.get_all("Job Card", filters={"work_order": order.name}, fields=["*"], order_by="name"))
+		frappe.db.savepoint("b06_over_report")
+		with self.assertRaisesRegex(frappe.ValidationError, "本工序累计数量超过"):
+			self.r.report(2, 0)
+		# A real failed HTTP request rolls back; mirror that transaction boundary here.
+		frappe.db.rollback(save_point="b06_over_report")
+		self.assertEqual(frappe.as_json(frappe.get_all("Job Card", filters={"work_order": order.name}, fields=["*"], order_by="name")), before)
+		self.r.report(1, 0)
+		self.assertEqual(frappe.db.get_value("Work Order Operation", self.r.operation_id, "status"), "Completed")
+
+	def test_current_person_department_all_scopes_and_revocation(self):
+		from frappe.permissions import add_user_permission
+		from erpnext.manufacturing.doctype.job_card.job_card import get_production_report_tasks, preview_production_report_time
+		f = self.r.approval
+		frappe.set_user("Administrator")
+		peer = frappe.get_doc({"doctype": "User", "email": f.prefix.lower() + "-peer@example.invalid", "first_name": "他班报工员",
+			"send_welcome_email": 0, "roles": [{"role": "生产报工"}]}).insert()
+		frappe.get_doc({"doctype": "Employee", "first_name": "他班报工员", "gender": "Male", "date_of_birth": "1990-01-01",
+			"date_of_joining": "2020-01-01", "company": f.company, "department": f.teams[1], "status": "Active",
+			"user_id": peer.name, "create_user_permission": 0}).insert()
+		for dt, value in (("Company", f.company), ("Department", f.teams[0]), ("Work Order", f.order.name)):
+			add_user_permission(dt, value, peer.name, applicable_for="Work Order" if dt == "Department" else None)
+		frappe.set_user(peer.name)
+		self.assertFalse(f.order.has_permission("write"))
+		self.assertEqual([r["name"] for r in get_production_report_tasks(f.order.name)["tasks"]], [f.order.operations[2].name])
+		for row in f.order.operations[:2]:
+			with self.assertRaisesRegex(frappe.PermissionError, "本道工序"):
+				preview_production_report_time(f.order.name, row.name, "2026-10-20 12:00:00", "2026-10-20 13:00:00")
+		self.assertTrue(preview_production_report_time(f.order.name, f.order.operations[2].name, "2026-10-20 12:00:00", "2026-10-20 13:00:00"))
+		frappe.set_user("Administrator")
+		peer.reload().remove_roles("生产报工")
+		frappe.clear_cache(user=peer.name)
+		frappe.set_user(peer.name)
+		with self.assertRaises(frappe.PermissionError):
+			get_production_report_tasks(f.order.name)
+		self.assertFalse(frappe.db.exists("Job Card", {"work_order": f.order.name, "docstatus": 1}))
 
 
 class TestProductionReportFollowup(FrappeTestCase):
@@ -2622,7 +2706,16 @@ class TestProductionReportHistoryPaths(FrappeTestCase):
 	def test_unreported_draft_operations_remain_editable_and_deletable(self):
 		from frappe.api.v1 import delete_doc as resource_delete
 		from frappe.client import delete as client_delete, save
-		draft = self.draft().insert()
+		draft = self.draft()
+		operations = [row.as_dict() for row in draft.operations]
+		items = [row.as_dict() for row in draft.required_items]
+		draft.set("operations", [])
+		draft.set("required_items", [])
+		draft.insert()
+		for table, rows in (("operations", operations), ("required_items", items)):
+			for values in rows:
+				draft.append(table, values)
+		draft.save()
 		self.as_creator_with_delete()
 		row = frappe.get_doc("Work Order Operation", draft.operations[0].name)
 		self.assertFalse(frappe.db.exists("Job Card", {"operation_id":row.name,"docstatus":[">",0]}))

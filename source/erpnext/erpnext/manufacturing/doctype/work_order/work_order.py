@@ -223,7 +223,7 @@ def apply_production_approval(work_order: str, action: str, expected_modified: s
 		frappe.local.production_approval_context = previous_context
 
 
-_DETAIL_OPERATION_FIELDS = ("operation", "description", "workstation", "workstation_type", "bom", "sequence_id")
+_DETAIL_OPERATION_FIELDS = ("operation", "description", "workstation", "workstation_type", "bom", "sequence_id", "report_plan_qty")
 _DETAIL_OPERATION_NUMBERS = ("time_in_mins", "hour_rate", "batch_size", "fixed_time")
 _DETAIL_ITEM_FIELDS = ("item_code", "stock_uom", "source_warehouse", "operation")
 _DETAIL_ITEM_NUMBERS = ("required_qty", "include_item_in_manufacturing", "allow_alternative_item")
@@ -241,17 +241,23 @@ def _production_detail_rows(order):
 	}
 
 
+def _check_production_draft_editor(order):
+	if order.docstatus != 0 or order.get("workflow_state") not in ("草稿", "退回") or order.get("approval_requested_by") != frappe.session.user:
+		frappe.throw("送审后的依据已冻结，请退回或撤回后由发起人修改", frappe.PermissionError)
+	if "生产工单发起" not in frappe.get_roles():
+		frappe.throw("当前工单发起授权已撤销，不能调整工单明细", frappe.PermissionError)
+	_check_production_approval_scope(order, team_required=True)
+
+
 def _production_order_for_details(work_order, *, for_update=False):
+	from frappe.model.workflow import get_workflow_name
+
 	order = frappe.get_doc("Work Order", work_order, for_update=for_update)
 	order.check_permission("read")
 	order.check_permission("write")
-	if (
-		order.docstatus != 0 or order.get("workflow_state") not in ("草稿", "退回")
-		or order.get("approval_requested_by") != frappe.session.user
-		or "生产工单发起" not in frappe.get_roles()
-	):
-		frappe.throw("仅当前有权发起人可在草稿或退回状态准备工单明细", frappe.PermissionError)
-	_check_production_approval_scope(order, team_required=True)
+	if get_workflow_name("Work Order") != PRODUCTION_APPROVAL_WORKFLOW:
+		frappe.throw("生产工单审批流程未启用，不能调整工单明细", frappe.PermissionError)
+	_check_production_draft_editor(order)
 	return order
 
 
@@ -262,6 +268,7 @@ def _production_order_detail_plan(order):
 	bom.check_permission("read")
 	validate_bom_no(order.production_item, order.bom_no)
 	plan = frappe.copy_doc(order)
+	plan.approval_requested_by = order.approval_requested_by
 	# Establish the same normalized operation context used by native saving first.
 	plan.set_work_order_operations()
 	plan.validate_operations()
@@ -542,9 +549,7 @@ class WorkOrder(Document):
 		protected = ("workflow_state", "approval_requested_by", "approval_reviewed_by", "approval_note", "docstatus")
 		if any(self.get(f) != before.get(f) for f in protected):
 			frappe.throw("请通过工单审批动作处理，不能直接改审批字段或提交", frappe.PermissionError)
-		if before.workflow_state not in ("草稿", "退回") or user != before.approval_requested_by:
-			frappe.throw("送审后的依据已冻结，请退回或撤回后由发起人修改", frappe.PermissionError)
-		_check_production_approval_scope(self, team_required=True)
+		_check_production_draft_editor(self)
 		self.validate_production_header()
 
 	def validate_production_header(self, *, for_review=False):
@@ -1171,7 +1176,7 @@ class WorkOrder(Document):
 		plan_days = cint(manufacturing_settings_doc.capacity_planning_for_days) or 30
 
 		for idx, row in enumerate(self.operations):
-			qty = self.qty
+			qty = self.get_operation_plan_quantity(row)
 			while qty > 0:
 				qty = split_qty_based_on_batch_size(self, row, qty)
 				if row.job_card_qty > 0:
@@ -1491,18 +1496,18 @@ class WorkOrder(Document):
 		allowance_percentage = flt(
 			frappe.db.get_single_value("Manufacturing Settings", "overproduction_percentage_for_work_order")
 		)
-		max_allowed_qty_for_wo = flt(self.qty) + (allowance_percentage / 100 * flt(self.qty))
-
 		for d in self.get("operations"):
+			plan = flt(self.get_operation_plan_quantity(d))
+			max_allowed_qty = plan + allowance_percentage / 100 * plan
 			precision = d.precision("completed_qty")
 			qty = flt(flt(d.completed_qty, precision) + flt(d.process_loss_qty, precision), precision)
 			if not qty:
 				d.status = "Pending"
-			elif qty < flt(self.qty, precision):
+			elif qty < flt(plan, precision):
 				d.status = "Work in Progress"
-			elif qty == flt(self.qty, precision):
+			elif qty == flt(plan, precision):
 				d.status = "Completed"
-			elif qty <= flt(max_allowed_qty_for_wo, precision) or d.name != operation_id:
+			elif qty <= flt(max_allowed_qty, precision) or d.name != operation_id:
 				d.status = "Completed"
 			else:
 				frappe.throw(_("Completed Qty cannot be greater than 'Qty to Manufacture'"))
@@ -1610,8 +1615,31 @@ class WorkOrder(Document):
 				title=_("Missing value"),
 			)
 
+	def get_operation_plan_quantity(self, row):
+		if not self.get("approval_requested_by"):
+			return self.qty
+		# Only empty legacy values retain the approved parent plan; invalid input never falls back.
+		value = row.get("report_plan_qty")
+		return validate_quantity_input(self.qty if value in (None, "") else value, "任务计划数量")
+
 	def validate_operations(self):
+		if self.get("approval_requested_by") and self.docstatus == 0 and self.get("workflow_state") in ("草稿", "退回"):
+			names = [row.name for row in self.operations if row.name]
+			if len(names) != len(set(names)):
+				frappe.throw("同一任务行身份不能重复使用；复制任务请新增工序行", frappe.PermissionError)
+			for name in names:
+				parent = frappe.db.get_value("Work Order Operation", name, "parent")
+				if parent and parent != self.name:
+					frappe.throw("不能挪用其他工单的任务行身份；请新增本单工序行", frappe.PermissionError)
 		for d in self.operations:
+			if self.get("approval_requested_by"):
+				editable = self.docstatus == 0 and self.get("workflow_state") in ("草稿", "退回")
+				if editable and d.get("report_plan_qty") in (None, ""):
+					d.report_plan_qty = str(self.qty)
+				self.get_operation_plan_quantity(d)
+				if editable and (d.status not in (None, "", "Pending") or d.actual_start_time or d.actual_end_time
+					or any(d.get(f) for f in ("completed_qty", "process_loss_qty", "actual_operation_time", "actual_operating_cost"))):
+					frappe.throw("草稿任务不能填写生产实绩，请通过正常报工形成事实", frappe.PermissionError)
 			if not d.batch_size or d.batch_size <= 0:
 				d.batch_size = 1
 
@@ -2240,9 +2268,10 @@ def _production_close_snapshot(order, timers, fingerprint):
 
 	operations = []
 	for row in order.operations:
-		remaining = calculate_report_metrics(plan_quantity=order.qty, good_quantity=row.completed_qty,
+		plan = order.get_operation_plan_quantity(row)
+		remaining = calculate_report_metrics(plan_quantity=plan, good_quantity=row.completed_qty,
 			bad_quantity=row.process_loss_qty, effective_seconds=0)["unfinished_quantity"]
-		operations.append({"operation_id": row.name, "operation": row.operation, "plan": order.qty,
+		operations.append({"operation_id": row.name, "operation": row.operation, "plan": plan,
 			"good": row.completed_qty, "bad": row.process_loss_qty, "unfinished": remaining})
 	stock_remaining = calculate_report_metrics(plan_quantity=order.qty, good_quantity=order.produced_qty,
 		bad_quantity=0, effective_seconds=0)["unfinished_quantity"]
@@ -2427,7 +2456,7 @@ def create_job_card(work_order, row, enable_capacity_planning=False, auto_create
 			"operation": row.get("operation"),
 			"workstation": row.get("workstation"),
 			"posting_date": nowdate(),
-			"for_quantity": row.job_card_qty or work_order.get("qty", 0),
+			"for_quantity": row.job_card_qty or work_order.get_operation_plan_quantity(row),
 			"operation_id": row.get("name"),
 			"bom_no": row.get("bom") or work_order.bom_no,
 			"project": work_order.project,

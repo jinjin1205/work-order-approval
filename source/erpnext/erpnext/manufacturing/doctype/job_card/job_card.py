@@ -203,10 +203,14 @@ class JobCard(Document):
 				filters.update(docstatus=["!=", 2], report_request_id=["is", "not set"])
 			quantities = [row[0] for row in frappe.db.get_values("Job Card", filters, "for_quantity", for_update=True)]
 			total = sum((Decimal(str(q)) for q in quantities), Decimal(0)) + Decimal(str(validate_quantity_input(self.for_quantity, "本次数量")))
-			plan = Decimal(str(frappe.db.get_value("Work Order", self.work_order, "qty")))
+			order = frappe.get_doc("Work Order", self.work_order)
+			operation = next((row for row in order.operations if row.name == self.operation_id), None)
+			if not operation:
+				frappe.throw("本道工序不属于当前工单", frappe.PermissionError)
+			plan = Decimal(str(order.get_operation_plan_quantity(operation)))
 			allowance = Decimal(str(frappe.db.get_single_value("Manufacturing Settings", "overproduction_percentage_for_work_order") or 0))
 			if total > plan * (1 + allowance / 100):
-				frappe.throw("本工序累计数量超过工单允许数量，请核对本次报工和已确认记录")
+				frappe.throw("本工序累计数量超过任务允许数量，请核对本次报工和已确认记录")
 			return
 
 		wo_qty = flt(frappe.get_cached_value("Work Order", self.work_order, "qty"))
@@ -1162,7 +1166,9 @@ class JobCard(Document):
 					OperationSequenceError,
 				)
 
-			if row.completed_qty < current_operation_qty:
+			if row.completed_qty < current_operation_qty and not (
+				row.status == "Completed" and frappe.db.get_value("Work Order", self.work_order, "approval_requested_by")
+			):
 				frappe.throw(
 					_(
 						"The completed quantity {0} of an operation {1} cannot be greater than the completed quantity {2} of a previous operation {3}."
@@ -1686,9 +1692,13 @@ def _report_task(work_order, operation_id, *, history=False, for_update=False):
 @frappe.whitelist()
 def get_production_report_tasks(work_order):
 	order, employee = _report_context(work_order, history=True)
-	tasks = [{"name": row.name, "operation": row.operation, "plan": order.qty, "good": row.completed_qty,
-		"bad": row.process_loss_qty, "unfinished": max(Decimal(0), Decimal(str(order.qty)) - Decimal(str(row.completed_qty or 0)) - Decimal(str(row.process_loss_qty or 0))),
-		"status": row.status} for row in order.operations if _report_scope_allows(row, employee)]
+	tasks = []
+	for row in order.operations:
+		if _report_scope_allows(row, employee):
+			plan = order.get_operation_plan_quantity(row)
+			tasks.append({"name": row.name, "operation": row.operation, "plan": plan, "good": row.completed_qty,
+				"bad": row.process_loss_qty, "unfinished": max(Decimal(0), Decimal(str(plan)) - Decimal(str(row.completed_qty or 0)) - Decimal(str(row.process_loss_qty or 0))),
+				"status": row.status})
 	reports = frappe.get_list("Job Card", filters={"work_order": work_order, "operation_id": ["in", [t["name"] for t in tasks]],
 		"report_request_id": ["is", "set"]}, fields=["name", "operation_id", "total_completed_qty", "process_loss_qty", "report_effective_seconds", "docstatus", "amended_from"],
 		order_by="creation desc", limit_page_length=50) if tasks else []

@@ -2190,6 +2190,66 @@
     "reason": "local raw execution evidence; not uploaded"
   },
   {
+    "path": "evidence/B06/tasks-20261029/acceptance-summary.json",
+    "original_sha256": "a66cb4d326d180edc5869b7889e644de17261a2bb586985e220651e5c037b320",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B06/tasks-20261029/bounded-change.patch",
+    "original_sha256": "a8af8f8df136fbe6b1d48ab20bded1e19441013f53a7d7910f15756ea6505e11",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B06/tasks-20261029/http-summary.json",
+    "original_sha256": "6a36c77921192556d6db6ecf442b91140153f64347cc2073371d9135eb356c8d",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B06/tasks-20261029/implementation.patch",
+    "original_sha256": "5400304daea042a926dc99bd6b10b10be899e146db9971802a2a17cf72688cb8",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B06/tasks-20261029/old-row-audit.json",
+    "original_sha256": "d68b892d9ce74db86b4177215f1268ed5c9211287a434d3997fa5ee6c585a3de",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B06/tasks-20261029/run-record.md",
+    "original_sha256": "e642ccab2809407b5c7e4281dd744423b6375bd4360d3aaf7089db9df74dc218",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B06/tasks-20261029/source-manifest.json",
+    "original_sha256": "fd1f06e21b88ac75676c76cddac28401efbfb1a570981fbcf09926532d4bffa0",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B06/tasks-20261029/test-batches.json",
+    "original_sha256": "afdbd133bdf3185c1a99a258786c25ac9c0b5c51ea3966fb6b050540a85a805a",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B06/tasks-20261029/test-runtime.json",
+    "original_sha256": "149af199538c18c658f96c713453204ee03be4aa37832735c7de1948eab62a9a",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B06/tasks-20261029/ui-runtime.json",
+    "original_sha256": "149af199538c18c658f96c713453204ee03be4aa37832735c7de1948eab62a9a",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
     "path": "evidence/B08/distinct-concurrency-20261028/baseline.json",
     "original_sha256": "45277afffcaa7414ff6e561ce6b2061701dc8a442f102670ed0dd25cc5efe025",
     "published": true,
@@ -6031,7 +6091,7 @@
   },
   {
     "path": "evidence/R07/card-binding.md",
-    "original_sha256": "45a5baba57d31beebf18df6de63f4b7881b874af978afdf435e41a66deabcbd5",
+    "original_sha256": "dacb741e6fddd7b51525c4d03c7effd1a2444fbe80647d9315b04210e4b0b7d7",
     "published": true,
     "reason": "public copy"
   },
@@ -6214,6 +6274,12 @@
     "original_sha256": "66c8477579be1abb3183ac505ec877735bc7d6f1a1f694ca0353095cf34259e1",
     "published": false,
     "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/发布/2026-10-29-1f2fc31-remote.json",
+    "original_sha256": "97bb779ec766d77beefb3f6cb393b01dceae09abc0deb84490596899eb385d90",
+    "published": true,
+    "reason": "public copy"
   },
   {
     "path": "evidence/发布/2026-10-29-4925f5b-remote.json",

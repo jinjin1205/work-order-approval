@@ -89,7 +89,8 @@ frappe.ui.form.on("Work Order", {
 
 		// formatter for work order operation
 		frm.set_indicator_formatter("operation", function (doc) {
-			return frm.doc.qty == doc.completed_qty ? "green" : "orange";
+			return (frm.doc.approval_requested_by ? doc.status === "Completed" : frm.doc.qty == doc.completed_qty)
+				? "green" : "orange";
 		});
 	},
 
@@ -177,6 +178,12 @@ frappe.ui.form.on("Work Order", {
 	},
 
 	refresh: function (frm) {
+		frm.fields_dict.operations.grid.update_docfield_property("report_scope", "options", [
+			{ value: "", label: __("未授权") },
+			{ value: "ALL", label: __("所有人") },
+			{ value: "DEPT", label: __("指定部门") },
+			{ value: "PERSON", label: __("指定人员") },
+		]);
 		if (frm.doc.docstatus === 0 && ["草稿", "退回"].includes(frm.doc.workflow_state)
 			&& frm.doc.approval_requested_by === frappe.session.user) {
 			frm.add_custom_button("预览任务和用料", () => erpnext.work_order.preview_production_details(frm));
@@ -525,6 +532,16 @@ frappe.ui.form.on("Work Order", {
 
 	show_progress_for_operations: function (frm) {
 		if (frm.doc.operations && frm.doc.operations.length) {
+			if (frm.doc.approval_requested_by) {
+				const total = frm.doc.operations.length;
+				const done = frm.doc.operations.filter((row) => row.status === "Completed").length;
+				const message = __("已完成 {0}/{1} 道工序", [done, total]);
+				frm.dashboard.add_progress(__("任务完成比例"), [{
+					title: message, width: flt(done / total * 100, 2) + "%",
+					progress_class: "progress-bar-success",
+				}], message);
+				return;
+			}
 			let progress_class = {
 				"Work in Progress": "progress-bar-warning",
 				Completed: "progress-bar-success",

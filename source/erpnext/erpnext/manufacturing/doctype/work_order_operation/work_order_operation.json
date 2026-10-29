@@ -7,6 +7,7 @@
  "field_order": [
   "details",
   "operation",
+  "report_plan_qty",
   "status",
   "completed_qty",
   "process_loss_qty",
@@ -41,6 +42,14 @@
   "report_standard_efficiency"
  ],
  "fields": [
+  {
+   "fieldname": "report_plan_qty",
+   "fieldtype": "Data",
+   "label": "任务计划数量",
+   "description": "按工单库存单位填写正数，最多6位小数；可小于工单计划数量。",
+   "in_list_view": 1,
+   "columns": 2
+  },
   {
    "fieldname": "details",
    "fieldtype": "Section Break"
