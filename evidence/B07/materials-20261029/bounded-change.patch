@@ -1,0 +1,452 @@
+--- a/erpnext/manufacturing/doctype/bom/bom.js
++++ b/erpnext/manufacturing/doctype/bom/bom.js
+@@ -64,6 +64,13 @@
+ 					docstatus: 1,
+ 				},
+ 			};
++		});
++	},
++
++	before_save: function (frm) {
++		return new Promise((resolve) => {
++			frappe.confirm("保存对象：产品通用BOM。变更会影响后续引用该版本的工单；覆盖历史结构可能不可恢复，已提交版本请创建新版本。确认保存？",
++				resolve, () => { frappe.validated = false; resolve(); });
+ 		});
+ 	},
+ 
+--- a/erpnext/manufacturing/doctype/bom/bom.py
++++ b/erpnext/manufacturing/doctype/bom/bom.py
+@@ -24,6 +24,18 @@
+ 
+ class BOMRecursionError(frappe.ValidationError):
+ 	pass
++
++
++def validate_child_table_identity(doc, table):
++	rows = doc.get(table)
++	names = [row.name for row in rows if row.name]
++	if len(names) != len(set(names)):
++		frappe.throw("同一计划行身份不能重复使用，请新增本单行", frappe.PermissionError)
++	child_type = doc.meta.get_field(table).options
++	for name in names:
++		parent = frappe.db.get_value(child_type, name, "parent")
++		if parent and parent != doc.name:
++			frappe.throw("不能挪用其他单据的材料或任务行身份，请新增本单行", frappe.PermissionError)
+ 
+ 
+ def material_loss_factor(percent):
+@@ -296,6 +308,7 @@
+ 		self.validate_quantity_inputs()
+ 
+ 	def validate_quantity_inputs(self):
++		validate_child_table_identity(self, "items")
+ 		self.quantity = validate_quantity_input(self.quantity, "BOM父项基数")
+ 		for row in self.items:
+ 			row.qty = validate_quantity_input(row.qty, "第{0}行原料用量".format(row.idx))
+@@ -394,6 +407,15 @@
+ 				frappe.get_all("BOM Item", filters={"parent": self.name}, fields=["name", "material_loss_percent"])}
+ 			if current != previous:
+ 				frappe.throw("已提交的 BOM 不允许修改材料损耗依据，请创建新版本。", exc=frappe.UpdateAfterSubmitError)
++			header = frappe.db.get_value("BOM", self.name, ["item", "quantity", "uom", "company"], as_dict=True)
++			fields = ("name", "item_code", "qty", "uom", "stock_uom", "stock_qty", "conversion_factor", "bom_no",
++				"include_item_in_manufacturing", "do_not_explode")
++			stored = frappe.get_all("BOM Item", filters={"parent": self.name}, fields=list(fields), order_by="idx")
++			def structure(row):
++				return tuple(flt(row.get(f)) if f in ("qty", "stock_qty", "conversion_factor", "include_item_in_manufacturing", "do_not_explode")
++					else row.get(f) or None for f in fields)
++			if any(self.get(f) != header.get(f) for f in header) or [structure(r) for r in self.items] != [structure(r) for r in stored]:
++				frappe.throw("已提交的产品BOM结构不能通过保存或成本更新改写，请复制创建新版本。", exc=frappe.UpdateAfterSubmitError)
+ 
+ 	def on_update_after_submit(self):
+ 		self.validate_bom_links()
+--- a/erpnext/manufacturing/doctype/bom_item/bom_item.py
++++ b/erpnext/manufacturing/doctype/bom_item/bom_item.py
+@@ -2,6 +2,7 @@
+ # License: GNU General Public License v3. See license.txt
+ 
+ 
++import frappe
+ from frappe.model.document import Document
+ 
+ 
+@@ -42,4 +43,9 @@
+ 		uom: DF.Link
+ 	# end: auto-generated types
+ 
+-	pass
++	def validate_parent_material_edit(self):
++		frappe.throw("请通过产品BOM表单修改用料并保存，已提交版本请复制新版本；不能直接改删BOM子行", frappe.PermissionError)
++
++	before_validate = validate_parent_material_edit
++	before_update_after_submit = validate_parent_material_edit
++	on_trash = validate_parent_material_edit
+--- a/erpnext/manufacturing/doctype/work_order/test_work_order.py
++++ b/erpnext/manufacturing/doctype/work_order/test_work_order.py
+@@ -6131,6 +6131,204 @@
+ 		self.assertEqual(self.f.order.reload().workflow_state,"草稿")
+ 
+ 
++class TestWorkOrderMaterials(FrappeTestCase):
++	def setUp(self):
++		self.base = TestWorkOrderExplicitDetails()
++		self.addCleanup(self.base.doCleanups)
++		self.base.setUp()
++		self.base.confirm(self.base.preview())
++		self.order = self.base.order.reload()
++		self.f = self.base.f
++		self.f.order = self.order
++
++	def summary(self):
++		from erpnext.manufacturing.doctype.work_order import work_order
++		return work_order.get_production_material_summary(self.order.name)
++
++	def grant_bom_editor(self):
++		from frappe.permissions import update_permission_property
++		frappe.set_user("Administrator")
++		for ptype in ("create", "write", "delete"):
++			update_permission_property("BOM", self.f.roles[0], 0, ptype, 1)
++		frappe.set_user(self.f.users["operator"])
++
++	def test_00_material_fixture_runnable(self):
++		self.assertEqual(len(self.order.required_items), 1)
++		self.assertEqual(self.order.required_items[0].required_qty, 5)
++		self.assertEqual(self.base.bom.items[0].qty, 0.5)
++		self.assertFalse(frappe.db.exists("Stock Entry", {"work_order": self.order.name}))
++
++	def test_local_save_does_not_change_shared_bom(self):
++		before = frappe.as_json(frappe.get_doc("BOM", self.order.bom_no).as_dict())
++		self.order.required_items[0].required_qty = 6
++		self.order.save().reload()
++		self.assertEqual(self.order.required_items[0].required_qty, 6)
++		self.assertEqual(frappe.as_json(frappe.get_doc("BOM", self.order.bom_no).as_dict()), before)
++
++	def test_invalid_material_quantity_unit_and_actuals_rejected(self):
++		for field, value in (("required_qty", "-1"), ("required_qty", "1.0000001"), ("required_qty", "NaN"),
++			("transferred_qty", 1), ("returned_qty", 1), ("consumed_qty", 1)):
++			with self.subTest(field=field, value=value):
++				self.order.reload()
++				self.order.required_items[0].set(field, value)
++				with self.assertRaises((frappe.ValidationError, frappe.PermissionError)):
++					self.order.save()
++		self.order.reload()
++		self.assertEqual(self.order.required_items[0].required_qty, 5)
++		self.assertEqual(self.order.required_items[0].transferred_qty, 0)
++		other_unit = frappe.db.get_value("UOM", {"name": ["!=", self.order.required_items[0].stock_uom]}, "name")
++		self.assertTrue(other_unit)
++		self.order.required_items[0].stock_uom = other_unit
++		self.order.save().reload()
++		self.assertEqual(self.order.required_items[0].stock_uom,
++			frappe.get_cached_value("Item", self.order.required_items[0].item_code, "stock_uom"))
++
++	def test_frozen_material_child_update_and_delete_rejected(self):
++		from frappe.client import save
++		from frappe.api.v1 import delete_doc
++		from frappe.permissions import update_permission_property
++		frappe.set_user("Administrator")
++		update_permission_property("Work Order", self.f.roles[0], 0, "delete", 1)
++		self.f.act("operator", "送审")
++		row = frappe.get_doc("Work Order Item", self.order.required_items[0].name)
++		row.required_qty = 6
++		with self.assertRaises(frappe.PermissionError):
++			save(row.as_dict())
++		with self.assertRaises(frappe.PermissionError):
++			delete_doc("Work Order Item", row.name)
++		self.order.reload()
++		self.assertEqual(self.order.required_items[0].required_qty, 5)
++
++	def test_material_parent_cannot_steal_or_duplicate_row_identity(self):
++		fields = ("production_item", "bom_no", "qty", "company", "stock_uom", "production_team", "planned_start_date",
++			"expected_delivery_date", "source_warehouse", "wip_warehouse", "fg_warehouse")
++		target = frappe.get_doc({"doctype": "Work Order", **{f: self.order.get(f) for f in fields}}).insert()
++		target.append("required_items", self.order.required_items[0].as_dict())
++		with self.assertRaises(frappe.PermissionError):
++			target.save()
++		self.order.append("required_items", self.order.required_items[0].as_dict())
++		with self.assertRaises(frappe.PermissionError):
++			self.order.save()
++
++	def test_submitted_bom_child_delete_rejected(self):
++		from frappe.api.v1 import delete_doc
++		self.grant_bom_editor()
++		bom = frappe.get_doc("BOM", self.order.bom_no)
++		self.assertTrue(bom.has_permission("delete"))
++		with self.assertRaises((frappe.PermissionError, frappe.UpdateAfterSubmitError)):
++			delete_doc("BOM Item", bom.items[0].name)
++
++	def test_submitted_bom_cost_structure_change_rejected(self):
++		self.grant_bom_editor()
++		bom = frappe.get_doc("BOM", self.order.bom_no)
++		bom.items[0].qty = 0.7
++		with self.assertRaises(frappe.UpdateAfterSubmitError):
++			bom.update_cost()
++		self.assertEqual(frappe.db.get_value("BOM Item", bom.items[0].name, "qty"), 0.5)
++
++	def test_submitted_bom_cost_cannot_spoof_stock_quantity(self):
++		self.grant_bom_editor()
++		bom = frappe.get_doc("BOM", self.order.bom_no)
++		original = bom.items[0].stock_qty
++		bom.items[0].stock_qty, bom.items[0].rate = 99, -999
++		with self.assertRaises(frappe.UpdateAfterSubmitError):
++			bom.update_cost()
++		self.assertEqual(frappe.db.get_value("BOM Item", bom.items[0].name, "stock_qty"), original)
++
++	def test_native_bom_new_version_and_permission_boundary(self):
++		bom = frappe.copy_doc(frappe.get_doc("BOM", self.order.bom_no), ignore_no_copy=False)
++		bom.docstatus, bom.is_default = 0, 0
++		bom.items[0].qty = 0.6
++		with self.assertRaises(frappe.PermissionError):
++			bom.insert()
++		self.grant_bom_editor()
++		bom.insert()
++		self.assertNotEqual(bom.name, self.order.bom_no)
++		bom.items[0].qty = 0.7
++		bom.save().reload()
++		self.assertEqual(bom.items[0].qty, 0.7)
++		self.assertEqual(frappe.db.get_value("BOM Item", self.base.bom.items[0].name, "qty"), 0.5)
++		self.order.reload()
++		self.assertEqual(self.order.required_items[0].required_qty, 5)
++
++	def test_draft_bom_parent_cannot_steal_submitted_material_identity(self):
++		self.grant_bom_editor()
++		bom = frappe.copy_doc(frappe.get_doc("BOM", self.order.bom_no), ignore_no_copy=False)
++		bom.docstatus, bom.is_default = 0, 0
++		bom.insert()
++		bom.items[0].name = self.base.bom.items[0].name
++		with self.assertRaises(frappe.PermissionError):
++			bom.save()
++		with self.assertRaises(frappe.PermissionError):
++			bom.update_cost()
++		self.assertEqual(frappe.db.get_value("BOM Item", self.base.bom.items[0].name, "parent"), self.order.bom_no)
++
++	def test_material_summary_exposes_source_and_rechecks_read(self):
++		data = self.summary()
++		self.assertEqual(len(data["items"]), 1)
++		row = data["items"][0]
++		self.assertEqual(float(row["required"]), 5)
++		self.assertEqual([float(row[key]) for key in ("issued", "returned", "net", "consumed")], [0, 0, 0, 0])
++		self.assertIsNone(row["pending_issue"])
++		self.assertIsNone(row["pending_return"])
++		self.assertIn("未接入", data["pending_source"])
++		self.assertFalse(data["can_write_bom"])
++		frappe.set_user(self.f.users["outsider"])
++		with self.assertRaises(frappe.PermissionError):
++			self.summary()
++
++
++class TestWorkOrderMaterialHistory(FrappeTestCase):
++	def setUp(self):
++		self.base = TestWorkOrderApprovalChanges()
++		self.addCleanup(self.base.doCleanups)
++		self.base.setUp()
++		self.f = self.base.f
++
++	def test_full_return_and_cancelled_history_keep_material_structure(self):
++		from frappe.api.v1 import delete_doc
++		from frappe.client import save
++		from frappe.permissions import update_permission_property
++		from erpnext.manufacturing.doctype.work_order.work_order import get_production_material_summary
++		self.base.approve()
++		frappe.set_user(self.f.users["warehouse"])
++		case = test_stock_entry.TestStockExecutionApproval()
++		case.f = self.f
++		entry = case.transfer(self.f.order)
++		entry.items[0].qty, entry.fg_completed_qty = 10, 10
++		entry.insert().submit()
++		self.f.order.reload()
++		self.assertEqual(self.f.order.required_items[0].transferred_qty, 10)
++		returned = make_stock_return_entry(self.f.order.name)
++		returned.company = self.f.company
++		returned.items[0].cost_center = frappe.get_cached_value("Company", self.f.company, "cost_center")
++		returned.submit()
++		self.f.order.reload()
++		data = get_production_material_summary(self.f.order.name)["items"][0]
++		self.assertEqual([float(data[key]) for key in ("issued", "returned", "net", "consumed")], [10, 10, 0, 0])
++		frappe.set_user("Administrator")
++		update_permission_property("Work Order", self.f.roles[0], 0, "delete", 1)
++		frappe.set_user(self.f.users["operator"])
++		fields = ("production_item", "bom_no", "qty", "company", "stock_uom", "production_team", "planned_start_date",
++			"expected_delivery_date", "source_warehouse", "wip_warehouse", "fg_warehouse")
++		target = frappe.get_doc({"doctype": "Work Order", **{f: self.f.order.get(f) for f in fields}}).insert()
++		for cancel_history in (False, True):
++			if cancel_history:
++				frappe.set_user(self.f.users["warehouse"])
++				returned.cancel()
++				entry.reload().cancel()
++				self.f.order.reload()
++			frappe.set_user(self.f.users["operator"])
++			row = frappe.get_doc("Work Order Item", self.f.order.required_items[0].name)
++			with self.subTest(cancelled=cancel_history):
++				with self.assertRaisesRegex(frappe.PermissionError, "领退.*历史"):
++					delete_doc("Work Order Item", row.name)
++				row.parent = target.name
++				with self.assertRaisesRegex(frappe.PermissionError, "领退.*历史"):
++					save(row.as_dict())
++			self.assertTrue(frappe.db.exists("Work Order Item", self.f.order.required_items[0].name))
++
++
+ class TestWorkOrderTaskAdjustments(FrappeTestCase):
+ 	def setUp(self):
+ 		self.f = TestWorkOrderApproval()
+--- a/erpnext/manufacturing/doctype/work_order/work_order.js
++++ b/erpnext/manufacturing/doctype/work_order/work_order.js
+@@ -3,6 +3,12 @@
+ 
+ frappe.ui.form.on("Work Order", {
+ 	setup: function (frm) {
++		frm.$wrapper.on("dirty.b07-material-save", () => {
++			if (frm.doc.approval_requested_by && frm.doc.docstatus === 0 &&
++				["草稿", "退回"].includes(frm.doc.workflow_state) && frm.get_perm(0, "write")) {
++				frm.page.set_primary_action("保存到本工单", () => frm.save());
++			}
++		});
+ 		if (frappe.workflow.workflows[frm.doctype]?.name === "生产工单两级审批") {
+ 			// Install before the first render_complete, keeping the native state/menu rendering.
+ 			frm.states.show_actions = () => erpnext.work_order.show_production_approval_actions(frm);
+@@ -211,6 +217,7 @@
+ 			}
+ 		}
+ 		erpnext.work_order.show_production_header_guidance(frm);
++		erpnext.work_order.show_production_material_summary(frm);
+ 
+ 		if (frm.doc.status != "Closed") {
+ 			if (
+@@ -268,6 +275,13 @@
+ 	toggle_items_editable(frm) {
+ 		let allow_edit = true;
+ 		if (!frm.doc.__onload?.allow_editing_items) allow_edit = false;
++		if (frm.doc.approval_requested_by) {
++			allow_edit = frm.doc.docstatus === 0 && ["草稿", "退回"].includes(frm.doc.workflow_state)
++				&& frappe.session.user === frm.doc.approval_requested_by
++				&& frappe.user_roles.includes("生产工单发起") && !!frm.get_perm(0, "write");
++			frm.set_df_property("required_items", "label", "本工单用料");
++			frm.set_df_property("required_items", "description", "保存仅更新本工单用料；产品通用BOM在菜单中独立维护，已领退或送审后结构受保护。");
++		}
+ 
+ 		frm.set_df_property("required_items", "cannot_delete_rows", !allow_edit);
+ 		frm.set_df_property("required_items", "cannot_add_rows", !allow_edit);
+@@ -745,6 +759,35 @@
+ });
+ 
+ erpnext.work_order = {
++	show_production_material_summary: function (frm) {
++		if (frm.is_new() || !frm.doc.approval_requested_by || frm.is_dirty()) return;
++		const name = frm.doc.name, modified = frm.doc.modified;
++		frappe.call({
++			method: "erpnext.manufacturing.doctype.work_order.work_order.get_production_material_summary",
++			args: { work_order: name },
++			callback: ({ message }) => {
++				if (frm.doc.name !== name || frm.doc.modified !== modified || frm.is_dirty()) return;
++				const escape = frappe.utils.escape_html;
++				const number = (value) => value === null ? "未接入" : frappe.format(value, {fieldtype: "Float", precision: 6});
++				const rows = message.items.map((row) => `<tr><td>${escape(row.item_code)}</td><td>${escape(row.unit)}</td>` +
++					["required", "issued", "returned", "net", "consumed", "pending_issue", "pending_return"].map((key) => `<td>${number(row[key])}</td>`).join("") + "</tr>").join("");
++				frm.dashboard.add_section(`<div class="b07-material-source"><p>${escape(message.effective_source)}</p>` +
++					`<div class="table-responsive"><table class="table table-bordered"><thead><tr>` +
++					["物料", "库存单位", "需求", "累计已领", "累计已退", "净领料", "实际消耗", "待审批领料", "待审批退料"].map((label) => `<th>${label}</th>`).join("") +
++					`</tr></thead><tbody>${rows}</tbody></table></div><p>${escape(message.pending_source)}</p></div>`, "本工单用料来源");
++				if (message.can_write_bom) {
++					frm.page.add_menu_item("修改产品通用BOM", () => {
++						if (frm.is_dirty() || frm.doc.name !== name || frm.doc.modified !== modified) {
++							frappe.msgprint("工单已变化，请先保存或刷新后确认BOM维护对象。"); return;
++						}
++						frappe.confirm("进入产品通用BOM维护。保存通用版本会影响后续工单，已提交版本请复制新版本；本单用料另行保存。确认进入？",
++							() => frappe.set_route("Form", "BOM", message.bom_no));
++					});
++				}
++			}
++		});
++	},
++
+ 	show_production_header_guidance: function (frm) {
+ 		if (frappe.workflow.workflows[frm.doctype]?.name !== "生产工单两级审批" ||
+ 			frm.doc.docstatus !== 0 || (frm.doc.workflow_state && !["草稿", "退回"].includes(frm.doc.workflow_state))) return;
+--- a/erpnext/manufacturing/doctype/work_order/work_order.py
++++ b/erpnext/manufacturing/doctype/work_order/work_order.py
+@@ -29,6 +29,7 @@
+ 	get_bom_item_rate,
+ 	get_bom_items_as_dict,
+ 	validate_bom_no,
++	validate_child_table_identity,
+ 	validate_quantity_input,
+ )
+ from erpnext.manufacturing.doctype.manufacturing_settings.manufacturing_settings import (
+@@ -319,6 +320,24 @@
+ 				if key not in ("name", "parent", "parenttype", "parentfield")})
+ 	order.save()
+ 	return {"work_order": order.name, "modified": str(order.modified)}
++
++
++@frappe.whitelist()
++def get_production_material_summary(work_order):
++	from decimal import Decimal
++
++	order = frappe.get_doc("Work Order", work_order)
++	order.check_permission("read")
++	items = [{"name": row.name, "item_code": row.item_code, "item_name": row.item_name,
++		"unit": row.stock_uom, "required": row.required_qty, "issued": row.transferred_qty,
++		"returned": row.returned_qty, "net": Decimal(str(row.transferred_qty)) - Decimal(str(row.returned_qty)),
++		"consumed": row.consumed_qty, "pending_issue": None, "pending_return": None} for row in order.required_items]
++	bom = frappe.get_doc("BOM", order.bom_no) if order.bom_no else None
++	can_read = bool(bom and bom.has_permission("read"))
++	return {"work_order": order.name, "modified": str(order.modified), "bom_no": order.bom_no,
++		"can_read_bom": can_read, "can_write_bom": bool(can_read and bom.has_permission("write")), "items": items,
++		"pending_source": "库存待审批状态来源未接入，不能由全部草稿推定待审批量；未接入不等于0。",
++		"effective_source": "累计领/退仅含已提交库存单据，净领为两者之差；实际消耗独立读取，不用净领替代。"}
+ 
+ 
+ class WorkOrder(Document):
+@@ -1622,15 +1641,23 @@
+ 		value = row.get("report_plan_qty")
+ 		return validate_quantity_input(self.qty if value in (None, "") else value, "任务计划数量")
+ 
++	def validate_production_plan_rows(self):
++		if self.get("approval_requested_by") and self.docstatus == 0 and self.get("workflow_state") in ("草稿", "退回"):
++			for table in ("operations", "required_items"):
++				validate_child_table_identity(self, table)
++			for row in self.required_items:
++				row.required_qty = validate_quantity_input(row.required_qty, "物料需求数量", allow_zero=True)
++				unit = frappe.get_cached_value("Item", row.item_code, "stock_uom")
++				if not unit or row.stock_uom not in (None, "", unit):
++					frappe.throw("本单用料必须使用该物料的库存单位，请核对物料和单位")
++				row.stock_uom = unit
++				for field in ("transferred_qty", "returned_qty", "consumed_qty"):
++					value = row.get(field)
++					if value not in (None, "") and validate_quantity_input(value, "库存生效数量", allow_zero=True):
++						frappe.throw("草稿用料不能填写已领、已退或实际消耗，请通过库存单据形成事实", frappe.PermissionError)
++
+ 	def validate_operations(self):
+-		if self.get("approval_requested_by") and self.docstatus == 0 and self.get("workflow_state") in ("草稿", "退回"):
+-			names = [row.name for row in self.operations if row.name]
+-			if len(names) != len(set(names)):
+-				frappe.throw("同一任务行身份不能重复使用；复制任务请新增工序行", frappe.PermissionError)
+-			for name in names:
+-				parent = frappe.db.get_value("Work Order Operation", name, "parent")
+-				if parent and parent != self.name:
+-					frappe.throw("不能挪用其他工单的任务行身份；请新增本单工序行", frappe.PermissionError)
++		self.validate_production_plan_rows()
+ 		for d in self.operations:
+ 			if self.get("approval_requested_by"):
+ 				editable = self.docstatus == 0 and self.get("workflow_state") in ("草稿", "退回")
+--- a/erpnext/manufacturing/doctype/work_order_item/work_order_item.py
++++ b/erpnext/manufacturing/doctype/work_order_item/work_order_item.py
+@@ -37,7 +37,19 @@
+ 		transferred_qty: DF.Float
+ 	# end: auto-generated types
+ 
+-	pass
++	def validate_direct_material_edit(self):
++		stored_parent = frappe.db.get_value("Work Order Item", self.name, "parent") if not self.is_new() else None
++		for parent in {stored_parent, self.parent} - {None, ""}:
++			if frappe.db.exists("Stock Entry", {"work_order": parent, "docstatus": [">", 0]}):
++				frappe.throw("工单已有领退等库存单据历史，净额归零或取消后仍不能改写、删除或改挂用料行", frappe.PermissionError)
++			if frappe.db.get_value("Work Order", parent, "approval_requested_by"):
++				from erpnext.manufacturing.doctype.work_order.work_order import _production_order_for_details
++				_production_order_for_details(parent, for_update=True)
++				frappe.throw("请通过本工单用料表修改并保存，不能直接改写或删除用料子行", frappe.PermissionError)
++
++	before_validate = validate_direct_material_edit
++	before_update_after_submit = validate_direct_material_edit
++	on_trash = validate_direct_material_edit
+ 
+ 
+ def on_doctype_update():

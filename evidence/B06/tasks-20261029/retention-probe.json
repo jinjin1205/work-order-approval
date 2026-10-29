@@ -1,0 +1,8 @@
+{
+  "native_same_status_write_changed_fields": [
+    "modified"
+  ],
+  "old_tables_restored_after_rollback": 23,
+  "historical_original_field_diff_reconstructed": false,
+  "new_fact_created": false
+}

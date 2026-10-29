@@ -67,6 +67,13 @@ frappe.ui.form.on("BOM", {
 		});
 	},
 
+	before_save: function (frm) {
+		return new Promise((resolve) => {
+			frappe.confirm("保存对象：产品通用BOM。变更会影响后续引用该版本的工单；覆盖历史结构可能不可恢复，已提交版本请创建新版本。确认保存？",
+				resolve, () => { frappe.validated = false; resolve(); });
+		});
+	},
+
 	validate: function (frm) {
 		if (frm.doc.fg_based_operating_cost && frm.doc.with_operations) {
 			frappe.throw({

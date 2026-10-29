@@ -1,0 +1,21 @@
+{
+  "old_tables_exact_rows_preserved": 24,
+  "old_row_mismatches": 0,
+  "old_Bin_rows_preserved": true,
+  "new_independent_items": 2,
+  "new_independent_station": 1,
+  "local_required": 6,
+  "original_bom_quantity": 0.5,
+  "new_bom_draft_quantity": 0.6,
+  "issued": 6,
+  "returned": 6,
+  "net": 0,
+  "actual_consumed": 0,
+  "pending_approval_source": "UNCONNECTED_NOT_ZERO",
+  "seed_receipts": 1,
+  "new_issue_and_return_documents": 2,
+  "new_reports": 0,
+  "new_users": 2,
+  "new_roles": 2,
+  "old_users_roles_permissions_unchanged": true
+}

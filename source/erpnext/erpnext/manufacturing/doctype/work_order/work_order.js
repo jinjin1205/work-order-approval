@@ -3,6 +3,12 @@
 
 frappe.ui.form.on("Work Order", {
 	setup: function (frm) {
+		frm.$wrapper.on("dirty.b07-material-save", () => {
+			if (frm.doc.approval_requested_by && frm.doc.docstatus === 0 &&
+				["草稿", "退回"].includes(frm.doc.workflow_state) && frm.get_perm(0, "write")) {
+				frm.page.set_primary_action("保存到本工单", () => frm.save());
+			}
+		});
 		if (frappe.workflow.workflows[frm.doctype]?.name === "生产工单两级审批") {
 			// Install before the first render_complete, keeping the native state/menu rendering.
 			frm.states.show_actions = () => erpnext.work_order.show_production_approval_actions(frm);
@@ -211,6 +217,7 @@ frappe.ui.form.on("Work Order", {
 			}
 		}
 		erpnext.work_order.show_production_header_guidance(frm);
+		erpnext.work_order.show_production_material_summary(frm);
 
 		if (frm.doc.status != "Closed") {
 			if (
@@ -268,6 +275,13 @@ frappe.ui.form.on("Work Order", {
 	toggle_items_editable(frm) {
 		let allow_edit = true;
 		if (!frm.doc.__onload?.allow_editing_items) allow_edit = false;
+		if (frm.doc.approval_requested_by) {
+			allow_edit = frm.doc.docstatus === 0 && ["草稿", "退回"].includes(frm.doc.workflow_state)
+				&& frappe.session.user === frm.doc.approval_requested_by
+				&& frappe.user_roles.includes("生产工单发起") && !!frm.get_perm(0, "write");
+			frm.set_df_property("required_items", "label", "本工单用料");
+			frm.set_df_property("required_items", "description", "保存仅更新本工单用料；产品通用BOM在菜单中独立维护，已领退或送审后结构受保护。");
+		}
 
 		frm.set_df_property("required_items", "cannot_delete_rows", !allow_edit);
 		frm.set_df_property("required_items", "cannot_add_rows", !allow_edit);
@@ -745,6 +759,35 @@ frappe.ui.form.on("Work Order Operation", {
 });
 
 erpnext.work_order = {
+	show_production_material_summary: function (frm) {
+		if (frm.is_new() || !frm.doc.approval_requested_by || frm.is_dirty()) return;
+		const name = frm.doc.name, modified = frm.doc.modified;
+		frappe.call({
+			method: "erpnext.manufacturing.doctype.work_order.work_order.get_production_material_summary",
+			args: { work_order: name },
+			callback: ({ message }) => {
+				if (frm.doc.name !== name || frm.doc.modified !== modified || frm.is_dirty()) return;
+				const escape = frappe.utils.escape_html;
+				const number = (value) => value === null ? "未接入" : frappe.format(value, {fieldtype: "Float", precision: 6});
+				const rows = message.items.map((row) => `<tr><td>${escape(row.item_code)}</td><td>${escape(row.unit)}</td>` +
+					["required", "issued", "returned", "net", "consumed", "pending_issue", "pending_return"].map((key) => `<td>${number(row[key])}</td>`).join("") + "</tr>").join("");
+				frm.dashboard.add_section(`<div class="b07-material-source"><p>${escape(message.effective_source)}</p>` +
+					`<div class="table-responsive"><table class="table table-bordered"><thead><tr>` +
+					["物料", "库存单位", "需求", "累计已领", "累计已退", "净领料", "实际消耗", "待审批领料", "待审批退料"].map((label) => `<th>${label}</th>`).join("") +
+					`</tr></thead><tbody>${rows}</tbody></table></div><p>${escape(message.pending_source)}</p></div>`, "本工单用料来源");
+				if (message.can_write_bom) {
+					frm.page.add_menu_item("修改产品通用BOM", () => {
+						if (frm.is_dirty() || frm.doc.name !== name || frm.doc.modified !== modified) {
+							frappe.msgprint("工单已变化，请先保存或刷新后确认BOM维护对象。"); return;
+						}
+						frappe.confirm("进入产品通用BOM维护。保存通用版本会影响后续工单，已提交版本请复制新版本；本单用料另行保存。确认进入？",
+							() => frappe.set_route("Form", "BOM", message.bom_no));
+					});
+				}
+			}
+		});
+	},
+
 	show_production_header_guidance: function (frm) {
 		if (frappe.workflow.workflows[frm.doctype]?.name !== "生产工单两级审批" ||
 			frm.doc.docstatus !== 0 || (frm.doc.workflow_state && !["草稿", "退回"].includes(frm.doc.workflow_state))) return;

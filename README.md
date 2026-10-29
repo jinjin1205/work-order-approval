@@ -6,7 +6,7 @@
 
 ## 从哪里继续
 
-**2026-10-29最新实施入口：**[当前进度与后续TODO](docs/开发TODO.md#current-progress)。B06任务调整/授权已实现：原生grid增删复制重排、独立任务计划、冻结/撤权/行身份保护；20个不同方法分批覆盖，普通中文PC及真实HTTP部分任务限额已验。两连接争计划1仅一报工、零库存，页面完成1/3。**保持门槛未通过，未归档：**22旧表完全一致、1条共用合成工位行不同，旧值未保存，字段级差异未证明，不能称旧23表全不变。[B06实际记录](evidence/B06/tasks-20261029/run-record.md)。下一步仅处理该证据边界，再进B07；B05未变成果冻结。
+**2026-10-29最新结果：**[当前进度与后续TODO](docs/开发TODO.md#current-progress)。B06工位保持差异已纠正：使用独立工位，一笔新报工后旧23表完全保持，历史FAILED不覆盖、历史字段差异不猜测；[纠正证据](evidence/B06/tasks-20261029/retention-correction.md)。B07限定包已实现：本单保存与通用BOM维护/新版本作用域明确，材料行/成本路径身份及历史结构锁、数量来源展示。12新＋4受影响原方法共16方法分批通过，普通中文PC本单需求6/原BOM0.5/新草稿0.6；原生受控领6退6后页面分别显示6/6/6/0/0，仍锁。旧24表含Bin捕获行保持，36运行文件匹配；[B07实际记录](evidence/B07/materials-20261029/run-record.md)。待审批来源明确“未接入”，整卡、完整G1/G2/G3、手机/现场及Z01未关闭。当前限定包归档，不恢复暂停后台任务。
 
 | 大板块 | 小任务卡 | 整卡收口 | 部分完成 | 未完成 |
 |---|---:|---:|---:|---:|
@@ -48,11 +48,11 @@ OpenSpec采用原卡引用模式，不复制平行清单；CLI无法解析外部
 
 ## 代码保存方式
 
-**2026-10-29源码更新：**本包仅修改原Work Order控制器/表单/测试及JSON四文件，累计26份源码。JSON只给三个既有字段加no_copy，无新字段、表或依赖；普通新建/复制/修订先空0/0，准备计划仍用原入口。新建实绩输入拒绝，停止/取消及父删复用原权限和历史保护。旧计算、审批、计时结束与报工/库存算法保留。测试及专用网页容器各34份清单文件匹配，未重建镜像；以源码锁、元数据加载与实际页面为依据，历史批次不外推整卡通过。
+**2026-10-29源码更新：**本包仅修改原Work Order控制器/表单/测试及JSON四文件，累计28份源码。JSON只给三个既有字段加no_copy，无新字段、表或依赖；普通新建/复制/修订先空0/0，准备计划仍用原入口。新建实绩输入拒绝，停止/取消及父删复用原权限和历史保护。旧计算、审批、计时结束与报工/库存算法保留。测试及专用网页容器各34份清单文件匹配，未重建镜像；以源码锁、元数据加载与实际页面为依据，历史批次不外推整卡通过。
 
 [source/source-lock.json](source/source-lock.json)固定ERPNext v15.124.1的完整上游提交。`source/erpnext/`保存截至本批的**26个完整修改或新增文件**（18份上游派生、8份新增）及上游许可证；[当前差异补丁](evidence/B05/entries-20261029/implementation.patch)同时保留。Frappe v15.124.0保持原版，没有重复上传完整上游目录、Git缓存或容器镜像。既有逐笔事实、计价冻结、金额/效率快照和中文入口保留；history-paths包在原工序控制器增加历史引用保护并补原测试，仅两个文件变化；后续I03/I04及I05/I06包只增加验证脚本/证据，产品源码未改，复用原Document生命周期与权限，未新增服务、元数据或生产/库存账本。
 
-GitHub已经保存这26份源码、固定上游锁、`tools/prepare_source.py`、任务文档和可公开证据。`git pull`只更新当前归档仓的受跟踪文件；被忽略的`.development/repos/erpnext`维护checkout、运行中的容器和数据库不会随之自动更新。已有本机环境继续复用原数据，先核源码差异，再按对应任务决定是否同步源码或迁移；不要为拉取文档而重建站点、覆盖维护代码或重复业务样例。
+GitHub已经保存这28份源码、固定上游锁、`tools/prepare_source.py`、任务文档和可公开证据。`git pull`只更新当前归档仓的受跟踪文件；被忽略的`.development/repos/erpnext`维护checkout、运行中的容器和数据库不会随之自动更新。已有本机环境继续复用原数据，先核源码差异，再按对应任务决定是否同步源码或迁移；不要为拉取文档而重建站点、覆盖维护代码或重复业务样例。
 
 在一份新克隆中准备完整维护源码（需要Git、Python 3、网络；不启动数据库或写业务数据）：
 
@@ -60,7 +60,7 @@ GitHub已经保存这26份源码、固定上游锁、`tools/prepare_source.py`�
 python3 tools/prepare_source.py
 ```
 
-脚本固定获取上游SHA，核对原文件哈希，再覆盖清单中的26个已保存文件（18份上游派生、8份新增；新增文件在上游应不存在）并验证修改后哈希。已有`.development/repos/erpnext`时会停止，不覆盖已有工作。新机器准备源码后仍需私有配置、数据备份及相应环境验证；源码恢复成功或本机旧环境可用都不代表Z01干净环境启动、备份恢复和独立接手通过。新增BOM字段已在隔离测试站和既有开发站执行原生reload-doc，数量默认精度使用六位；既有站运行新源码前须先按所属任务导入元数据并验证，不能直接启动新镜像而沿用旧字段。B14两份新DocType须先按[evidence/R07/time-config-binding.md](evidence/R07/time-config-binding.md)加载子表再主表；`.development/checks/b14_prepare.py`只准备隔离站角色/link-select，客户配置角色及Company授权需显式映射。首次加载B08计价包元数据的站点还需在新源码环境执行原生`reload-doc manufacturing doctype work_order_operation`及`reload-doc manufacturing doctype job_card`，然后对该授权站点执行`clear-cache`并重新加载页面，核对新增计价字段与计时/计件中文下拉；已完成相同元数据加载的站点无需因本轮history-paths重复reload-doc。本包首次加载还须对目标授权站点执行原生`reload-doc manufacturing doctype work_order`，使三个既有字段no_copy生效，清目标DocType缓存并完整刷新页面。修订需显式原生create/amend及生产发起角色授权；本包新隔离角色不代表客户权限初始化。生产报工Role、员工/公司/班组和任务scope须显式映射，不能给操作工整单write；最小更正另需原生cancel权限。合成fixture不是客户权限初始化脚本，不可在客户站直接运行。随后按[本地开发环境说明](.development/README.md)配置本机新凭据和独立站点。镜像是已验证的固定ARM64基线，其他机器、完整生产服务及客户部署仍需对应验收。
+脚本固定获取上游SHA，核对原文件哈希，再覆盖清单中的28个已保存文件（20份上游派生、8份新增；新增文件在上游应不存在）并验证修改后哈希。已有`.development/repos/erpnext`时会停止，不覆盖已有工作。新机器准备源码后仍需私有配置、数据备份及相应环境验证；源码恢复成功或本机旧环境可用都不代表Z01干净环境启动、备份恢复和独立接手通过。新增BOM字段已在隔离测试站和既有开发站执行原生reload-doc，数量默认精度使用六位；既有站运行新源码前须先按所属任务导入元数据并验证，不能直接启动新镜像而沿用旧字段。B14两份新DocType须先按[evidence/R07/time-config-binding.md](evidence/R07/time-config-binding.md)加载子表再主表；`.development/checks/b14_prepare.py`只准备隔离站角色/link-select，客户配置角色及Company授权需显式映射。首次加载B08计价包元数据的站点还需在新源码环境执行原生`reload-doc manufacturing doctype work_order_operation`及`reload-doc manufacturing doctype job_card`，然后对该授权站点执行`clear-cache`并重新加载页面，核对新增计价字段与计时/计件中文下拉；已完成相同元数据加载的站点无需因本轮history-paths重复reload-doc。本包首次加载还须对目标授权站点执行原生`reload-doc manufacturing doctype work_order`，使三个既有字段no_copy生效，清目标DocType缓存并完整刷新页面。修订需显式原生create/amend及生产发起角色授权；本包新隔离角色不代表客户权限初始化。生产报工Role、员工/公司/班组和任务scope须显式映射，不能给操作工整单write；最小更正另需原生cancel权限。合成fixture不是客户权限初始化脚本，不可在客户站直接运行。随后按[本地开发环境说明](.development/README.md)配置本机新凭据和独立站点。镜像是已验证的固定ARM64基线，其他机器、完整生产服务及客户部署仍需对应验收。
 
 ## 公开与本地边界
 

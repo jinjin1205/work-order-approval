@@ -6131,6 +6131,204 @@ class TestWorkOrderHeader(FrappeTestCase):
 		self.assertEqual(self.f.order.reload().workflow_state,"草稿")
 
 
+class TestWorkOrderMaterials(FrappeTestCase):
+	def setUp(self):
+		self.base = TestWorkOrderExplicitDetails()
+		self.addCleanup(self.base.doCleanups)
+		self.base.setUp()
+		self.base.confirm(self.base.preview())
+		self.order = self.base.order.reload()
+		self.f = self.base.f
+		self.f.order = self.order
+
+	def summary(self):
+		from erpnext.manufacturing.doctype.work_order import work_order
+		return work_order.get_production_material_summary(self.order.name)
+
+	def grant_bom_editor(self):
+		from frappe.permissions import update_permission_property
+		frappe.set_user("Administrator")
+		for ptype in ("create", "write", "delete"):
+			update_permission_property("BOM", self.f.roles[0], 0, ptype, 1)
+		frappe.set_user(self.f.users["operator"])
+
+	def test_00_material_fixture_runnable(self):
+		self.assertEqual(len(self.order.required_items), 1)
+		self.assertEqual(self.order.required_items[0].required_qty, 5)
+		self.assertEqual(self.base.bom.items[0].qty, 0.5)
+		self.assertFalse(frappe.db.exists("Stock Entry", {"work_order": self.order.name}))
+
+	def test_local_save_does_not_change_shared_bom(self):
+		before = frappe.as_json(frappe.get_doc("BOM", self.order.bom_no).as_dict())
+		self.order.required_items[0].required_qty = 6
+		self.order.save().reload()
+		self.assertEqual(self.order.required_items[0].required_qty, 6)
+		self.assertEqual(frappe.as_json(frappe.get_doc("BOM", self.order.bom_no).as_dict()), before)
+
+	def test_invalid_material_quantity_unit_and_actuals_rejected(self):
+		for field, value in (("required_qty", "-1"), ("required_qty", "1.0000001"), ("required_qty", "NaN"),
+			("transferred_qty", 1), ("returned_qty", 1), ("consumed_qty", 1)):
+			with self.subTest(field=field, value=value):
+				self.order.reload()
+				self.order.required_items[0].set(field, value)
+				with self.assertRaises((frappe.ValidationError, frappe.PermissionError)):
+					self.order.save()
+		self.order.reload()
+		self.assertEqual(self.order.required_items[0].required_qty, 5)
+		self.assertEqual(self.order.required_items[0].transferred_qty, 0)
+		other_unit = frappe.db.get_value("UOM", {"name": ["!=", self.order.required_items[0].stock_uom]}, "name")
+		self.assertTrue(other_unit)
+		self.order.required_items[0].stock_uom = other_unit
+		self.order.save().reload()
+		self.assertEqual(self.order.required_items[0].stock_uom,
+			frappe.get_cached_value("Item", self.order.required_items[0].item_code, "stock_uom"))
+
+	def test_frozen_material_child_update_and_delete_rejected(self):
+		from frappe.client import save
+		from frappe.api.v1 import delete_doc
+		from frappe.permissions import update_permission_property
+		frappe.set_user("Administrator")
+		update_permission_property("Work Order", self.f.roles[0], 0, "delete", 1)
+		self.f.act("operator", "送审")
+		row = frappe.get_doc("Work Order Item", self.order.required_items[0].name)
+		row.required_qty = 6
+		with self.assertRaises(frappe.PermissionError):
+			save(row.as_dict())
+		with self.assertRaises(frappe.PermissionError):
+			delete_doc("Work Order Item", row.name)
+		self.order.reload()
+		self.assertEqual(self.order.required_items[0].required_qty, 5)
+
+	def test_material_parent_cannot_steal_or_duplicate_row_identity(self):
+		fields = ("production_item", "bom_no", "qty", "company", "stock_uom", "production_team", "planned_start_date",
+			"expected_delivery_date", "source_warehouse", "wip_warehouse", "fg_warehouse")
+		target = frappe.get_doc({"doctype": "Work Order", **{f: self.order.get(f) for f in fields}}).insert()
+		target.append("required_items", self.order.required_items[0].as_dict())
+		with self.assertRaises(frappe.PermissionError):
+			target.save()
+		self.order.append("required_items", self.order.required_items[0].as_dict())
+		with self.assertRaises(frappe.PermissionError):
+			self.order.save()
+
+	def test_submitted_bom_child_delete_rejected(self):
+		from frappe.api.v1 import delete_doc
+		self.grant_bom_editor()
+		bom = frappe.get_doc("BOM", self.order.bom_no)
+		self.assertTrue(bom.has_permission("delete"))
+		with self.assertRaises((frappe.PermissionError, frappe.UpdateAfterSubmitError)):
+			delete_doc("BOM Item", bom.items[0].name)
+
+	def test_submitted_bom_cost_structure_change_rejected(self):
+		self.grant_bom_editor()
+		bom = frappe.get_doc("BOM", self.order.bom_no)
+		bom.items[0].qty = 0.7
+		with self.assertRaises(frappe.UpdateAfterSubmitError):
+			bom.update_cost()
+		self.assertEqual(frappe.db.get_value("BOM Item", bom.items[0].name, "qty"), 0.5)
+
+	def test_submitted_bom_cost_cannot_spoof_stock_quantity(self):
+		self.grant_bom_editor()
+		bom = frappe.get_doc("BOM", self.order.bom_no)
+		original = bom.items[0].stock_qty
+		bom.items[0].stock_qty, bom.items[0].rate = 99, -999
+		with self.assertRaises(frappe.UpdateAfterSubmitError):
+			bom.update_cost()
+		self.assertEqual(frappe.db.get_value("BOM Item", bom.items[0].name, "stock_qty"), original)
+
+	def test_native_bom_new_version_and_permission_boundary(self):
+		bom = frappe.copy_doc(frappe.get_doc("BOM", self.order.bom_no), ignore_no_copy=False)
+		bom.docstatus, bom.is_default = 0, 0
+		bom.items[0].qty = 0.6
+		with self.assertRaises(frappe.PermissionError):
+			bom.insert()
+		self.grant_bom_editor()
+		bom.insert()
+		self.assertNotEqual(bom.name, self.order.bom_no)
+		bom.items[0].qty = 0.7
+		bom.save().reload()
+		self.assertEqual(bom.items[0].qty, 0.7)
+		self.assertEqual(frappe.db.get_value("BOM Item", self.base.bom.items[0].name, "qty"), 0.5)
+		self.order.reload()
+		self.assertEqual(self.order.required_items[0].required_qty, 5)
+
+	def test_draft_bom_parent_cannot_steal_submitted_material_identity(self):
+		self.grant_bom_editor()
+		bom = frappe.copy_doc(frappe.get_doc("BOM", self.order.bom_no), ignore_no_copy=False)
+		bom.docstatus, bom.is_default = 0, 0
+		bom.insert()
+		bom.items[0].name = self.base.bom.items[0].name
+		with self.assertRaises(frappe.PermissionError):
+			bom.save()
+		with self.assertRaises(frappe.PermissionError):
+			bom.update_cost()
+		self.assertEqual(frappe.db.get_value("BOM Item", self.base.bom.items[0].name, "parent"), self.order.bom_no)
+
+	def test_material_summary_exposes_source_and_rechecks_read(self):
+		data = self.summary()
+		self.assertEqual(len(data["items"]), 1)
+		row = data["items"][0]
+		self.assertEqual(float(row["required"]), 5)
+		self.assertEqual([float(row[key]) for key in ("issued", "returned", "net", "consumed")], [0, 0, 0, 0])
+		self.assertIsNone(row["pending_issue"])
+		self.assertIsNone(row["pending_return"])
+		self.assertIn("未接入", data["pending_source"])
+		self.assertFalse(data["can_write_bom"])
+		frappe.set_user(self.f.users["outsider"])
+		with self.assertRaises(frappe.PermissionError):
+			self.summary()
+
+
+class TestWorkOrderMaterialHistory(FrappeTestCase):
+	def setUp(self):
+		self.base = TestWorkOrderApprovalChanges()
+		self.addCleanup(self.base.doCleanups)
+		self.base.setUp()
+		self.f = self.base.f
+
+	def test_full_return_and_cancelled_history_keep_material_structure(self):
+		from frappe.api.v1 import delete_doc
+		from frappe.client import save
+		from frappe.permissions import update_permission_property
+		from erpnext.manufacturing.doctype.work_order.work_order import get_production_material_summary
+		self.base.approve()
+		frappe.set_user(self.f.users["warehouse"])
+		case = test_stock_entry.TestStockExecutionApproval()
+		case.f = self.f
+		entry = case.transfer(self.f.order)
+		entry.items[0].qty, entry.fg_completed_qty = 10, 10
+		entry.insert().submit()
+		self.f.order.reload()
+		self.assertEqual(self.f.order.required_items[0].transferred_qty, 10)
+		returned = make_stock_return_entry(self.f.order.name)
+		returned.company = self.f.company
+		returned.items[0].cost_center = frappe.get_cached_value("Company", self.f.company, "cost_center")
+		returned.submit()
+		self.f.order.reload()
+		data = get_production_material_summary(self.f.order.name)["items"][0]
+		self.assertEqual([float(data[key]) for key in ("issued", "returned", "net", "consumed")], [10, 10, 0, 0])
+		frappe.set_user("Administrator")
+		update_permission_property("Work Order", self.f.roles[0], 0, "delete", 1)
+		frappe.set_user(self.f.users["operator"])
+		fields = ("production_item", "bom_no", "qty", "company", "stock_uom", "production_team", "planned_start_date",
+			"expected_delivery_date", "source_warehouse", "wip_warehouse", "fg_warehouse")
+		target = frappe.get_doc({"doctype": "Work Order", **{f: self.f.order.get(f) for f in fields}}).insert()
+		for cancel_history in (False, True):
+			if cancel_history:
+				frappe.set_user(self.f.users["warehouse"])
+				returned.cancel()
+				entry.reload().cancel()
+				self.f.order.reload()
+			frappe.set_user(self.f.users["operator"])
+			row = frappe.get_doc("Work Order Item", self.f.order.required_items[0].name)
+			with self.subTest(cancelled=cancel_history):
+				with self.assertRaisesRegex(frappe.PermissionError, "领退.*历史"):
+					delete_doc("Work Order Item", row.name)
+				row.parent = target.name
+				with self.assertRaisesRegex(frappe.PermissionError, "领退.*历史"):
+					save(row.as_dict())
+			self.assertTrue(frappe.db.exists("Work Order Item", self.f.order.required_items[0].name))
+
+
 class TestWorkOrderTaskAdjustments(FrappeTestCase):
 	def setUp(self):
 		self.f = TestWorkOrderApproval()

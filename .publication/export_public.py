@@ -16,14 +16,14 @@ details_manifest = json.loads((ROOT / ".development/checks/b05-details-source-ma
 closeout_manifest = json.loads((ROOT / ".development/checks/b05-closeout-source-manifest.json").read_text())
 header_manifest = json.loads((ROOT / ".development/checks/b05-header-source-manifest.json").read_text())
 entries_manifest = json.loads((ROOT / ".development/checks/b05-entries-source-manifest.json").read_text())
-manifest = json.loads((ROOT / ".development/checks/b06-tasks-source-manifest.json").read_text())
+manifest = json.loads((ROOT / ".development/checks/b07-materials-source-manifest.json").read_text())
 metrics_manifest = json.loads((ROOT / ".development/checks/b08-metrics-source-manifest.json").read_text())
 followup_manifest = json.loads((ROOT / ".development/checks/b08-followup-source-manifest.json").read_text())
 changes = subprocess.check_output(["git", "diff", "--name-only", BASE], cwd=REPO, text=True).splitlines()
 patch = subprocess.check_output(["git", "diff", BASE], cwd=REPO)
-assert len(changes) == 26
+assert len(changes) == 28
 assert hashlib.sha256(patch).hexdigest() == manifest["patch_sha256"]
-assert patch == (ROOT / "evidence/B06/tasks-20261029/implementation.patch").read_bytes()
+assert patch == (ROOT / "evidence/B07/materials-20261029/implementation.patch").read_bytes()
 for name in changes:
     assert hashlib.sha256((REPO / name).read_bytes()).hexdigest() == manifest["files"][name]
 
@@ -50,7 +50,7 @@ def portable(text):
 for name in changes:
     add("source/erpnext/" + name, (REPO / name).read_bytes(), ".development/repos/erpnext/" + name)
 add("source/erpnext/license.txt", (REPO / "license.txt").read_bytes(), ".development/repos/erpnext/license.txt")
-for name in ("evidence/B06/tasks-20261029/implementation.patch", "evidence/B06/tasks-20261029/bounded-change.patch", "evidence/B05/entries-20261029/implementation.patch", "evidence/B05/entries-20261029/bounded-change.patch", "evidence/B05/header-20261029/implementation.patch", "evidence/B05/header-20261029/bounded-change.patch", "evidence/B05/closeout-20261029/implementation.patch", "evidence/B05/closeout-20261029/bounded-change.patch", "evidence/B05/explicit-details-20261029/implementation.patch", "evidence/B05/explicit-details-20261029/bounded-change.patch", "evidence/B10/combined-implementation.patch", "evidence/B19/combined-implementation.patch",
+for name in ("evidence/B07/materials-20261029/implementation.patch", "evidence/B07/materials-20261029/bounded-change.patch", "evidence/B06/tasks-20261029/implementation.patch", "evidence/B06/tasks-20261029/bounded-change.patch", "evidence/B05/entries-20261029/implementation.patch", "evidence/B05/entries-20261029/bounded-change.patch", "evidence/B05/header-20261029/implementation.patch", "evidence/B05/header-20261029/bounded-change.patch", "evidence/B05/closeout-20261029/implementation.patch", "evidence/B05/closeout-20261029/bounded-change.patch", "evidence/B05/explicit-details-20261029/implementation.patch", "evidence/B05/explicit-details-20261029/bounded-change.patch", "evidence/B10/combined-implementation.patch", "evidence/B19/combined-implementation.patch",
              "evidence/B19/b19-only.patch", "evidence/B19/execution-gate/combined-implementation.patch",
              "evidence/B19/entry-history/combined-implementation.patch",
              "evidence/B19/approved-changes/combined-implementation.patch",
@@ -68,11 +68,13 @@ paths += sorted((ROOT / "openspec/changes/b08-followup-20261028").glob("*.md"))
 paths += [ROOT / "openspec/changes/b08-followup-20261028/.openspec.yaml"]
 paths += sorted((ROOT / "openspec/changes/explicit-order-details-20261029").rglob("*.md"))
 paths += [ROOT / "openspec/changes/explicit-order-details-20261029/.openspec.yaml"]
-paths += sorted((ROOT / "openspec/changes/b06-task-adjustments-20261029").rglob("*.md"))
-paths += [ROOT / "openspec/changes/b06-task-adjustments-20261029/.openspec.yaml"]
+paths += sorted((ROOT / "openspec/changes/archive/2026-10-29-b06-task-adjustments-20261029").rglob("*.md"))
+paths += [ROOT / "openspec/changes/archive/2026-10-29-b06-task-adjustments-20261029/.openspec.yaml"]
 paths += sorted((ROOT / "openspec/changes/archive/2026-10-29-work-order-closeout-20261029").rglob("*.md"))
 paths += [ROOT / "openspec/changes/archive/2026-10-29-work-order-closeout-20261029/.openspec.yaml"]
-paths += [ROOT / "openspec/specs/production-order-closeout/spec.md"]
+paths += [ROOT / "openspec/specs/production-order-closeout/spec.md", ROOT / "openspec/specs/production-task-adjustments/spec.md"]
+paths += sorted((ROOT / "openspec/changes/archive/2026-10-29-b07-material-boundaries-20261029").rglob("*.md"))
+paths += [ROOT / "openspec/changes/archive/2026-10-29-b07-material-boundaries-20261029/.openspec.yaml", ROOT / "openspec/specs/production-material-boundaries/spec.md"]
 paths += sorted((ROOT / "openspec/changes/archive/2026-10-29-work-order-header-20261029").rglob("*.md"))
 paths += [ROOT / "openspec/changes/archive/2026-10-29-work-order-header-20261029/.openspec.yaml"]
 paths += [ROOT / "openspec/specs/production-order-header/spec.md"]
@@ -98,6 +100,15 @@ for path in paths:
     add(relative, clean, relative, "personal paths/runtime identifiers removed" if original != clean else "unchanged")
 
 safe_json = [
+    "evidence/B06/tasks-20261029/retention-correction.json",
+    "evidence/B06/tasks-20261029/retention-probe.json",
+    "evidence/发布/2026-10-29-69aa1b9-remote.json",
+    "evidence/B07/materials-20261029/source-manifest.json",
+    "evidence/B07/materials-20261029/test-batches.json",
+    "evidence/B07/materials-20261029/acceptance-summary.json",
+    "evidence/B07/materials-20261029/old-row-audit.json",
+    "evidence/B07/materials-20261029/test-runtime.json",
+    "evidence/B07/materials-20261029/ui-runtime.json",
     "evidence/B06/tasks-20261029/source-manifest.json",
     "evidence/B06/tasks-20261029/test-batches.json",
     "evidence/B06/tasks-20261029/http-summary.json",
@@ -334,6 +345,10 @@ previous_receipts = json.loads((ROOT / ".development/private/b06-tasks-20261029/
 assert test_receipts == previous_receipts, "Historical 42 receipts must remain exact"
 for batch in json.loads((ROOT / "evidence/B06/tasks-20261029/test-batches.json").read_text())["batches"]:
     test_receipts.append({**batch, "executed_on": "2026-10-29", "group": "B06 bounded task adjustments: " + Path(batch["local_log"]).stem})
+previous_b07_receipts = json.loads((ROOT / ".development/private/b07-materials-20261029/base-receipts.json").read_text())["tests"]
+assert test_receipts == previous_b07_receipts, "Historical 50 receipts must remain exact"
+for batch in json.loads((ROOT / "evidence/B07/materials-20261029/test-batches.json").read_text())["batches"]:
+    test_receipts.append({**batch, "executed_on": "2026-10-29", "group": "B07 bounded material boundaries: " + Path(batch["local_log"]).stem})
 add("publication/test-receipts.json", json.dumps({"scope": "Separate executed batches; FAILED red/intermediate batches preserved. Exact source patch where captured, explicit null otherwise. No cumulative full-suite result; publication does not rerun tests", "tests": test_receipts, "http_B02_historical": safe_http, "current_patch_sha256": manifest["patch_sha256"]}, ensure_ascii=False, indent=2) + "\n")
 
 index = []

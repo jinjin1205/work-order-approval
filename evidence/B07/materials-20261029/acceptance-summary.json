@@ -1,0 +1,67 @@
+{
+  "date": "2026-10-29",
+  "scope": "B07 bound seven-file local material save, explicit native shared-BOM maintenance, history/identity boundaries and source display; not whole-card acceptance",
+  "source_patch_sha256": "222e92cce70c730d0cf81b83689384d6fbea31c41d444775892dda7fa60d8172",
+  "modified_package_files": 7,
+  "current_cumulative_modified_files": 28,
+  "runtime_files_matched_per_site": 36,
+  "python_files_compiled_per_site": 19,
+  "unique_passing_methods": 16,
+  "new_methods": 12,
+  "affected_original_methods": 4,
+  "single_final_full_suite": false,
+  "pc": {
+    "ordinary_editor": true,
+    "local_required_saved_and_reopened": 6,
+    "source_bom_quantity_unchanged": 0.5,
+    "new_version_cancel_did_not_insert": true,
+    "native_new_version_saved_as_draft_quantity": 0.6,
+    "send_for_review_material_editable": false,
+    "after_native_issue_and_return": {
+      "demand": 6,
+      "gross_issued": 6,
+      "returned": 6,
+      "net": 0,
+      "consumed": 0,
+      "pending_issue": "UNCONNECTED",
+      "pending_return": "UNCONNECTED"
+    },
+    "after_roundtrip_material_editable": false,
+    "after_roundtrip_visible_add_buttons": 0,
+    "stock_posting_was_native_controlled_prerequisite_not_PC_acceptance": true
+  },
+  "retention": {
+    "old_tables_exact_rows_preserved": 24,
+    "old_row_mismatches": 0,
+    "old_Bin_rows_preserved": true,
+    "new_independent_items": 2,
+    "new_independent_station": 1,
+    "local_required": 6,
+    "original_bom_quantity": 0.5,
+    "new_bom_draft_quantity": 0.6,
+    "issued": 6,
+    "returned": 6,
+    "net": 0,
+    "actual_consumed": 0,
+    "pending_approval_source": "UNCONNECTED_NOT_ZERO",
+    "seed_receipts": 1,
+    "new_issue_and_return_documents": 2,
+    "new_reports": 0,
+    "new_users": 2,
+    "new_roles": 2,
+    "old_users_roles_permissions_unchanged": true
+  },
+  "review": {
+    "scope": "seven product files, independent static review",
+    "important_found": 1,
+    "important_closed": 1,
+    "issue": "Submitted BOM native cost endpoint accepted forged stock_qty; actual red then stock_qty freeze with native normal cost positive green.",
+    "final_blocking_findings_reported": 0
+  },
+  "not_verified": [
+    "Inventory pending-approval source not connected; neither draft count nor null means zero.",
+    "Whole B07 CASE-01/02/06, complete G1/G2/G3, field/mobile acceptance and Z01 delivery are not closed.",
+    "No full approval/reporting/inventory/cost suite rerun; unchanged accepted items reused.",
+    "No stock issue/return UI acceptance; native controlled prerequisites and final material-source PC display only."
+  ]
+}

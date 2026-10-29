@@ -8,8 +8,10 @@ import frappe
 
 os.chdir("sites")
 p = Path("/tmp/b08-private")
-a = json.loads((p / "b06-tasks-ui.json").read_text())
-baseline = json.loads((p / "b06-tasks-before.json").read_text())
+case = sys.argv[sys.argv.index("--case") + 1] if "--case" in sys.argv else "b06-tasks"
+assert case in ("b06-tasks", "b06-retention")
+a = json.loads((p / (case + "-ui.json")).read_text())
+baseline = json.loads((p / (case + "-before.json")).read_text())
 frappe.init(site=a["site"])
 frappe.connect()
 try:
@@ -45,13 +47,17 @@ try:
         assert set(differences) == {"Workstation"} and len(differences["Workstation"]) == 1
         station = frappe.db.get_value("Workstation", differences["Workstation"][0], ["status", "modified_by"], as_dict=True)
         assert station.modified_by == a["actors"]["reporter"]["user"]
-    print(json.dumps({"strict_old_row_retention_result": "FAILED" if differences else "OK",
+    if case == "b06-retention":
+        assert additions["Workstation"] == 1 and all(r.workstation == a["workstation"] for r in order.operations)
+    print(json.dumps({"acceptance_case": case, "historical_failed_case_replaced": False,
+        "strict_old_row_retention_result": "FAILED" if differences else "OK",
         "old_tables_captured": len(baseline), "old_tables_exact_rows_preserved": len(baseline) - len(differences),
         "changed_old_rows": {dt: len(rows) for dt, rows in differences.items()},
         "changed_station_current_modifier_is_new_reporter": bool(differences),
         "old_station_field_level_diff_proven": False if differences else None,
         "native_station_state_audit_not_restored": bool(differences),
-        "original_task_identities_retained": True, "new_copy_and_insert_removed_after_saved_acceptance": True,
+        "original_task_identities_retained": True,
+        "new_copy_and_insert_removed_after_saved_acceptance": True if case == "b06-tasks" else None,
         "independent_task_plans": [1, 2, 3], "parent_plan": 10, "completed_tasks": 1, "total_tasks": 3,
         "effective_reports": 1, "new_draft_plan_cards": 3, "time_logs": 1, "new_stock_entries": 0,
         "new_stock_ledger_entries": 0, "new_users": 2, "new_roles": 1, "new_employee": 1,

@@ -3,6 +3,7 @@ import hashlib
 import json
 import os
 import secrets
+import sys
 from pathlib import Path
 import frappe
 from frappe.permissions import add_permission, add_user_permission
@@ -11,7 +12,9 @@ from frappe.utils.password import update_password
 os.umask(0o077)
 os.chdir("sites")
 p = Path("/tmp/b08-private")
-access, baseline = p / "b06-tasks-ui.json", p / "b06-tasks-before.json"
+case = sys.argv[1] if len(sys.argv) > 1 else "b06-tasks"
+assert case in ("b06-tasks", "b06-retention")
+access, baseline = p / (case + "-ui.json"), p / (case + "-before.json")
 assert not access.exists() and not baseline.exists(), "Resume existing B06 fixture; do not recreate"
 source = json.loads((p / "fixture.json").read_text())
 entries = json.loads((p / "b05-entries-ui.json").read_text())
@@ -25,9 +28,16 @@ try:
     before = {}
     for dt in tables:
         columns = sorted(frappe.db.get_table_columns(dt))
-        before[dt] = {"columns": columns, "rows": {row.name: hashlib.sha256(json.dumps(dict(row), sort_keys=True, ensure_ascii=False, default=str).encode()).hexdigest() for row in frappe.get_all(dt, fields=columns, limit_page_length=0)}}
+        rows = frappe.get_all(dt, fields=columns, limit_page_length=0)
+        before[dt] = {"columns": columns, "rows": {row.name: hashlib.sha256(json.dumps(dict(row), sort_keys=True, ensure_ascii=False, default=str).encode()).hexdigest() for row in rows}}
+        if dt == "Workstation":
+            before[dt]["raw_rows"] = {row.name: dict(row) for row in rows}
     old = frappe.get_doc("Work Order", entries["copy_source"])
     prefix = "B06-TASK-" + frappe.generate_hash(length=8)
+    bom = frappe.get_doc("BOM", details["bom_no"])
+    station = frappe.copy_doc(frappe.get_doc("Workstation", bom.operations[0].workstation), ignore_no_copy=False)
+    station.workstation_name = prefix + "-独立工位"
+    station.insert()
     # New fixture-only select role: no change to prior role matrices or customer deployment.
     select_role = frappe.get_doc({"doctype": "Role", "role_name": prefix + "-select", "desk_access": 1}).insert().name
     for dt in ("Employee", "Department"):
@@ -52,13 +62,12 @@ try:
         "date_of_joining": "2020-01-01", "company": old.company, "department": old.production_team, "status": "Active",
         "user_id": actors["reporter"]["user"], "create_user_permission": 0}).insert().name
     frappe.set_user(actors["editor"]["user"])
-    bom = frappe.get_doc("BOM", details["bom_no"])
     order = frappe.get_doc({"doctype": "Work Order", "production_item": details["production_item"], "bom_no": bom.name,
         "company": old.company, "production_team": old.production_team, "qty": 10, "stock_uom": old.stock_uom,
         "expected_delivery_date": frappe.utils.add_days(frappe.utils.nowdate(), 7), "planned_start_date": frappe.utils.now(),
         "source_warehouse": old.source_warehouse, "wip_warehouse": old.wip_warehouse, "fg_warehouse": old.fg_warehouse}).insert()
     for row in bom.operations:
-        order.append("operations", {"operation": row.operation, "workstation": row.workstation, "time_in_mins": row.time_in_mins,
+        order.append("operations", {"operation": row.operation, "workstation": station.name, "time_in_mins": row.time_in_mins,
             "sequence_id": row.sequence_id, "report_scope": "ALL"})
     order.set_required_items()
     order.save()
@@ -70,12 +79,13 @@ try:
     value = {"site": source["site"], "base_url": source["base_url"], "actors": actors, "employee": employee,
         "order": order.name, "company": old.company, "department": old.production_team,
         "original_rows": [r.name for r in order.operations], "operations": [r.operation for r in order.operations],
-        "reviewer": old.approval_reviewed_by, "director": entries["actors"]["director"]["user"]}
-    baseline.write_text(json.dumps(before, ensure_ascii=False, indent=2))
+        "reviewer": old.approval_reviewed_by, "director": entries["actors"]["director"]["user"], "workstation": station.name}
+    baseline.write_text(json.dumps(before, ensure_ascii=False, indent=2, default=str))
     access.write_text(json.dumps(value, ensure_ascii=False, indent=2))
     frappe.db.commit()
     print(json.dumps({"old_tables_captured": len(before), "new_users": 2, "new_roles": 1, "new_employee": 1,
-        "prepared_draft": 1, "tasks": 3, "reports": 0, "inventory": 0, "narrow_reporter_no_order_write": True, "secrets_printed": False}))
+        "prepared_draft": 1, "tasks": 3, "reports": 0, "inventory": 0, "independent_workstation": 1,
+        "narrow_reporter_no_order_write": True, "secrets_printed": False}))
 finally:
     frappe.db.rollback()
     frappe.destroy()

@@ -552,6 +552,216 @@
       "old_tables_rollback_unchanged": 15,
       "executed_on": "2026-10-29",
       "group": "B06 bounded task adjustments: green-review"
+    },
+    {
+      "local_log": ".development/private/b07-materials-20261029/logs/p0.log",
+      "sha256": "401b0ad4b6898767feefc7674f43b2cc8ef7beced527bc4a07d6d59986381ba0",
+      "tests": 1,
+      "seconds": "7.102",
+      "result": "OK",
+      "failures": 0,
+      "errors": 0,
+      "passed_methods": 1,
+      "method_names": [
+        "test_00_material_fixture_runnable"
+      ],
+      "passing_method_names": [
+        "test_00_material_fixture_runnable"
+      ],
+      "old_tables_unchanged": 15,
+      "source_patch_sha256": null,
+      "executed_on": "2026-10-29",
+      "group": "B07 bounded material boundaries: p0"
+    },
+    {
+      "local_log": ".development/private/b07-materials-20261029/logs/red.log",
+      "sha256": "d2ccc56a39286373bd9a3adabb9fea6a78efa60cc06c4bb20abeeb0801f470ec",
+      "tests": 4,
+      "seconds": "27.418",
+      "result": "FAILED (failures=4)",
+      "failures": 4,
+      "errors": 0,
+      "passed_methods": 0,
+      "method_names": [
+        "test_frozen_material_child_update_and_delete_rejected",
+        "test_material_parent_cannot_steal_or_duplicate_row_identity",
+        "test_submitted_bom_child_delete_rejected",
+        "test_submitted_bom_cost_structure_change_rejected"
+      ],
+      "passing_method_names": [],
+      "old_tables_unchanged": 15,
+      "source_patch_sha256": null,
+      "executed_on": "2026-10-29",
+      "group": "B07 bounded material boundaries: red"
+    },
+    {
+      "local_log": ".development/private/b07-materials-20261029/logs/green.log",
+      "sha256": "98a523abb0d6046c6c05085e67cdd1917d54cc901e825fe8e0e6048f598cf05d",
+      "tests": 13,
+      "seconds": "87.362",
+      "result": "FAILED (failures=1, errors=2)",
+      "failures": 1,
+      "errors": 2,
+      "passed_methods": 11,
+      "method_names": [
+        "test_local_save_does_not_change_shared_bom",
+        "test_invalid_material_quantity_unit_and_actuals_rejected",
+        "test_frozen_material_child_update_and_delete_rejected",
+        "test_material_parent_cannot_steal_or_duplicate_row_identity",
+        "test_submitted_bom_child_delete_rejected",
+        "test_submitted_bom_cost_structure_change_rejected",
+        "test_native_bom_new_version_and_permission_boundary",
+        "test_material_summary_exposes_source_and_rechecks_read",
+        "test_full_return_and_cancelled_history_keep_material_structure",
+        "test_insert_copy_reorder_delete_retains_row_identity",
+        "test_parent_save_cannot_steal_task_identity_from_another_order",
+        "test_parent_save_cannot_repeat_existing_task_identity",
+        "test_cost_update_cannot_change_submitted_material_loss"
+      ],
+      "passing_method_names": [
+        "test_local_save_does_not_change_shared_bom",
+        "test_frozen_material_child_update_and_delete_rejected",
+        "test_material_parent_cannot_steal_or_duplicate_row_identity",
+        "test_submitted_bom_child_delete_rejected",
+        "test_submitted_bom_cost_structure_change_rejected",
+        "test_native_bom_new_version_and_permission_boundary",
+        "test_material_summary_exposes_source_and_rechecks_read",
+        "test_insert_copy_reorder_delete_retains_row_identity",
+        "test_parent_save_cannot_steal_task_identity_from_another_order",
+        "test_parent_save_cannot_repeat_existing_task_identity",
+        "test_cost_update_cannot_change_submitted_material_loss"
+      ],
+      "old_tables_unchanged": 15,
+      "source_patch_sha256": null,
+      "executed_on": "2026-10-29",
+      "group": "B07 bounded material boundaries: green"
+    },
+    {
+      "local_log": ".development/private/b07-materials-20261029/logs/red-bom-identity.log",
+      "sha256": "2eab2860785631953fd11a4bd2a620651081319c4fb54ad1a1d9d0c2c6d5afaf",
+      "tests": 1,
+      "seconds": "7.088",
+      "result": "FAILED (failures=1)",
+      "failures": 1,
+      "errors": 0,
+      "passed_methods": 0,
+      "method_names": [
+        "test_draft_bom_parent_cannot_steal_submitted_material_identity"
+      ],
+      "passing_method_names": [],
+      "old_tables_unchanged": 15,
+      "source_patch_sha256": null,
+      "executed_on": "2026-10-29",
+      "group": "B07 bounded material boundaries: red-bom-identity"
+    },
+    {
+      "local_log": ".development/private/b07-materials-20261029/logs/targeted.log",
+      "sha256": "657896506ad6a87652cd2e13268093bc9778c92ac45b2a2c96c2b7408f70260c",
+      "tests": 6,
+      "seconds": "41.440",
+      "result": "FAILED (failures=1)",
+      "failures": 1,
+      "errors": 0,
+      "passed_methods": 5,
+      "method_names": [
+        "test_invalid_material_quantity_unit_and_actuals_rejected",
+        "test_draft_bom_parent_cannot_steal_submitted_material_identity",
+        "test_native_bom_new_version_and_permission_boundary",
+        "test_material_parent_cannot_steal_or_duplicate_row_identity",
+        "test_full_return_and_cancelled_history_keep_material_structure",
+        "test_insert_copy_reorder_delete_retains_row_identity"
+      ],
+      "passing_method_names": [
+        "test_draft_bom_parent_cannot_steal_submitted_material_identity",
+        "test_native_bom_new_version_and_permission_boundary",
+        "test_material_parent_cannot_steal_or_duplicate_row_identity",
+        "test_full_return_and_cancelled_history_keep_material_structure",
+        "test_insert_copy_reorder_delete_retains_row_identity"
+      ],
+      "old_tables_unchanged": 15,
+      "source_patch_sha256": null,
+      "executed_on": "2026-10-29",
+      "group": "B07 bounded material boundaries: targeted"
+    },
+    {
+      "local_log": ".development/private/b07-materials-20261029/logs/red-draft-cost.log",
+      "sha256": "9b35f90f6a7d2be160dd51c55452cc591023c31ce319e2e01c1da6599ce04381",
+      "tests": 1,
+      "seconds": "7.355",
+      "result": "FAILED (failures=1)",
+      "failures": 1,
+      "errors": 0,
+      "passed_methods": 0,
+      "method_names": [
+        "test_draft_bom_parent_cannot_steal_submitted_material_identity"
+      ],
+      "passing_method_names": [],
+      "old_tables_unchanged": 15,
+      "source_patch_sha256": null,
+      "executed_on": "2026-10-29",
+      "group": "B07 bounded material boundaries: red-draft-cost"
+    },
+    {
+      "local_log": ".development/private/b07-materials-20261029/logs/final-two.log",
+      "sha256": "45f735b09d779c0d870f55473d15c0bcff567667ad9beecb3fa86cd932a22ec8",
+      "tests": 2,
+      "seconds": "16.406",
+      "result": "OK",
+      "failures": 0,
+      "errors": 0,
+      "passed_methods": 2,
+      "method_names": [
+        "test_invalid_material_quantity_unit_and_actuals_rejected",
+        "test_draft_bom_parent_cannot_steal_submitted_material_identity"
+      ],
+      "passing_method_names": [
+        "test_invalid_material_quantity_unit_and_actuals_rejected",
+        "test_draft_bom_parent_cannot_steal_submitted_material_identity"
+      ],
+      "old_tables_unchanged": 15,
+      "source_patch_sha256": null,
+      "executed_on": "2026-10-29",
+      "group": "B07 bounded material boundaries: final-two"
+    },
+    {
+      "local_log": ".development/private/b07-materials-20261029/logs/review-red.log",
+      "sha256": "ce7bfa0ddabbb3203aee9b703ea11dcbfb256ef18752892dcbe4681caab30aad",
+      "tests": 1,
+      "seconds": "7.947",
+      "result": "FAILED (failures=1)",
+      "failures": 1,
+      "errors": 0,
+      "passed_methods": 0,
+      "method_names": [
+        "test_submitted_bom_cost_cannot_spoof_stock_quantity"
+      ],
+      "passing_method_names": [],
+      "old_tables_unchanged": 15,
+      "source_patch_sha256": null,
+      "executed_on": "2026-10-29",
+      "group": "B07 bounded material boundaries: review-red"
+    },
+    {
+      "local_log": ".development/private/b07-materials-20261029/logs/review-green.log",
+      "sha256": "d64ba879ae8e28bbea481ab91c98ca37249ad9ad2bf19be1148e2ed5cab56477",
+      "tests": 2,
+      "seconds": "8.290",
+      "result": "OK",
+      "failures": 0,
+      "errors": 0,
+      "passed_methods": 2,
+      "method_names": [
+        "test_submitted_bom_cost_cannot_spoof_stock_quantity",
+        "test_cost_update_cannot_change_submitted_material_loss"
+      ],
+      "passing_method_names": [
+        "test_submitted_bom_cost_cannot_spoof_stock_quantity",
+        "test_cost_update_cannot_change_submitted_material_loss"
+      ],
+      "old_tables_unchanged": 15,
+      "source_patch_sha256": "222e92cce70c730d0cf81b83689384d6fbea31c41d444775892dda7fa60d8172",
+      "executed_on": "2026-10-29",
+      "group": "B07 bounded material boundaries: review-green"
     }
   ],
   "http_B02_historical": {
@@ -563,5 +773,5 @@
     "verified_after_all_requests": true,
     "publication_note": "Only assertions/counts retained; runtime business_state and raw responses remain local."
   },
-  "current_patch_sha256": "5400304daea042a926dc99bd6b10b10be899e146db9971802a2a17cf72688cb8"
+  "current_patch_sha256": "222e92cce70c730d0cf81b83689384d6fbea31c41d444775892dda7fa60d8172"
 }

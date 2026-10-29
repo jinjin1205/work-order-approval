@@ -29,6 +29,7 @@ from erpnext.manufacturing.doctype.bom.bom import (
 	get_bom_item_rate,
 	get_bom_items_as_dict,
 	validate_bom_no,
+	validate_child_table_identity,
 	validate_quantity_input,
 )
 from erpnext.manufacturing.doctype.manufacturing_settings.manufacturing_settings import (
@@ -319,6 +320,24 @@ def confirm_production_order_details(work_order, expected_modified, fingerprint)
 				if key not in ("name", "parent", "parenttype", "parentfield")})
 	order.save()
 	return {"work_order": order.name, "modified": str(order.modified)}
+
+
+@frappe.whitelist()
+def get_production_material_summary(work_order):
+	from decimal import Decimal
+
+	order = frappe.get_doc("Work Order", work_order)
+	order.check_permission("read")
+	items = [{"name": row.name, "item_code": row.item_code, "item_name": row.item_name,
+		"unit": row.stock_uom, "required": row.required_qty, "issued": row.transferred_qty,
+		"returned": row.returned_qty, "net": Decimal(str(row.transferred_qty)) - Decimal(str(row.returned_qty)),
+		"consumed": row.consumed_qty, "pending_issue": None, "pending_return": None} for row in order.required_items]
+	bom = frappe.get_doc("BOM", order.bom_no) if order.bom_no else None
+	can_read = bool(bom and bom.has_permission("read"))
+	return {"work_order": order.name, "modified": str(order.modified), "bom_no": order.bom_no,
+		"can_read_bom": can_read, "can_write_bom": bool(can_read and bom.has_permission("write")), "items": items,
+		"pending_source": "库存待审批状态来源未接入，不能由全部草稿推定待审批量；未接入不等于0。",
+		"effective_source": "累计领/退仅含已提交库存单据，净领为两者之差；实际消耗独立读取，不用净领替代。"}
 
 
 class WorkOrder(Document):
@@ -1622,15 +1641,23 @@ class WorkOrder(Document):
 		value = row.get("report_plan_qty")
 		return validate_quantity_input(self.qty if value in (None, "") else value, "任务计划数量")
 
-	def validate_operations(self):
+	def validate_production_plan_rows(self):
 		if self.get("approval_requested_by") and self.docstatus == 0 and self.get("workflow_state") in ("草稿", "退回"):
-			names = [row.name for row in self.operations if row.name]
-			if len(names) != len(set(names)):
-				frappe.throw("同一任务行身份不能重复使用；复制任务请新增工序行", frappe.PermissionError)
-			for name in names:
-				parent = frappe.db.get_value("Work Order Operation", name, "parent")
-				if parent and parent != self.name:
-					frappe.throw("不能挪用其他工单的任务行身份；请新增本单工序行", frappe.PermissionError)
+			for table in ("operations", "required_items"):
+				validate_child_table_identity(self, table)
+			for row in self.required_items:
+				row.required_qty = validate_quantity_input(row.required_qty, "物料需求数量", allow_zero=True)
+				unit = frappe.get_cached_value("Item", row.item_code, "stock_uom")
+				if not unit or row.stock_uom not in (None, "", unit):
+					frappe.throw("本单用料必须使用该物料的库存单位，请核对物料和单位")
+				row.stock_uom = unit
+				for field in ("transferred_qty", "returned_qty", "consumed_qty"):
+					value = row.get(field)
+					if value not in (None, "") and validate_quantity_input(value, "库存生效数量", allow_zero=True):
+						frappe.throw("草稿用料不能填写已领、已退或实际消耗，请通过库存单据形成事实", frappe.PermissionError)
+
+	def validate_operations(self):
+		self.validate_production_plan_rows()
 		for d in self.operations:
 			if self.get("approval_requested_by"):
 				editable = self.docstatus == 0 and self.get("workflow_state") in ("草稿", "退回")

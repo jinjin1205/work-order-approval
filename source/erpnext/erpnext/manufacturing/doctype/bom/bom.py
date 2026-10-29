@@ -26,6 +26,18 @@ class BOMRecursionError(frappe.ValidationError):
 	pass
 
 
+def validate_child_table_identity(doc, table):
+	rows = doc.get(table)
+	names = [row.name for row in rows if row.name]
+	if len(names) != len(set(names)):
+		frappe.throw("同一计划行身份不能重复使用，请新增本单行", frappe.PermissionError)
+	child_type = doc.meta.get_field(table).options
+	for name in names:
+		parent = frappe.db.get_value(child_type, name, "parent")
+		if parent and parent != doc.name:
+			frappe.throw("不能挪用其他单据的材料或任务行身份，请新增本单行", frappe.PermissionError)
+
+
 def material_loss_factor(percent):
 	return Decimal(1) + Decimal(str(percent or 0)) / 100
 
@@ -296,6 +308,7 @@ class BOM(WebsiteGenerator):
 		self.validate_quantity_inputs()
 
 	def validate_quantity_inputs(self):
+		validate_child_table_identity(self, "items")
 		self.quantity = validate_quantity_input(self.quantity, "BOM父项基数")
 		for row in self.items:
 			row.qty = validate_quantity_input(row.qty, "第{0}行原料用量".format(row.idx))
@@ -394,6 +407,15 @@ class BOM(WebsiteGenerator):
 				frappe.get_all("BOM Item", filters={"parent": self.name}, fields=["name", "material_loss_percent"])}
 			if current != previous:
 				frappe.throw("已提交的 BOM 不允许修改材料损耗依据，请创建新版本。", exc=frappe.UpdateAfterSubmitError)
+			header = frappe.db.get_value("BOM", self.name, ["item", "quantity", "uom", "company"], as_dict=True)
+			fields = ("name", "item_code", "qty", "uom", "stock_uom", "stock_qty", "conversion_factor", "bom_no",
+				"include_item_in_manufacturing", "do_not_explode")
+			stored = frappe.get_all("BOM Item", filters={"parent": self.name}, fields=list(fields), order_by="idx")
+			def structure(row):
+				return tuple(flt(row.get(f)) if f in ("qty", "stock_qty", "conversion_factor", "include_item_in_manufacturing", "do_not_explode")
+					else row.get(f) or None for f in fields)
+			if any(self.get(f) != header.get(f) for f in header) or [structure(r) for r in self.items] != [structure(r) for r in stored]:
+				frappe.throw("已提交的产品BOM结构不能通过保存或成本更新改写，请复制创建新版本。", exc=frappe.UpdateAfterSubmitError)
 
 	def on_update_after_submit(self):
 		self.validate_bom_links()

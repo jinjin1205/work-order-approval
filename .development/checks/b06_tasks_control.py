@@ -8,7 +8,9 @@ from frappe.tests.utils import change_settings
 from erpnext.manufacturing.doctype.work_order.work_order import apply_production_approval
 
 os.chdir("sites")
-a = json.loads(Path("/tmp/b08-private/b06-tasks-ui.json").read_text())
+case = sys.argv[2] if len(sys.argv) > 2 else "b06-tasks"
+assert case in ("b06-tasks", "b06-retention")
+a = json.loads(Path("/tmp/b08-private", case + "-ui.json").read_text())
 assert a["site"] == "xgd-b08-http.localhost" and a["actors"]["editor"]["user"].startswith("b06-task-")
 frappe.init(site=a["site"])
 frappe.connect()
@@ -20,6 +22,20 @@ try:
         frappe.cache.hdel("doctype_form_meta", "Work Order")
         frappe.db.commit()
         print(json.dumps({"work_order_cache_cleared": True}))
+    elif mode == "prepare-retention":
+        assert case == "b06-retention"
+        frappe.set_user(a["actors"]["editor"]["user"])
+        order = frappe.get_doc("Work Order", a["order"])
+        assert order.workflow_state == "草稿"
+        for row, plan, scope in zip(order.operations, (1, 2, 3), ("PERSON", "DEPT", "ALL")):
+            row.report_plan_qty, row.report_scope = str(plan), scope
+            row.report_employee = a["employee"] if scope == "PERSON" else None
+            row.report_department = a["department"] if scope == "DEPT" else None
+            assert row.workstation == a["workstation"]
+        order.save()
+        apply_production_approval(order.name, "送审", str(order.modified))
+        frappe.db.commit()
+        print(json.dumps({"prepared_independent_station_case": True}))
     elif mode == "approve":
         order = frappe.get_doc("Work Order", a["order"])
         assert order.workflow_state == "待审核", "Do not replay approval"
@@ -34,6 +50,7 @@ try:
         frappe.set_user("Administrator")
         order = frappe.get_doc("Work Order", a["order"])
         print(json.dumps({"state": order.workflow_state, "status": order.status, "parent_plan": order.qty,
+            "workstations": [r.workstation for r in order.operations],
             "produced": order.produced_qty, "tasks": [{"name": r.name, "plan": r.report_plan_qty, "scope": r.report_scope,
                 "good": r.completed_qty, "bad": r.process_loss_qty, "status": r.status} for r in order.operations],
             "reports": frappe.db.count("Job Card", {"work_order": order.name, "docstatus": 1}),
