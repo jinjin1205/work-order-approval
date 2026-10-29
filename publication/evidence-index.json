@@ -1854,6 +1854,108 @@
     "reason": "local raw execution evidence; not uploaded"
   },
   {
+    "path": "evidence/B05/header-20261029/acceptance-summary.json",
+    "original_sha256": "39017f28292bc2d6468788bf4a9da318cd537de98b8550d6b63147338edeb73a",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/header-20261029/bounded-change.patch",
+    "original_sha256": "b7511858ec0d04c4c1e4d114a0d09b56af3d7003d570b83d5c34a5fc3f6b4e17",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/header-20261029/green-first.log",
+    "original_sha256": "749c62ce6e1c69499fbd1e41303fb5b137ec456054c81017e6a4554ba03a43c1",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/header-20261029/implementation.patch",
+    "original_sha256": "382c6d2f0498fc0747599e4e0eab1920375484c0c267395f9b3df3967b1f35b9",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/header-20261029/intermediate-suite-source.json",
+    "original_sha256": "bdb2a09e16cdfb230fb1a1be23059faab1fae80fc81b68db38de6bc2b3d05e66",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/header-20261029/overdue-fixed.log",
+    "original_sha256": "615c74fef7e2072122fe4565de6b9d33ea45a9ae737117935d33eda5c9f14b42",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/header-20261029/red-baseline.log",
+    "original_sha256": "c42b605a6640fbf7c4a777c1af947c0a5058c6fdc7cd5b74486cdb44f3179919",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/header-20261029/red-before.log",
+    "original_sha256": "3b285226e79ab02e331bcb139e5868e8aac1b34e053d1b76c8db844462bae289",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/header-20261029/red-overdue-policy.log",
+    "original_sha256": "763f0d6185360253138b29b9eea8e1e34bef1caba2f5dc70d96a940090bf3619",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/header-20261029/review-notes.md",
+    "original_sha256": "c910b84d69c3fc84a36712c373eae515f9bda413ae211a3407df2dac38b21795",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/header-20261029/run-record.md",
+    "original_sha256": "daac3f386b987c124b1c72e035f266094747eef7fe2c68c1fb38c58109b70aca",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/header-20261029/source-manifest.json",
+    "original_sha256": "8782b2b7af88f9179e2fc13a93b86560c502f0b6f2b5b9ab4558d9bfb9d97af9",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/header-20261029/test-runtime-source.json",
+    "original_sha256": "23cbb3c0ba9cd223ec6208539b1538d12a46d794f65d72a5f4f924d311897f87",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/header-20261029/ui-preserve-final.json",
+    "original_sha256": "d4b6145ac5b23bfdcf5b71f247df50a3750e7fbaa4e2d777e150015e6e455553",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/header-20261029/ui-preserve.json",
+    "original_sha256": "35830c705c3fa9536b7c1f8c034f4924b2d05936c652c038de5680fc938cda6b",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/header-20261029/ui-runtime-source.json",
+    "original_sha256": "23cbb3c0ba9cd223ec6208539b1538d12a46d794f65d72a5f4f924d311897f87",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/header-20261029/ui-setup.log",
+    "original_sha256": "ebf44c7ad842f343f4c8f53be66b0be9b8701aeb9bcbf41c0dc71138db3e49c1",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
     "path": "evidence/B08/distinct-concurrency-20261028/baseline.json",
     "original_sha256": "45277afffcaa7414ff6e561ce6b2061701dc8a442f102670ed0dd25cc5efe025",
     "published": true,
@@ -5695,7 +5797,7 @@
   },
   {
     "path": "evidence/R07/card-binding.md",
-    "original_sha256": "c51bed6f788e61e0734a7217efeed356244293887575f7bcf476771a2f24c44f",
+    "original_sha256": "97cd24db1684b1ff93fee113cd80cfc0a038d9d3bfe8253781a6ece73ec2c7dc",
     "published": true,
     "reason": "public copy"
   },
@@ -5888,6 +5990,12 @@
   {
     "path": "evidence/发布/2026-10-29-65b0a8a-remote.json",
     "original_sha256": "72e90ac4f59e7e9dacc16a41d6a50246adb7952241045d1799eefc1e6f260a3d",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/发布/2026-10-29-e18aba7-remote.json",
+    "original_sha256": "392f02b65a9fd72b28ea28d729938d6c92122b9fb04fca91d33f507fd21730b2",
     "published": false,
     "reason": "local raw execution evidence; not uploaded"
   },

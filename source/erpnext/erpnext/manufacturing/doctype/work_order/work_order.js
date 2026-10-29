@@ -193,6 +193,7 @@ frappe.ui.form.on("Work Order", {
 				frm.set_intro("审批状态：" + frm.doc.workflow_state + "。从“操作”菜单处理审批；签批通过前不能执行生产或库存过账。");
 			}
 		}
+		erpnext.work_order.show_production_header_guidance(frm);
 
 		if (frm.doc.status != "Closed") {
 			if (
@@ -582,10 +583,12 @@ frappe.ui.form.on("Work Order", {
 							frm.toggle_reqd("scrap_warehouse", true);
 						}
 						erpnext.in_production_item_onchange = false;
+						erpnext.work_order.show_production_header_guidance(frm);
 					}
 				},
 			});
 		}
+		erpnext.work_order.show_production_header_guidance(frm);
 	},
 
 	project: function (frm) {
@@ -596,7 +599,7 @@ frappe.ui.form.on("Work Order", {
 
 	bom_no: function (frm) {
 		if (frappe.workflow.workflows[frm.doctype]?.name === "生产工单两级审批") {
-			frm.set_intro("请先保存工单，再点击“预览任务和用料”，核对后确认生成。");
+			erpnext.work_order.show_production_header_guidance(frm);
 			return;
 		}
 		return frm.call({
@@ -609,6 +612,10 @@ frappe.ui.form.on("Work Order", {
 				}
 			},
 		});
+	},
+
+	expected_delivery_date: function (frm) {
+		erpnext.work_order.show_production_header_guidance(frm);
 	},
 
 	use_multi_level_bom: function (frm) {
@@ -711,6 +718,22 @@ frappe.ui.form.on("Work Order Operation", {
 });
 
 erpnext.work_order = {
+	show_production_header_guidance: function (frm) {
+		if (frappe.workflow.workflows[frm.doctype]?.name !== "生产工单两级审批" ||
+			frm.doc.docstatus !== 0 || (frm.doc.workflow_state && !["草稿", "退回"].includes(frm.doc.workflow_state))) return;
+		const missing = [];
+		if (!frm.doc.production_item) missing.push("未选择生产物料，请先选择要生产的产品。");
+		if (!frm.doc.bom_no) missing.push("缺少BOM，请选择已提交且启用的BOM；没有BOM时不能保存。");
+		if (!frm.doc.expected_delivery_date) missing.push("未填写预计交付日期：草稿可以暂存，送审前必须补齐交期。");
+		frm.set_df_property("expected_delivery_date", "description", "交期：草稿可暂空，送审前必须填写；早于计划开始时提示可能逾期，并保留原交期。");
+		const state = frm.is_new() ? "新草稿（尚未保存）" : "审批状态：" + frappe.utils.escape_html(frm.doc.workflow_state);
+		const next = !frm.doc.operations?.length || !frm.doc.required_items?.length
+			? "下一步：发起人先保存工单，再点击“预览任务和用料”，核对后确认生成；预览会指出具体缺项。"
+			: "已准备任务和用料计划，请核对资料后从“操作”菜单送审。";
+		frm.set_intro("");
+		frm.set_intro(`${state}。签批通过前不能执行生产或库存过账。<br>${missing.join("<br>")}${missing.length ? "<br>" : ""}${next}`, missing.length ? "yellow" : "blue");
+	},
+
 	preview_production_details: async function (frm) {
 		if (frm.is_new() || frm.is_dirty()) {
 			frappe.msgprint("请先保存工单，再预览任务和用料");

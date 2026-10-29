@@ -3,6 +3,7 @@
 
 import hashlib
 import json
+from datetime import date
 
 import frappe
 from dateutil.relativedelta import relativedelta
@@ -266,8 +267,10 @@ def _production_order_detail_plan(order):
 	plan.validate_operations()
 	plan.validate_operations_sequence()
 	plan.set_required_items()
-	if not plan.operations or not plan.required_items:
-		frappe.throw("BOM缺少工序路线或用料，请先补齐再生成工单明细")
+	if not plan.operations:
+		frappe.throw("BOM未维护工序路线，请先补齐BOM工序后再预览")
+	if not plan.required_items:
+		frappe.throw("BOM未维护生产用料，请先补齐BOM用料后再预览")
 	data = _production_detail_rows(plan)
 	basis = {field: order.get(field) for field in (
 		"production_item", "bom_no", "qty", "company", "source_warehouse", "wip_warehouse",
@@ -496,6 +499,7 @@ class WorkOrder(Document):
 				frappe.throw("请选择本公司有效的执行班组")
 			if any(self.get(f) for f in ("approval_requested_by", "approval_reviewed_by", "approval_note")) or self.get("workflow_state") not in (None, "", "草稿") or self.docstatus != 0:
 				frappe.throw("不能在创建工单时指定审批结果或处理人", frappe.PermissionError)
+			self.validate_production_header()
 			self.approval_requested_by = user
 			self.workflow_state = "草稿"
 			return
@@ -504,6 +508,8 @@ class WorkOrder(Document):
 			frappe.throw("存量工单尚未确认审批依据，不能作为新单处理", frappe.PermissionError)
 		context = getattr(frappe.local, "production_approval_context", None)
 		if context and context.name == self.name and context.user == user and context.state == before.workflow_state and context.next_state == self.workflow_state:
+			if context.action == "送审":
+				self.validate_production_header(for_review=True)
 			self.approval_note = context.reason
 			if context.action == "审核通过":
 				self.approval_reviewed_by = user
@@ -522,6 +528,26 @@ class WorkOrder(Document):
 		if before.workflow_state not in ("草稿", "退回") or user != before.approval_requested_by:
 			frappe.throw("送审后的依据已冻结，请退回或撤回后由发起人修改", frappe.PermissionError)
 		_check_production_approval_scope(self, team_required=True)
+		self.validate_production_header()
+
+	def validate_production_header(self, *, for_review=False):
+		# Apply to preparation and sending only; other transitions and old approved facts stay valid.
+		if not self.expected_delivery_date:
+			if for_review:
+				frappe.throw("送审前请填写预计交付日期；草稿可以暂不填写")
+			return
+		if not isinstance(self.expected_delivery_date, (str, date)):
+			frappe.throw("预计交付日期无效，请填写有效日期")
+		delivery = getdate(self.expected_delivery_date)
+		if delivery is None:
+			frappe.throw("预计交付日期无效，请填写有效日期")
+		if self.planned_start_date:
+			start = getdate(self.planned_start_date)
+			if start is None:
+				frappe.throw("计划开始日期无效，请填写有效日期")
+			if delivery < start:
+				frappe.msgprint("预计交付日期早于计划开始日期，可能逾期；请核对安排，系统保留原交期。", indicator="orange", alert=True)
+		self.expected_delivery_date = delivery
 
 	def validate_report_derivation(self, before, operation_id):
 		parent_fields = {"actual_operating_cost", "total_operating_cost", "actual_start_date", "actual_end_date", "lead_time", "status", "modified", "modified_by"}

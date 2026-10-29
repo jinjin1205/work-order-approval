@@ -92,6 +92,7 @@ class TestWorkOrderApproval(FrappeTestCase):
 			currency=frappe.get_cached_value("Company", self.company, "default_currency"),
 			raw_materials=[raw.name], rm_qty=1, with_operations=False)
 		self.order_args = dict(item=finished.name, bom_no=bom.name, qty=10, company=self.company,
+			expected_delivery_date=frappe.utils.add_days(frappe.utils.nowdate(), 7),
 			stock_uom="Nos", source_warehouse=warehouse, wip_warehouse=warehouse, fg_warehouse=warehouse, do_not_save=True)
 		self.workstation = make_workstation(workstation_name=self.prefix).name
 		self.operations = [frappe.get_doc({"doctype": "Operation", "__newname": self.prefix + suffix}).insert().name
@@ -5530,6 +5531,7 @@ def make_wo_order_test_record(**args):
 	wo_order.get_items_and_operations_from_bom()
 	wo_order.sales_order = args.sales_order or None
 	wo_order.planned_start_date = args.planned_start_date or now()
+	wo_order.expected_delivery_date = args.expected_delivery_date
 	wo_order.transfer_material_against = args.transfer_material_against or "Work Order"
 	wo_order.from_wip_warehouse = args.from_wip_warehouse or 0
 	wo_order.batch_size = args.batch_size or 0
@@ -5582,6 +5584,7 @@ class TestWorkOrderExplicitDetails(FrappeTestCase):
 		self.order = frappe.get_doc({"doctype": "Work Order", "production_item": bom.item,
 			"bom_no": bom.name, "qty": 10, "company": bom.company, "stock_uom": "Nos",
 			"production_team": self.f.teams[0], "planned_start_date": now(),
+			"expected_delivery_date": self.f.order_args["expected_delivery_date"],
 			"source_warehouse": self.f.order.source_warehouse,
 			"wip_warehouse": self.f.order.wip_warehouse, "fg_warehouse": self.f.order.fg_warehouse,
 			"transfer_material_against": "Work Order"}).insert()
@@ -5981,3 +5984,132 @@ class TestWorkOrderCloseout(FrappeTestCase):
 		self.assertEqual(frappe.db.count("Comment", {"reference_name": self.f.order.name}), comment_count)
 		self.close()
 		self.assertEqual(self.f.order.reload().status, "Closed")
+
+
+class TestWorkOrderHeader(FrappeTestCase):
+	"""B05 header/number/prerequisites only, using existing native fields and fixtures."""
+
+	def setUp(self):
+		from frappe.permissions import add_permission
+		self.f = TestWorkOrderApproval("test_00_fixture_runnable")
+		self.addCleanup(self.f.doCleanups)
+		self.f.setUp()
+		frappe.set_user("Administrator")
+		add_permission("BOM", self.f.roles[0], ptype="read")
+		frappe.set_user(self.f.users["operator"])
+
+	def draft(self, **changes):
+		return frappe.get_doc(dict({"doctype":"Work Order", "production_item":self.f.order.production_item,
+			"bom_no":self.f.order.bom_no, "qty":10, "company":self.f.company, "stock_uom":"Nos",
+			"production_team":self.f.teams[0], "planned_start_date":now(),
+			"expected_delivery_date":self.f.order_args["expected_delivery_date"],
+			"source_warehouse":self.f.order.source_warehouse, "wip_warehouse":self.f.order.wip_warehouse,
+			"fg_warehouse":self.f.order.fg_warehouse}, **changes))
+
+	def details(self, order):
+		from erpnext.manufacturing.doctype.work_order.work_order import preview_production_order_details
+		return preview_production_order_details(order.name, str(order.modified))
+
+	def test_00_fixture_runnable(self):
+		self.assertEqual(self.f.order.workflow_state, "草稿")
+		self.assertTrue(self.f.order.expected_delivery_date)
+		self.assertEqual(len(self.f.order.operations),3)
+		self.assertFalse(frappe.db.exists("Job Card",{"work_order":self.f.order.name}))
+
+	def test_native_numbers_unique_persisted_and_duplicate_rejected(self):
+		first, second = self.draft().insert(), self.draft().insert()
+		self.assertNotEqual(first.name,second.name)
+		self.assertRegex(first.name,r"^MFG-WO-"+frappe.utils.nowdate()[:4]+r"-\d+$")
+		self.assertEqual(first.reload().name,first.name)
+		self.assertEqual(first.naming_series,"MFG-WO-.YYYY.-")
+		count=frappe.db.count("Work Order")
+		with self.assertRaises(frappe.DuplicateEntryError):
+			self.draft().insert(set_name=first.name)
+		self.assertEqual(frappe.db.count("Work Order"),count)
+		self.assertEqual(frappe.get_doc("Work Order",first.name).qty,10)
+
+	def test_draft_without_delivery_saves_but_review_is_blocked(self):
+		self.f.order.expected_delivery_date=None
+		self.f.order.save()
+		before=frappe.db.count("Comment",{"reference_name":self.f.order.name})
+		self.assertFalse(self.f.order.reload().expected_delivery_date)
+		with self.assertRaisesRegex(frappe.ValidationError,"预计交付日期"):
+			self.f.act("operator","送审")
+		self.assertEqual(self.f.order.reload().workflow_state,"草稿")
+		self.assertEqual(frappe.db.count("Comment",{"reference_name":self.f.order.name}),before)
+		self.assertFalse(frappe.db.exists("Job Card",{"work_order":self.f.order.name}))
+
+	def test_delivery_roundtrip_preserves_plan_and_review_freeze(self):
+		before={key:[row.name for row in self.f.order.get(key)] for key in ("operations","required_items")}
+		due=frappe.utils.add_days(frappe.utils.nowdate(),10)
+		self.f.order.expected_delivery_date=due
+		self.f.order.save().reload()
+		self.assertEqual(str(self.f.order.expected_delivery_date),due)
+		self.assertEqual(before,{key:[row.name for row in self.f.order.get(key)] for key in before})
+		number=self.f.order.name
+		self.f.act("operator","送审")
+		self.assertEqual(self.f.order.workflow_state,"待审核")
+		self.assertEqual(self.f.order.name,number)
+		self.f.order.expected_delivery_date=frappe.utils.add_days(due,1)
+		with self.assertRaises(frappe.PermissionError): self.f.order.save()
+		self.assertEqual(str(self.f.order.reload().expected_delivery_date),due)
+
+	def test_invalid_delivery_and_date_order_rejected(self):
+		count=frappe.db.count("Work Order")
+		for due in ("0000-00-00","not-a-date"):
+			with self.subTest(due=due),self.assertRaises(frappe.ValidationError):
+				self.draft(planned_start_date="2026-01-02 09:00:00",expected_delivery_date=due).insert()
+		self.assertEqual(frappe.db.count("Work Order"),count)
+		valid=self.draft(planned_start_date="2026-01-02 09:00:00",expected_delivery_date="2026-01-02").insert()
+		self.assertEqual(str(valid.reload().expected_delivery_date),"2026-01-02")
+		with self.assertRaises(frappe.ValidationError):
+			self.draft(planned_start_date="2026-01-02 09:00:00",planned_end_date="2026-01-01 09:00:00").insert()
+
+	def test_overdue_delivery_is_preserved_with_warning(self):
+		frappe.local.message_log = []
+		order=self.draft(planned_start_date="2026-01-02 09:00:00",expected_delivery_date="2026-01-01").insert()
+		self.assertEqual(str(order.reload().expected_delivery_date),"2026-01-01")
+		self.assertTrue(any("可能逾期" in str(message) for message in frappe.local.message_log))
+		self.assertFalse(order.operations or order.required_items)
+
+	def test_missing_bom_and_route_are_specific_without_details(self):
+		count=frappe.db.count("Work Order")
+		with self.assertRaises(frappe.MandatoryError):self.draft(bom_no=None).insert()
+		self.assertEqual(frappe.db.count("Work Order"),count)
+		order=self.draft().insert()
+		self.assertFalse(order.operations or order.required_items)
+		before=str(order.modified)
+		with self.assertRaisesRegex(frappe.ValidationError,"BOM未维护工序路线"):
+			self.details(order)
+		order.reload()
+		self.assertEqual(str(order.modified),before)
+		self.assertFalse(order.operations or order.required_items)
+		self.assertFalse(frappe.db.exists("Job Card",{"work_order":order.name}))
+
+	def test_missing_material_is_reported_without_partial_plan(self):
+		frappe.set_user("Administrator")
+		bom=frappe.copy_doc(frappe.get_doc("BOM",self.f.order.bom_no))
+		bom.docstatus=0; bom.is_default=0; bom.with_operations=1
+		for i,operation in enumerate(self.f.operations,1):
+			bom.append("operations",{"operation":operation,"workstation":self.f.workstation,"time_in_mins":1,"sequence_id":i})
+		bom.insert().submit()
+		# Only this rollback fixture's new BOM: reproduce an incomplete upstream source, never customer data.
+		frappe.db.delete("BOM Item",{"parent":bom.name})
+		frappe.db.delete("BOM Explosion Item",{"parent":bom.name})
+		frappe.set_user(self.f.users["operator"])
+		order=self.draft(bom_no=bom.name).insert()
+		with self.assertRaisesRegex(frappe.ValidationError,"BOM未维护生产用料"):
+			self.details(order)
+		self.assertFalse(order.reload().operations or order.required_items)
+
+	def test_header_checks_do_not_bypass_role_or_revoked_scope(self):
+		self.f.order.expected_delivery_date=None;self.f.order.save()
+		for key in ("other","outsider"):
+			with self.subTest(key=key),self.assertRaises(frappe.PermissionError):
+				self.f.act(key,"送审")
+		frappe.set_user("Administrator")
+		frappe.db.delete("User Permission",{"user":self.f.users["operator"],"allow":"Department"})
+		frappe.clear_cache(user=self.f.users["operator"])
+		frappe.set_user(self.f.users["operator"])
+		with self.assertRaises(frappe.PermissionError):self.f.act("operator","送审")
+		self.assertEqual(self.f.order.reload().workflow_state,"草稿")

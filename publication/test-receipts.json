@@ -2,6 +2,26 @@
   "scope": "Separate executed batches; exact patches where captured, explicit null otherwise with product hash. No cumulative full-suite result; publication does not rerun tests",
   "tests": [
     {
+      "local_log": "evidence/B05/header-20261029/overdue-fixed.log",
+      "sha256": "615c74fef7e2072122fe4565de6b9d33ea45a9ae737117935d33eda5c9f14b42",
+      "tests": 2,
+      "seconds": "15.321",
+      "result": "OK",
+      "executed_on": "2026-10-29",
+      "group": "B05 final overdue warning policy affected date methods only",
+      "source_patch_sha256": "382c6d2f0498fc0747599e4e0eab1920375484c0c267395f9b3df3967b1f35b9"
+    },
+    {
+      "local_log": "evidence/B05/header-20261029/green-first.log",
+      "sha256": "749c62ce6e1c69499fbd1e41303fb5b137ec456054c81017e6a4554ba03a43c1",
+      "tests": 10,
+      "seconds": "59.569",
+      "result": "OK",
+      "executed_on": "2026-10-29",
+      "group": "B05 native header numbering and prerequisites with two affected original cases",
+      "source_patch_sha256": "0ca3cf406d65cea5e10feafb10af277b098c08210f955ffb84143ef761c4f5c0"
+    },
+    {
       "local_log": "evidence/B05/closeout-20261029/unicode-fixed.log",
       "sha256": "e64c34c4e9ab57ad0cd5d818b37ecf301a5bfed5c5def1c135e0d7b8e804f8d9",
       "tests": 1,
@@ -389,5 +409,5 @@
     "verified_after_all_requests": true,
     "publication_note": "Only assertions/counts retained; runtime business_state and raw responses remain local."
   },
-  "current_patch_sha256": "3e9b706c7b293631e86b5a73e662bdc9b048168bd8b9fee2b4f05e098c94d4cf"
+  "current_patch_sha256": "382c6d2f0498fc0747599e4e0eab1920375484c0c267395f9b3df3967b1f35b9"
 }

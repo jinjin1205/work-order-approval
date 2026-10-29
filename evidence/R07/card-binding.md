@@ -175,3 +175,34 @@ B01实际显示：新站点用`--module`未准备所需fixture，改原生`--doc
 
 
 真实持久化核对发现结束快照的中文被原生`as_json`默认转义；只将同调用补`ensure_ascii=False`，原记录不改写。新增脚本`.development/checks/b05_closeout_ui_unicode.py`仅给原本包追加第四张无计时/无报工的中文记录展示样例，不重放前三张；受影响单方法补中文原文断言，先红后绿，不重跑已验12项全批。原23表捕获基线及原3样例保留，预期新单4/计划卡12＋正式报工1。
+
+
+## 2026-10-29 B05字段编号与缺资料提示绑定
+
+**授权与版本：**用户明确继续原B05这三个余项，先核对补绑再连续开发验收。公开main已实际pull为Already up to date，HEAD=e18aba7548d7d3805ddfd2729388ff94257a1b04；25份维护源码哈希与公开锁一致，原累计patch 3e9b706c。ERPNext15.124.1/Frappe15.124.0及维护checkout/隔离站点沿原绑定，不新建工作树覆盖25份已有改动。
+
+**做什么：**映射并复用工单字段和编号，补交期完整性及具体缺项提示。**不做：**不另加字段/表/编号器、路线平台、主数据维护界面或日历产能算法；不改B04数量/展开、B08事实、已验计时/结束或库存链，不扩手机/现场/G/Z01及后台周期。**通过：**正常原生编号/字段保存重开；草稿交期可空有提醒，送审必须补交期；交期不得早于计划开始日期；缺BOM/工序路线/用料分别可理解，权限与原审批冻结不弱化；失败不生半张有效单。真实中文PC及旧行保留、一次审查及公开回读后只关闭本包子项。
+
+### 现有字段与处理，不重复造轮子
+
+| 业务字段 | 原真实字段/代码 | 本包处理 |
+|---|---|---|
+| 工单编号 | Work Order.name / naming_series；work_order.json autoname=naming_series:，单项MFG-WO-.YYYY.-；Frappe model.naming.set_new_name/set_name_from_naming_options/getseries及主键唯一约束 | 直接复用；不自定新前缀，不承诺连续无断号；实测两个新号唯一、重开不变与重复主键拒绝。测试使用原insert(set_name=...)指定重复号，不能用重新分号伪装重复测试 |
+| 产品/公司/计划量 | production_item/company/qty/stock_uom；原before_validate/validate_production_item及JSON必填 | 直接复用现有有效物料/单位/B04校验，不重跑已验精度批次 |
+| 执行班组/申请人 | 原production_team、approval_requested_by；validate_production_approval及scope | 直接复用，不增加岗位，原对象/公司/班组和归属校验在交期提示前 |
+| 交期与计划 | expected_delivery_date是既有Date、原未必填；planned_start_date既有必填Datetime默认now；planned_end_date原validate_dates检查先后 | 不把计划完工当交期、不推算交期。草稿可暂空；仅新建/发起人草稿编辑及送审检查新交期规则；其他流转/已批准报工/停止与结束不倒追补填旧单 |
+| BOM/路线 | bom_no既有必填Link；已提交有效BOM名为现有版本标识，工单operations为准备的计划行；_production_order_detail_plan先read权限、validate_bom_no再原展开 | 不造独立路线版本字段；仅把原合并的缺工序/用料错误拆清。原确认指纹已含BOM.modified及计划明细，沿用不重写；全局BOM结构锁/主路线历史仍B07责任，不因字段映射通过 |
+| 仓库/可选来源 | source_warehouse/wip_warehouse/fg_warehouse；sales_order/project/production_plan等原字段 | 保留必填和默认行为；不强制销售单或新加仓库校验，原生缺必填保存拦截继续生效 |
+| 实际日期与数量 | actual_start_date/end_date、produced_qty及原报工/库存来源 | 只映射、不改来源，不用交期或草稿字段伪造实际生产/入库 |
+
+### 最小改动与唯一任务步骤
+
+1. **仅允许3份产品文件：**`erpnext/manufacturing/doctype/work_order/work_order.py/.js/test_work_order.py`。不改JSON元数据、Frappe、JobCard、BOM算法。现有25份累计成果保留。拟新增控制器方法`WorkOrder.validate_production_header(self, *, for_review=False)`，只消费原生getdate做必填/日期先后；在validate_production_approval的新建/本人草稿保存及可信送审处调用一份规则，其他审批流转/派生回写跳过，不给旧批准单追补交期。原`validate_dates`的计划结束检查不重写。
+2. 原`_production_order_detail_plan(order)`保留计算/权限，只拆“缺工序路线”和“缺用料”消息，原缺BOM分支仍在同处。JS原refresh/bom_no/production_item回调和既有字段事件调用拟新增`erpnext.work_order.show_production_header_guidance(frm)`；只用本表已有值提示产品/BOM/交期及准备下一步，不新开读取API，不对未知BOM断言无路线；具体缺项仍由原有预览返回。复用原set_intro和字段description，不重建页面。
+3. 测试拟新增`TestWorkOrderHeader`：原生编号唯一/重复拒绝，交期草稿空值/送审拦截，交期保存/重开/冻结，非法及倒序日期，缺BOM/无路线具体错误零明细，缺用料明确拒绝，权限/撤权。复用TestWorkOrderApproval fixture；因新增送审前置，在该fixture.order_args补可见交期并让原helper透传，原显式生成fixture亦补该字段，不代表旧批次已重跑。具体方法在原B05创建前列名。仅直接受影响原回归`TestWorkOrderApproval.test_normal_two_stage_workflow`及`TestWorkOrderExplicitDetails.test_preview_confirm_replay`各一次；不重跑计时/结束/B08等全批。
+4. 复用runner模式新增`.development/checks/b05_header_tests.py`，命令`docker exec xgd-b08-check env/bin/python /b01/b05_header_tests.py`；实际红绿、原11表回滚保持。新UI脚本仅`b05_header_ui_fixture.py/b05_header_ui_preserve.py`及私有Playwright步骤，复用18090，不导入会初始化fixture的test_*模块。新普通发起人、无BOM物料、已准备但无交期草稿作为最小前提；页面实际验字段/编号、缺BOM、无路线提示、交期拦截/补填/送审/重开，不重放旧确认生成或旧报工。
+5. 无元数据/依赖变化；只同步3文件到保留测试/网页容器、必要noreload重启。指定运行清单和原数据回读，独立审查一次，原34卡只关本包子项，OpenSpec引用本卡不复制第二清单。可公开证据在`evidence/B05/header-20261029/`；原始日志/样例/凭据/截图本地保留。依据继续沿R03～R06五候选及原CASE-01/07，实际复用ERPNext/Frappe，未重选/安装其他底座。
+
+**本包实操补充：**缺用料测试仅在本方法新造的BOM中受控清空用料/展开行，模拟上游不完整来源，最后事务回滚；为此原11表外另核4张BOM表，共15表，不操作旧客户资料。网页新会话实际出现磁盘源码已新但提示函数仍undefined的旧脚本；只清专用合成站`frappe.clear_cache(doctype="Work Order")`并完整重载后，新交期提示已出现。该目标缓存刷新属于本包必要运行同步，不改元数据或业务数据；不能只凭源码哈希声称浏览器已更新。
+
+**收口规则校正（以本段为准）：**原生`validate_dates`只阻断计划结束早于计划开始，`expected_delivery_date`为期望交付日期；原卡未要求它必须晚于计划开始。初版把该关系硬拦截依据不足，会阻断逾期安排。仅把该一分支改为“可能逾期”的风险提示并保留原交期，非法日期/缺交期送审及原权限/冻结仍阻断。新增`TestWorkOrderHeader.test_overdue_delivery_is_preserved_with_warning`先红后绿，连同受影响日期方法定向2项复验，不重跑其他主批次；原10项清单另存中间版本。页面只在本包自己的无路线草稿填早于计划开始的交期，保存/重开核警示及原值，不新增样例或执行事实。

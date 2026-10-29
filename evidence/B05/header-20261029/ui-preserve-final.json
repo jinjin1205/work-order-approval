@@ -1,0 +1,21 @@
+{
+  "old_tables_preserved": 23,
+  "old_row_mismatches": 0,
+  "new_orders": 2,
+  "prepared_review_state": "待审核",
+  "prepared_due": "2026-11-05",
+  "prepared_plan_operations": 3,
+  "prepared_plan_materials": 1,
+  "new_page_draft_no_route": true,
+  "no_route_operations": 0,
+  "no_route_materials": 0,
+  "blank_due_draft_earlier_verified": true,
+  "overdue_delivery_preserved": "2026-10-28",
+  "distinct_native_numbers": true,
+  "job_cards_added": 0,
+  "time_logs_added": 0,
+  "stock_entries_added": 0,
+  "stock_ledger_entries_added": 0,
+  "new_user": 1,
+  "new_item": 1
+}

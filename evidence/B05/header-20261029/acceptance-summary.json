@@ -1,0 +1,111 @@
+{
+  "scope": "B05 native fields/numbering and missing prerequisites only",
+  "base_public_commit": "e18aba7548d7d3805ddfd2729388ff94257a1b04",
+  "patch_sha256": "382c6d2f0498fc0747599e4e0eab1920375484c0c267395f9b3df3967b1f35b9",
+  "product_files_changed": 3,
+  "metadata_or_dependency_changes": 0,
+  "tests": {
+    "new_methods": 8,
+    "affected_original_methods": 2,
+    "total_methods": 10,
+    "seconds": 59.569,
+    "failures": 0,
+    "errors": 0,
+    "old_tables_restored": 15,
+    "log": "green-first.log",
+    "source_manifest": "intermediate-suite-source.json"
+  },
+  "ui": {
+    "prepared_delivery_gate": {
+      "missingDeliveryHttp": 417,
+      "failedStateUnchanged": true,
+      "filledDelivery": "2026-11-05",
+      "nativeNumberPreserved": true,
+      "planRowIdsPreserved": true,
+      "reopenedWorkflow": "待审核"
+    },
+    "new_page_missing_data": {
+      "noBomGuidance": true,
+      "noRouteHttp": 417,
+      "specificRouteError": true,
+      "blankDeliveryDraftSaved": true,
+      "reopenSameNumberAndModified": true,
+      "operations": 0,
+      "materials": 0,
+      "due": null,
+      "nativeNumberVisible": true
+    },
+    "source_cache_reload_verified": true,
+    "final_overdue_warning": {
+      "saveHttp": 200,
+      "warningVisible": true,
+      "deliveryPreserved": "2026-10-28",
+      "reopenedSameDelivery": true,
+      "numberAndPlanUnchanged": true
+    }
+  },
+  "retention": {
+    "old_tables_preserved": 23,
+    "old_row_mismatches": 0,
+    "new_orders": 2,
+    "prepared_review_state": "待审核",
+    "prepared_due": "2026-11-05",
+    "prepared_plan_operations": 3,
+    "prepared_plan_materials": 1,
+    "new_page_draft_no_route": true,
+    "no_route_operations": 0,
+    "no_route_materials": 0,
+    "blank_due_draft_earlier_verified": true,
+    "overdue_delivery_preserved": "2026-10-28",
+    "distinct_native_numbers": true,
+    "job_cards_added": 0,
+    "time_logs_added": 0,
+    "stock_entries_added": 0,
+    "stock_ledger_entries_added": 0,
+    "new_user": 1,
+    "new_item": 1
+  },
+  "review": {
+    "independent_read_only_review": 1,
+    "critical": 0,
+    "important": 0,
+    "minor": 0,
+    "limit": "Code/readback only; browser proof executed separately",
+    "targeted_followup": "Same reviewer read only the changed warning branch and field description; no permission/data integrity issue; no tests rerun"
+  },
+  "limits": [
+    "Optional Sales Order search returned Invalid Method 404 for this synthetic actor; not repaired or expanded in this package",
+    "Native number sequence gaps not promised",
+    "B04 raw seventh-decimal browser behavior not revalidated",
+    "Whole B05 and full G1/G2/G3/mobile/field/Z01 not closed"
+  ],
+  "final_targeted_tests": {
+    "methods": 2,
+    "seconds": 15.321,
+    "failures": 0,
+    "errors": 0,
+    "old_tables_restored": 15,
+    "log": "overdue-fixed.log",
+    "scope": "One changed date method plus new overdue warning method; 11 unique methods across batches, not a current cumulative 12-method suite"
+  },
+  "retention_before_policy_case": {
+    "old_tables_preserved": 23,
+    "old_row_mismatches": 0,
+    "new_orders": 2,
+    "prepared_review_state": "待审核",
+    "prepared_due": "2026-11-05",
+    "prepared_plan_operations": 3,
+    "prepared_plan_materials": 1,
+    "new_page_draft_no_route": true,
+    "no_route_operations": 0,
+    "no_route_materials": 0,
+    "blank_due_draft_retained": true,
+    "distinct_native_numbers": true,
+    "job_cards_added": 0,
+    "time_logs_added": 0,
+    "stock_entries_added": 0,
+    "stock_ledger_entries_added": 0,
+    "new_user": 1,
+    "new_item": 1
+  }
+}

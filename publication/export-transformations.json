@@ -105,19 +105,19 @@
     "source": ".development/repos/erpnext/erpnext/manufacturing/doctype/work_order/test_work_order.py",
     "public_path": "source/erpnext/erpnext/manufacturing/doctype/work_order/test_work_order.py",
     "treatment": "unchanged",
-    "source_sha256": "095a031c5d9b1d998443b9e7b86224b84be7e40e0eab08ede1d168c59403477f"
+    "source_sha256": "c00484c5256bd1b4a3b37c19240b0f4c401562814fe96a3228c3c302abc91826"
   },
   {
     "source": ".development/repos/erpnext/erpnext/manufacturing/doctype/work_order/work_order.js",
     "public_path": "source/erpnext/erpnext/manufacturing/doctype/work_order/work_order.js",
     "treatment": "unchanged",
-    "source_sha256": "1cb86061eaaeff0ec3b7d6907071645c14e7501ac8e20e7c00d06cd9c40f7f0f"
+    "source_sha256": "8ee748b343c2ebbc050fbc13075f3afe4368e80d561c4ae30975a6e5bfa2b9e1"
   },
   {
     "source": ".development/repos/erpnext/erpnext/manufacturing/doctype/work_order/work_order.py",
     "public_path": "source/erpnext/erpnext/manufacturing/doctype/work_order/work_order.py",
     "treatment": "unchanged",
-    "source_sha256": "8a6a0025b317a60c51c250bec03147576bfa703e1c436e4078f28e49e31eddae"
+    "source_sha256": "f3d589bb664e8e7485b088fe45bff67763b570db3c45c6983fa4b9e9c0274c52"
   },
   {
     "source": ".development/repos/erpnext/erpnext/manufacturing/doctype/work_order_operation/work_order_operation.json",
@@ -154,6 +154,18 @@
     "public_path": "source/erpnext/license.txt",
     "treatment": "unchanged",
     "source_sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+  },
+  {
+    "source": "evidence/B05/header-20261029/implementation.patch",
+    "public_path": "evidence/B05/header-20261029/implementation.patch",
+    "treatment": "unchanged",
+    "source_sha256": "382c6d2f0498fc0747599e4e0eab1920375484c0c267395f9b3df3967b1f35b9"
+  },
+  {
+    "source": "evidence/B05/header-20261029/bounded-change.patch",
+    "public_path": "evidence/B05/header-20261029/bounded-change.patch",
+    "treatment": "unchanged",
+    "source_sha256": "b7511858ec0d04c4c1e4d114a0d09b56af3d7003d570b83d5c34a5fc3f6b4e17"
   },
   {
     "source": "evidence/B05/closeout-20261029/implementation.patch",
@@ -297,7 +309,7 @@
     "source": "AGENTS.md",
     "public_path": "AGENTS.md",
     "treatment": "unchanged",
-    "source_sha256": "c211d7eedd985dba66ae31f09ef118bd8297fef1ccacbb0475f349e89065002a"
+    "source_sha256": "01c4e2f3849620fc325f61795963ef2f99645fbf1efd5bc5803d490edd740908"
   },
   {
     "source": "docs/任务卡/01-复用核验与选型.md",
@@ -309,7 +321,7 @@
     "source": "docs/任务卡/02-生产与物料闭环.md",
     "public_path": "docs/任务卡/02-生产与物料闭环.md",
     "treatment": "personal paths/runtime identifiers removed",
-    "source_sha256": "2bb7883997a231109a3e99791a50b38ba37237810bba3d60b7617678a279c5e7"
+    "source_sha256": "2c7cc45cc5506d91df228a4c74fe1710e5095ecdf2c92e398cddeb64f70c086f"
   },
   {
     "source": "docs/任务卡/03-AI与交付.md",
@@ -327,7 +339,7 @@
     "source": "docs/开发TODO.md",
     "public_path": "docs/开发TODO.md",
     "treatment": "unchanged",
-    "source_sha256": "3063a983646f4604b29271beeeadc88a1aa2e8f05a6f5e413b3e9da3df4e226e"
+    "source_sha256": "7a1465dc4843d0ca4583ca2715c9f03fbe331e789878694fc10a37b8653dded1"
   },
   {
     "source": "docs/验收样例.md",
@@ -394,6 +406,18 @@
     "public_path": "evidence/B05/explicit-details-20261029/run-record.md",
     "treatment": "unchanged",
     "source_sha256": "dd91d86cd344dc9f229e1a2230cdb207a02644ed0b00a9b47b6894d6b832efa3"
+  },
+  {
+    "source": "evidence/B05/header-20261029/review-notes.md",
+    "public_path": "evidence/B05/header-20261029/review-notes.md",
+    "treatment": "unchanged",
+    "source_sha256": "c910b84d69c3fc84a36712c373eae515f9bda413ae211a3407df2dac38b21795"
+  },
+  {
+    "source": "evidence/B05/header-20261029/run-record.md",
+    "public_path": "evidence/B05/header-20261029/run-record.md",
+    "treatment": "unchanged",
+    "source_sha256": "daac3f386b987c124b1c72e035f266094747eef7fe2c68c1fb38c58109b70aca"
   },
   {
     "source": "evidence/B08/distinct-concurrency-20261028/run-record.md",
@@ -681,7 +705,7 @@
     "source": "evidence/R07/card-binding.md",
     "public_path": "evidence/R07/card-binding.md",
     "treatment": "unchanged",
-    "source_sha256": "c51bed6f788e61e0734a7217efeed356244293887575f7bcf476771a2f24c44f"
+    "source_sha256": "97cd24db1684b1ff93fee113cd80cfc0a038d9d3bfe8253781a6ece73ec2c7dc"
   },
   {
     "source": "evidence/R07/chinese-interface.md",
@@ -834,6 +858,42 @@
     "source_sha256": "14131ba33b0965ec6c2e1a6dce40ec82c8a9d58b2c3ed4d0feadd0c7b31aa90f"
   },
   {
+    "source": "openspec/changes/archive/2026-10-29-work-order-header-20261029/design.md",
+    "public_path": "openspec/changes/archive/2026-10-29-work-order-header-20261029/design.md",
+    "treatment": "unchanged",
+    "source_sha256": "42fdf1b9ab74e6ff99c62fa31b25771fdeac41a0c46b23dbd37a51ef3c70e864"
+  },
+  {
+    "source": "openspec/changes/archive/2026-10-29-work-order-header-20261029/proposal.md",
+    "public_path": "openspec/changes/archive/2026-10-29-work-order-header-20261029/proposal.md",
+    "treatment": "unchanged",
+    "source_sha256": "d6b6a0abf32131b2b59883c734d1a2be65fcd7a3c7441ef0a1fe2d91c76fa4bd"
+  },
+  {
+    "source": "openspec/changes/archive/2026-10-29-work-order-header-20261029/specs/production-order-header/spec.md",
+    "public_path": "openspec/changes/archive/2026-10-29-work-order-header-20261029/specs/production-order-header/spec.md",
+    "treatment": "unchanged",
+    "source_sha256": "cccd1b7e389fd48834c83eb56d39dc0303fe6be4f6e1bd7859a8794d74efc299"
+  },
+  {
+    "source": "openspec/changes/archive/2026-10-29-work-order-header-20261029/tasks.md",
+    "public_path": "openspec/changes/archive/2026-10-29-work-order-header-20261029/tasks.md",
+    "treatment": "unchanged",
+    "source_sha256": "13b0739d7386b395bc1b0c8e511ab29a34df880a7a135c2f1fd3b4ce5c5718d8"
+  },
+  {
+    "source": "openspec/changes/archive/2026-10-29-work-order-header-20261029/.openspec.yaml",
+    "public_path": "openspec/changes/archive/2026-10-29-work-order-header-20261029/.openspec.yaml",
+    "treatment": "unchanged",
+    "source_sha256": "374b8065d2a855e995ccb196a4c93679ecb37066a4c8fb44f18c7e47e9327b2a"
+  },
+  {
+    "source": "openspec/specs/production-order-header/spec.md",
+    "public_path": "openspec/specs/production-order-header/spec.md",
+    "treatment": "unchanged",
+    "source_sha256": "786878aa0e39029d5583ea39ea16b3276b1d0072835bab47453129a73853176f"
+  },
+  {
     "source": ".agents/skills/openspec-apply-change/SKILL.md",
     "public_path": ".agents/skills/openspec-apply-change/SKILL.md",
     "treatment": "unchanged",
@@ -957,13 +1017,13 @@
     "source": ".publication/export_public.py",
     "public_path": ".publication/export_public.py",
     "treatment": "unchanged",
-    "source_sha256": "00ef2862fc7094052650374c4b0b820348b865899c969eca070e415712f41a4a"
+    "source_sha256": "3d4634973df5f8fce982e544b413eb7f820b41212ae516668a5a717f3246c4a7"
   },
   {
     "source": ".publication/check_public.py",
     "public_path": ".publication/check_public.py",
     "treatment": "unchanged",
-    "source_sha256": "d42a804970aa9f18cfe6dc57c53248bf6f13be15e2b3d665a9fe93c8afb27c59"
+    "source_sha256": "7ab64d96e1661008f00ba4b716e697214b97ca87983e0c5916fc210142e945fe"
   },
   {
     "source": ".publication/verify_b08.py",
@@ -993,7 +1053,7 @@
     "source": ".development/README.md",
     "public_path": ".development/README.md",
     "treatment": "unchanged",
-    "source_sha256": "4729b38122b1d6fd6a1d9d2e7e5e1a9db1226566ae1b230541f051b08bc99a63"
+    "source_sha256": "f8ff7e4c0b80268942cb9774ddb1a7d6a7d7aefc2c1c857fd58d9683ba6c2583"
   },
   {
     "source": ".development/.dockerignore",
@@ -1096,6 +1156,24 @@
     "public_path": ".development/checks/b05_details_ui_preserve.py",
     "treatment": "unchanged",
     "source_sha256": "735575debbdddcbb31fe43266a4bcee955408a9a76bc2c5a371a858b2c76e090"
+  },
+  {
+    "source": ".development/checks/b05_header_tests.py",
+    "public_path": ".development/checks/b05_header_tests.py",
+    "treatment": "unchanged",
+    "source_sha256": "34bfcd4081fd1fb9bc8045158cb9474d640f8045f14205d56ae76c7c2d6ca4ab"
+  },
+  {
+    "source": ".development/checks/b05_header_ui_fixture.py",
+    "public_path": ".development/checks/b05_header_ui_fixture.py",
+    "treatment": "unchanged",
+    "source_sha256": "7ab983ab8c7ad42a06797c9646761816ce49e5117b3d770a302f2d371c36b117"
+  },
+  {
+    "source": ".development/checks/b05_header_ui_preserve.py",
+    "public_path": ".development/checks/b05_header_ui_preserve.py",
+    "treatment": "unchanged",
+    "source_sha256": "d9dc4bbb3febc125fff2eac10c148e37adcbf0aacb72d05fefb2a1081f6aadbe"
   },
   {
     "source": ".development/checks/b08_affected_regression.py",
@@ -1500,6 +1578,12 @@
     "source_sha256": "8a84a6dadc3046835bf2c53f0bae392a8f2f1730e2977d7cd704cf1fca207705"
   },
   {
+    "source": ".development/checks/b05-header-source-manifest.json",
+    "public_path": ".development/checks/b05-header-source-manifest.json",
+    "treatment": "unchanged",
+    "source_sha256": "8782b2b7af88f9179e2fc13a93b86560c502f0b6f2b5b9ab4558d9bfb9d97af9"
+  },
+  {
     "source": ".development/checks/b08-distinct-concurrency-source-manifest.json",
     "public_path": ".development/checks/b08-distinct-concurrency-source-manifest.json",
     "treatment": "unchanged",
@@ -1708,6 +1792,48 @@
     "public_path": "evidence/R05/r02-probe-attempt5.py",
     "treatment": "unchanged",
     "source_sha256": "bebd418f53e027db69fc9888dfc4bf01fc162aab71394832e1e2572c6d9cd774"
+  },
+  {
+    "source": "evidence/B05/header-20261029/source-manifest.json",
+    "public_path": "evidence/B05/header-20261029/source-manifest.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "8782b2b7af88f9179e2fc13a93b86560c502f0b6f2b5b9ab4558d9bfb9d97af9"
+  },
+  {
+    "source": "evidence/B05/header-20261029/intermediate-suite-source.json",
+    "public_path": "evidence/B05/header-20261029/intermediate-suite-source.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "bdb2a09e16cdfb230fb1a1be23059faab1fae80fc81b68db38de6bc2b3d05e66"
+  },
+  {
+    "source": "evidence/B05/header-20261029/ui-preserve-final.json",
+    "public_path": "evidence/B05/header-20261029/ui-preserve-final.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "d4b6145ac5b23bfdcf5b71f247df50a3750e7fbaa4e2d777e150015e6e455553"
+  },
+  {
+    "source": "evidence/B05/header-20261029/test-runtime-source.json",
+    "public_path": "evidence/B05/header-20261029/test-runtime-source.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "23cbb3c0ba9cd223ec6208539b1538d12a46d794f65d72a5f4f924d311897f87"
+  },
+  {
+    "source": "evidence/B05/header-20261029/ui-runtime-source.json",
+    "public_path": "evidence/B05/header-20261029/ui-runtime-source.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "23cbb3c0ba9cd223ec6208539b1538d12a46d794f65d72a5f4f924d311897f87"
+  },
+  {
+    "source": "evidence/B05/header-20261029/ui-preserve.json",
+    "public_path": "evidence/B05/header-20261029/ui-preserve.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "35830c705c3fa9536b7c1f8c034f4924b2d05936c652c038de5680fc938cda6b"
+  },
+  {
+    "source": "evidence/B05/header-20261029/acceptance-summary.json",
+    "public_path": "evidence/B05/header-20261029/acceptance-summary.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "39017f28292bc2d6468788bf4a9da318cd537de98b8550d6b63147338edeb73a"
   },
   {
     "source": "evidence/B05/closeout-20261029/source-manifest.json",
