@@ -393,7 +393,7 @@
     "source": "docs/开发TODO.md",
     "public_path": "docs/开发TODO.md",
     "treatment": "unchanged",
-    "source_sha256": "d94e0eaba2f1b13314d405709e5a87ba772130ee87a09f57a8b372de270f4bf3"
+    "source_sha256": "e5b6ccd88eb39dfd0e1a080d0d9b20ff8b585b24b68824a87608d9e6674c3fd1"
   },
   {
     "source": "docs/验收样例.md",
@@ -837,7 +837,7 @@
     "source": "evidence/维护/2026-10-28-暂停与保存.md",
     "public_path": "evidence/维护/2026-10-28-暂停与保存.md",
     "treatment": "unchanged",
-    "source_sha256": "ccffe148d50656d46a515fa417abcb1a9c237279e75e6018d929bb26636c5b87"
+    "source_sha256": "03b3933e0a7321ce98e121a7eb6c52675ce3ecf6d8ea48aff4fd6ea004145861"
   },
   {
     "source": "evidence/维护/2026-10-29-进度与规划核对.md",

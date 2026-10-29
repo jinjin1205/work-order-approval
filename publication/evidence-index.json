@@ -6372,6 +6372,12 @@
     "reason": "public copy"
   },
   {
+    "path": "evidence/发布/2026-10-29-a164924-remote.json",
+    "original_sha256": "153b151f653ec4e8aaf267b0b143be044951b913e4e9759f78cff2a06e026bd6",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
     "path": "evidence/发布/2026-10-29-b26633c-remote.json",
     "original_sha256": "92cb2619edb0a28b05037e89801326254cb5e0d72c273921b0d85dfbc1eaa550",
     "published": false,
@@ -6469,7 +6475,7 @@
   },
   {
     "path": "evidence/维护/2026-10-28-暂停与保存.md",
-    "original_sha256": "ccffe148d50656d46a515fa417abcb1a9c237279e75e6018d929bb26636c5b87",
+    "original_sha256": "03b3933e0a7321ce98e121a7eb6c52675ce3ecf6d8ea48aff4fd6ea004145861",
     "published": true,
     "reason": "public copy"
   },
