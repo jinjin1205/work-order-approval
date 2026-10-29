@@ -103,16 +103,26 @@ frappe.ui.form.on("Work Order", {
 		});
 	},
 
-	onload: function (frm) {
+	onload: async function (frm) {
 		if (!frm.doc.status) frm.doc.status = "Draft";
 
 		frm.add_fetch("sales_order", "project", "project");
 
 		if (frm.doc.__islocal) {
-			frm.set_value({
+			await frm.set_value({
 				actual_start_date: "",
 				actual_end_date: "",
 			});
+			if (frm.doc.amended_from && frappe.workflow.workflows[frm.doctype]?.name === "生产工单两级审批") {
+				// Native amendment copies no_copy fields; the new order must prepare its own plan and approval.
+				await frm.set_value({
+					status: "Draft", workflow_state: "草稿",
+					approval_requested_by: null, approval_reviewed_by: null, approval_note: null,
+					operations: [], required_items: [], produced_qty: 0,
+					material_transferred_for_manufacturing: 0, process_loss_qty: 0, disassembled_qty: 0,
+					actual_operating_cost: 0, lead_time: 0,
+				});
+			}
 			erpnext.work_order.set_default_warehouse(frm);
 		}
 
@@ -810,6 +820,17 @@ erpnext.work_order = {
 				});
 			});
 			frm.states.setup_btn(actions.length > 0);
+			const permission = frappe.perm.get_perm(frm.doctype)[0];
+			if (frm.doc.docstatus === 2 && frm.doc.approval_requested_by &&
+				frappe.user_roles.includes("生产工单发起") && permission.create && permission.amend) {
+				frm.page.set_primary_action("修订", () => {
+					if (frm.is_dirty() || frm.doc.name !== work_order || frm.doc.modified !== expected_modified) {
+						frappe.msgprint("工单已变化，请刷新后再修订。");
+						return;
+					}
+					return frm.amend_doc();
+				});
+			}
 		});
 	},
 
@@ -830,7 +851,7 @@ erpnext.work_order = {
 				},
 				__("Status")
 			);
-			if (doc.status != "Stopped" && doc.status != "Completed") {
+			if (!doc.approval_requested_by && doc.status != "Stopped" && doc.status != "Completed") {
 				frm.add_custom_button(
 					__("Stop"),
 					function () {
@@ -838,7 +859,7 @@ erpnext.work_order = {
 					},
 					__("Status")
 				);
-			} else if (doc.status == "Stopped") {
+			} else if (!doc.approval_requested_by && doc.status == "Stopped") {
 				frm.add_custom_button(
 					__("Re-open"),
 					function () {
@@ -860,7 +881,7 @@ erpnext.work_order = {
 					frm.add_custom_button(__("Create Pick List"), function () {
 						erpnext.work_order.create_pick_list(frm);
 					});
-					var start_btn = frm.add_custom_button(__("Start"), function () {
+					var start_btn = frm.add_custom_button(doc.approval_requested_by ? "生产领料" : __("Start"), function () {
 						erpnext.work_order.make_se(frm, "Material Transfer for Manufacture");
 					});
 					start_btn.addClass("btn-primary");
@@ -905,7 +926,7 @@ erpnext.work_order = {
 						if (flt(doc.produced_qty) < flt(doc.material_transferred_for_manufacturing)) {
 							frm.has_finish_btn = true;
 
-							let finish_btn = frm.add_custom_button(__("Finish"), function () {
+							let finish_btn = frm.add_custom_button(doc.approval_requested_by ? "成品入库" : __("Finish"), function () {
 								erpnext.work_order.make_se(frm, "Manufacture");
 							});
 
@@ -920,7 +941,7 @@ erpnext.work_order = {
 								let allowed_qty = frm.doc.qty + (allowance_percentage / 100) * frm.doc.qty;
 
 								if (flt(doc.produced_qty) < allowed_qty) {
-									frm.add_custom_button(__("Finish"), function () {
+									frm.add_custom_button(doc.approval_requested_by ? "成品入库" : __("Finish"), function () {
 										erpnext.work_order.make_se(frm, "Manufacture");
 									});
 								}
@@ -929,7 +950,7 @@ erpnext.work_order = {
 					}
 				} else {
 					if (flt(doc.produced_qty) < flt(doc.qty)) {
-						let finish_btn = frm.add_custom_button(__("Finish"), function () {
+						let finish_btn = frm.add_custom_button(doc.approval_requested_by ? "成品入库" : __("Finish"), function () {
 							erpnext.work_order.make_se(frm, "Manufacture");
 						});
 						finish_btn.addClass("btn-primary");

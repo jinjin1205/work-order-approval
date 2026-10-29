@@ -1716,6 +1716,240 @@
     "reason": "local raw execution evidence; not uploaded"
   },
   {
+    "path": "evidence/B05/entries-20261029/acceptance-summary.json",
+    "original_sha256": "d9201f5db6eaa5c0f49d76b3a92df59ff7203e27281de2537fa15ee08d4a0531",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/affected-copy-source.json",
+    "original_sha256": "3110a25e9161768b56505088606c69213835655119e477fb34525de6f94a5613",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/affected-copy.log",
+    "original_sha256": "204e9c41e59d170f7ae3b58a4a0b4a919bce7d96ebcd9d58eebd63f73925ccb4",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/baseline-source.json",
+    "original_sha256": "8782b2b7af88f9179e2fc13a93b86560c502f0b6f2b5b9ab4558d9bfb9d97af9",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/bounded-change.patch",
+    "original_sha256": "b792b303d7df64d0fa152cde0e07ce7dd4f7e9f2210c05f74e3786413f16f1f7",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/final-affected.log",
+    "original_sha256": "a0ef6810f4abbc5a4f76cba01495a5aaa97520680a64c248b5e41a6c66d922cd",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/final-backend-source.json",
+    "original_sha256": "10a8c07785a9e98f7a934cc011c0cfa093158cb22fe1c20d1310d0f684d63798",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/final-fixture-source.json",
+    "original_sha256": "afd10c4075003cf1c47557dbe15891c98b2eafee2323ff3a3220e06607075716",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/final-fixture.log",
+    "original_sha256": "4e30b947200510e08c076230b97940e4730d0d8c3bc5dd0d72c7e0c9bf888bb9",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/final-history-only.log",
+    "original_sha256": "2f7ed2d698a726d00b6b6c66c614e535f88ffa79ea6f96e4735b9ee9e404ca06",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/final-server.log",
+    "original_sha256": "8e283a155c9519afdc37002b66c90b96d2d7746ebd49bcb71467e8aca8e850c5",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/green-first.log",
+    "original_sha256": "7f383503db908e8601b627c4d3ca031800d0b6ddc679000913d3bc4857f765a7",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/green-row-facts.log",
+    "original_sha256": "61654f99470a5585ea383b438846cf36c4f0d2b4a90c2b1d5d5354f18603d5cb",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/green-stopped-cancel-scoped.log",
+    "original_sha256": "65581037280786c4cce7d093dbe7fd63a791d763a1b8fa77e58d04d38b92efe2",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/green-stopped-cancel.log",
+    "original_sha256": "fbfbdad6d0efb2db28d772546822dd8808aaaf82a9deb8fd469e0f85c6a4a155",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/implementation.patch",
+    "original_sha256": "a3493e9f94f9ef5a0c37ca468014d88331e5f599bcb2574137f5ec01e9701a5c",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/intermediate-suite-source.json",
+    "original_sha256": "b3623203229b963882efba961dd7daa4d692b2d4f09cf97b4a21a40d8a90c9ea",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/red-baseline.log",
+    "original_sha256": "f4425dc198657327972c0da07a41f4d8821b8e4000314225900d5ef7b09e8b1a",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/red-new-plan.log",
+    "original_sha256": "20a2ea6502a92b2080cd1d2017f479a3ed8f9d1489db028ae4095217b9a76d78",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/red-row-facts.log",
+    "original_sha256": "9522519bf16e9a5459be02314dbfd7f83e578b84d15ea8c13d76be7233d20c88",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/red-scoped.log",
+    "original_sha256": "6336272e81541ae56c3848eeb5524637ee3ccea40c479233b2ba31d5563032b8",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/red-stopped-cancel.log",
+    "original_sha256": "3c468e713d795bf068eed147495c137717fac2a6954456b2909857a4fce04a75",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/review-notes.md",
+    "original_sha256": "468621cb9bb294d09e05a77f76f71e87ed936d89ebddd9f2cfa81c16396ff957",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/row-facts-source.json",
+    "original_sha256": "972fae608ce9a27726ea68d22d7e7e615c2e73e6b6215aed67399a94d0ab3ccb",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/row-runtime-source.json",
+    "original_sha256": "f43ee89e3c529d76f2b55113d91079060e75fdfbcc5b4614639e6e015a4eefb7",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/run-record.md",
+    "original_sha256": "cd819fd8809fbdb446818b67dc00a04229f6b845d75378baef8cce92900de44c",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/source-manifest.json",
+    "original_sha256": "0711b639ca03780e3831bd15b87bc64264eeeaff57fc09d510e4a89564b240f0",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/stopped-cancel-runtime-source.json",
+    "original_sha256": "701aa9493780b0687c74724552ff4edf0fc44941b590b307aa6646d05fef1dcd",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/stopped-cancel-source.json",
+    "original_sha256": "c50860e376dccd4cd4dfdc9cf85f1ba32928a48ad5d55d9274e0572126fd9784",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/test-first-runtime-source.json",
+    "original_sha256": "1d293ab33008786b6ab63f22c999d442ecbdd6059f6b8e57db5d158ab33c1e26",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/test-runtime-final.json",
+    "original_sha256": "d48412879ca23c096c6e7230492a5c8e14d3ec34692d00e6c97a2c748eabd936",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/test-runtime-source.json",
+    "original_sha256": "fe8285ecea9d73d76cf5e02beef7a4488962c9d499adade0e02f1659bb8fe50c",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/ui-preserve-error.log",
+    "original_sha256": "b25d1abd88526e5394a3b009feefbc3b785c0469405d106a79395b5cf910b325",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/ui-preserve-final-error.log",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/ui-preserve-final.json",
+    "original_sha256": "8ad03d41a1c3f2e1e9081a4623126452d7ce547f84a8403cbf24c699164f7410",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/ui-preserve.json",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/ui-runtime-source.json",
+    "original_sha256": "d48412879ca23c096c6e7230492a5c8e14d3ec34692d00e6c97a2c748eabd936",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/ui-setup-scoped.log",
+    "original_sha256": "fd04d3ffd7b3db31890d85f0b4a2e5e323be7887d0a526be065731bbbb21ed46",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B05/entries-20261029/ui-setup.log",
+    "original_sha256": "c243768db024500ba460f5b470932a378a27def930e56cc2839d8b6bb1a91f64",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
     "path": "evidence/B05/explicit-details-20261029/acceptance-summary.json",
     "original_sha256": "78a629b40604895781452c5d52bcd69359f861490e777a5f857ab85590d77302",
     "published": true,
@@ -5797,7 +6031,7 @@
   },
   {
     "path": "evidence/R07/card-binding.md",
-    "original_sha256": "97cd24db1684b1ff93fee113cd80cfc0a038d9d3bfe8253781a6ece73ec2c7dc",
+    "original_sha256": "45a5baba57d31beebf18df6de63f4b7881b874af978afdf435e41a66deabcbd5",
     "published": true,
     "reason": "public copy"
   },
@@ -5990,6 +6224,12 @@
   {
     "path": "evidence/发布/2026-10-29-65b0a8a-remote.json",
     "original_sha256": "72e90ac4f59e7e9dacc16a41d6a50246adb7952241045d1799eefc1e6f260a3d",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/发布/2026-10-29-b26633c-remote.json",
+    "original_sha256": "92cb2619edb0a28b05037e89801326254cb5e0d72c273921b0d85dfbc1eaa550",
     "published": false,
     "reason": "local raw execution evidence; not uploaded"
   },

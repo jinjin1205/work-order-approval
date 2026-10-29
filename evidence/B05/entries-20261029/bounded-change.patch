@@ -1,0 +1,373 @@
+diff --git a/erpnext/manufacturing/doctype/work_order/work_order.py b/erpnext/manufacturing/doctype/work_order/work_order.py
+--- a/erpnext/manufacturing/doctype/work_order/work_order.py
++++ b/erpnext/manufacturing/doctype/work_order/work_order.py
+@@ -499,6 +499,23 @@
+ 				frappe.throw("请选择本公司有效的执行班组")
+ 			if any(self.get(f) for f in ("approval_requested_by", "approval_reviewed_by", "approval_note")) or self.get("workflow_state") not in (None, "", "草稿") or self.docstatus != 0:
+ 				frappe.throw("不能在创建工单时指定审批结果或处理人", frappe.PermissionError)
++			actual_quantities = (("produced_qty", "成品入库数量"),
++				("material_transferred_for_manufacturing", "已领料数量"),
++				("process_loss_qty", "实际损耗数量"), ("disassembled_qty", "已拆解数量"))
++			if self.actual_start_date or self.actual_end_date or any(
++				validate_quantity_input(self.get(field), label, allow_zero=True)
++				for field, label in actual_quantities if self.get(field) not in (None, "")
++			):
++				frappe.throw("新工单不能填写实际生产日期或数量，请通过正常报工和库存入口形成事实", frappe.PermissionError)
++			for row in self.operations:
++				if row.actual_start_time or row.actual_end_time or row.status not in (None, "", "Pending") or any(
++					validate_quantity_input(row.get(field), label, allow_zero=True)
++					for field, label in (("completed_qty", "工序良品数量"), ("process_loss_qty", "工序不良数量"),
++						("actual_operation_time", "实际工序用时")) if row.get(field) not in (None, "")
++				):
++					frappe.throw("新工单工序不能填写实际生产日期、数量或执行状态，请通过正常报工形成事实", frappe.PermissionError)
++			if self.operations or self.required_items:
++				frappe.throw("新工单请先保存空草稿，再预览确认生成任务和用料计划", frappe.PermissionError)
+ 			self.validate_production_header()
+ 			self.approval_requested_by = user
+ 			self.workflow_state = "草稿"
+@@ -1219,7 +1236,8 @@
+ 			frappe.throw(_("Capacity Planning Error, planned start time can not be same as end time"))
+ 
+ 	def validate_cancel(self):
+-		if self.status == "Stopped":
++		# Approval cancellation already checks the controlled action and all execution history in before_cancel.
++		if self.status == "Stopped" and not self.get("approval_requested_by"):
+ 			frappe.throw(_("Stopped Work Order cannot be cancelled, Unstop it first to cancel"))
+ 
+ 		# Check whether any stock entry exists against this Work Order
+@@ -2147,7 +2165,7 @@
+ 
+ 	pro_order.update_status(status)
+ 	pro_order.update_planned_qty()
+-	frappe.msgprint(_("Work Order has been {0}").format(status))
++	frappe.msgprint("工单已停止新增执行" if pro_order.get("approval_requested_by") else _("Work Order has been {0}").format(status))
+ 	pro_order.notify_update()
+ 
+ 	return pro_order.status
+diff --git a/erpnext/manufacturing/doctype/work_order/work_order.js b/erpnext/manufacturing/doctype/work_order/work_order.js
+--- a/erpnext/manufacturing/doctype/work_order/work_order.js
++++ b/erpnext/manufacturing/doctype/work_order/work_order.js
+@@ -103,16 +103,26 @@
+ 		});
+ 	},
+ 
+-	onload: function (frm) {
++	onload: async function (frm) {
+ 		if (!frm.doc.status) frm.doc.status = "Draft";
+ 
+ 		frm.add_fetch("sales_order", "project", "project");
+ 
+ 		if (frm.doc.__islocal) {
+-			frm.set_value({
++			await frm.set_value({
+ 				actual_start_date: "",
+ 				actual_end_date: "",
+ 			});
++			if (frm.doc.amended_from && frappe.workflow.workflows[frm.doctype]?.name === "生产工单两级审批") {
++				// Native amendment copies no_copy fields; the new order must prepare its own plan and approval.
++				await frm.set_value({
++					status: "Draft", workflow_state: "草稿",
++					approval_requested_by: null, approval_reviewed_by: null, approval_note: null,
++					operations: [], required_items: [], produced_qty: 0,
++					material_transferred_for_manufacturing: 0, process_loss_qty: 0, disassembled_qty: 0,
++					actual_operating_cost: 0, lead_time: 0,
++				});
++			}
+ 			erpnext.work_order.set_default_warehouse(frm);
+ 		}
+ 
+@@ -810,6 +820,17 @@
+ 				});
+ 			});
+ 			frm.states.setup_btn(actions.length > 0);
++			const permission = frappe.perm.get_perm(frm.doctype)[0];
++			if (frm.doc.docstatus === 2 && frm.doc.approval_requested_by &&
++				frappe.user_roles.includes("生产工单发起") && permission.create && permission.amend) {
++				frm.page.set_primary_action("修订", () => {
++					if (frm.is_dirty() || frm.doc.name !== work_order || frm.doc.modified !== expected_modified) {
++						frappe.msgprint("工单已变化，请刷新后再修订。");
++						return;
++					}
++					return frm.amend_doc();
++				});
++			}
+ 		});
+ 	},
+ 
+@@ -830,7 +851,7 @@
+ 				},
+ 				__("Status")
+ 			);
+-			if (doc.status != "Stopped" && doc.status != "Completed") {
++			if (!doc.approval_requested_by && doc.status != "Stopped" && doc.status != "Completed") {
+ 				frm.add_custom_button(
+ 					__("Stop"),
+ 					function () {
+@@ -838,7 +859,7 @@
+ 					},
+ 					__("Status")
+ 				);
+-			} else if (doc.status == "Stopped") {
++			} else if (!doc.approval_requested_by && doc.status == "Stopped") {
+ 				frm.add_custom_button(
+ 					__("Re-open"),
+ 					function () {
+@@ -860,7 +881,7 @@
+ 					frm.add_custom_button(__("Create Pick List"), function () {
+ 						erpnext.work_order.create_pick_list(frm);
+ 					});
+-					var start_btn = frm.add_custom_button(__("Start"), function () {
++					var start_btn = frm.add_custom_button(doc.approval_requested_by ? "生产领料" : __("Start"), function () {
+ 						erpnext.work_order.make_se(frm, "Material Transfer for Manufacture");
+ 					});
+ 					start_btn.addClass("btn-primary");
+@@ -905,7 +926,7 @@
+ 						if (flt(doc.produced_qty) < flt(doc.material_transferred_for_manufacturing)) {
+ 							frm.has_finish_btn = true;
+ 
+-							let finish_btn = frm.add_custom_button(__("Finish"), function () {
++							let finish_btn = frm.add_custom_button(doc.approval_requested_by ? "成品入库" : __("Finish"), function () {
+ 								erpnext.work_order.make_se(frm, "Manufacture");
+ 							});
+ 
+@@ -920,7 +941,7 @@
+ 								let allowed_qty = frm.doc.qty + (allowance_percentage / 100) * frm.doc.qty;
+ 
+ 								if (flt(doc.produced_qty) < allowed_qty) {
+-									frm.add_custom_button(__("Finish"), function () {
++									frm.add_custom_button(doc.approval_requested_by ? "成品入库" : __("Finish"), function () {
+ 										erpnext.work_order.make_se(frm, "Manufacture");
+ 									});
+ 								}
+@@ -929,7 +950,7 @@
+ 					}
+ 				} else {
+ 					if (flt(doc.produced_qty) < flt(doc.qty)) {
+-						let finish_btn = frm.add_custom_button(__("Finish"), function () {
++						let finish_btn = frm.add_custom_button(doc.approval_requested_by ? "成品入库" : __("Finish"), function () {
+ 							erpnext.work_order.make_se(frm, "Manufacture");
+ 						});
+ 						finish_btn.addClass("btn-primary");
+diff --git a/erpnext/manufacturing/doctype/work_order/work_order.json b/erpnext/manufacturing/doctype/work_order/work_order.json
+--- a/erpnext/manufacturing/doctype/work_order/work_order.json
++++ b/erpnext/manufacturing/doctype/work_order/work_order.json
+@@ -307,7 +307,8 @@
+    "fieldname": "actual_start_date",
+    "fieldtype": "Datetime",
+    "label": "Actual Start Date",
+-   "read_only_depends_on": "eval:doc.operations && doc.operations.length > 0"
++   "read_only_depends_on": "eval:doc.operations && doc.operations.length > 0",
++   "no_copy": 1
+   },
+   {
+    "fieldname": "column_break_13",
+@@ -326,7 +327,8 @@
+    "fieldname": "actual_end_date",
+    "fieldtype": "Datetime",
+    "label": "Actual End Date",
+-   "read_only_depends_on": "eval:doc.operations && doc.operations.length > 0"
++   "read_only_depends_on": "eval:doc.operations && doc.operations.length > 0",
++   "no_copy": 1
+   },
+   {
+    "allow_on_submit": 1,
+@@ -353,7 +355,8 @@
+    "fieldname": "operations",
+    "fieldtype": "Table",
+    "label": "Operations",
+-   "options": "Work Order Operation"
++   "options": "Work Order Operation",
++   "no_copy": 1
+   },
+   {
+    "depends_on": "operations",
+diff --git a/erpnext/manufacturing/doctype/work_order/test_work_order.py b/erpnext/manufacturing/doctype/work_order/test_work_order.py
+--- a/erpnext/manufacturing/doctype/work_order/test_work_order.py
++++ b/erpnext/manufacturing/doctype/work_order/test_work_order.py
+@@ -106,9 +106,14 @@
+ 		frappe.set_user(self.users["operator"])
+ 		self.order = make_wo_order_test_record(**self.order_args)
+ 		self.order.production_team = self.teams[0]
++		# The upstream helper expands BOM material before insert; the project starts with an empty draft.
++		self.order.set("operations", [])
++		self.order.set("required_items", [])
++		self.order.insert()
+ 		for operation in self.operations:
+ 			self.order.append("operations", {"operation": operation, "workstation": self.workstation, "time_in_mins": 1})
+-		self.order.insert()
++		self.order.set_required_items()
++		self.order.save()
+ 
+ 	def clean_fixture(self):
+ 		frappe.set_user("Administrator")
+@@ -636,6 +641,12 @@
+ 		self.assertFalse(amended.approval_reviewed_by)
+ 		self.assertEqual(amended.approval_requested_by, self.f.users["operator"])
+ 		self.assertTrue(frappe.db.exists("Work Order", self.f.order.name))
++		self.assertFalse(amended.operations or amended.required_items)
++		# Controlled plan setup for this no-route legacy fixture; never copy actual quantities or dates.
++		for operation in self.f.operations:
++			amended.append("operations", {"operation": operation, "workstation": self.f.workstation, "time_in_mins": 1})
++		amended.set_required_items()
++		amended.save()
+ 		self.f.order = amended
+ 		with self.assertRaises(frappe.PermissionError):
+ 			self.f.act("director", "签批通过")
+@@ -753,6 +764,11 @@
+ 		self.f.order.reload()
+ 		self.assertEqual(self.f.order.qty, 10)
+ 		self.assertEqual(self.f.order.status, "Stopped")
++		self.assertFalse(new.operations or new.required_items)
++		for operation in self.f.operations:
++			new.append("operations", {"operation": operation, "workstation": self.f.workstation, "time_in_mins": 1})
++		new.set_required_items()
++		new.save()
+ 		self.f.order = new
+ 		with self.assertRaises(frappe.PermissionError):
+ 			self.f.act("director", "签批通过")
+@@ -6113,3 +6129,145 @@
+ 		frappe.set_user(self.f.users["operator"])
+ 		with self.assertRaises(frappe.PermissionError):self.f.act("operator","送审")
+ 		self.assertEqual(self.f.order.reload().workflow_state,"草稿")
++
++
++class TestWorkOrderEntrances(FrappeTestCase):
++	"""Remaining B05 entry boundaries; reuse real approval and reporting fixtures."""
++
++	def setUp(self):
++		from erpnext.manufacturing.doctype.job_card.test_job_card import TestProductionReportConfirmation
++		self.report_case = TestProductionReportConfirmation()
++		self.addCleanup(self.report_case.doCleanups)
++		with change_settings("Manufacturing Settings", {"disable_capacity_planning": 1}):
++			self.report_case.setUp()
++		self.f = self.report_case.approval
++
++	def test_00_fixture_runnable(self):
++		self.assertEqual(self.f.order.workflow_state, "已批准")
++		self.assertEqual(self.f.order.status, "Not Started")
++		self.assertFalse(self.f.order.actual_start_date)
++		self.assertFalse(frappe.db.exists("Stock Entry", {"work_order": self.f.order.name}))
++
++	def test_new_order_requires_empty_saved_draft_before_plan_input(self):
++		frappe.set_user(self.f.users["operator"])
++		row = {"operation": self.f.operations[0], "workstation": self.f.workstation, "time_in_mins": 1}
++		material = {key: self.f.order.required_items[0].get(key) for key in ("item_code", "stock_uom", "required_qty", "source_warehouse")}
++		for changes in ({"operations": [row]}, {"required_items": [material]}):
++			with self.subTest(fields=list(changes)), self.assertRaisesRegex(frappe.PermissionError, "先保存空草稿"):
++				TestWorkOrderHeader.draft(self, **changes).insert()
++		order = TestWorkOrderHeader.draft(self).insert()
++		self.assertFalse(order.operations or order.required_items)
++		order.append("operations", row)
++		order.set_required_items()
++		order.save()
++		self.assertEqual(len(order.reload().operations), 1)
++
++	def test_stopped_approval_without_execution_can_cancel_without_resume(self):
++		from frappe.permissions import update_permission_property
++		frappe.set_user("Administrator")
++		update_permission_property("Work Order", self.f.roles[2], 0, "cancel", 1)
++		self.f.act("director", "停止执行", reason="无执行历史，需求取消")
++		self.assertEqual(self.f.order.status, "Stopped")
++		message = frappe.local.message_log[-1]["message"]
++		self.f.act("director", "取消修订", reason="保留原审批历史后重新准备")
++		self.assertEqual(self.f.order.reload().docstatus, 2)
++		self.assertEqual(self.f.order.status, "Cancelled")
++		self.assertFalse(self.f.order.actual_start_date or self.f.order.actual_end_date)
++		self.assertTrue(frappe.db.exists("Work Order", self.f.order.name))
++		self.assertFalse(frappe.db.exists("Stock Entry", {"work_order": self.f.order.name}))
++		self.assertIn("停止新增执行", message)
++
++	def test_stopped_order_with_report_history_still_cannot_cancel(self):
++		from frappe.permissions import update_permission_property
++		self.report_case.report(2, 0)
++		self.f.order.reload()
++		frappe.set_user("Administrator")
++		update_permission_property("Work Order", self.f.roles[2], 0, "cancel", 1)
++		self.f.act("director", "停止执行", reason="保留已生效报工")
++		before = frappe.as_json(self.f.order.as_dict())
++		facts = frappe.as_json(frappe.get_all("Job Card", filters={"work_order": self.f.order.name, "docstatus": 1}, fields=["*"], order_by="name"))
++		with self.assertRaisesRegex(frappe.PermissionError, "历史"):
++			self.f.act("director", "取消修订", reason="不能通过取消抹去报工")
++		self.assertEqual(frappe.as_json(self.f.order.reload().as_dict()), before)
++		self.assertEqual(self.f.order.status, "Stopped")
++		self.assertEqual(frappe.as_json(frappe.get_all("Job Card", filters={"work_order": self.f.order.name, "docstatus": 1}, fields=["*"], order_by="name")), facts)
++
++	def test_native_copy_of_executed_order_is_empty_and_without_facts(self):
++		self.report_case.report(2, 0)
++		self.f.order.reload()
++		self.assertTrue(self.f.order.actual_start_date)
++		before = frappe.as_json(self.f.order.as_dict())
++		cards = frappe.db.count("Job Card")
++		frappe.set_user(self.f.users["operator"])
++		in_test = frappe.flags.in_test
++		frappe.flags.in_test = False
++		try:
++			copy = frappe.copy_doc(self.f.order, ignore_no_copy=False)
++		finally:
++			frappe.flags.in_test = in_test
++		for field in ("operations", "required_items", "actual_start_date", "actual_end_date"):
++			with self.subTest(field=field):
++				self.assertFalse(copy.get(field), field + " must not be copied")
++		copy.insert()
++		self.assertNotEqual(copy.name, self.f.order.name)
++		self.assertEqual(copy.reload().workflow_state, "草稿")
++		self.assertEqual(copy.docstatus, 0)
++		self.assertFalse(copy.operations or copy.required_items)
++		self.assertFalse(copy.actual_start_date or copy.actual_end_date)
++		self.assertFalse(copy.approval_reviewed_by)
++		self.assertFalse(frappe.db.exists("Job Card", {"work_order": copy.name}))
++		self.assertFalse(frappe.db.exists("Stock Entry", {"work_order": copy.name}))
++		self.assertEqual(frappe.db.count("Job Card"), cards)
++		self.assertEqual(frappe.as_json(self.f.order.reload().as_dict()), before)
++
++	def test_new_plan_rows_cannot_fabricate_execution(self):
++		frappe.set_user(self.f.users["operator"])
++		for field, value in (("completed_qty", 1), ("process_loss_qty", 1),
++			("actual_operation_time", 60), ("actual_start_time", "2026-10-20 09:00:00"),
++			("actual_end_time", "2026-10-20 10:00:00"), ("status", "Completed")):
++			with self.subTest(field=field):
++				count = frappe.db.count("Work Order")
++				row = {"operation": self.f.operations[0], "workstation": self.f.workstation, "time_in_mins": 1, field: value}
++				with self.assertRaisesRegex(frappe.PermissionError, "实际生产"):
++					TestWorkOrderHeader.draft(self, operations=[row]).insert()
++				self.assertEqual(frappe.db.count("Work Order"), count)
++		order = TestWorkOrderHeader.draft(self).insert()
++		order.append("operations", {"operation": self.f.operations[0],
++			"workstation": self.f.workstation, "time_in_mins": 1, "status": "Pending", "completed_qty": 0})
++		order.save()
++		self.assertFalse(order.operations[0].completed_qty)
++
++	def test_new_input_cannot_fabricate_actual_dates_or_quantities(self):
++		frappe.set_user(self.f.users["operator"])
++		for field, value in (("actual_start_date", "2026-10-20 09:00:00"),
++			("actual_end_date", "2026-10-20 10:00:00"), ("produced_qty", 1),
++			("material_transferred_for_manufacturing", 1), ("process_loss_qty", 1),
++			("disassembled_qty", 1)):
++			with self.subTest(field=field):
++				count = frappe.db.count("Work Order")
++				order = TestWorkOrderHeader.draft(self, **{field: value})
++				with self.assertRaisesRegex(frappe.PermissionError, "实际生产"):
++					order.insert()
++				self.assertEqual(frappe.db.count("Work Order"), count)
++
++	def test_parent_delete_allows_only_authorized_draft_without_history(self):
++		from frappe.permissions import update_permission_property
++		frappe.set_user("Administrator")
++		update_permission_property("Work Order", self.f.roles[0], 0, "delete", 1)
++		frappe.set_user(self.f.users["operator"])
++		draft = TestWorkOrderHeader.draft(self).insert()
++		frappe.set_user(self.f.users["other"])
++		with self.assertRaises(frappe.PermissionError):
++			frappe.delete_doc("Work Order", draft.name)
++		self.assertTrue(frappe.db.exists("Work Order", draft.name))
++		frappe.set_user(self.f.users["operator"])
++		frappe.delete_doc("Work Order", draft.name)
++		self.assertFalse(frappe.db.exists("Work Order", draft.name))
++		frappe.set_user(self.report_case.user)
++		self.report_case.report(2, 0)
++		self.f.order.reload()
++		before = frappe.as_json(self.f.order.as_dict())
++		frappe.set_user(self.f.users["operator"])
++		with self.assertRaises((frappe.PermissionError, frappe.ValidationError)):
++			frappe.delete_doc("Work Order", self.f.order.name)
++		self.assertEqual(frappe.as_json(self.f.order.reload().as_dict()), before)

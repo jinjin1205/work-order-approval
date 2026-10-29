@@ -14,14 +14,15 @@ BASE = "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e"
 history_paths_manifest = json.loads((ROOT / ".development/checks/b08-history-paths-source-manifest.json").read_text())
 details_manifest = json.loads((ROOT / ".development/checks/b05-details-source-manifest.json").read_text())
 closeout_manifest = json.loads((ROOT / ".development/checks/b05-closeout-source-manifest.json").read_text())
-manifest = json.loads((ROOT / ".development/checks/b05-header-source-manifest.json").read_text())
+header_manifest = json.loads((ROOT / ".development/checks/b05-header-source-manifest.json").read_text())
+manifest = json.loads((ROOT / ".development/checks/b05-entries-source-manifest.json").read_text())
 metrics_manifest = json.loads((ROOT / ".development/checks/b08-metrics-source-manifest.json").read_text())
 followup_manifest = json.loads((ROOT / ".development/checks/b08-followup-source-manifest.json").read_text())
 changes = subprocess.check_output(["git", "diff", "--name-only", BASE], cwd=REPO, text=True).splitlines()
 patch = subprocess.check_output(["git", "diff", BASE], cwd=REPO)
-assert len(changes) == 25
+assert len(changes) == 26
 assert hashlib.sha256(patch).hexdigest() == manifest["patch_sha256"]
-assert patch == (ROOT / "evidence/B05/header-20261029/implementation.patch").read_bytes()
+assert patch == (ROOT / "evidence/B05/entries-20261029/implementation.patch").read_bytes()
 for name in changes:
     assert hashlib.sha256((REPO / name).read_bytes()).hexdigest() == manifest["files"][name]
 
@@ -48,7 +49,7 @@ def portable(text):
 for name in changes:
     add("source/erpnext/" + name, (REPO / name).read_bytes(), ".development/repos/erpnext/" + name)
 add("source/erpnext/license.txt", (REPO / "license.txt").read_bytes(), ".development/repos/erpnext/license.txt")
-for name in ("evidence/B05/header-20261029/implementation.patch", "evidence/B05/header-20261029/bounded-change.patch", "evidence/B05/closeout-20261029/implementation.patch", "evidence/B05/closeout-20261029/bounded-change.patch", "evidence/B05/explicit-details-20261029/implementation.patch", "evidence/B05/explicit-details-20261029/bounded-change.patch", "evidence/B10/combined-implementation.patch", "evidence/B19/combined-implementation.patch",
+for name in ("evidence/B05/entries-20261029/implementation.patch", "evidence/B05/entries-20261029/bounded-change.patch", "evidence/B05/header-20261029/implementation.patch", "evidence/B05/header-20261029/bounded-change.patch", "evidence/B05/closeout-20261029/implementation.patch", "evidence/B05/closeout-20261029/bounded-change.patch", "evidence/B05/explicit-details-20261029/implementation.patch", "evidence/B05/explicit-details-20261029/bounded-change.patch", "evidence/B10/combined-implementation.patch", "evidence/B19/combined-implementation.patch",
              "evidence/B19/b19-only.patch", "evidence/B19/execution-gate/combined-implementation.patch",
              "evidence/B19/entry-history/combined-implementation.patch",
              "evidence/B19/approved-changes/combined-implementation.patch",
@@ -72,6 +73,9 @@ paths += [ROOT / "openspec/specs/production-order-closeout/spec.md"]
 paths += sorted((ROOT / "openspec/changes/archive/2026-10-29-work-order-header-20261029").rglob("*.md"))
 paths += [ROOT / "openspec/changes/archive/2026-10-29-work-order-header-20261029/.openspec.yaml"]
 paths += [ROOT / "openspec/specs/production-order-header/spec.md"]
+paths += sorted((ROOT / "openspec/changes/archive/2026-10-29-work-order-entries-20261029").rglob("*.md"))
+paths += [ROOT / "openspec/changes/archive/2026-10-29-work-order-entries-20261029/.openspec.yaml"]
+paths += [ROOT / "openspec/specs/production-order-entries/spec.md"]
 paths += sorted((ROOT / ".agents/skills").glob("openspec-*/SKILL.md"))
 paths += [ROOT / ".agents/skills/.openspec-target", ROOT / ".agents/skills/playwright-cli/SKILL.md"]
 paths += sorted((ROOT / ".agents/skills/playwright-cli/references").glob("*.md"))
@@ -91,6 +95,22 @@ for path in paths:
     add(relative, clean, relative, "personal paths/runtime identifiers removed" if original != clean else "unchanged")
 
 safe_json = [
+    "evidence/B05/entries-20261029/source-manifest.json",
+    "evidence/B05/entries-20261029/baseline-source.json",
+    "evidence/B05/entries-20261029/intermediate-suite-source.json",
+    "evidence/B05/entries-20261029/affected-copy-source.json",
+    "evidence/B05/entries-20261029/row-facts-source.json",
+    "evidence/B05/entries-20261029/stopped-cancel-source.json",
+    "evidence/B05/entries-20261029/final-fixture-source.json",
+    "evidence/B05/entries-20261029/final-backend-source.json",
+    "evidence/B05/entries-20261029/test-first-runtime-source.json",
+    "evidence/B05/entries-20261029/test-runtime-source.json",
+    "evidence/B05/entries-20261029/row-runtime-source.json",
+    "evidence/B05/entries-20261029/stopped-cancel-runtime-source.json",
+    "evidence/B05/entries-20261029/test-runtime-final.json",
+    "evidence/B05/entries-20261029/ui-runtime-source.json",
+    "evidence/B05/entries-20261029/ui-preserve-final.json",
+    "evidence/B05/entries-20261029/acceptance-summary.json",
     "evidence/B05/header-20261029/source-manifest.json",
     "evidence/B05/header-20261029/intermediate-suite-source.json",
     "evidence/B05/header-20261029/ui-preserve-final.json",
@@ -249,7 +269,9 @@ history_patch = json.loads((ROOT / "evidence/B19/entry-history/source-manifest.j
 changes_patch = json.loads((ROOT / "evidence/B19/approved-changes/source-manifest.json").read_text())["patch_sha256"]
 b04_patch = json.loads((ROOT / "evidence/B04/source-manifest.json").read_text())["patch_sha256"]
 groups = [
-    ("B05 final overdue warning policy affected date methods only", "2026-10-29", manifest["patch_sha256"], [("evidence/B05/header-20261029/overdue-fixed.log",2)]),
+    ("B05 entries final empty-create fixture only", "2026-10-29", json.loads((ROOT / "evidence/B05/entries-20261029/final-fixture-source.json").read_text())["patch_sha256"], [("evidence/B05/entries-20261029/final-fixture.log",1)]),
+    ("B05 entries corrected viewed-version fixture method only", "2026-10-29", manifest["patch_sha256"], [("evidence/B05/entries-20261029/final-history-only.log",1)]),
+    ("B05 final overdue warning policy affected date methods only", "2026-10-29", header_manifest["patch_sha256"], [("evidence/B05/header-20261029/overdue-fixed.log",2)]),
     ("B05 native header numbering and prerequisites with two affected original cases", "2026-10-29", json.loads((ROOT / "evidence/B05/header-20261029/intermediate-suite-source.json").read_text())["patch_sha256"], [("evidence/B05/header-20261029/green-first.log",10)]),
     ("B05 Chinese snapshot display fix affected method only", "2026-10-29", closeout_manifest["patch_sha256"], [("evidence/B05/closeout-20261029/unicode-fixed.log",1)]),
     ("B05 timer finish/manual close bounded suite and affected original cases", "2026-10-29", json.loads((ROOT / "evidence/B05/closeout-20261029/intermediate-suite-source.json").read_text())["patch_sha256"], [("evidence/B05/closeout-20261029/final-tests.log",12)]),
@@ -285,6 +307,18 @@ for group, date, patch_sha, logs in groups:
                           "group": group, "source_patch_sha256": patch_sha,
                           **({"product_job_card_sha256": followup_manifest["files"]["erpnext/manufacturing/doctype/job_card/job_card.py"]} if group.startswith("B08 followup") else {}),
                           **({"product_job_card_sha256": metrics_manifest["files"]["erpnext/manufacturing/doctype/job_card/job_card.py"]} if group.startswith("B08 metrics") else {})})
+# Preserve the real FAILED batch; one fixture timestamp error was corrected separately.
+partial_log = ROOT / "evidence/B05/entries-20261029/final-affected.log"
+partial_text = partial_log.read_text()
+assert "Ran 10 tests in 103.397s" in partial_text and "FAILED (errors=1)" in partial_text
+assert len(re.findall(r"^(?:test_.* [.][.][.] )?ok$", partial_text, re.M)) == 9
+test_receipts.insert(2, {"local_log": "evidence/B05/entries-20261029/final-affected.log",
+    "sha256": hashlib.sha256(partial_log.read_bytes()).hexdigest(), "tests": 10,
+    "passed_methods": 9, "errors": 1, "seconds": "103.397", "result": "FAILED",
+    "executed_on": "2026-10-29", "group": "B05 entries final affected batch: nine pass, one fixture stale-version error",
+    "source_patch_sha256": json.loads((ROOT / "evidence/B05/entries-20261029/final-backend-source.json").read_text())["patch_sha256"],
+    "resolved_fixture_only_by": "evidence/B05/entries-20261029/final-history-only.log",
+    "scope": "Nine passing methods reused unchanged; only the fixture reload was corrected and rerun. Not a single final full-suite pass."})
 add("publication/test-receipts.json", json.dumps({"scope": "Separate executed batches; exact patches where captured, explicit null otherwise with product hash. No cumulative full-suite result; publication does not rerun tests", "tests": test_receipts, "http_B02_historical": safe_http, "current_patch_sha256": manifest["patch_sha256"]}, ensure_ascii=False, indent=2) + "\n")
 
 index = []

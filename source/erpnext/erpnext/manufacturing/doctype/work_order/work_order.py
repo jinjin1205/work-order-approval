@@ -499,6 +499,23 @@ class WorkOrder(Document):
 				frappe.throw("请选择本公司有效的执行班组")
 			if any(self.get(f) for f in ("approval_requested_by", "approval_reviewed_by", "approval_note")) or self.get("workflow_state") not in (None, "", "草稿") or self.docstatus != 0:
 				frappe.throw("不能在创建工单时指定审批结果或处理人", frappe.PermissionError)
+			actual_quantities = (("produced_qty", "成品入库数量"),
+				("material_transferred_for_manufacturing", "已领料数量"),
+				("process_loss_qty", "实际损耗数量"), ("disassembled_qty", "已拆解数量"))
+			if self.actual_start_date or self.actual_end_date or any(
+				validate_quantity_input(self.get(field), label, allow_zero=True)
+				for field, label in actual_quantities if self.get(field) not in (None, "")
+			):
+				frappe.throw("新工单不能填写实际生产日期或数量，请通过正常报工和库存入口形成事实", frappe.PermissionError)
+			for row in self.operations:
+				if row.actual_start_time or row.actual_end_time or row.status not in (None, "", "Pending") or any(
+					validate_quantity_input(row.get(field), label, allow_zero=True)
+					for field, label in (("completed_qty", "工序良品数量"), ("process_loss_qty", "工序不良数量"),
+						("actual_operation_time", "实际工序用时")) if row.get(field) not in (None, "")
+				):
+					frappe.throw("新工单工序不能填写实际生产日期、数量或执行状态，请通过正常报工形成事实", frappe.PermissionError)
+			if self.operations or self.required_items:
+				frappe.throw("新工单请先保存空草稿，再预览确认生成任务和用料计划", frappe.PermissionError)
 			self.validate_production_header()
 			self.approval_requested_by = user
 			self.workflow_state = "草稿"
@@ -1219,7 +1236,8 @@ class WorkOrder(Document):
 			frappe.throw(_("Capacity Planning Error, planned start time can not be same as end time"))
 
 	def validate_cancel(self):
-		if self.status == "Stopped":
+		# Approval cancellation already checks the controlled action and all execution history in before_cancel.
+		if self.status == "Stopped" and not self.get("approval_requested_by"):
 			frappe.throw(_("Stopped Work Order cannot be cancelled, Unstop it first to cancel"))
 
 		# Check whether any stock entry exists against this Work Order
@@ -2147,7 +2165,7 @@ def stop_unstop(work_order, status):
 
 	pro_order.update_status(status)
 	pro_order.update_planned_qty()
-	frappe.msgprint(_("Work Order has been {0}").format(status))
+	frappe.msgprint("工单已停止新增执行" if pro_order.get("approval_requested_by") else _("Work Order has been {0}").format(status))
 	pro_order.notify_update()
 
 	return pro_order.status

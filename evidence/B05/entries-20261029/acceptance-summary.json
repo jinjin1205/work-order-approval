@@ -1,0 +1,86 @@
+{
+  "scope": "B05 bounded state and entry package; original card still waits for B04 raw quantity precision evidence",
+  "source_patch_sha256": "a3493e9f94f9ef5a0c37ca468014d88331e5f599bcb2574137f5ec01e9701a5c",
+  "modified_existing_product_files": 4,
+  "cumulative_source_files": 26,
+  "runtime_manifest_files": 34,
+  "server": {
+    "unique_methods_covered": 11,
+    "single_final_full_suite": false,
+    "batches": [
+      {
+        "log": "final-fixture.log",
+        "tests": 1,
+        "passed": 1,
+        "errors": 0,
+        "seconds": 8.789
+      },
+      {
+        "log": "final-affected.log",
+        "tests": 10,
+        "passed": 9,
+        "errors": 1,
+        "seconds": 103.397,
+        "error": "fixture timestamp not refreshed after report; corrected separately"
+      },
+      {
+        "log": "final-history-only.log",
+        "tests": 1,
+        "passed": 1,
+        "errors": 0,
+        "seconds": 11.483
+      }
+    ],
+    "old_rollback_tables_unchanged": 15
+  },
+  "pc": {
+    "ordinary_roles": true,
+    "state_menu_matches_controlled_actions": true,
+    "stop_http": 200,
+    "cancel_after_fix_http": 200,
+    "zero_quantity_http": 417,
+    "copy_save_http": 200,
+    "copy_reopen_empty_plan": true,
+    "no_history_copy_delete_http": 200,
+    "native_amend_save_http": 200,
+    "amended_draft_reopened_empty": true,
+    "history_parent_delete_http": 403,
+    "old_approvals_not_inherited": true
+  },
+  "preservation": {
+    "old_tables_business_preserved": 23,
+    "raw_old_row_differences": 1,
+    "native_seen_reader_additions": 1,
+    "old_business_field_mismatches": 0,
+    "new_orders_remaining": 2,
+    "ready_cancelled_with_reason_and_history": true,
+    "amended_draft_new_number": true,
+    "amended_source_link_preserved": true,
+    "amended_operations": 0,
+    "amended_materials": 0,
+    "amended_new_requester": true,
+    "old_approvals_not_inherited": true,
+    "actual_dates_or_quantities_inherited": false,
+    "created_empty_copy_deleted": true,
+    "new_draft_job_cards": 3,
+    "new_effective_reports": 0,
+    "new_time_logs": 0,
+    "new_stock_entries": 0,
+    "new_stock_ledger_entries": 0,
+    "new_users": 2,
+    "new_roles": 2,
+    "old_users_roles_permissions_preserved": true
+  },
+  "review": {
+    "independent_reviewers": 1,
+    "critical": 0,
+    "important": 0,
+    "minor": 0,
+    "reviewer_did_not_run_tests_or_browser": true,
+    "native_permission_code_not_independently_run_by_reviewer": true
+  },
+  "b05_whole_card_closed": false,
+  "next_development_card": "B06",
+  "formal_customer_delivery": false,
+  "remote_publication": "Not asserted here; see the independent post-push remote receipt"
+}

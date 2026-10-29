@@ -19,7 +19,7 @@ unexpected = sorted(set(files) - allowed)
 assert not unexpected, "Unexpected files: " + str(unexpected)
 
 secrets = set()
-credential_sources = [root / ".development/private/b05-header-20261029/access.json", root / ".development/private/b05-closeout-20261029/access.json", root / ".development/private/b05-details-20261029/access.json", root / ".development/private/b08-metrics/config-access.json", root / ".development/private/b08-followup/http-fixture.json",root / ".development/private/b08-http/fixture.json", root / ".development/private/b14-ui/access.json", root / ".development/private/b04-bom-ui/access.json", root / ".development/.env", root / ".development/private/b02-http.json",
+credential_sources = [root / ".development/private/b05-entries-20261029/access.json", root / ".development/private/b05-header-20261029/access.json", root / ".development/private/b05-closeout-20261029/access.json", root / ".development/private/b05-details-20261029/access.json", root / ".development/private/b08-metrics/config-access.json", root / ".development/private/b08-followup/http-fixture.json",root / ".development/private/b08-http/fixture.json", root / ".development/private/b14-ui/access.json", root / ".development/private/b04-bom-ui/access.json", root / ".development/.env", root / ".development/private/b02-http.json",
                       root / ".development/private/b19-http/fixture.json",
                       root / ".development/private/b19-http/ui-access.json",
                       root / ".evaluation/r05-erpnext/.env", root / ".evaluation/r05-erpnext/access-secrets.json"]

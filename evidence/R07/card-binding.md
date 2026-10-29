@@ -206,3 +206,38 @@ B01实际显示：新站点用`--module`未准备所需fixture，改原生`--doc
 **本包实操补充：**缺用料测试仅在本方法新造的BOM中受控清空用料/展开行，模拟上游不完整来源，最后事务回滚；为此原11表外另核4张BOM表，共15表，不操作旧客户资料。网页新会话实际出现磁盘源码已新但提示函数仍undefined的旧脚本；只清专用合成站`frappe.clear_cache(doctype="Work Order")`并完整重载后，新交期提示已出现。该目标缓存刷新属于本包必要运行同步，不改元数据或业务数据；不能只凭源码哈希声称浏览器已更新。
 
 **收口规则校正（以本段为准）：**原生`validate_dates`只阻断计划结束早于计划开始，`expected_delivery_date`为期望交付日期；原卡未要求它必须晚于计划开始。初版把该关系硬拦截依据不足，会阻断逾期安排。仅把该一分支改为“可能逾期”的风险提示并保留原交期，非法日期/缺交期送审及原权限/冻结仍阻断。新增`TestWorkOrderHeader.test_overdue_delivery_is_preserved_with_warning`先红后绿，连同受影响日期方法定向2项复验，不重跑其他主批次；原10项清单另存中间版本。页面只在本包自己的无路线草稿填早于计划开始的交期，保存/重开核警示及原值，不新增样例或执行事实。
+
+## 2026-10-29 B05状态动作与未覆盖入口绑定
+
+**授权/基线：**用户要求从原B05状态动作及未覆盖入口续接，并核清为什么仍在B05。公开main实际pull无更新，基线`b26633cb871b2cd4667b943493cf787234b8d93e`；维护checkout沿`codex/xgd-maintenance`，累计25份修改保留，原源码清单/补丁`382c6d2f`。复用原测试容器`xgd-b08-check`、专用合成网页`xgd-b08-ui:18090`，不另建工作树、站点或初始化依赖。原R03～R06五候选核验继续适用，本包直接复用ERPNext15.124.1/Frappe15.124.0。
+
+**目标：**把剩余入口逐项对账，只修真实缺口，状态页面与已验服务器规则一致；复制的新单不能继承生产事实，父单删除不能抹除历史。**边界：**不重新开发审批、计时/结束、报工/库存算法；不扩销售404、全局BOM锁、手机/现场、完整G1/G2/G3、Z01或后台周期。本包新增隔离样例才允许在用例内删除/回滚，旧记录、用户与授权保持。
+
+### 唯一实施计划（原卡引用，不另建任务清单）
+
+1. 按原B05及CASE-01/07建立入口矩阵。已验直接建单/确认生成、交期/编号、两级审批及直接取消/停止拒绝、首报联动、计时/结束与历史保护只回链旧记录；未改变不重跑。不把B04网页精度或其他卡的整体验收挪成B05新增功能。
+2. 先以真实fixture核原生`frappe.copy_doc(..., ignore_no_copy=False)`，检查新单任务/用料、实际日期、原事实及审批是否继承。仅当真实反例确认时，复用原生`no_copy`修既有字段（`operations/actual_start_date/actual_end_date`），不新建复制器。普通新建/Resource保存输入在`WorkOrder.validate_production_approval`现有新建边界检查不能伪造实际生产字段，不改旧单派生回写。
+3. 原`work_order.js:set_custom_buttons`只对审批工单去掉原生`Stop/Re-open`入口，保留原`show_production_approval_actions`的厂长/版本/原因动作；原生非审批路径保留。库存`Start/Finish`若在审批表单出现，只澄清领料/入库语义，不新增手动开工或生产完成入口。直接服务器保护沿原`stop_unstop/close_work_order/apply_production_approval`，不复制状态机。
+4. 仅允许原`work_order.py/.js/.json/test_work_order.py`四文件，JSON仅既有字段`no_copy`；未发现真实缺口的文件不改。新增`TestWorkOrderEntrances`：最小fixture、新单伪造实际字段拒绝、原生复制空明细且不带事实、父单删除权限/历史正反例。复制元数据如影响旧取消修订/关联新单，仅相应两原方法改用原预览/确认准备新计划并定向回归，不重跑旧18项。先红后绿，期望为失败零副作用及测试结束旧表回滚相同。
+5. 检查脚本复用原runner，新增`.development/checks/b05_entries_tests.py`，命令`docker exec xgd-b08-check env/bin/python /b01/b05_entries_tests.py`。必要时仅目标`reload_doc(manufacturing,doctype,work_order)`同步既有no_copy并刷新DocType缓存；不全量迁移/构建。中文PC普通岗位新样例核状态菜单、带原因停止/取消及复制保存重开/删除；服务器绕过反例由定向测试承担，不将API冒充页面验收。
+6. 本包证据`evidence/B05/entries-20261029/`。源码/实际命令/分批红绿、中文PC、旧行保留、独立一次审查及公开回读齐备后，逐项回填原B05；整卡是否关闭仅依矩阵支持范围与原结束条件，不预填通过、不因其他卡未验无限滞留B05。未支持管理入口明确范围，不承诺抵抗管理员SQL。
+
+**执行记录：**尚未运行本包测试或验收，结果在上述路径按实际续记。
+
+**同一新建边界补充：**新单的工序行也属于外部新建输入，`completed_qty/process_loss_qty/actual_operation_time/actual_start_time/actual_end_time/status`不能伪造执行事实。原WorkOrderOperation历史保护针对已存在的报工引用，不负责新父单输入；本包仍只在原WorkOrder新建检查内处理，新增一个定向方法`test_new_plan_rows_cannot_fabricate_execution`先红后绿，不修改子行控制器或重开B08。
+
+**状态冲突实证及补绑：**普通厂长在本包新样例停止后，页面仍提供取消修订，真实HTTP417；一次仅回滚的同对象诊断定位原`WorkOrder.validate_cancel`要求Stopped先恢复，与项目原规则禁止恢复冲突。原C10/B19已允许无执行历史取消修订。本包补绑此原方法，仅审批工单可跳过原Stopped阻挡；`before_cancel`既有动作授权和`_has_production_execution`历史保护保持，不允许有计时/报工/库存历史取消。新增`test_stopped_approval_without_execution_can_cancel_without_resume`单方法红绿；原`stop_unstop`仅将审批停止消息明确中文化，非审批原逻辑保留。此前417和脚本超时留档，不写成取消成功。
+
+**页面修订授权前提：**实际读取本包新发起人权限为read/create/delete真、amend/import假，Data Import create假；不能把create当作amend。本包只在新增隔离角色追加原生amend以验修订入口，旧角色/用户/授权不动；客户角色部署仍归B02/Z01，不把测试授权当默认生产配置。此项在fixture脚本中可复现。
+
+**普通新建0/0的直接输入：**本包工序零实绩正例实际通过时带入一行计划，证明普通insert仍允许跳过“先保存空草稿”。原CASE-01不只约束自动BOM展开。本包追加`test_new_order_requires_empty_saved_draft_before_plan_input`红绿，在同一新建边界拒绝预填任务/用料。既有`TestWorkOrderApproval.setUp`只把计划准备移到空insert之后，仍沿原草稿编辑与权威set_required_items；不新造fixture或确认入口。当前UI fixture同样调整，仅本轮受影响方法及正常两级审批定向复验，历史全批不重跑。
+
+**受影响验收范围冻结：**新建0/0规则使本轮fixture创建步骤变化，最终只重验本轮`TestWorkOrderEntrances`，含`test_stopped_order_with_report_history_still_cannot_cancel`保护反例；另加原正常两级审批及本包直接影响的取消修订/剩余需求两方法。B04/计时结束/B08旧整批不跑。这个有限集合是最终服务器验收，不再扩成全量ERPNext测试。
+
+**修订按钮补绑：**实际已取消新单在有amend权限时仍无修订按钮；Frappe`Form.set_read_only`裁掉amend/create，Toolbar.can_amend因此不显示，但原`Form.validate_form_action`已支持Workflow只读单据按基础权限执行复制/修订。仅原`work_order.js:show_production_approval_actions`在已取消审批单、生产发起角色且原基础create/amend权限均真时显示“修订”，复用`frm.amend_doc()`及其原生校验；不改Frappe、Workflow配置或任何权限掩码。新草稿不应继承审批/事实/计划，若原生from_amend复制的实际结果不满足，再仅在原onload新修订单初始化处理。
+
+**修订实测反例与初始化：**原生按钮实测可进入新未存修订单，但from_amend忽略no_copy，仍带3计划/1用料、原申请/审核人、Cancelled生产状态。仅原`onload`在新建且有amended_from及本审批Workflow时清审批、计划和实绩并设Draft/草稿；await原set_value完成再继续，不改源单、默认Workflow或权限。普通复制已经通过不重跑。服务器最终10方法中9通过，唯一历史反例因报工后fixture未reload导致TimestampMismatch；只补该方法reload并单独复验，不重跑9个未变方法；此准备失败不算产品缺陷或整批通过。
+
+**旧行差异的已证实归属：**最终完整哈希检查发现复制源单一行不同，modified仍为本轮前时间。只读副本去掉本轮新读者的`_seen`新增项、按原生json.dumps重建后与开工原哈希完全一致，证明其余全部字段未改；实际Frappe`Document.add_seen`正是update_modified=False追加阅读者。保留该原生阅读审计，不恢复/删除或称原23表逐字节零差异。最终回执明确“1阅读标记差异、0业务字段差异”。这不放宽任何其他旧行/字段核对。
+
+**本轮实际结束：**[执行记录](../B05/entries-20261029/run-record.md)及原B05入口矩阵已回填，11不同方法按P0/9过1准备错/修后单项分批覆盖，中文PC及最终23表业务字段核对完成，一次独立四文件审查无阻断。只归档本状态入口change；B05整卡保留B04网页原始数量精度回链，后续开发移到原B06，不因卡片仍部分反复开本包。公开保存以最终远端回执为准。

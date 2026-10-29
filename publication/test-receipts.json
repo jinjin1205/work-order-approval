@@ -2,6 +2,40 @@
   "scope": "Separate executed batches; exact patches where captured, explicit null otherwise with product hash. No cumulative full-suite result; publication does not rerun tests",
   "tests": [
     {
+      "local_log": "evidence/B05/entries-20261029/final-fixture.log",
+      "sha256": "4e30b947200510e08c076230b97940e4730d0d8c3bc5dd0d72c7e0c9bf888bb9",
+      "tests": 1,
+      "seconds": "8.789",
+      "result": "OK",
+      "executed_on": "2026-10-29",
+      "group": "B05 entries final empty-create fixture only",
+      "source_patch_sha256": "ea69880da2fe93d9dc5136e116d83f0c24302a4e5ad2b77a6ab5c6525c7cb68d"
+    },
+    {
+      "local_log": "evidence/B05/entries-20261029/final-history-only.log",
+      "sha256": "2f7ed2d698a726d00b6b6c66c614e535f88ffa79ea6f96e4735b9ee9e404ca06",
+      "tests": 1,
+      "seconds": "11.483",
+      "result": "OK",
+      "executed_on": "2026-10-29",
+      "group": "B05 entries corrected viewed-version fixture method only",
+      "source_patch_sha256": "a3493e9f94f9ef5a0c37ca468014d88331e5f599bcb2574137f5ec01e9701a5c"
+    },
+    {
+      "local_log": "evidence/B05/entries-20261029/final-affected.log",
+      "sha256": "a0ef6810f4abbc5a4f76cba01495a5aaa97520680a64c248b5e41a6c66d922cd",
+      "tests": 10,
+      "passed_methods": 9,
+      "errors": 1,
+      "seconds": "103.397",
+      "result": "FAILED",
+      "executed_on": "2026-10-29",
+      "group": "B05 entries final affected batch: nine pass, one fixture stale-version error",
+      "source_patch_sha256": "93534d797b4b92887853f8e70a591d7c5e63e6a9d8a73256435777ef123281ef",
+      "resolved_fixture_only_by": "evidence/B05/entries-20261029/final-history-only.log",
+      "scope": "Nine passing methods reused unchanged; only the fixture reload was corrected and rerun. Not a single final full-suite pass."
+    },
+    {
       "local_log": "evidence/B05/header-20261029/overdue-fixed.log",
       "sha256": "615c74fef7e2072122fe4565de6b9d33ea45a9ae737117935d33eda5c9f14b42",
       "tests": 2,
@@ -409,5 +443,5 @@
     "verified_after_all_requests": true,
     "publication_note": "Only assertions/counts retained; runtime business_state and raw responses remain local."
   },
-  "current_patch_sha256": "382c6d2f0498fc0747599e4e0eab1920375484c0c267395f9b3df3967b1f35b9"
+  "current_patch_sha256": "a3493e9f94f9ef5a0c37ca468014d88331e5f599bcb2574137f5ec01e9701a5c"
 }
