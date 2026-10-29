@@ -273,25 +273,25 @@
     "source": "AGENTS.md",
     "public_path": "AGENTS.md",
     "treatment": "unchanged",
-    "source_sha256": "1f074eb7f488f6359f8ca97b93ec32f8e8dc35d97bcf18bd7e897e1b247316e5"
+    "source_sha256": "c211d7eedd985dba66ae31f09ef118bd8297fef1ccacbb0475f349e89065002a"
   },
   {
     "source": "docs/任务卡/01-复用核验与选型.md",
     "public_path": "docs/任务卡/01-复用核验与选型.md",
     "treatment": "unchanged",
-    "source_sha256": "6b7059e64da4dd96bb6a0b5e007d48d5aa42c356338ce6e06f97d935d79823b3"
+    "source_sha256": "1ca50786c78c6c4a403c5e6fad27e3070d8f9c92edb97bae1547cb0067a42ae2"
   },
   {
     "source": "docs/任务卡/02-生产与物料闭环.md",
     "public_path": "docs/任务卡/02-生产与物料闭环.md",
     "treatment": "personal paths/runtime identifiers removed",
-    "source_sha256": "2049f96c3f501c6eb23fb96b240949f70e4d8deb85f2897fd261674c53bb2505"
+    "source_sha256": "951933460dc3024358b78b0aed275bf39e111d606a7d6b898faaa13f82b142d8"
   },
   {
     "source": "docs/任务卡/03-AI与交付.md",
     "public_path": "docs/任务卡/03-AI与交付.md",
     "treatment": "unchanged",
-    "source_sha256": "2f6b21c2814178018454c16200de3f3036f06fd76d0372fd378df83e0c629faa"
+    "source_sha256": "f414e7ac9c7ede418e5c164a54c98eb463b940343e9155b84f27d595f2935928"
   },
   {
     "source": "docs/决策与范围.md",
@@ -303,7 +303,7 @@
     "source": "docs/开发TODO.md",
     "public_path": "docs/开发TODO.md",
     "treatment": "unchanged",
-    "source_sha256": "86a3985704b228d29d3e81d84a156efb0ba2f83b02f3c4a63bbab1e3804e8758"
+    "source_sha256": "abb2ef8bb738239dcc427a1b7ee0d5ce51b9c30f185509049e8db954388135e1"
   },
   {
     "source": "docs/验收样例.md",
@@ -682,6 +682,12 @@
     "public_path": "evidence/维护/2026-10-28-暂停与保存.md",
     "treatment": "unchanged",
     "source_sha256": "ccffe148d50656d46a515fa417abcb1a9c237279e75e6018d929bb26636c5b87"
+  },
+  {
+    "source": "evidence/维护/2026-10-29-进度与规划核对.md",
+    "public_path": "evidence/维护/2026-10-29-进度与规划核对.md",
+    "treatment": "unchanged",
+    "source_sha256": "c461ae06847c9e5e9a09d8e336e2f0315ebab99ea552809b7b59b1973db13766"
   },
   {
     "source": "openspec/config.yaml",

@@ -5520,6 +5520,12 @@
     "reason": "local raw execution evidence; not uploaded"
   },
   {
+    "path": "evidence/发布/2026-10-28-1661956-remote.json",
+    "original_sha256": "fae834c7a64bf34e2c956a52dfd0ba98f2af9ca166e186efb50782ddda6e4c73",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
     "path": "evidence/发布/2026-10-28-35d6332-remote.json",
     "original_sha256": "c6af60ff2060b77073ce9a4f1c837f394a79e46861351a6089fc48b9e07b43ed",
     "published": false,
@@ -5702,6 +5708,12 @@
   {
     "path": "evidence/维护/2026-10-28-缓存清理结果.json",
     "original_sha256": "a0c1e66d67cb34666327664052796737f9525ef2b90f2723efcfbe454fb03c13",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/维护/2026-10-29-进度与规划核对.md",
+    "original_sha256": "c461ae06847c9e5e9a09d8e336e2f0315ebab99ea552809b7b59b1973db13766",
     "published": true,
     "reason": "public copy"
   }
