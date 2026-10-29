@@ -1182,6 +1182,11 @@ class JobCard(Document):
 			if check_production_execution(before.work_order, require_team=True):
 				frappe.throw("审批工单的任务不能改挂到其他工单", frappe.PermissionError)
 
+		finish = getattr(frappe.local, "production_timer_finish_context", None)
+		if finish and finish.card is self and finish.work_order == self.work_order and finish.user == frappe.session.user:
+			# The bound server entry has locked/authorized this card and changes only existing open time.
+			return
+
 		if self.work_order:
 			context = getattr(frappe.local, "production_approval_context", None)
 			approval_creating_task = (
@@ -1214,7 +1219,14 @@ def make_time_log(args):
 		args = json.loads(args)
 
 	args = frappe._dict(args)
-	doc = frappe.get_doc("Job Card", args.job_card_id)
+	from erpnext.manufacturing.doctype.work_order.work_order import check_production_execution
+
+	work_order = frappe.db.get_value("Job Card", args.job_card_id, "work_order")
+	if work_order:
+		check_production_execution(work_order, require_team=True, for_update=True)
+	doc = frappe.get_doc("Job Card", args.job_card_id, for_update=True)
+	if doc.work_order != work_order:
+		frappe.throw("作业卡工单关联已变化，请刷新重试", frappe.TimestampMismatchError)
 	doc.validate_sequence_id()
 	doc.add_time_log(args)
 

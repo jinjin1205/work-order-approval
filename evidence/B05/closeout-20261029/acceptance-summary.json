@@ -1,0 +1,130 @@
+{
+  "scope": "B05 existing active timer finish, manual close difference/reason only",
+  "base_public_commit": "65b0a8a30baff197985b811a2ba7188815e83651",
+  "final_patch_sha256": "3e9b706c7b293631e86b5a73e662bdc9b048168bd8b9fee2b4f05e098c94d4cf",
+  "product_files_changed_this_package": 4,
+  "metadata_or_dependency_changes": 0,
+  "test_batches": [
+    {
+      "methods": 12,
+      "seconds": 106.701,
+      "failures": 0,
+      "errors": 0,
+      "source_manifest": "intermediate-suite-source.json",
+      "log": "final-tests.log"
+    },
+    {
+      "methods": 1,
+      "seconds": 9.104,
+      "failures": 0,
+      "errors": 0,
+      "source_manifest": "source-manifest.json",
+      "log": "unicode-fixed.log",
+      "scope": "same one affected method after Chinese display fix; not 13 unique methods or one cumulative suite"
+    }
+  ],
+  "ui": [
+    {
+      "flow": "ordinary factory partial order",
+      "afterTimer": {
+        "status": "In Process",
+        "good": 8,
+        "bad": 2,
+        "produced": 0
+      },
+      "closed": true,
+      "reopenedClosed": true,
+      "reasonVisible": true,
+      "remainingStock": 10
+    },
+    {
+      "flow": "stopped order finish",
+      "afterTimer": "Stopped",
+      "closed": true,
+      "reopenedClosed": true,
+      "reasonVisible": true
+    },
+    {
+      "displayOnly": true,
+      "closed": true,
+      "reopenedClosed": true,
+      "chineseSnapshotVisible": true,
+      "reasonVisible": true,
+      "timers": 0,
+      "reports": 0
+    }
+  ],
+  "http": {
+    "scenario": "native timer begin vs manual close on one new approved parent",
+    "requests": 2,
+    "begin_http": 200,
+    "close_http": 417,
+    "winner": "begin",
+    "client_interval_overlap_ms": 78.016167,
+    "only_one_initial_success": true,
+    "final_closed": true,
+    "final_open_timers": 0,
+    "confirmed_report_added": 0,
+    "timer_quantity": 0,
+    "limit": "One overlapping HTTP case; not a DB lock trace, all resource paths, shared workstation concurrency, pressure test or full G3"
+  },
+  "retention": {
+    "old_tables_preserved": 23,
+    "old_row_mismatches": 0,
+    "new_orders": 4,
+    "all_closed": true,
+    "new_job_cards": 13,
+    "new_confirmed_reports": 1,
+    "new_stock_entries": 0,
+    "new_stock_ledger_entries": 0,
+    "samples": [
+      {
+        "mode": "partial",
+        "closed": true,
+        "timer_rows": 1,
+        "timer_quantity": 0,
+        "close_records": 1
+      },
+      {
+        "mode": "stopped",
+        "closed": true,
+        "timer_rows": 1,
+        "timer_quantity": 0,
+        "close_records": 1
+      },
+      {
+        "mode": "race",
+        "closed": true,
+        "timer_rows": 1,
+        "timer_quantity": 0,
+        "close_records": 1
+      },
+      {
+        "mode": "unicode",
+        "closed": true,
+        "timer_rows": 0,
+        "timer_quantity": 0,
+        "close_records": 1
+      }
+    ],
+    "partial_good": 8,
+    "partial_bad": 2,
+    "partial_report_minutes": 60,
+    "plan_timer_minutes_not_added_to_report": true,
+    "original_actual_dates_retained": true,
+    "new_display_sample_chinese_plain_text": true,
+    "original_three_records_rewritten": 0
+  },
+  "review": {
+    "independent_read_only_reviews": 1,
+    "critical": 0,
+    "important": 0,
+    "limit": "before display-only serialization fix; no UI or real concurrency claim from reviewer"
+  },
+  "not_closed": [
+    "B05 whole card",
+    "full G1/G2/G3",
+    "mobile and field acceptance",
+    "Z01 clean deployment and independent takeover"
+  ]
+}

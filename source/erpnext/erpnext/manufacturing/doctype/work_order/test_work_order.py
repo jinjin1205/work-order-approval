@@ -5737,3 +5737,247 @@ class TestWorkOrderExplicitDetails(FrappeTestCase):
 		self.order.reload()
 		self.assertEqual(([row.name for row in self.order.operations], [row.name for row in self.order.required_items]), identities)
 		self.assertEqual(self.order.required_items[0].operation, self.f.operations[0])
+
+
+class TestWorkOrderCloseout(FrappeTestCase):
+	"""B05 bounded closing; reuse real approval, timer and report fixtures."""
+
+	def setUp(self):
+		from erpnext.manufacturing.doctype.job_card.test_job_card import TestProductionReportConfirmation
+		self.report_case = TestProductionReportConfirmation()
+		self.addCleanup(self.report_case.doCleanups)
+		with change_settings("Manufacturing Settings", {"disable_capacity_planning": 1}):
+			self.report_case.setUp()
+		self.f = self.report_case.approval
+		self.card_name = frappe.db.get_value("Job Card", {"work_order": self.f.order.name,
+			"operation_id": self.f.order.operations[0].name, "docstatus": 0}, "name")
+		self.assertTrue(self.card_name)
+		self.end_time = "2026-10-20 10:00:00"
+
+	def method(self, name):
+		from erpnext.manufacturing.doctype.work_order import work_order
+		method = getattr(work_order, name, None)
+		self.assertTrue(callable(method), name + " is not implemented")
+		return method
+
+	def start(self):
+		from erpnext.manufacturing.doctype.job_card.job_card import make_time_log
+		frappe.set_user(self.f.users["operator"])
+		make_time_log({"job_card_id": self.card_name, "start_time": "2026-10-20 09:00:00", "status": "Work In Progress"})
+		self.f.order.reload()
+
+	def preview(self):
+		frappe.set_user(self.f.users["director"])
+		self.f.order.reload()
+		return self.method("preview_production_close")(self.f.order.name, str(self.f.order.modified))
+
+	def finish(self, preview=None, **changes):
+		preview = preview or self.preview()
+		return self.method("finish_production_timers")(**dict({"work_order": self.f.order.name,
+			"expected_modified": preview["modified"], "timer_fingerprint": preview["timer_fingerprint"],
+			"end_time": self.end_time}, **changes))
+
+	def close(self, reason="客户缩量，保留缺额和原记录", **changes):
+		self.f.order.reload()
+		return self.method("close_work_order")(**dict({"work_order": self.f.order.name,
+			"status": "Closed", "expected_modified": str(self.f.order.modified), "reason": reason}, **changes))
+
+	def facts(self):
+		return frappe.as_json({"reports": frappe.get_all("Job Card", filters={"work_order": self.f.order.name,
+			"docstatus": [">", 0]}, fields=["*"], order_by="name"),
+			"report_logs": frappe.get_all("Job Card Time Log", filters={"parent": ["in", frappe.get_all("Job Card",
+				filters={"work_order": self.f.order.name, "docstatus": [">", 0]}, pluck="name") or ["__none__"]]}, fields=["*"], order_by="name"),
+			"operations": frappe.get_all("Work Order Operation", filters={"parent": self.f.order.name}, fields=["*"], order_by="name"),
+			"stock": frappe.get_all("Stock Entry", filters={"work_order": self.f.order.name}, fields=["*"], order_by="name")})
+
+	def test_00_fixture_runnable(self):
+		self.assertEqual(self.f.order.docstatus, 1)
+		self.assertEqual(self.f.order.status, "Not Started")
+		self.assertEqual(len(self.f.order.operations), 3)
+		self.assertEqual(frappe.get_doc("Job Card", self.card_name).docstatus, 0)
+
+	def test_open_draft_timer_is_not_ignored_by_legacy_signature(self):
+		self.start()
+		card = frappe.get_doc("Job Card", self.card_name)
+		self.assertEqual(card.status, "Work In Progress")
+		self.assertFalse(card.time_logs[0].to_time)
+		frappe.set_user(self.f.users["director"])
+		with self.assertRaises(frappe.ValidationError):
+			self.method("close_work_order")(self.f.order.name, "Closed")
+		self.assertNotEqual(self.f.order.reload().status, "Closed")
+
+	def test_finish_then_close_preserves_gap_reason_and_original_facts(self):
+		import html
+		import json
+		import re
+		self.report_case.report(8, 2, hour=7)
+		self.start()
+		before = self.facts()
+		preview = self.preview()
+		self.assertEqual(len(preview["open_timers"]), 1)
+		self.assertEqual(preview["operations"][0]["unfinished"], 0)
+		self.assertEqual(preview["operations"][0]["good"], 8)
+		self.assertEqual(preview["operations"][0]["bad"], 2)
+		self.assertEqual(preview["stock_unfinished"], 10)
+		with self.assertRaisesRegex(frappe.ValidationError, "活动计时"):
+			self.close()
+		self.finish(preview)
+		card = frappe.get_doc("Job Card", self.card_name)
+		self.assertEqual(card.docstatus, 0)
+		self.assertEqual(card.total_completed_qty, 0)
+		self.assertEqual(card.time_logs[0].time_in_mins, 60)
+		self.assertEqual(str(card.time_logs[0].to_time), self.end_time)
+		self.assertEqual(card.status, "On Hold")
+		self.assertFalse(card.started_time)
+		self.assertEqual(self.facts(), before)
+		reason = "缺件 <确认> & 保留原记录"
+		result = self.close(reason)
+		self.assertEqual(result["status"], "Closed")
+		self.assertEqual(self.f.order.reload().status, "Closed")
+		comment = frappe.get_doc("Comment", result["comment"])
+		self.assertIn("人工结束时间", comment.content)
+		self.assertIn("未入库差额", comment.content)
+		snapshot = json.loads(html.unescape(re.search(r"<pre>(.*?)</pre>", comment.content, re.S).group(1)))
+		self.assertEqual(snapshot["结束原因"], reason)
+		self.assertEqual(snapshot["操作者"], self.f.users["director"])
+		self.assertTrue(snapshot["人工结束时间"])
+		self.assertEqual(snapshot["工序差额"][0]["良品"], 8)
+		self.assertEqual(snapshot["工序差额"][0]["不良"], 2)
+		self.assertEqual(snapshot["工序差额"][0]["未清数量"], 0)
+		self.assertEqual(snapshot["未入库差额"], 10)
+		self.assertEqual(self.facts(), before)
+		with self.assertRaises(frappe.PermissionError):
+			frappe.delete_doc("Comment", comment.name)
+		with self.assertRaises(frappe.ValidationError):
+			self.close("不能改写旧原因")
+		self.assertEqual(frappe.get_doc("Comment", comment.name).content, comment.content)
+		from erpnext.manufacturing.doctype.job_card.job_card import make_time_log
+		frappe.set_user(self.f.users["operator"])
+		with self.assertRaises(frappe.PermissionError):
+			make_time_log({"job_card_id": self.card_name, "start_time": "2026-10-20 11:00:00", "status": "Work In Progress"})
+		self.assertEqual(len(frappe.get_doc("Job Card", self.card_name).time_logs), 1)
+
+	def test_stopped_order_allows_only_existing_timer_finish(self):
+		self.start()
+		self.f.act("director", "停止执行", reason="需求变更，收尾既有计时")
+		from erpnext.manufacturing.doctype.job_card.job_card import make_time_log
+		frappe.set_user(self.f.users["operator"])
+		with self.assertRaises(frappe.PermissionError):
+			make_time_log({"job_card_id": self.card_name, "start_time": self.end_time, "status": "Work In Progress"})
+		self.finish()
+		self.assertEqual(self.f.order.reload().status, "Stopped")
+		self.assertFalse(getattr(frappe.local, "production_timer_finish_context", None))
+		self.close()
+		self.assertEqual(self.f.order.reload().status, "Closed")
+
+	def test_preview_is_read_only_and_missing_reason_or_version_is_rejected(self):
+		self.start()
+		before = frappe.get_doc("Job Card", self.card_name).as_json()
+		old_modified = str(self.f.order.modified)
+		preview = self.preview()
+		self.assertEqual(before, frappe.get_doc("Job Card", self.card_name).as_json())
+		self.assertEqual(str(self.f.order.reload().modified), old_modified)
+		for reason in (None, "", "  "):
+			with self.subTest(reason=reason), self.assertRaises(frappe.ValidationError):
+				self.close(reason)
+		with self.assertRaises(frappe.TimestampMismatchError):
+			self.close(expected_modified="2000-01-01 00:00:00")
+		with self.assertRaises(frappe.TimestampMismatchError):
+			self.finish(preview, expected_modified="2000-01-01 00:00:00")
+		self.assertEqual(before, frappe.get_doc("Job Card", self.card_name).as_json())
+
+	def test_invalid_time_or_changed_timer_is_rejected_without_writes(self):
+		self.start()
+		preview = self.preview()
+		before = frappe.get_doc("Job Card", self.card_name).as_json()
+		for end in (None, "not-a-time", "2026-10-20 08:59:59", "2999-01-01 00:00:00"):
+			with self.subTest(end=end), self.assertRaises(frappe.ValidationError):
+				self.finish(preview, end_time=end)
+		self.assertEqual(before, frappe.get_doc("Job Card", self.card_name).as_json())
+		frappe.db.set_value("Job Card", self.card_name, "modified", "2026-10-20 12:00:00", update_modified=False)
+		with self.assertRaises(frappe.TimestampMismatchError):
+			self.finish(preview)
+		self.assertFalse(frappe.get_doc("Job Card", self.card_name).time_logs[0].to_time)
+
+	def test_other_roles_and_company_revocation_cannot_finish_or_close(self):
+		self.start()
+		preview = self.preview()
+		for key in ("operator", "reviewer", "other", "outsider"):
+			frappe.set_user(self.f.users[key])
+			with self.subTest(key=key), self.assertRaises(frappe.PermissionError):
+				self.method("preview_production_close")(self.f.order.name, preview["modified"])
+			with self.assertRaises(frappe.PermissionError):
+				self.finish(preview)
+			with self.assertRaises(frappe.PermissionError):
+				self.close()
+		frappe.set_user("Administrator")
+		frappe.db.delete("User Permission", {"user": self.f.users["director"], "allow": "Company"})
+		frappe.clear_cache(user=self.f.users["director"])
+		frappe.set_user(self.f.users["director"])
+		with self.assertRaises(frappe.PermissionError):
+			self.finish(preview)
+		with self.assertRaises(frappe.PermissionError):
+			self.close()
+		self.assertNotEqual(self.f.order.reload().status, "Closed")
+
+	def test_timer_fingerprint_is_bound_to_parent(self):
+		self.start()
+		preview = self.preview()
+		frappe.set_user(self.f.users["operator"])
+		other = make_wo_order_test_record(**self.f.order_args)
+		other.production_team = self.f.teams[0]
+		for operation in self.f.operations:
+			other.append("operations", {"operation": operation, "workstation": self.f.workstation, "time_in_mins": 1})
+		other.insert()
+		original = self.f.order
+		self.f.order = other
+		self.f.act("operator", "送审")
+		self.f.act("reviewer", "审核通过")
+		with change_settings("Manufacturing Settings", {"disable_capacity_planning": 1}):
+			self.f.act("director", "签批通过")
+		with self.assertRaises(frappe.TimestampMismatchError):
+			self.finish(preview, work_order=other.name, expected_modified=str(other.modified))
+		self.f.order = original
+		self.assertFalse(frappe.get_doc("Job Card", self.card_name).time_logs[0].to_time)
+
+	def test_submitted_open_timer_is_not_rewritten(self):
+		result = self.report_case.report(1, 0, hour=7)
+		name = result["name"]
+		frappe.db.set_value("Job Card Time Log", {"parent": name}, "to_time", None)
+		before = self.facts()
+		preview = self.preview()
+		with self.assertRaisesRegex(frappe.ValidationError, "已生效|已提交"):
+			self.finish(preview)
+		with self.assertRaisesRegex(frappe.ValidationError, "活动计时"):
+			self.close()
+		self.assertEqual(before, self.facts())
+
+	def test_finish_and_close_failures_propagate_and_rollback(self):
+		from unittest.mock import patch
+		from erpnext.manufacturing.doctype.job_card.job_card import JobCard
+		from erpnext.manufacturing.doctype.work_order.work_order import WorkOrder
+		self.start()
+		preview = self.preview()
+		before = frappe.get_doc("Job Card", self.card_name).as_json()
+		real_save = JobCard.save
+		def saved_then_fail(card, *args, **kwargs):
+			real_save(card, *args, **kwargs)
+			raise RuntimeError("B05 controlled failure after timer save")
+		frappe.db.savepoint("b05_finish_fault")
+		with patch.object(JobCard, "save", saved_then_fail), self.assertRaises(RuntimeError):
+			self.finish(preview)
+		self.assertFalse(getattr(frappe.local, "production_timer_finish_context", None))
+		frappe.db.rollback(save_point="b05_finish_fault")
+		self.assertEqual(frappe.get_doc("Job Card", self.card_name).as_json(), before)
+		self.finish(preview)
+		self.f.order.reload()
+		before_status = self.f.order.status
+		comment_count = frappe.db.count("Comment", {"reference_name": self.f.order.name})
+		frappe.db.savepoint("b05_close_fault")
+		with patch.object(WorkOrder, "add_comment", side_effect=RuntimeError("B05 controlled comment failure")), self.assertRaises(RuntimeError):
+			self.close()
+		frappe.db.rollback(save_point="b05_close_fault")
+		self.assertEqual(self.f.order.reload().status, before_status)
+		self.assertEqual(frappe.db.count("Comment", {"reference_name": self.f.order.name}), comment_count)
+		self.close()
+		self.assertEqual(self.f.order.reload().status, "Closed")

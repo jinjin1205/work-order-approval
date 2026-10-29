@@ -12,14 +12,15 @@ OUT = ROOT / ".publication/work-order-approval"
 REPO = ROOT / ".development/repos/erpnext"
 BASE = "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e"
 history_paths_manifest = json.loads((ROOT / ".development/checks/b08-history-paths-source-manifest.json").read_text())
-manifest = json.loads((ROOT / ".development/checks/b05-details-source-manifest.json").read_text())
+details_manifest = json.loads((ROOT / ".development/checks/b05-details-source-manifest.json").read_text())
+manifest = json.loads((ROOT / ".development/checks/b05-closeout-source-manifest.json").read_text())
 metrics_manifest = json.loads((ROOT / ".development/checks/b08-metrics-source-manifest.json").read_text())
 followup_manifest = json.loads((ROOT / ".development/checks/b08-followup-source-manifest.json").read_text())
 changes = subprocess.check_output(["git", "diff", "--name-only", BASE], cwd=REPO, text=True).splitlines()
 patch = subprocess.check_output(["git", "diff", BASE], cwd=REPO)
 assert len(changes) == 25
 assert hashlib.sha256(patch).hexdigest() == manifest["patch_sha256"]
-assert patch == (ROOT / "evidence/B05/explicit-details-20261029/implementation.patch").read_bytes()
+assert patch == (ROOT / "evidence/B05/closeout-20261029/implementation.patch").read_bytes()
 for name in changes:
     assert hashlib.sha256((REPO / name).read_bytes()).hexdigest() == manifest["files"][name]
 
@@ -46,7 +47,7 @@ def portable(text):
 for name in changes:
     add("source/erpnext/" + name, (REPO / name).read_bytes(), ".development/repos/erpnext/" + name)
 add("source/erpnext/license.txt", (REPO / "license.txt").read_bytes(), ".development/repos/erpnext/license.txt")
-for name in ("evidence/B05/explicit-details-20261029/implementation.patch", "evidence/B05/explicit-details-20261029/bounded-change.patch", "evidence/B10/combined-implementation.patch", "evidence/B19/combined-implementation.patch",
+for name in ("evidence/B05/closeout-20261029/implementation.patch", "evidence/B05/closeout-20261029/bounded-change.patch", "evidence/B05/explicit-details-20261029/implementation.patch", "evidence/B05/explicit-details-20261029/bounded-change.patch", "evidence/B10/combined-implementation.patch", "evidence/B19/combined-implementation.patch",
              "evidence/B19/b19-only.patch", "evidence/B19/execution-gate/combined-implementation.patch",
              "evidence/B19/entry-history/combined-implementation.patch",
              "evidence/B19/approved-changes/combined-implementation.patch",
@@ -64,6 +65,9 @@ paths += sorted((ROOT / "openspec/changes/b08-followup-20261028").glob("*.md"))
 paths += [ROOT / "openspec/changes/b08-followup-20261028/.openspec.yaml"]
 paths += sorted((ROOT / "openspec/changes/explicit-order-details-20261029").rglob("*.md"))
 paths += [ROOT / "openspec/changes/explicit-order-details-20261029/.openspec.yaml"]
+paths += sorted((ROOT / "openspec/changes/archive/2026-10-29-work-order-closeout-20261029").rglob("*.md"))
+paths += [ROOT / "openspec/changes/archive/2026-10-29-work-order-closeout-20261029/.openspec.yaml"]
+paths += [ROOT / "openspec/specs/production-order-closeout/spec.md"]
 paths += sorted((ROOT / ".agents/skills").glob("openspec-*/SKILL.md"))
 paths += [ROOT / ".agents/skills/.openspec-target", ROOT / ".agents/skills/playwright-cli/SKILL.md"]
 paths += sorted((ROOT / ".agents/skills/playwright-cli/references").glob("*.md"))
@@ -83,6 +87,13 @@ for path in paths:
     add(relative, clean, relative, "personal paths/runtime identifiers removed" if original != clean else "unchanged")
 
 safe_json = [
+    "evidence/B05/closeout-20261029/source-manifest.json",
+    "evidence/B05/closeout-20261029/intermediate-suite-source.json",
+    "evidence/B05/closeout-20261029/test-runtime-source.json",
+    "evidence/B05/closeout-20261029/ui-runtime-source.json",
+    "evidence/B05/closeout-20261029/ui-preserve-final.json",
+    "evidence/B05/closeout-20261029/http-race.json",
+    "evidence/B05/closeout-20261029/acceptance-summary.json",
     "evidence/B05/explicit-details-20261029/source-manifest.json",
     "evidence/B05/explicit-details-20261029/test-runtime-source.json",
     "evidence/B05/explicit-details-20261029/ui-runtime-source.json",
@@ -227,7 +238,9 @@ history_patch = json.loads((ROOT / "evidence/B19/entry-history/source-manifest.j
 changes_patch = json.loads((ROOT / "evidence/B19/approved-changes/source-manifest.json").read_text())["patch_sha256"]
 b04_patch = json.loads((ROOT / "evidence/B04/source-manifest.json").read_text())["patch_sha256"]
 groups = [
-    ("B05 explicit details reviewed bounded suite and affected original cases", "2026-10-29", manifest["patch_sha256"], [("evidence/B05/explicit-details-20261029/final-with-revocation.log",11)]),
+    ("B05 Chinese snapshot display fix affected method only", "2026-10-29", manifest["patch_sha256"], [("evidence/B05/closeout-20261029/unicode-fixed.log",1)]),
+    ("B05 timer finish/manual close bounded suite and affected original cases", "2026-10-29", json.loads((ROOT / "evidence/B05/closeout-20261029/intermediate-suite-source.json").read_text())["patch_sha256"], [("evidence/B05/closeout-20261029/final-tests.log",12)]),
+    ("B05 explicit details reviewed bounded suite and affected original cases", "2026-10-29", details_manifest["patch_sha256"], [("evidence/B05/explicit-details-20261029/final-with-revocation.log",11)]),
     ("B08 history paths corrected draft fixture", "2026-10-28", json.loads((ROOT / "evidence/B08/history-paths-20261028/draft-fixed-source.json").read_text())["patch_sha256"], [("evidence/B08/history-paths-20261028/draft-fixed.log",1)]),
     ("B08 history paths cancelled-only reference; controlled native cancellation fixture", "2026-10-28", history_paths_manifest["patch_sha256"], [("evidence/B08/history-paths-20261028/cancelled-only.log",1)]),
     ("B08 metrics fixture fix and additions", "2026-10-28", json.loads((ROOT / "evidence/B08/metrics-20261028/runtime-source.json").read_text())["patch_sha256"], [("evidence/B08/metrics-20261028/server-fixed-second.log",4)]),

@@ -1,0 +1,14 @@
+{
+  "scenario": "native timer begin vs manual close on one new approved parent",
+  "requests": 2,
+  "begin_http": 200,
+  "close_http": 417,
+  "winner": "begin",
+  "client_interval_overlap_ms": 78.016167,
+  "only_one_initial_success": true,
+  "final_closed": true,
+  "final_open_timers": 0,
+  "confirmed_report_added": 0,
+  "timer_quantity": 0,
+  "limit": "One overlapping HTTP case; not a DB lock trace, all resource paths, shared workstation concurrency, pressure test or full G3"
+}

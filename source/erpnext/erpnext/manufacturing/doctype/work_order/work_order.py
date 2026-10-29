@@ -94,7 +94,7 @@ def check_production_execution(work_order, *, require_team=False, material_retur
 	return validate_production_execution_state(order, material_return=material_return)
 
 
-def validate_production_execution_state(order, *, material_return=False):
+def validate_production_execution_state(order, *, material_return=False, finishing_execution=False):
 	"""Internal state check for an already read/authorized production order."""
 	from frappe.model.workflow import get_workflow_name
 
@@ -105,7 +105,9 @@ def validate_production_execution_state(order, *, material_return=False):
 		or not order.get("approval_reviewed_by")
 	):
 		frappe.throw("工单尚未完成审核和签批，不能新增执行记录", frappe.PermissionError)
-	if not material_return:
+	if finishing_execution and order.status == "Closed":
+		frappe.throw("工单已经结束，不能重复处理或改写原结束记录")
+	if not material_return and not finishing_execution:
 		if get_workflow_name("Work Order") != PRODUCTION_APPROVAL_WORKFLOW:
 			frappe.throw("生产工单审批流程未启用，不能新增执行记录", frappe.PermissionError)
 		if order.status in ("Stopped", "Closed"):
@@ -2159,34 +2161,148 @@ def make_job_card(work_order, operations):
 				create_job_card(work_order, row, auto_create=True)
 
 
+def _check_production_close(order, expected_modified):
+	order.check_permission("read")
+	order.check_permission("write")
+	if not order.get("approval_requested_by") or "生产工单签批" not in frappe.get_roles():
+		frappe.throw("仅有权厂长可收尾计时或人工结束审批工单", frappe.PermissionError)
+	_check_production_approval_scope(order, team_required=False)
+	validate_production_execution_state(order, finishing_execution=True)
+	if order.status not in ("Not Started", "In Process", "Stopped", "Completed"):
+		frappe.throw("当前工单状态不能人工结束")
+	if not expected_modified or get_datetime(expected_modified) != get_datetime(order.modified):
+		frappe.throw("工单已变化，请刷新并重新核对结束依据", frappe.TimestampMismatchError)
+
+
+def _production_open_timers(order, *, for_update=False):
+	# Object authorization belongs to the caller. A permission-filtered list must not hide activity.
+	cards = frappe.db.get_values("Job Card", {"work_order": order.name, "docstatus": ["!=", 2]},
+		["name", "modified", "docstatus", "report_request_id", "started_time"],
+		as_dict=True, order_by="name", for_update=for_update)
+	active = []
+	for card in cards:
+		logs = frappe.db.get_values("Job Card Time Log", {"parent": card.name, "parenttype": "Job Card"},
+			["name", "from_time", "to_time", "operation", "employee", "completed_qty"],
+			as_dict=True, order_by="idx", for_update=for_update)
+		card.open_logs = [row for row in logs if row.from_time and not row.to_time]
+		if card.started_time or card.open_logs:
+			active.append(card)
+	fingerprint = hashlib.sha256(frappe.as_json({"work_order": order.name, "timers": active}).encode()).hexdigest()
+	return active, fingerprint
+
+
+def _production_close_snapshot(order, timers, fingerprint):
+	from erpnext.manufacturing.doctype.job_card.job_card import calculate_report_metrics
+
+	operations = []
+	for row in order.operations:
+		remaining = calculate_report_metrics(plan_quantity=order.qty, good_quantity=row.completed_qty,
+			bad_quantity=row.process_loss_qty, effective_seconds=0)["unfinished_quantity"]
+		operations.append({"operation_id": row.name, "operation": row.operation, "plan": order.qty,
+			"good": row.completed_qty, "bad": row.process_loss_qty, "unfinished": remaining})
+	stock_remaining = calculate_report_metrics(plan_quantity=order.qty, good_quantity=order.produced_qty,
+		bad_quantity=0, effective_seconds=0)["unfinished_quantity"]
+	return {"work_order": order.name, "modified": str(order.modified), "unit": order.stock_uom,
+		"plan": order.qty, "produced": order.produced_qty, "stock_unfinished": stock_remaining,
+		"operations": operations, "open_timers": timers, "timer_fingerprint": fingerprint}
+
+
+@frappe.whitelist()
+def preview_production_close(work_order, expected_modified):
+	order = frappe.get_doc("Work Order", work_order)
+	_check_production_close(order, expected_modified)
+	timers, fingerprint = _production_open_timers(order)
+	for card in timers:
+		frappe.get_doc("Job Card", card.name).check_permission("read")
+	return _production_close_snapshot(order, timers, fingerprint)
+
+
 @frappe.whitelist(methods=["POST"])
-def close_work_order(work_order, status):
+def finish_production_timers(work_order, expected_modified, timer_fingerprint, end_time):
+	from html import escape
+
+	from erpnext.manufacturing.doctype.job_card.job_card import _report_datetime
+
+	order = frappe.get_doc("Work Order", work_order, for_update=True)
+	_check_production_close(order, expected_modified)
+	timers, fingerprint = _production_open_timers(order, for_update=True)
+	if not timer_fingerprint or timer_fingerprint != fingerprint:
+		frappe.throw("活动计时已变化，请重新预览后收尾", frappe.TimestampMismatchError)
+	if not timers:
+		frappe.throw("没有需要收尾的活动计时，请刷新核对")
+	end = _report_datetime(end_time, "实际结束时间").replace(tzinfo=None)
+	if end > get_datetime(now()):
+		frappe.throw("实际结束时间不能晚于当前时间")
+	cards = []
+	for timer in timers:
+		card = frappe.get_doc("Job Card", timer.name, for_update=True)
+		card.check_permission("read")
+		card.check_permission("write")
+		if card.work_order != order.name or card.docstatus != 0 or card.get("report_request_id"):
+			frappe.throw("已提交或已生效报工的活动计时不能改写，请保留原记录处理异常")
+		open_logs = [row for row in card.time_logs if row.from_time and not row.to_time]
+		if not open_logs:
+			frappe.throw("计时状态与原时段不一致，请先核对异常，不能推测开始时间")
+		if any(end < get_datetime(row.from_time) for row in open_logs):
+			frappe.throw("实际结束时间不能早于任何活动计时的开始时间")
+		cards.append((card, open_logs))
+	previous = getattr(frappe.local, "production_timer_finish_context", None)
+	try:
+		for card, open_logs in cards:
+			for row in open_logs:
+				row.to_time = end
+			card.started_time = None
+			card.current_time = (end - get_datetime(open_logs[-1].from_time)).total_seconds()
+			card.status = "On Hold"
+			# Only this already-authorized instance can finish existing time after a stop.
+			frappe.local.production_timer_finish_context = frappe._dict(
+				card=card, work_order=order.name, user=frappe.session.user)
+			card.save()
+	finally:
+		frappe.local.production_timer_finish_context = previous
+	order.add_comment("Comment", "活动计时人工收尾；操作者：{0}；实际结束时间：{1}；作业卡：{2}；未确认产量。".format(
+		escape(frappe.session.user), escape(str(end)), escape("、".join(card.name for card, _ in cards))))
+	timers, fingerprint = _production_open_timers(order, for_update=True)
+	return _production_close_snapshot(order, timers, fingerprint)
+
+
+@frappe.whitelist(methods=["POST"])
+def close_work_order(work_order, status, expected_modified=None, reason=None):
+	from html import escape
+
 	frappe.has_permission("Work Order", "write", throw=True)
-
-	# doctype level above, record level here — see stop_unstop()
-	work_order = frappe.get_doc("Work Order", work_order)
+	work_order = frappe.get_doc("Work Order", work_order, for_update=True)
 	work_order.check_permission("write")
-	if work_order.get("approval_requested_by"):
-		if status != "Closed" or "生产工单签批" not in frappe.get_roles():
+	approval_order = bool(work_order.get("approval_requested_by"))
+	if approval_order:
+		if status != "Closed":
 			frappe.throw("审批工单不能通过结束接口恢复执行，仅厂长可结束", frappe.PermissionError)
-		_check_production_approval_scope(work_order, team_required=False)
-	if work_order.get("operations"):
-		job_cards = frappe.get_list(
-			"Job Card",
-			filters={"work_order": work_order.name, "status": "Work In Progress", "docstatus": 1},
-			pluck="name",
-		)
-
+		_check_production_close(work_order, expected_modified)
+		if not isinstance(reason, str) or not reason.strip():
+			frappe.throw("人工结束必须填写原因")
+		timers, fingerprint = _production_open_timers(work_order, for_update=True)
+		if timers:
+			frappe.throw("仍有活动计时，请先核对实际结束时间并收尾，不能自动确认产量")
+		snapshot = _production_close_snapshot(work_order, timers, fingerprint)
+		snapshot.update(user=frappe.session.user, closed_at=now(), reason=reason.strip())
+	elif work_order.get("operations"):
+		job_cards = frappe.get_list("Job Card", filters={"work_order": work_order.name,
+			"status": "Work In Progress", "docstatus": 1}, pluck="name")
 		if job_cards:
-			job_cards = ", ".join(job_cards)
-			frappe.throw(
-				_("Can not close Work Order. Since {0} Job Cards are in Work In Progress state.").format(
-					job_cards
-				)
-			)
-
+			frappe.throw(_("Can not close Work Order. Since {0} Job Cards are in Work In Progress state.").format(
+				", ".join(job_cards)))
 	work_order.update_status(status)
 	work_order.on_close_or_cancel()
+	if approval_order:
+		record = {"工单": snapshot["work_order"], "依据版本": snapshot["modified"], "单位": snapshot["unit"],
+			"操作者": snapshot["user"], "人工结束时间": snapshot["closed_at"], "结束原因": snapshot["reason"],
+			"计划数量": snapshot["plan"], "成品入库数量": snapshot["produced"], "未入库差额": snapshot["stock_unfinished"],
+			"工序差额": [{"工序行": row["operation_id"], "工序": row["operation"], "计划": row["plan"],
+				"良品": row["good"], "不良": row["bad"], "未清数量": row["unfinished"]} for row in snapshot["operations"]]}
+		comment = work_order.add_comment("Comment", "<p>人工结束工单：{0}</p><pre>{1}</pre>".format(
+			escape(snapshot["reason"]), escape(frappe.as_json(record, ensure_ascii=False))))
+		work_order.notify_update()
+		return {"status": work_order.status, "comment": comment.name}
 	frappe.msgprint(_("Work Order has been {0}").format(status))
 	work_order.notify_update()
 	return work_order.status

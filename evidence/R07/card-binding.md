@@ -143,3 +143,35 @@ B01实际显示：新站点用`--module`未准备所需fixture，改原生`--doc
 
 
 **本包审查补绑（2026-10-29）：**现有`reset_use_multi_level_bom`仍会在保存切换时展开，属于同一确认边界；限定在原WorkOrder内禁用审批工单该自动路径。已有明细变更qty/BOM/展开开关/来源仓等计划依据时，拒绝携带旧计划保存，要求人工核对后清空草稿明细再改依据、重新确认；不实现自动替换/复杂调整。预览按`set_work_order_operations→validate_operations/validate_operations_sequence→set_required_items`建立稳定计划，不复制规则。原测试类新增`test_switch_explosion_does_not_generate`、`test_confirmed_basis_requires_clearing`、`test_unsequenced_route_replay`、`test_single_operation_replay`先核反例；仍只改原3文件，命令仍原b05 runner。
+
+
+## 2026-10-29 B05活动计时收尾与人工结束绑定
+
+用户明确授权本绑定后连续开发和验收，仅B05这三个余项。开工公开main为65b0a8a30baff197985b811a2ba7188815e83651，固定ERPNext/Frappe及现有维护checkout沿第2节，原25份累计源码/5823ca57保留；原空明细/确认生成子包不重开。
+
+**做什么／通过标准：**识别原审批工单下所有非取消卡的真实开放计时；人工结束前必须收尾。计时按人明确填写的实际结束时刻保存、既有时段/数量/原记录不变；停止单仍允许结束既有计时但不允许新增执行。厂长用原结束接口，最新授权/版本/状态及原因必填，保存结束当时差额与操作者/时间。正常、无权/跨单/撤权、陈旧、失败零残留、中文PC重开可核。**不做：**不改生产/库存数量、报工/工资/效率公式，不新增结束状态机、计时平台、元数据或事实账；不接库存闭环、完整G3、手机、现场、AI、Z01或后台周期。
+
+### 真实入口和最小方案
+
+| 归属 | 实际位置/拟新增签名 | 允许范围与判据 |
+|---|---|---|
+| 结束入口 | 原`work_order.py:close_work_order(work_order,status)`拟补可选`expected_modified=None,reason=None`；拟新增`preview_production_close(work_order,expected_modified)` | 仅新审批工单强制厂长/对象write/read/本公司授权、已批准docstatus1及Not Started/In Process/Stopped/Completed状态；工单先锁重读。Closed拒绝重复结束，不追加原因记录；非审批原调用保持 |
+| 计时发现 | 同模块拟新增内部`_production_open_timers(order)` | 在已授权父工单内按真实Job Card/Time Log查询，docstatus0/1且未取消；from有值/to为空及started_time异常均不能忽略，不用用户可见列表或status标签筛掉活动；预览只读 |
+| 计时收尾 | 同模块拟新增`finish_production_timers(work_order,expected_modified,timer_fingerprint,end_time)` | 本包由有权厂长处理，每张卡仍需read/write；工单先锁再按卡名锁，核预览指纹/各卡版本、合法时间、draft且非正式report卡；已提交开放卡/时间异常明确拒绝，不修旧事实。只给原开放行填to_time，清原计时器状态，使用原JobCard校验/分钟计算并save，不submit/不记数量 |
+| 停止单收尾边界 | `job_card.py:JobCard.validate_work_order`及`make_time_log(args)` | 仅上述服务器创建的request-local context，绑定同一父对象/同一卡对象/当前厂长，允许Stopped收尾既有草稿计时；Closed/新增行/改量/改关联仍拒绝。原make_time_log审批路径在父工单先锁后重读，收尾与标准开始/完成计时使用同一父锁；不宣称所有通用资源/库存路径已覆盖G3 |
+| 差额/原因 | 原close入口复用`update_status/on_close_or_cancel`及原Comment | 差额消费B04`calculate_report_metrics(...plan_quantity,good,bad...)`，逐工序存计划/良/不良/未清，成品入库量及其计划差额另列，不把工序相加当成品。只在同事务记录原Comment：原因、当前人/时间、依据版本、单位及快照；不改历史报工、库存、作业实际日期或补造完工事实 |
+| 页面 | 原`work_order.js`状态按钮/`change_work_order_status` | 审批单以中文“人工结束”对话框展示当前计时、差额和原因；先明确实际时间结束计时，再刷新预览后确认结束。接口复验全部边界，按钮隐藏不代替鉴权；原非审批按钮不重写 |
+
+**依据／岗位：**原C05/C10及B19已验的厂长结束限制，不新增审核层级。工单停止表示不再新增执行，收尾原计时不等恢复。原生暂停方法会带入completed_qty并受Stopped校验，故只复用原时间校验/计时状态与save，不自动用该方法写产量。原五项目固定来源沿R03～R06/审批绑定；实际只复用ERPNext/Frappe，配置不能修漏检和结束原因缺失，需局部改造。
+
+**允许产品文件仅4份：**原`work_order.py/.js/test_work_order.py`与`job_card.py`。源路径均在`erpnext/manufacturing/doctype/`；不改Frappe/BOM算法/Job Card元数据/库存。检查脚本仅`.development/checks/b05_closeout_tests.py`、`b05_closeout_ui_fixture.py`、`b05_closeout_ui_preserve.py`及本包浏览器步骤。无元数据新增，无reload-doc/建站/全量依赖初始化。原xgd-test.localhost和18090合成站/容器复用；开工及最终指定源文件核哈希，原数据/凭据保留。
+
+**拟新增测试：**原`test_work_order.py:TestWorkOrderCloseout`复用原审批/报工fixture，覆盖开放草稿拒结束、明确收尾后结束、Stopped仍能收尾、原因与差额历史、角色/跨公司/撤权/陈旧、非法时间/正式卡不改、失败回滚及重复结束；仅补直接受影响的原停止/恢复和计时状态回归。具体每个方法名字在创建前写原卡，不运行未创建方法或用未收集冒充通过。命令`docker exec xgd-b08-check env/bin/python /b01/b05_closeout_tests.py`，真实DB/原业务对象，fixture事务回滚核原11表。页面使用Playwright CLI和新合成数据，不重放旧B05/B08/I03～I06写入。
+
+**结束条件：**绑定、实际红绿/受影响回归、明确中文PC操作/重开、旧数据/源码核对、一次独立审阅及公开回读齐备才收口本包。证据为`evidence/B05/closeout-20261029/`；B05整卡、G1/G2/G3及正式交付不因此关闭。
+
+
+本包页面夹具复用18090及旧BOM，只新增自己角色/厂长/窄报工员/Employee/隔离工位和3张新样例；旧岗位/权限/配置不变，按原审批产生计划卡，再给差额样例一笔8良2不良作为人工结束的既存前提。23表捕获旧行。计时/结束共享父锁改动另以`.development/checks/b05_closeout_race.py`在第三张新单做一次两独立HTTP标准开始与close重叠，结果只能开始成功/close活动冲突，或close成功/开始闭单拒绝；新样例后续仅正常接口收尾，实际结果不外推全部G3。脚本在执行前补绑。
+
+
+真实持久化核对发现结束快照的中文被原生`as_json`默认转义；只将同调用补`ensure_ascii=False`，原记录不改写。新增脚本`.development/checks/b05_closeout_ui_unicode.py`仅给原本包追加第四张无计时/无报工的中文记录展示样例，不重放前三张；受影响单方法补中文原文断言，先红后绿，不重跑已验12项全批。原23表捕获基线及原3样例保留，预期新单4/计划卡12＋正式报工1。

@@ -793,8 +793,12 @@ erpnext.work_order = {
 	set_custom_buttons: function (frm) {
 		var doc = frm.doc;
 
+		if (doc.approval_requested_by && doc.docstatus === 1 && doc.status !== "Closed" &&
+			doc.workflow_state === "已批准" && frappe.user.has_role("生产工单签批")) {
+			frm.add_custom_button("人工结束", () => erpnext.work_order.show_production_close(frm), __("Status"));
+		}
 		if (doc.docstatus === 1 && !["Closed", "Completed"].includes(doc.status)) {
-			frm.add_custom_button(
+			if (!doc.approval_requested_by) frm.add_custom_button(
 				__("Close"),
 				function () {
 					frappe.confirm(__("Once the Work Order is Closed. It can't be resumed."), () => {
@@ -1125,6 +1129,52 @@ erpnext.work_order = {
 				frappe.set_route("Form", doclist[0].doctype, doclist[0].name);
 			},
 		});
+	},
+
+	show_production_close: async function (frm, reason = "") {
+		if (frm.is_dirty()) {
+			frappe.msgprint("请先保存或刷新工单，再核对人工结束依据。");
+			return;
+		}
+		const prefix = "erpnext.manufacturing.doctype.work_order.work_order";
+		const { message: preview } = await frappe.call({
+			method: `${prefix}.preview_production_close`,
+			args: { work_order: frm.doc.name, expected_modified: frm.doc.modified },
+			freeze: true,
+		});
+		const e = (value) => frappe.utils.escape_html(String(value ?? ""));
+		const timer_rows = preview.open_timers.map((card) => `<tr><td>${e(card.name)}</td><td>${
+			card.open_logs.map((row) => e(row.from_time)).join("<br>") || "开始时间缺失，需核对异常"
+		}</td></tr>`).join("");
+		const operation_rows = preview.operations.map((row) => `<tr><td>${e(row.operation)}</td><td>${e(row.plan)}</td><td>${e(row.good)}</td><td>${e(row.bad)}</td><td>${e(row.unfinished)}</td></tr>`).join("");
+		const has_timers = preview.open_timers.length > 0;
+		const dialog = new frappe.ui.Dialog({
+			title: "人工结束工单", size: "large",
+			fields: [
+				{ fieldname: "summary", fieldtype: "HTML", options: `<p>单位：${e(preview.unit)}；计划：${e(preview.plan)}；成品入库：${e(preview.produced)}；未入库差额：<b>${e(preview.stock_unfinished)}</b></p>
+					<table class="table table-bordered"><thead><tr><th>工序</th><th>计划</th><th>良品</th><th>不良</th><th>未清数量</th></tr></thead><tbody>${operation_rows}</tbody></table>
+					<p>工序数量不能相加当作成品入库。人工结束保留差额和原记录，结束后不能恢复执行。</p>
+					${has_timers ? `<p>仍有活动计时，请核对实际结束时间后先收尾。不会确认产量或提交报工；已提交或时段异常的记录不能在此改写。</p><table class="table table-bordered"><thead><tr><th>活动作业卡</th><th>原开始时间</th></tr></thead><tbody>${timer_rows}</tbody></table>` : "<p>活动计时：0，可以核对原因并人工结束。</p>"}` },
+				{ fieldname: "end_time", label: "实际结束时间", fieldtype: "Datetime", reqd: has_timers ? 1 : 0,
+					hidden: !has_timers, description: "填写所列活动计时的实际结束时刻，不得晚于当前时间。" },
+				{ fieldname: "reason", label: "结束原因", fieldtype: "Small Text", reqd: has_timers ? 0 : 1, default: reason },
+			],
+			primary_action_label: has_timers ? "结束所列活动计时" : "确认人工结束",
+			primary_action: async (values) => {
+				await frappe.call({
+					method: `${prefix}.${has_timers ? "finish_production_timers" : "close_work_order"}`,
+					args: has_timers ? {
+						work_order: frm.doc.name, expected_modified: preview.modified,
+						timer_fingerprint: preview.timer_fingerprint, end_time: values.end_time,
+					} : { work_order: frm.doc.name, status: "Closed", expected_modified: preview.modified, reason: values.reason },
+					freeze: true, freeze_message: has_timers ? "正在收尾计时" : "正在人工结束工单",
+				});
+				dialog.hide();
+				await frm.reload_doc();
+				if (has_timers) erpnext.work_order.show_production_close(frm, values.reason || "");
+			},
+		});
+		dialog.show();
 	},
 
 	change_work_order_status: function (frm, status) {

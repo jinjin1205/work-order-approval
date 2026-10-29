@@ -1,0 +1,47 @@
+{
+  "old_tables_preserved": 23,
+  "old_row_mismatches": 0,
+  "new_orders": 4,
+  "all_closed": true,
+  "new_job_cards": 13,
+  "new_confirmed_reports": 1,
+  "new_stock_entries": 0,
+  "new_stock_ledger_entries": 0,
+  "samples": [
+    {
+      "mode": "partial",
+      "closed": true,
+      "timer_rows": 1,
+      "timer_quantity": 0,
+      "close_records": 1
+    },
+    {
+      "mode": "stopped",
+      "closed": true,
+      "timer_rows": 1,
+      "timer_quantity": 0,
+      "close_records": 1
+    },
+    {
+      "mode": "race",
+      "closed": true,
+      "timer_rows": 1,
+      "timer_quantity": 0,
+      "close_records": 1
+    },
+    {
+      "mode": "unicode",
+      "closed": true,
+      "timer_rows": 0,
+      "timer_quantity": 0,
+      "close_records": 1
+    }
+  ],
+  "partial_good": 8,
+  "partial_bad": 2,
+  "partial_report_minutes": 60,
+  "plan_timer_minutes_not_added_to_report": true,
+  "original_actual_dates_retained": true,
+  "new_display_sample_chinese_plain_text": true,
+  "original_three_records_rewritten": 0
+}

@@ -2,6 +2,26 @@
   "scope": "Separate executed batches; exact patches where captured, explicit null otherwise with product hash. No cumulative full-suite result; publication does not rerun tests",
   "tests": [
     {
+      "local_log": "evidence/B05/closeout-20261029/unicode-fixed.log",
+      "sha256": "e64c34c4e9ab57ad0cd5d818b37ecf301a5bfed5c5def1c135e0d7b8e804f8d9",
+      "tests": 1,
+      "seconds": "9.104",
+      "result": "OK",
+      "executed_on": "2026-10-29",
+      "group": "B05 Chinese snapshot display fix affected method only",
+      "source_patch_sha256": "3e9b706c7b293631e86b5a73e662bdc9b048168bd8b9fee2b4f05e098c94d4cf"
+    },
+    {
+      "local_log": "evidence/B05/closeout-20261029/final-tests.log",
+      "sha256": "5ac4af014e30fb81224e58eb4c8b89bb2661a37302e44797289b1eb45cb52da2",
+      "tests": 12,
+      "seconds": "106.701",
+      "result": "OK",
+      "executed_on": "2026-10-29",
+      "group": "B05 timer finish/manual close bounded suite and affected original cases",
+      "source_patch_sha256": "f8d440034be7698f3cdd539909dfb618d01f08cc77852eb45ae8a1e472b13cb9"
+    },
+    {
       "local_log": "evidence/B05/explicit-details-20261029/final-with-revocation.log",
       "sha256": "ec1a5e8548b472c0ef52b179db41a7d812742cd48cd7bea10f4883b337753a2f",
       "tests": 11,
@@ -369,5 +389,5 @@
     "verified_after_all_requests": true,
     "publication_note": "Only assertions/counts retained; runtime business_state and raw responses remain local."
   },
-  "current_patch_sha256": "5823ca570ba376fd8af67d386dd2898c987cd56f3655686c9f9a6b9256aa356e"
+  "current_patch_sha256": "3e9b706c7b293631e86b5a73e662bdc9b048168bd8b9fee2b4f05e098c94d4cf"
 }
