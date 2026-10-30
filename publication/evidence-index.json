@@ -3733,13 +3733,19 @@
   },
   {
     "path": "evidence/B08/quality-20261030/acceptance-summary.json",
-    "original_sha256": "a69eaa5d20338fcef08f1275265a9c191a5d4fd670838c815c3aa7c86c1de7b3",
+    "original_sha256": "49402260bdc3d17791a2b0be7a93491251a4608b7d6a743bae66f63fbba8e2f9",
     "published": true,
     "reason": "public copy"
   },
   {
     "path": "evidence/B08/quality-20261030/bounded-change.patch",
     "original_sha256": "f763502527c66470a9441ee2d0492649987370d7384e19da3c71be2c89748196",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/quality-20261030/code-ci.json",
+    "original_sha256": "b872a1d2d3f63f73298c5cfdccd118be51a1038c593b9942dd33b69df5fca54c",
     "published": true,
     "reason": "public copy"
   },
@@ -3769,7 +3775,7 @@
   },
   {
     "path": "evidence/B08/quality-20261030/run-record.md",
-    "original_sha256": "c4f1955284f13712faaf009c747aa9e7a71d92e4918baa547858b0e86981370e",
+    "original_sha256": "1074e138235b8526446627a15b7205227eee06c6cb47a39cf2c834c3801df1bb",
     "published": true,
     "reason": "public copy"
   },
@@ -6524,6 +6530,12 @@
   {
     "path": "evidence/发布/2026-10-30-13f7f6f-remote.json",
     "original_sha256": "cda16c2a1b8b7ce608a2635ac25858f30a249858970ab66865f2574f86674737",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/发布/2026-10-30-6d4dd00-remote.json",
+    "original_sha256": "e79e593b49efbe5d3ba10b955d46e0293c3743910b59294ed0c4647a688109bb",
     "published": true,
     "reason": "public copy"
   },

@@ -417,7 +417,7 @@
     "source": "docs/任务卡/02-生产与物料闭环.md",
     "public_path": "docs/任务卡/02-生产与物料闭环.md",
     "treatment": "personal paths/runtime identifiers removed",
-    "source_sha256": "271adb707b374eb6c909d75824363711519c96ab9c247958849f1b233d56539c"
+    "source_sha256": "ef3b82c90967e2a6f905d99f80eec0d1762590cdb711e0c4ef9a1f41cbeeaf90"
   },
   {
     "source": "docs/任务卡/03-AI与交付.md",
@@ -435,7 +435,7 @@
     "source": "docs/开发TODO.md",
     "public_path": "docs/开发TODO.md",
     "treatment": "unchanged",
-    "source_sha256": "8a1be66fe767a3595eb3aa14b0cf4f9e77a5745932880ac7d3381edb22978888"
+    "source_sha256": "6d310540566556811403f37701ba6f70e914a20ec8aea74967c2e98a5e96dae6"
   },
   {
     "source": "docs/验收样例.md",
@@ -609,7 +609,7 @@
     "source": "evidence/B08/quality-20261030/run-record.md",
     "public_path": "evidence/B08/quality-20261030/run-record.md",
     "treatment": "unchanged",
-    "source_sha256": "c4f1955284f13712faaf009c747aa9e7a71d92e4918baa547858b0e86981370e"
+    "source_sha256": "1074e138235b8526446627a15b7205227eee06c6cb47a39cf2c834c3801df1bb"
   },
   {
     "source": "evidence/B08/recovery-20261028/run-record.md",
@@ -921,19 +921,19 @@
     "source": "openspec/changes/b08-followup-20261028/design.md",
     "public_path": "openspec/changes/b08-followup-20261028/design.md",
     "treatment": "unchanged",
-    "source_sha256": "a0f1a13e8200e1ed14fa4c0ae20f104a1ed2b13a26d263e941a2b465d825f316"
+    "source_sha256": "1d00cb0c5ce5533c2b3a97d0d451f5c642352363173bbccc0afd0d6d6ba337d9"
   },
   {
     "source": "openspec/changes/b08-followup-20261028/proposal.md",
     "public_path": "openspec/changes/b08-followup-20261028/proposal.md",
     "treatment": "unchanged",
-    "source_sha256": "f2648554c23736f0d82ce096902cc56bd1742b9b06ae4d77986ba5ddaabf5578"
+    "source_sha256": "6ea61272af26e579acc8fe387fc4fcd2b7568f104c3ceccb9d74089eb374a698"
   },
   {
     "source": "openspec/changes/b08-followup-20261028/tasks.md",
     "public_path": "openspec/changes/b08-followup-20261028/tasks.md",
     "treatment": "unchanged",
-    "source_sha256": "3954161d008c7ae968cef830fb6ddce74b42602c4248a11dbda997020b589bc0"
+    "source_sha256": "fd432c182be707413b2ee76a326108e10e38bf9f0cf4265fbacb0aaae0a89422"
   },
   {
     "source": "openspec/changes/b08-followup-20261028/.openspec.yaml",
@@ -1275,7 +1275,7 @@
     "source": ".publication/export_public.py",
     "public_path": ".publication/export_public.py",
     "treatment": "unchanged",
-    "source_sha256": "58ce8a5764a999d077be25dcd44b1e59fb589821a1232ec3fc18f62bc5e61c06"
+    "source_sha256": "afa1553b077eb205fe823f8a950db519706985284151b741b4570060c63af515"
   },
   {
     "source": ".publication/check_public.py",
@@ -2202,6 +2202,18 @@
     "source_sha256": "bebd418f53e027db69fc9888dfc4bf01fc162aab71394832e1e2572c6d9cd774"
   },
   {
+    "source": "evidence/发布/2026-10-30-6d4dd00-remote.json",
+    "public_path": "evidence/发布/2026-10-30-6d4dd00-remote.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "e79e593b49efbe5d3ba10b955d46e0293c3743910b59294ed0c4647a688109bb"
+  },
+  {
+    "source": "evidence/B08/quality-20261030/code-ci.json",
+    "public_path": "evidence/B08/quality-20261030/code-ci.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "b872a1d2d3f63f73298c5cfdccd118be51a1038c593b9942dd33b69df5fca54c"
+  },
+  {
     "source": "evidence/发布/2026-10-30-13f7f6f-remote.json",
     "public_path": "evidence/发布/2026-10-30-13f7f6f-remote.json",
     "treatment": "allowlisted metadata; personal paths removed",
@@ -2229,7 +2241,7 @@
     "source": "evidence/B08/quality-20261030/acceptance-summary.json",
     "public_path": "evidence/B08/quality-20261030/acceptance-summary.json",
     "treatment": "allowlisted metadata; personal paths removed",
-    "source_sha256": "a69eaa5d20338fcef08f1275265a9c191a5d4fd670838c815c3aa7c86c1de7b3"
+    "source_sha256": "49402260bdc3d17791a2b0be7a93491251a4608b7d6a743bae66f63fbba8e2f9"
   },
   {
     "source": "evidence/B08/quality-20261030/http-summary.json",

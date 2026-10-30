@@ -50,5 +50,12 @@
     "JPEG/WebP browser uploads"
   ],
   "background_b19": "PAUSED, not resumed",
-  "publication": "PENDING_REMOTE_READBACK"
+  "publication": {
+    "code_commit": "6d4dd00280ef3231653ddeed954e407280d1d4b3",
+    "remote_verified": true,
+    "tracked_files": 591,
+    "content_hashes_verified": 590,
+    "source_files_exact": 31,
+    "ci": "No configured workflows; exact code SHA has 0 runs/checks/statuses; NOT CI passed"
+  }
 }

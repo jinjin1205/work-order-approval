@@ -4,7 +4,7 @@
 
 ## 范围与结论
 
-依据[原卡](../../../docs/任务卡/02-生产与物料闭环.md#b08-quality-20261030)及[R07](../../R07/inspection-attachments.md)，本包限定实现与本地验收通过，公开推送/回读尚待执行。用户明确不新增字段。只用原生Quality Inspection追加关联已确认报工，图片挂质检草稿；人工选结果后提交，原报工不回写，不新增生产/库存事实账。
+依据[原卡](../../../docs/任务卡/02-生产与物料闭环.md#b08-quality-20261030)及[R07](../../R07/inspection-attachments.md)，本包限定实现与本地验收通过，代码提交已推送并完成新克隆回读。用户明确不新增字段。只用原生Quality Inspection追加关联已确认报工，图片挂质检草稿；人工选结果后提交，原报工不回写，不新增生产/库存事实账。
 
 维护分支`codex/xgd-maintenance`，ERPNext15.124.1上游`4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e`，Frappe15.124.0；发布基线main `13f7f6fe5430212428d663f9e106984b642f9916`，本次已fetch核一致。产品仅R07五文件，累计31份修改源码；[最终清单](source-manifest.json)39份运行文件，补丁SHA256 `fe0fd20526058649f5a250ff53780e2dea0b51b2a7a6ed7fb93e00cbd8dd0343`。没有新增字段/元数据或变更Frappe共享框架。
 
@@ -47,3 +47,9 @@ Playwright CLI专用`b08-quality`实际使用普通报工/原生Quality Manager�
 [旧行核对](old-row-audit.json)：原26张表捕获行/列全保持，旧用户/权限不改；仅新增独立工单1、计划卡3、正式报工1、时间行1、QI1、私图1。该笔良1/不良1，库存0。原报工在查看前后整行未变，质检前checkpoint与最终整行完全相同，图片磁盘二进制哈希保持；不是仅调用缓存get_content检查。
 
 复用未变化的导航、报工、计价、时段、并发及B05～B07证据，不重跑。现场人工10秒、手机/PDA、完整G1/G2/G3、B08整卡、客户角色映射及Z01/CASE-11仍未验证，不能以本机旧环境验收替代正式交付。后台b19未恢复。
+
+## 公开保存
+
+代码提交[`6d4dd00`](https://github.com/jinjin1205/work-order-approval/commit/6d4dd00280ef3231653ddeed954e407280d1d4b3)已推送main；[新克隆回执](../../发布/2026-10-30-6d4dd00-remote.json)核591个跟踪文件/590个内容哈希及31份源码一致，缺失/多余/哈希差异均0。白名单扫描0凭据/运行数据命中，原64批历史测试回执逐项保持。实际源码与文档空白检查通过；作为数据归档的.patch保留统一diff必需的上下文空格，不按其外层文本空格修改证据。
+
+[精确代码SHA的CI查询](code-ci.json)覆盖全部事件：仓库0workflow，该SHA运行/check/status均0且无查询错误，故为未配置/未触发，不是CI通过；没有可用运行链接，见[Actions入口](https://github.com/jinjin1205/work-order-approval/actions)。最终文档提交号、对应CI与远端一致性仅在最终回复报告，不再回填循环提交。

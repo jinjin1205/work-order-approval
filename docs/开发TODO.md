@@ -2,11 +2,11 @@
 
 <a id="current-progress"></a>
 
-## 2026-10-30 当前：原生报检/图片限定验收通过，待公开回读
+## 2026-10-30 当前：原生报检/图片本包已验并公开保存
 
 用户明确不新增自定义字段，本包按[原B08](任务卡/02-生产与物料闭环.md#b08-quality-20261030)及[R07五文件绑定](../evidence/R07/inspection-attachments.md)完成原生Quality Inspection追加、私有图片及历史保护；原报工不回写。21个不同方法分批通过，最后受影响4项42.360秒；实际中文PC手工检验/上传/提交/重开及图片显示通过，HTTP18项。撤父分享后图片原URL/fid/zip及浏览器无缓存请求均403。原报工整行、原图片和旧26表捕获行保持；只为本例正常确认1笔报工，库存0。见[实际命令、失败和结果](../evidence/B08/quality-20261030/run-record.md)。
 
-**保存状态：**维护分支`codex/xgd-maintenance`，ERPNext上游`4e0dce9`；累计31份修改源码、两容器39文件核对一致。公开main开工前已fetch核对`13f7f6f`，本包代码提交/推送/远端回读与精确SHA的CI尚待执行，不能写远程完成。
+**保存状态：**维护分支`codex/xgd-maintenance`，ERPNext上游`4e0dce9`；累计31份修改源码、两容器39文件核对一致。公开main开工前fetch核`13f7f6f`；本包代码[`6d4dd00`](https://github.com/jinjin1205/work-order-approval/commit/6d4dd00280ef3231653ddeed954e407280d1d4b3)已推送，[新克隆回执](../evidence/发布/2026-10-30-6d4dd00-remote.json)核591文件/590内容哈希、31份源码一致。精确代码SHA的[CI查询](../evidence/B08/quality-20261030/code-ci.json)为0workflow及0run/check/status、无查询错误，记未配置/未触发，不写CI通过；无运行链接，见[Actions入口](https://github.com/jinjin1205/work-order-approval/actions)。本次最终文档SHA/CI只在最终回复报告。
 
 **剩余与停止点：**不重跑未变化的B05～B07、导航、报工/计价/规则/并发成果。新增字段等用户清单；人工现场10秒、手机/PDA、完整G1/G2/G3、B08整卡及Z01/CASE-11仍未验，34卡仍7收口/12部分/15未完成。客户岗位需显式映射原生质检角色、父报工只读及当前公司/物料取值权，本例配置不是客户初始化。OpenSpec继续引用同一原卡、不归档整卡；后台b19仍PAUSED。以下导航及暂停记录按原日期保留。
 
