@@ -387,7 +387,7 @@
     "source": "docs/任务卡/02-生产与物料闭环.md",
     "public_path": "docs/任务卡/02-生产与物料闭环.md",
     "treatment": "personal paths/runtime identifiers removed",
-    "source_sha256": "22c444e537c4dfed06d9524975348510c383bfde62dd5e651855269eecc75ac7"
+    "source_sha256": "17225dc43710687bede567ea88a74178d5cf31aa9b9cb9d26dd925a1f51bb1ef"
   },
   {
     "source": "docs/任务卡/03-AI与交付.md",
@@ -405,7 +405,7 @@
     "source": "docs/开发TODO.md",
     "public_path": "docs/开发TODO.md",
     "treatment": "unchanged",
-    "source_sha256": "933b710d711d4cf650c1a9176b74216dff739d419cba32e4ca84ba5c74425357"
+    "source_sha256": "3f558bef059b7021d5b00d2f06ce0308fdb179dbd7d6b885498509ec7a4de7bc"
   },
   {
     "source": "docs/验收样例.md",
@@ -567,7 +567,7 @@
     "source": "evidence/B08/navigation-20261030/run-record.md",
     "public_path": "evidence/B08/navigation-20261030/run-record.md",
     "treatment": "unchanged",
-    "source_sha256": "06d960654036d795fc48201bb243af0037a4dd6e77c16cf2f675fcc76f6fd213"
+    "source_sha256": "bf454699d019c9cb79ef74c7880c5ed46699cdf53af394ed539059a03a2c3279"
   },
   {
     "source": "evidence/B08/recovery-20261028/run-record.md",

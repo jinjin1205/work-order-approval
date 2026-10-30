@@ -60,3 +60,11 @@
 只关闭原B08本包。未重复旧I03～I06、三笔、计价/时段、原记录及库存全量验证。图片/自定义字段须有真实定义后按B14/B08补绑，不自动扩展。人工现场10秒缺实际使用者计量，手机/PDA、CASE-01/02/06整体验收、完整G1/G2/G3及Z01仍未完成验收；B08整卡和34卡统计不变，后台b19仍暂停。
 
 OpenSpec沿活动`b08-followup-20261028`引用原卡，不复制清单。CLI因引用模式报0任务/blocked，严格校验有对应警告，不能算规划或业务通过；按用户明确的原卡唯一清单执行。整个活动change仍有整卡未验条件，未归档。
+
+## 代码保存与CI查询
+
+代码提交[a06ad21](https://github.com/jinjin1205/work-order-approval/commit/a06ad21c53ae5e7b01d7cc6bba9df03a87e6b481)已推送main，远端新克隆571跟踪文件/570内容哈希、28份源码完全一致，缺失/多余/哈希不一致0；59批旧回执精确保留，新增本包5批，已知凭据和原始运行数据匹配0。
+
+`python3 .publication/check_ci_pause.py a06ad21c53ae5e7b01d7cc6bba9df03a87e6b481`于2026-10-30中国时间查询各CI端点返回403，原因未验证。已有GitHub连接只读复核该SHA：statuses为空；其workflow封装仅覆盖PR事件，结果为空不能代替本次push全事件；Actions及check-runs完整状态仍未验证。没有引用历史CI或宣称通过。[Actions入口](https://github.com/jinjin1205/work-order-approval/actions)。
+
+本节是已完成代码回读后的状态回填，原卡保存过程项至此关闭；最终文档提交和对应CI核验只在最终回复报告，避免循环回填。

@@ -3703,7 +3703,7 @@
   },
   {
     "path": "evidence/B08/navigation-20261030/run-record.md",
-    "original_sha256": "06d960654036d795fc48201bb243af0037a4dd6e77c16cf2f675fcc76f6fd213",
+    "original_sha256": "bf454699d019c9cb79ef74c7880c5ed46699cdf53af394ed539059a03a2c3279",
     "published": true,
     "reason": "public copy"
   },
@@ -6448,6 +6448,12 @@
     "original_sha256": "0293ed46c05f86883104a3f00bf401ff2f9639d89ed7b45c010fd0ecbc9c8491",
     "published": true,
     "reason": "public copy"
+  },
+  {
+    "path": "evidence/发布/2026-10-30-a06ad21-remote.json",
+    "original_sha256": "20c1aec16a654d3c4e1687f30c383f020d1a1694dec192b4a647a7c3538dd91f",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
   },
   {
     "path": "evidence/发布/B04-B19-ui-2026-10-27-remote.json",
