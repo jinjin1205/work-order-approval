@@ -9,7 +9,7 @@ from erpnext.manufacturing.doctype.work_order.work_order import apply_production
 
 os.chdir("sites")
 case = sys.argv[2] if len(sys.argv) > 2 else "b06-tasks"
-assert case in ("b06-tasks", "b06-retention")
+assert case in ("b06-tasks", "b06-retention", "b08-navigation")
 a = json.loads(Path("/tmp/b08-private", case + "-ui.json").read_text())
 assert a["site"] == "xgd-b08-http.localhost" and a["actors"]["editor"]["user"].startswith("b06-task-")
 frappe.init(site=a["site"])
@@ -36,6 +36,20 @@ try:
         apply_production_approval(order.name, "送审", str(order.modified))
         frappe.db.commit()
         print(json.dumps({"prepared_independent_station_case": True}))
+    elif mode == "prepare-navigation":
+        assert case == "b08-navigation"
+        frappe.set_user(a["actors"]["editor"]["user"])
+        order = frappe.get_doc("Work Order", a["order"])
+        assert order.workflow_state == "草稿"
+        for row, plan, scope in zip(order.operations, (2, 2, 1), ("PERSON", "", "ALL")):
+            row.report_plan_qty, row.report_scope = str(plan), scope
+            row.report_employee = a["employee"] if scope == "PERSON" else None
+            row.report_department = None
+        order.operations[2].operation = order.operations[0].operation
+        order.save()
+        apply_production_approval(order.name, "送审", str(order.modified))
+        frappe.db.commit()
+        print(json.dumps({"prepared_navigation_case": True, "plans": [2, 2, 1], "same_named_positions": [1, 3]}))
     elif mode == "approve":
         order = frappe.get_doc("Work Order", a["order"])
         assert order.workflow_state == "待审核", "Do not replay approval"

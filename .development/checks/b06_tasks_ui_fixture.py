@@ -13,7 +13,7 @@ os.umask(0o077)
 os.chdir("sites")
 p = Path("/tmp/b08-private")
 case = sys.argv[1] if len(sys.argv) > 1 else "b06-tasks"
-assert case in ("b06-tasks", "b06-retention")
+assert case in ("b06-tasks", "b06-retention", "b08-navigation")
 access, baseline = p / (case + "-ui.json"), p / (case + "-before.json")
 assert not access.exists() and not baseline.exists(), "Resume existing B06 fixture; do not recreate"
 source = json.loads((p / "fixture.json").read_text())

@@ -762,6 +762,89 @@
       "source_patch_sha256": "222e92cce70c730d0cf81b83689384d6fbea31c41d444775892dda7fa60d8172",
       "executed_on": "2026-10-29",
       "group": "B07 bounded material boundaries: review-green"
+    },
+    {
+      "local_log": ".development/private/b08-navigation-20261030/logs/p0.log",
+      "sha256": "8a4dec4d89273e7c6fed60a6f88aa30babf4511f31c4f9ddc103d212e8c0b5c9",
+      "tests": 1,
+      "seconds": "8.578",
+      "result": "OK",
+      "failures": 0,
+      "errors": 0,
+      "old_tables_unchanged": 15,
+      "method_names": [
+        "test_00_navigation_fixture_runnable"
+      ],
+      "source_patch_sha256": null,
+      "executed_on": "2026-10-30",
+      "group": "B08 task follow-up navigation: p0"
+    },
+    {
+      "local_log": ".development/private/b08-navigation-20261030/logs/red-positions.log",
+      "sha256": "f24f0e8f930f27f467100f0eb331a25e56add40f34c274f99b4d9c0ea250d482",
+      "tests": 1,
+      "seconds": "9.025",
+      "result": "FAILED (errors=1)",
+      "failures": 0,
+      "errors": 1,
+      "old_tables_unchanged": 15,
+      "method_names": [
+        "test_same_named_authorized_tasks_keep_original_positions"
+      ],
+      "source_patch_sha256": null,
+      "executed_on": "2026-10-30",
+      "group": "B08 task follow-up navigation: red-positions"
+    },
+    {
+      "local_log": ".development/private/b08-navigation-20261030/logs/green.log",
+      "sha256": "c66c3a106a61d3cbbe87835a093118cd9892dc6b162a26b7e4f3e0cd1692853c",
+      "tests": 3,
+      "seconds": "29.317",
+      "result": "OK",
+      "failures": 0,
+      "errors": 0,
+      "old_tables_unchanged": 15,
+      "method_names": [
+        "test_same_named_authorized_tasks_keep_original_positions",
+        "test_followup_reads_current_remainder_and_rechecks_role",
+        "test_task_cards_list_and_close_difference_use_independent_plan"
+      ],
+      "source_patch_sha256": null,
+      "executed_on": "2026-10-30",
+      "group": "B08 task follow-up navigation: green"
+    },
+    {
+      "local_log": ".development/private/b08-navigation-20261030/logs/red-bom-capability.log",
+      "sha256": "9efbe0fe7ed8d0f1a66cafdf33c51ee4221a0cb1f2da39f8db5419fd613d99cb",
+      "tests": 1,
+      "seconds": "8.585",
+      "result": "FAILED (failures=1)",
+      "failures": 1,
+      "errors": 0,
+      "old_tables_unchanged": 15,
+      "method_names": [
+        "test_optional_bom_capability_has_no_permission_error_messages"
+      ],
+      "source_patch_sha256": null,
+      "executed_on": "2026-10-30",
+      "group": "B08 task follow-up navigation: red-bom-capability"
+    },
+    {
+      "local_log": ".development/private/b08-navigation-20261030/logs/green-bom-capability.log",
+      "sha256": "38378a0fd83e3c0347135332dc76a208aa4f5e8c66ebb6078717b081b0d9c280",
+      "tests": 2,
+      "seconds": "14.997",
+      "result": "OK",
+      "failures": 0,
+      "errors": 0,
+      "old_tables_unchanged": 15,
+      "method_names": [
+        "test_optional_bom_capability_has_no_permission_error_messages",
+        "test_material_summary_exposes_source_and_rechecks_read"
+      ],
+      "source_patch_sha256": null,
+      "executed_on": "2026-10-30",
+      "group": "B08 task follow-up navigation: green-bom-capability"
     }
   ],
   "http_B02_historical": {
@@ -773,5 +856,5 @@
     "verified_after_all_requests": true,
     "publication_note": "Only assertions/counts retained; runtime business_state and raw responses remain local."
   },
-  "current_patch_sha256": "222e92cce70c730d0cf81b83689384d6fbea31c41d444775892dda7fa60d8172"
+  "current_patch_sha256": "d46c2fcab206b349a99442b227661539031ef8232b04396d9a1d4d81c2cbc84b"
 }

@@ -1,0 +1,23 @@
+{
+  "old_tables_preserved": 23,
+  "old_rows_changed": 0,
+  "effective_reports": 2,
+  "time_logs": 2,
+  "new_stock_documents": 0,
+  "plans": [
+    2,
+    2,
+    1
+  ],
+  "completed": [
+    2,
+    0,
+    0
+  ],
+  "new_work_orders": 2,
+  "new_users": 2,
+  "new_roles": 1,
+  "new_employees": 1,
+  "independent_workstation": true,
+  "old_users_roles_permissions_preserved": true
+}

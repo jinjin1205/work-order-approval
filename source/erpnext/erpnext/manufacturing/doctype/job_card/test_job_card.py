@@ -2116,6 +2116,60 @@ class TestProductionReportConfirmation(FrappeTestCase):
 		self.assertEqual((self.order.qty, self.order.operations[0].completed_qty), (10, 0))
 
 
+class TestProductionTaskNavigation(FrappeTestCase):
+	def setUp(self):
+		self.r = TestProductionReportConfirmation()
+		self.addCleanup(self.r.doCleanups)
+		def prepare(f, employee):
+			for row, plan in zip(f.order.operations, (2, 2, 1)):
+				row.report_plan_qty = str(plan)
+			f.order.operations[2].operation = f.order.operations[0].operation
+		self.r.setUp(before_approval=prepare)
+
+	def menu(self):
+		return self.r.method("get_production_report_tasks")(self.r.order.name)
+
+	def test_00_navigation_fixture_runnable(self):
+		self.assertEqual(len(self.menu()["tasks"]), 2)
+		self.assertEqual(frappe.db.count("Job Card", {"work_order": self.r.order.name, "docstatus": 0}), 3)
+		self.assertEqual(self.menu()["reports"], [])
+
+	def test_same_named_authorized_tasks_keep_original_positions(self):
+		tasks = self.menu()["tasks"]
+		self.assertEqual([r["idx"] for r in tasks], [1, 3])
+		self.assertEqual(tasks[0]["operation"], tasks[1]["operation"])
+		self.assertNotEqual(tasks[0]["name"], tasks[1]["name"])
+		self.assertEqual([r["plan"] for r in tasks], [2, 1])
+
+	def test_optional_bom_capability_has_no_permission_error_messages(self):
+		from erpnext.manufacturing.doctype.work_order.work_order import get_production_material_summary
+		order = self.r.order
+		self.assertFalse(frappe.has_permission("BOM", "read", doc=frappe.get_doc("BOM", order.bom_no)))
+		frappe.clear_messages()
+		summary = get_production_material_summary(order.name)
+		self.assertFalse(summary["can_read_bom"])
+		self.assertFalse(summary["can_write_bom"])
+		self.assertFalse(frappe.local.message_log)
+		frappe.set_user(self.r.approval.users["outsider"])
+		with self.assertRaises(frappe.PermissionError):
+			get_production_material_summary(order.name)
+
+	def test_followup_reads_current_remainder_and_rechecks_role(self):
+		self.r.report(1, 0, hour=9)
+		self.assertEqual(self.menu()["tasks"][0]["unfinished"], 1)
+		self.r.report(1, 0, hour=10)
+		menu = self.menu()
+		self.assertEqual([r["unfinished"] for r in menu["tasks"]], [0, 1])
+		self.assertEqual(len(menu["reports"]), 2)
+		self.assertTrue(all(r["operation_id"] == menu["tasks"][0]["name"] for r in menu["reports"]))
+		frappe.set_user("Administrator")
+		frappe.get_doc("User", self.r.user).remove_roles("生产报工")
+		frappe.set_user(self.r.user)
+		with self.assertRaises(frappe.PermissionError):
+			self.menu()
+		self.assertEqual(frappe.db.count("Job Card", {"work_order": self.r.order.name, "docstatus": 1}), 2)
+
+
 class TestProductionTaskPlans(FrappeTestCase):
 	def setUp(self):
 		self.r = TestProductionReportConfirmation()

@@ -1,0 +1,217 @@
+diff --git a/erpnext/manufacturing/doctype/job_card/job_card.py b/erpnext/manufacturing/doctype/job_card/job_card.py
+--- a/erpnext/manufacturing/doctype/job_card/job_card.py
++++ b/erpnext/manufacturing/doctype/job_card/job_card.py
+@@ -1696,7 +1696,7 @@
+ 	for row in order.operations:
+ 		if _report_scope_allows(row, employee):
+ 			plan = order.get_operation_plan_quantity(row)
+-			tasks.append({"name": row.name, "operation": row.operation, "plan": plan, "good": row.completed_qty,
++			tasks.append({"name": row.name, "idx": row.idx, "operation": row.operation, "plan": plan, "good": row.completed_qty,
+ 				"bad": row.process_loss_qty, "unfinished": max(Decimal(0), Decimal(str(plan)) - Decimal(str(row.completed_qty or 0)) - Decimal(str(row.process_loss_qty or 0))),
+ 				"status": row.status})
+ 	reports = frappe.get_list("Job Card", filters={"work_order": work_order, "operation_id": ["in", [t["name"] for t in tasks]],
+diff --git a/erpnext/manufacturing/doctype/job_card/test_job_card.py b/erpnext/manufacturing/doctype/job_card/test_job_card.py
+--- a/erpnext/manufacturing/doctype/job_card/test_job_card.py
++++ b/erpnext/manufacturing/doctype/job_card/test_job_card.py
+@@ -2114,6 +2114,60 @@
+ 		self.assertFalse(frappe.db.exists("Job Card Time Log", {"parent": seen[0]}))
+ 		self.order.reload()
+ 		self.assertEqual((self.order.qty, self.order.operations[0].completed_qty), (10, 0))
++
++
++class TestProductionTaskNavigation(FrappeTestCase):
++	def setUp(self):
++		self.r = TestProductionReportConfirmation()
++		self.addCleanup(self.r.doCleanups)
++		def prepare(f, employee):
++			for row, plan in zip(f.order.operations, (2, 2, 1)):
++				row.report_plan_qty = str(plan)
++			f.order.operations[2].operation = f.order.operations[0].operation
++		self.r.setUp(before_approval=prepare)
++
++	def menu(self):
++		return self.r.method("get_production_report_tasks")(self.r.order.name)
++
++	def test_00_navigation_fixture_runnable(self):
++		self.assertEqual(len(self.menu()["tasks"]), 2)
++		self.assertEqual(frappe.db.count("Job Card", {"work_order": self.r.order.name, "docstatus": 0}), 3)
++		self.assertEqual(self.menu()["reports"], [])
++
++	def test_same_named_authorized_tasks_keep_original_positions(self):
++		tasks = self.menu()["tasks"]
++		self.assertEqual([r["idx"] for r in tasks], [1, 3])
++		self.assertEqual(tasks[0]["operation"], tasks[1]["operation"])
++		self.assertNotEqual(tasks[0]["name"], tasks[1]["name"])
++		self.assertEqual([r["plan"] for r in tasks], [2, 1])
++
++	def test_optional_bom_capability_has_no_permission_error_messages(self):
++		from erpnext.manufacturing.doctype.work_order.work_order import get_production_material_summary
++		order = self.r.order
++		self.assertFalse(frappe.has_permission("BOM", "read", doc=frappe.get_doc("BOM", order.bom_no)))
++		frappe.clear_messages()
++		summary = get_production_material_summary(order.name)
++		self.assertFalse(summary["can_read_bom"])
++		self.assertFalse(summary["can_write_bom"])
++		self.assertFalse(frappe.local.message_log)
++		frappe.set_user(self.r.approval.users["outsider"])
++		with self.assertRaises(frappe.PermissionError):
++			get_production_material_summary(order.name)
++
++	def test_followup_reads_current_remainder_and_rechecks_role(self):
++		self.r.report(1, 0, hour=9)
++		self.assertEqual(self.menu()["tasks"][0]["unfinished"], 1)
++		self.r.report(1, 0, hour=10)
++		menu = self.menu()
++		self.assertEqual([r["unfinished"] for r in menu["tasks"]], [0, 1])
++		self.assertEqual(len(menu["reports"]), 2)
++		self.assertTrue(all(r["operation_id"] == menu["tasks"][0]["name"] for r in menu["reports"]))
++		frappe.set_user("Administrator")
++		frappe.get_doc("User", self.r.user).remove_roles("生产报工")
++		frappe.set_user(self.r.user)
++		with self.assertRaises(frappe.PermissionError):
++			self.menu()
++		self.assertEqual(frappe.db.count("Job Card", {"work_order": self.r.order.name, "docstatus": 1}), 2)
+ 
+ 
+ class TestProductionTaskPlans(FrappeTestCase):
+diff --git a/erpnext/manufacturing/doctype/work_order/work_order.js b/erpnext/manufacturing/doctype/work_order/work_order.js
+--- a/erpnext/manufacturing/doctype/work_order/work_order.js
++++ b/erpnext/manufacturing/doctype/work_order/work_order.js
+@@ -1376,14 +1376,21 @@
+ ];
+ 
+ // B08 reuses the native form/dialog; quantities and confirmation remain server-authoritative.
+-erpnext.work_order.open_production_report = async function (frm) {
++erpnext.work_order.open_production_report = async function (frm, selected_task) {
++	const work_order = frm.doc.name;
+ 	const api = "erpnext.manufacturing.doctype.job_card.job_card.";
+-	const { message: menu } = await frappe.call(api + "get_production_report_tasks", { work_order: frm.doc.name });
++	const { message: menu } = await frappe.call(api + "get_production_report_tasks", { work_order });
++	if (frm.doc.name !== work_order) { frappe.msgprint("工单页面已变化，请重新打开报工。"); return; }
+ 	if (!menu.tasks.length) {
+ 		frappe.msgprint("没有已授权的工序任务，请由负责人检查任务授权。");
+ 		return;
+ 	}
+-	const storage_key = `production-report:${frappe.session.user}:${frm.doc.name}`;
++	const has_remaining = (task) => task.unfinished > 0 && task.status !== "Completed";
++	if (selected_task && !menu.tasks.some((task) => task.name === selected_task && has_remaining(task))) {
++		frappe.msgprint("所选任务已完成或授权已变化，请重新打开工单选择。");
++		return;
++	}
++	const storage_key = `production-report:${frappe.session.user}:${work_order}`;
+ 	let fingerprint = null;
+ 	let preview_generation = 0;
+ 	const escape = (value) => frappe.utils.escape_html(String(value ?? ""));
+@@ -1391,7 +1398,8 @@
+ 		title: "逐笔报工", size: "large",
+ 		fields: [
+ 			{ fieldname: "task", label: "工序任务", fieldtype: "Select", reqd: 1,
+-				options: menu.tasks.map((t) => ({ value: t.name, label: t.operation })), default: menu.tasks[0].name,
++				options: menu.tasks.map((t) => ({ value: t.name, label: `第${t.idx}任务 · ${t.operation}` })),
++				default: selected_task || menu.tasks.find(has_remaining)?.name || menu.tasks[0].name,
+ 				onchange: () => { update_task(); update_preview(); } },
+ 			{ fieldname: "summary", fieldtype: "HTML" },
+ 			{ fieldname: "good_quantity", label: "本次良品数量", fieldtype: "Data", reqd: 1, onchange: () => update_preview() },
+@@ -1405,11 +1413,12 @@
+ 		],
+ 		primary_action_label: "确认报工",
+ 		primary_action: async (values) => {
++			if (frm.doc.name !== work_order) { frappe.msgprint("工单页面已变化，请重新打开报工。"); return; }
+ 			if (!fingerprint) { frappe.msgprint("请先填写数量和起止时间，并核对工时、预计工资与效率预览。"); return; }
+ 			if (localStorage.getItem(storage_key)) {
+ 				frappe.msgprint("上次提交结果尚未核对，请先使用“查询或重试上次报工”，不要重复创建新记录。"); return;
+ 			}
+-			const args = { work_order: frm.doc.name, operation_id: values.task,
++			const args = { work_order, operation_id: values.task,
+ 				request_id: crypto.randomUUID(), good_quantity: values.good_quantity, bad_quantity: values.bad_quantity,
+ 				from_time: values.from_time, to_time: values.to_time, shutdown_seconds: values.shutdown_seconds,
+ 				overtime_seconds: values.overtime_seconds, context_fingerprint: fingerprint };
+@@ -1421,7 +1430,7 @@
+ 		const task = menu.tasks.find((t) => t.name === dialog.get_value("task"));
+ 		if (!task) return;
+ 		dialog.set_value("good_quantity", String(task.unfinished));
+-		dialog.fields_dict.summary.$wrapper.html(`<p>计划 ${escape(task.plan)}；累计良品 ${escape(task.good)}；累计不良 ${escape(task.bad)}；未完成 ${escape(task.unfinished)}（${escape(menu.unit)}）。本次确认不改计划量。</p>`);
++		dialog.fields_dict.summary.$wrapper.html(`<p>工单 ${escape(work_order)}，第${escape(task.idx)}任务 · ${escape(task.operation)}。</p><p>计划 ${escape(task.plan)}；累计良品 ${escape(task.good)}；累计不良 ${escape(task.bad)}；未完成 ${escape(task.unfinished)}（${escape(menu.unit)}）。本次确认不改计划量。</p>`);
+ 		const rows = menu.reports.filter((r) => r.operation_id === task.name);
+ 		dialog.fields_dict.history.$wrapper.html("<b>最近50笔中的本道工序记录</b>" + (rows.length ?
+ 			"<table class='table table-bordered'><thead><tr><th>记录</th><th>良品</th><th>不良</th><th>有效秒数</th><th>状态</th></tr></thead><tbody>" + rows.map((r) =>
+@@ -1438,7 +1447,7 @@
+ 		let result;
+ 		try {
+ 			({ message: result } = await frappe.call(api + "preview_production_report_time", {
+-				work_order: frm.doc.name, operation_id: dialog.get_value("task"), from_time: start, to_time: end,
++				work_order, operation_id: dialog.get_value("task"), from_time: start, to_time: end,
+ 				good_quantity: good, bad_quantity: bad,
+ 				shutdown_seconds: dialog.get_value("shutdown_seconds"), overtime_seconds: dialog.get_value("overtime_seconds"),
+ 			}));
+@@ -1485,21 +1494,51 @@
+ 		localStorage.removeItem(storage_key);
+ 		dialog.hide();
+ 		const state = {0: "未生效", 1: "已确认", 2: "已冲销"}[saved.docstatus];
+-		frappe.msgprint({ title: saved.docstatus === 1 ? "报工已确认" : "原记录已找回",
+-			message: `记录：${escape(saved.name)}，${escape(state)}。本笔数量与当次工时依据已保存。` });
++		const notice = new frappe.ui.Dialog({ title: saved.docstatus === 1 ? "报工已确认" : "原记录已找回",
++			fields: [{ fieldname: "receipt", fieldtype: "HTML",
++				options: `记录：<a href="/app/job-card/${encodeURIComponent(saved.name)}" target="_blank">${escape(saved.name)}</a>，${escape(state)}。本笔数量与当次工时依据已保存。` }] });
++		notice.show();
++		if (frm.doc.name !== work_order) return;
+ 		try { await frm.reload_doc(); }
+ 		catch (error) {
+ 			frappe.msgprint({ title: "记录已保存，页面刷新失败", message: `记录：${escape(saved.name)}。请重新打开工单查看，不要再次报工。` });
+-		}
++			return;
++		}
++		if (saved.docstatus !== 1 || frm.doc.name !== work_order || ["Stopped", "Closed", "Cancelled"].includes(frm.doc.status)) return;
++		let current;
++		try { ({ message: current } = await frappe.call(api + "get_production_report_tasks", { work_order })); }
++		catch (error) {
++			notice.$body.append("<p>记录已保存，后续任务读取未完成。请重开工单核对，不要重复报工。</p>");
++			return;
++		}
++		// Follow the server-linked fact, not the selection or a locally cached request.
++		const fact = current.reports.find((record) => record.name === saved.name && record.docstatus === 1);
++		const task = fact && current.tasks.find((row) => row.name === fact.operation_id);
++		if (!task || frm.doc.name !== work_order) return;
++		const open_task = async (target) => {
++			if (frm.doc.name !== work_order) { frappe.msgprint("工单页面已变化，请重新打开报工。"); return; }
++			notice.hide();
++			await erpnext.work_order.open_production_report(frm, target.name);
++		};
++		if (has_remaining(task)) {
++			notice.set_secondary_action(() => open_task(task));
++			notice.set_secondary_action_label("继续本道");
++		}
++		const next = current.tasks.find((row) => row.idx > task.idx && has_remaining(row));
++		if (next) notice.set_primary_action("下一任务", () => open_task(next));
+ 	}
+ 	dialog.set_secondary_action(async () => {
++		if (frm.doc.name !== work_order) { frappe.msgprint("工单页面已变化，请重新打开报工。"); return; }
+ 		const pending = localStorage.getItem(storage_key);
+ 		if (!pending) { frappe.msgprint("没有待核对的提交。"); return; }
+ 		const args = JSON.parse(pending);
+ 		const { message: saved } = await frappe.call(api + "get_production_report_result", { request_id: args.request_id });
+ 		if (saved) {
+ 			await show_saved(saved);
+-		} else { await submit(args); }
++		} else {
++			if (frm.doc.name !== work_order) { frappe.msgprint("工单页面已变化，请重新打开报工。"); return; }
++			await submit(args);
++		}
+ 	});
+ 	dialog.set_secondary_action_label("查询或重试上次报工");
+ 	dialog.show();
+diff --git a/erpnext/manufacturing/doctype/work_order/work_order.py b/erpnext/manufacturing/doctype/work_order/work_order.py
+--- a/erpnext/manufacturing/doctype/work_order/work_order.py
++++ b/erpnext/manufacturing/doctype/work_order/work_order.py
+@@ -333,9 +333,9 @@
+ 		"returned": row.returned_qty, "net": Decimal(str(row.transferred_qty)) - Decimal(str(row.returned_qty)),
+ 		"consumed": row.consumed_qty, "pending_issue": None, "pending_return": None} for row in order.required_items]
+ 	bom = frappe.get_doc("BOM", order.bom_no) if order.bom_no else None
+-	can_read = bool(bom and bom.has_permission("read"))
++	can_read = bool(bom and frappe.has_permission("BOM", "read", doc=bom, throw=False))
+ 	return {"work_order": order.name, "modified": str(order.modified), "bom_no": order.bom_no,
+-		"can_read_bom": can_read, "can_write_bom": bool(can_read and bom.has_permission("write")), "items": items,
++		"can_read_bom": can_read, "can_write_bom": bool(can_read and frappe.has_permission("BOM", "write", doc=bom, throw=False)), "items": items,
+ 		"pending_source": "库存待审批状态来源未接入，不能由全部草稿推定待审批量；未接入不等于0。",
+ 		"effective_source": "累计领/退仅含已提交库存单据，净领为两者之差；实际消耗独立读取，不用净领替代。"}
+ 

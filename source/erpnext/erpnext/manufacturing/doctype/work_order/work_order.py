@@ -333,9 +333,9 @@ def get_production_material_summary(work_order):
 		"returned": row.returned_qty, "net": Decimal(str(row.transferred_qty)) - Decimal(str(row.returned_qty)),
 		"consumed": row.consumed_qty, "pending_issue": None, "pending_return": None} for row in order.required_items]
 	bom = frappe.get_doc("BOM", order.bom_no) if order.bom_no else None
-	can_read = bool(bom and bom.has_permission("read"))
+	can_read = bool(bom and frappe.has_permission("BOM", "read", doc=bom, throw=False))
 	return {"work_order": order.name, "modified": str(order.modified), "bom_no": order.bom_no,
-		"can_read_bom": can_read, "can_write_bom": bool(can_read and bom.has_permission("write")), "items": items,
+		"can_read_bom": can_read, "can_write_bom": bool(can_read and frappe.has_permission("BOM", "write", doc=bom, throw=False)), "items": items,
 		"pending_source": "库存待审批状态来源未接入，不能由全部草稿推定待审批量；未接入不等于0。",
 		"effective_source": "累计领/退仅含已提交库存单据，净领为两者之差；实际消耗独立读取，不用净领替代。"}
 

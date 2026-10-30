@@ -1,4 +1,4 @@
-> 公开归档副本（2026-10-28）：保留结论、方法与限制；个人路径/运行编号已移除。原始运行单据、响应、截图和日志不上传，原件索引见 `publication/evidence-index.json`。本页历史结果不是发布日重测。
+> 公开归档副本（2026-10-30）：保留结论、方法与限制；个人路径/运行编号已移除。原始运行单据、响应、截图和日志不上传，原件索引见 `publication/evidence-index.json`。本页历史结果不是发布日重测。
 
 # R07｜报工事实保留与请求并发绑定
 
@@ -328,3 +328,29 @@ docker exec xgd-b08-check env/bin/python /b01/b08_correction_rollback.py
 两样例hour_rate=0，只核本样例零成本，非零成本未验证；I06的显式savepoint不能外推HTTP自动回滚、数据库崩溃或完整逆向链。**本包有限验证及白名单公开回读已完成，仅收口两项和保存过程**；累计e15fba补丁不变，不重跑已通过且未变化的验证。最终文档SHA与CI只在最终回复，不循环回填。凭据及原始敏感响应只在本地私有路径，公开证据不含密钥。
 
 本包不重跑I03/I04、旧同键、单价/效率、权限、规则、历史旁路或页面；不接父删除/复制、完整库存逆向、跨工单/库存/共享工作站完整并发、后台队列、页面/现场/手机、导航/图片/自定义字段、Z01或后台周期。完成判断仅沿原卡两行，不复制第二套任务清单；G1/G2/G3、B08/B09整卡及正式交付门槛保留，OpenSpec不归档。
+# 2026-10-30 B08任务定位与后续入口绑定
+
+本节是当前执行包；下文此前绑定及已验结果保留历史，不重新执行。
+
+**做什么：**原逐笔报工下拉框用本工单任务位置区分同名工序；确认后显示可重开原生记录的凭据，并提供人工点击“继续本道／下一任务”。后续菜单必须重新调用原任务API，仅取当前已授权、未完成任务；下一任务按原工单行顺序，跳过未授权和已完成行。每次点击只打开空的新报工输入，不能自动确认、继承旧时间/请求键或生成事实。恢复查询按服务器返回记录关联识别本道，不相信可变选择框或本地请求里的任务身份。
+
+**不做什么：**不增加报工API/角色/DocType、任务账或顺序生产约束；不改B04/B14计算、B09防重/更正、原记录与库存。图片/自定义字段缺具体对象和定义，由原B14/B08后续确认，不借本包新增。手机/人工现场10秒、完整G1/G2/G3和Z01仍未验，后台b19不恢复。
+
+**已核复用：**公开main基线ff14ba9；ERPNext15.124.1/Frappe15.124.0，维护分支codex/xgd-maintenance，累计补丁222e92c；36份源清单已核一致。五底座结论沿既有R03～R07，不安装第二底座。`get_production_report_tasks`已有精确公司/班组/员工/任务授权、实际计划与剩余及最近50笔关联；仅补原行idx。原生Dialog/Select、msgprint、reload_doc和Job Card页面复用。源码静态证实当前仅以工序名为选项文案、确认后无继续入口；不据此声称页面验收通过。
+
+**产品白名单（原3文件，实测后仅补1个摘要入口，共4文件）：**
+
+- `erpnext/manufacturing/doctype/work_order/work_order.js:open_production_report`：显示任务位置；成功后以新鲜任务/记录响应选择导航；点击再读最新权限/剩余并核父单上下文，保留已保存提示和必要错误边界。
+- `erpnext/manufacturing/doctype/job_card/job_card.py:get_production_report_tasks`：只增加原生idx字段；不重算数量、不扩授权。
+- `erpnext/manufacturing/doctype/job_card/test_job_card.py`：复用`TestProductionReportConfirmation`，增加同名任务/位置、当前余量及撤权测试。
+
+**实测触发的必要修补：**普通报工员读Work Order时，`get_production_material_summary`的`Document.has_permission`默认权限日志生成BOM错误提示（实际请求已定位），阻挡本包弹窗。仅额外允许`work_order/work_order.py:get_production_material_summary`将可选BOM read/write探测改为原生`frappe.has_permission(..., throw=False)`；保留父单`check_permission(read)`和真实False，不扩大权限、不改用料计算。反例加入同一`TestProductionTaskNavigation`，先红后绿。新增一张空同样例工单只用于已查明的异步父单切换验证；均不产生额外报工或库存。
+
+**唯一验收清单：**原B08的2026-10-30当前执行包；OpenSpec活动change `b08-followup-20261028`引用本节，不复制任务清单。
+
+**验证命令及停止点：**复用`docker exec -w /home/frappe/frappe-bench xgd-b08-check env/bin/python /b01/b06_tasks_tests.py <原测试完整名>`，先P0、反例红，再对应绿及实际受影响原方法；不跑旧并发/计价/时段全套。辅助脚本允许在`.development/checks/`按新case复用B06 fixture/control，保留独立工位和旧23表原值/哈希，原case结果不改。Playwright CLI用普通报工员完成同名第1/3任务识别、部分报工后继续本道、完成后下一任务、重开记录以及撤权/旧上下文拒绝；确认事实唯一、导航不新增事实、旧捕获行保持、零库存。缺人员只记现场未验，达到本包条件即停止。
+
+
+## 2026-10-30 本包实际收口
+
+原3文件及实测BOM提示修补新增1文件均完成；4新＋2受影响原方法分批通过，普通中文PC和23旧表保持通过，2笔报工/0库存。独立审查的对话框遗留按钮、异步重试父单检查2项已关闭；额外可选BOM权限探测修补保留硬权限。见[实际记录](../B08/navigation-20261030/run-record.md)。失败和工具限制保留，完整门槛/现场/图片配置未扩展。

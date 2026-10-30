@@ -1,0 +1,77 @@
+{
+  "date": "2026-10-30",
+  "scope": "B08 bound task identity and follow-up navigation, with only a real optional BOM capability warning correction. Not whole B08 acceptance.",
+  "source_patch_sha256": "d46c2fcab206b349a99442b227661539031ef8232b04396d9a1d4d81c2cbc84b",
+  "product_files_changed": 4,
+  "unique_passing_methods": 6,
+  "new_methods": 4,
+  "affected_original_methods": 2,
+  "single_final_full_suite": false,
+  "pc": {
+    "same_named_authorized_positions": [
+      1,
+      3
+    ],
+    "unauthorized_position_2_excluded": true,
+    "first_partial_good": 1,
+    "continue_same_task_fresh_start_time": true,
+    "second_good": 1,
+    "completed_task_continue_button_visible": false,
+    "saved_basis_reopened_in_native_job_card": true,
+    "next_task_position": 3,
+    "next_task_fresh_start_time": true,
+    "no_auto_report_on_navigation": true,
+    "optional_bom_warning_after_correction": false,
+    "stale_context": {
+      "real_result_delivery_delayed_until_native_sibling_route": true,
+      "response_rewritten": false,
+      "guard_message_observed": true,
+      "confirm_posts": 0,
+      "synthetic_empty_sibling_orders": 1,
+      "earlier_route_harness_failures_retained": true
+    },
+    "revoked_employee_binding_entry_rejected": true
+  },
+  "retention": {
+    "old_tables_preserved": 23,
+    "old_rows_changed": 0,
+    "effective_reports": 2,
+    "time_logs": 2,
+    "new_stock_documents": 0,
+    "plans": [
+      2,
+      2,
+      1
+    ],
+    "completed": [
+      2,
+      0,
+      0
+    ],
+    "new_work_orders": 2,
+    "new_users": 2,
+    "new_roles": 1,
+    "new_employees": 1,
+    "independent_workstation": true,
+    "old_users_roles_permissions_preserved": true
+  },
+  "review": {
+    "scope": "independent static review of four bound product files",
+    "important_findings_closed": 2,
+    "additional_runtime_bom_warning_fixed_and_reviewed": true,
+    "remaining_blocking_findings_reported": 0
+  },
+  "tool_failures_preserved": [
+    "Initial report click was obstructed by the real BOM warning, later specifically fixed.",
+    "cur_dialog was null during native modal transitions; browser check changed to visible DOM, not product behavior.",
+    "The CLI network command is not available in installed 0.1.22; response events used instead.",
+    "First deferred-response check waited for a transient visible modal and timed out; second route harness reported already handled. Real server count remained two; clean-tab real-response delivery adapter then observed guard and zero confirmation POST.",
+    "First retention assertion compared a native Data quantity string to integers; corrected only the helper normalization and reran the audit, without product/data/baseline changes.",
+    "One automatic permission-review timeout was retried once and completed."
+  ],
+  "not_verified": [
+    "Manual field 10-second measurement, mobile/PDA, whole CASE-01/02/06 and complete G1/G2/G3, customer deployment and Z01.",
+    "Images and confirmed custom field definitions are not expanded in this package.",
+    "No repeat of unchanged I03-I06, B04/B14 pricing/time calculations, full inventory or permissions suite."
+  ]
+}

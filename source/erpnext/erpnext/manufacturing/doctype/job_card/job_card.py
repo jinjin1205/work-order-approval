@@ -1696,7 +1696,7 @@ def get_production_report_tasks(work_order):
 	for row in order.operations:
 		if _report_scope_allows(row, employee):
 			plan = order.get_operation_plan_quantity(row)
-			tasks.append({"name": row.name, "operation": row.operation, "plan": plan, "good": row.completed_qty,
+			tasks.append({"name": row.name, "idx": row.idx, "operation": row.operation, "plan": plan, "good": row.completed_qty,
 				"bad": row.process_loss_qty, "unfinished": max(Decimal(0), Decimal(str(plan)) - Decimal(str(row.completed_qty or 0)) - Decimal(str(row.process_loss_qty or 0))),
 				"status": row.status})
 	reports = frappe.get_list("Job Card", filters={"work_order": work_order, "operation_id": ["in", [t["name"] for t in tasks]],

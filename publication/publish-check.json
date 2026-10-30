@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-29",
+  "date": "2026-10-30",
   "scope": "Explicit public snapshot only; application test receipts retain their execution batch and source hash; publication does not rerun application tests",
   "allowlist_passed": true,
   "known_credential_literal_matches": 0,

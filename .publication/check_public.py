@@ -23,7 +23,7 @@ credential_sources = [root / ".development/private/b05-entries-20261029/access.j
                       root / ".development/private/b19-http/fixture.json",
                       root / ".development/private/b19-http/ui-access.json",
                       root / ".evaluation/r05-erpnext/.env", root / ".evaluation/r05-erpnext/access-secrets.json"]
-credential_sources += [root / ".development/private/b06-tasks-20261029/access.json", root / ".development/private/b06-retention-20261029/access.json", root / ".development/private/b07-materials-20261029/access.json"]
+credential_sources += [root / ".development/private/b08-navigation-20261030/access.json", root / ".development/private/b06-tasks-20261029/access.json", root / ".development/private/b06-retention-20261029/access.json", root / ".development/private/b07-materials-20261029/access.json"]
 credential_sources += sorted((root / ".development/private/b08-history-paths").glob("*.json"))
 credential_sources += sorted((root / ".development/private/b08-distinct-concurrency").glob("*.json"))
 credential_sources += sorted((root / ".development/private/b08-recovery").glob("*.json"))
