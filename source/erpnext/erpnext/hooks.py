@@ -44,9 +44,15 @@ doctype_list_js = {
 	],
 }
 
-override_doctype_class = {"Address": "erpnext.accounts.custom.address.ERPNextAddress"}
+override_doctype_class = {
+	"Address": "erpnext.accounts.custom.address.ERPNextAddress",
+	"File": "erpnext.manufacturing.production_quality.ProductionQualityFile",
+}
 
-override_whitelisted_methods = {"frappe.www.contact.send_message": "erpnext.templates.utils.send_message"}
+override_whitelisted_methods = {
+	"frappe.www.contact.send_message": "erpnext.templates.utils.send_message",
+	"frappe.core.api.file.zip_files": "erpnext.manufacturing.production_quality.zip_quality_files",
+}
 
 welcome_email = "erpnext.setup.utils.welcome_email"
 
@@ -327,6 +333,9 @@ period_closing_doctypes = [
 ]
 
 doc_events = {
+	"DocShare": {
+		"validate": "erpnext.manufacturing.production_quality.protect_quality_share",
+	},
 	"Work Order": {
 		"on_trash": "erpnext.manufacturing.doctype.work_order.work_order.protect_production_approval_history",
 	},
@@ -685,8 +694,12 @@ ignore_translatable_strings_from = ["frappe"]
 
 # Production time-rule maintenance stays within explicit company assignments.
 has_permission = {
+	"File": "erpnext.manufacturing.production_quality.has_file_permission",
+	"Quality Inspection": "erpnext.manufacturing.production_quality.has_inspection_permission",
 	"Production Time Rule": "erpnext.manufacturing.doctype.production_time_rule.production_time_rule.has_permission",
 }
 permission_query_conditions = {
+	"File": "erpnext.manufacturing.production_quality.file_query_conditions",
+	"Quality Inspection": "erpnext.manufacturing.production_quality.inspection_query_conditions",
 	"Production Time Rule": "erpnext.manufacturing.doctype.production_time_rule.production_time_rule.get_permission_query_conditions",
 }

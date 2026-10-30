@@ -4,11 +4,11 @@
   "version": "15.124.1",
   "frappe_version": "15.124.0",
   "frappe_commit": "f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab",
-  "patch_sha256": "d46c2fcab206b349a99442b227661539031ef8232b04396d9a1d4d81c2cbc84b",
+  "patch_sha256": "fe0fd20526058649f5a250ff53780e2dea0b51b2a7a6ed7fb93e00cbd8dd0343",
   "files": {
     "erpnext/hooks.py": {
       "base_sha256": "e9d55d583820c5411a2133754362e2bf0b8f24ca48bf236ae27460af7fdf66bc",
-      "modified_sha256": "e8383e1e889a42c071f7fa0feae65803150b850baa63e4d16e65bf46a5130f0a"
+      "modified_sha256": "1e8abc685eda8baaa3bb2d3b4d21093c583db6ba1c5fd31447ec74a56b90e50f"
     },
     "erpnext/manufacturing/doctype/bom/bom.js": {
       "base_sha256": "615b11ed4594928ccf44d03aa7f73df7e3d0174a1f3377286d3e1f4b17429ff0",
@@ -32,7 +32,7 @@
     },
     "erpnext/manufacturing/doctype/job_card/job_card.js": {
       "base_sha256": "6c9849f71ae8e027afb267a5761d31c60d9e716bfd084f587b514ccc3e4bb1ef",
-      "modified_sha256": "0106ec883cd5ff868ad31fae3ee11bed0fbd6652abca7b8a0eb3b943865f9238"
+      "modified_sha256": "9f8762d5f5b3d59f537b541ffb594c193d69ac8246f6aa0c72999fc59628eee9"
     },
     "erpnext/manufacturing/doctype/job_card/job_card.json": {
       "base_sha256": "0a9c82618accc7f0d7aeb81aa056680e7810a637c2494ecaee28484337efa379",
@@ -105,6 +105,18 @@
     "erpnext/manufacturing/doctype/work_order_operation/work_order_operation.py": {
       "base_sha256": "6135963079dba860314b334cd8eaa32681bbb0e8765ade7cce9a7d118dd28d0a",
       "modified_sha256": "6c6e1cc4002179244ecd24f768d02b22446eca37a338e41f4cf95dec9c8ebfcc"
+    },
+    "erpnext/manufacturing/production_quality.py": {
+      "base_sha256": null,
+      "modified_sha256": "e2066400935abd7ec824d39dfa5fe65342b53d7b1d82170e1138c0dbdd97bf64"
+    },
+    "erpnext/stock/doctype/quality_inspection/quality_inspection.py": {
+      "base_sha256": "af1669a3a1c672d73a558fe60e80ea2021d55da9245f168b1ede03f10d9da606",
+      "modified_sha256": "c2b3d24c43be6c9b89c149336b9288c09e838cfbbfd4f0645f2a843a08e6867f"
+    },
+    "erpnext/stock/doctype/quality_inspection/test_quality_inspection.py": {
+      "base_sha256": "e2db6c0b5f664cba236bb6aa04200f1f98b49cfacc97906163b1c7e65b841dce",
+      "modified_sha256": "0cc2014c8c587d96d77d23f0d46e7022310968e2d03ce057a2677f51bfd474a2"
     },
     "erpnext/stock/doctype/stock_entry/stock_entry.py": {
       "base_sha256": "d3b32c0f711e12bc2dcab7367d13ab36252a6a67e3e14219a11ee9f003eae19d",

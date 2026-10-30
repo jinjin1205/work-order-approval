@@ -6,7 +6,7 @@
 
 ## 从哪里继续
 
-**2026-10-30最新结果：**[当前TODO](docs/开发TODO.md#current-progress)。B08任务定位/继续入口限定实现并验收：同名第1/3任务可辨，确认后继续本道或下一任务只导航，原生记录/依据可重开；4新＋2受影响原方法共6不同方法分批通过，实际中文PC、旧上下文0确认POST及解除员工绑定拒绝均有证据。旧23表捕获行保持、2笔报工/0库存，36运行文件匹配；仅附带修复实测B07可选BOM权限误提示，未扩大权限。见[B08记录](evidence/B08/navigation-20261030/run-record.md)。B06/B07前包和历史失败保留。整卡、人工现场10秒、手机、完整G1/G2/G3及Z01仍未验，后台b19保持暂停。
+**2026-10-30最新结果：**[当前TODO](docs/开发TODO.md#current-progress)。B08原生报检/私有图片限定实现与验收通过，无新增字段。普通质检岗位手填/上传/提交/重开；21个不同方法分批通过，实际HTTP18项。撤父分享后图片原URL/fid/zip与浏览器无缓存请求403；原报工整行、图片磁盘文件及旧26表捕获行保持，库存0。当前31份修改源码、两容器39文件匹配，见[B08记录](evidence/B08/quality-20261030/run-record.md)。任务定位/继续入口和B05～B07成果沿原证据复用。整卡、人工现场10秒、手机、完整G1/G2/G3及Z01仍未验，后台b19保持暂停。
 
 | 大板块 | 小任务卡 | 整卡收口 | 部分完成 | 未完成 |
 |---|---:|---:|---:|---:|
@@ -52,7 +52,7 @@ OpenSpec采用原卡引用模式，不复制平行清单；CLI无法解析外部
 
 [source/source-lock.json](source/source-lock.json)固定ERPNext v15.124.1的完整上游提交。`source/erpnext/`保存截至本批的**26个完整修改或新增文件**（18份上游派生、8份新增）及上游许可证；[当前差异补丁](evidence/B05/entries-20261029/implementation.patch)同时保留。Frappe v15.124.0保持原版，没有重复上传完整上游目录、Git缓存或容器镜像。既有逐笔事实、计价冻结、金额/效率快照和中文入口保留；history-paths包在原工序控制器增加历史引用保护并补原测试，仅两个文件变化；后续I03/I04及I05/I06包只增加验证脚本/证据，产品源码未改，复用原Document生命周期与权限，未新增服务、元数据或生产/库存账本。
 
-GitHub已经保存这28份源码、固定上游锁、`tools/prepare_source.py`、任务文档和可公开证据。`git pull`只更新当前归档仓的受跟踪文件；被忽略的`.development/repos/erpnext`维护checkout、运行中的容器和数据库不会随之自动更新。已有本机环境继续复用原数据，先核源码差异，再按对应任务决定是否同步源码或迁移；不要为拉取文档而重建站点、覆盖维护代码或重复业务样例。
+当前归档包含31份源码、固定上游锁、`tools/prepare_source.py`、任务文档和可公开证据。`git pull`只更新当前归档仓的受跟踪文件；被忽略的`.development/repos/erpnext`维护checkout、运行中的容器和数据库不会随之自动更新。已有本机环境继续复用原数据，先核源码差异，再按对应任务决定是否同步源码或迁移；不要为拉取文档而重建站点、覆盖维护代码或重复业务样例。
 
 在一份新克隆中准备完整维护源码（需要Git、Python 3、网络；不启动数据库或写业务数据）：
 
@@ -60,7 +60,7 @@ GitHub已经保存这28份源码、固定上游锁、`tools/prepare_source.py`�
 python3 tools/prepare_source.py
 ```
 
-脚本固定获取上游SHA，核对原文件哈希，再覆盖清单中的28个已保存文件（20份上游派生、8份新增；新增文件在上游应不存在）并验证修改后哈希。已有`.development/repos/erpnext`时会停止，不覆盖已有工作。新机器准备源码后仍需私有配置、数据备份及相应环境验证；源码恢复成功或本机旧环境可用都不代表Z01干净环境启动、备份恢复和独立接手通过。新增BOM字段已在隔离测试站和既有开发站执行原生reload-doc，数量默认精度使用六位；既有站运行新源码前须先按所属任务导入元数据并验证，不能直接启动新镜像而沿用旧字段。B14两份新DocType须先按[evidence/R07/time-config-binding.md](evidence/R07/time-config-binding.md)加载子表再主表；`.development/checks/b14_prepare.py`只准备隔离站角色/link-select，客户配置角色及Company授权需显式映射。首次加载B08计价包元数据的站点还需在新源码环境执行原生`reload-doc manufacturing doctype work_order_operation`及`reload-doc manufacturing doctype job_card`，然后对该授权站点执行`clear-cache`并重新加载页面，核对新增计价字段与计时/计件中文下拉；已完成相同元数据加载的站点无需因本轮history-paths重复reload-doc。本包首次加载还须对目标授权站点执行原生`reload-doc manufacturing doctype work_order`，使三个既有字段no_copy生效，清目标DocType缓存并完整刷新页面。修订需显式原生create/amend及生产发起角色授权；本包新隔离角色不代表客户权限初始化。生产报工Role、员工/公司/班组和任务scope须显式映射，不能给操作工整单write；最小更正另需原生cancel权限。合成fixture不是客户权限初始化脚本，不可在客户站直接运行。随后按[本地开发环境说明](.development/README.md)配置本机新凭据和独立站点。镜像是已验证的固定ARM64基线，其他机器、完整生产服务及客户部署仍需对应验收。
+脚本固定获取上游SHA，核对原文件哈希，再覆盖清单中的31个已保存文件（22份上游派生、9份新增；新增文件在上游应不存在）并验证修改后哈希。已有`.development/repos/erpnext`时会停止，不覆盖已有工作。新机器准备源码后仍需私有配置、数据备份及相应环境验证；源码恢复成功或本机旧环境可用都不代表Z01干净环境启动、备份恢复和独立接手通过。新增BOM字段已在隔离测试站和既有开发站执行原生reload-doc，数量默认精度使用六位；既有站运行新源码前须先按所属任务导入元数据并验证，不能直接启动新镜像而沿用旧字段。B14两份新DocType须先按[evidence/R07/time-config-binding.md](evidence/R07/time-config-binding.md)加载子表再主表；`.development/checks/b14_prepare.py`只准备隔离站角色/link-select，客户配置角色及Company授权需显式映射。首次加载B08计价包元数据的站点还需在新源码环境执行原生`reload-doc manufacturing doctype work_order_operation`及`reload-doc manufacturing doctype job_card`，然后对该授权站点执行`clear-cache`并重新加载页面，核对新增计价字段与计时/计件中文下拉；已完成相同元数据加载的站点无需因本轮history-paths重复reload-doc。本包首次加载还须对目标授权站点执行原生`reload-doc manufacturing doctype work_order`，使三个既有字段no_copy生效，清目标DocType缓存并完整刷新页面。修订需显式原生create/amend及生产发起角色授权；本包新隔离角色不代表客户权限初始化。生产报工Role、员工/公司/班组和任务scope须显式映射，不能给操作工整单write；最小更正另需原生cancel权限。合成fixture不是客户权限初始化脚本，不可在客户站直接运行。随后按[本地开发环境说明](.development/README.md)配置本机新凭据和独立站点。镜像是已验证的固定ARM64基线，其他机器、完整生产服务及客户部署仍需对应验收。
 
 ## 公开与本地边界
 

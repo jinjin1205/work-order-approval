@@ -15,6 +15,8 @@ try:
     frappe.flags.in_test = True
     frappe.flags.skip_test_records = True
     tables = ["Work Order", "Work Order Item", "Work Order Operation", "Job Card", "Job Card Time Log", "Stock Entry", "Stock Entry Detail", "Stock Ledger Entry", "Workflow Action", "Version", "Comment", "BOM", "BOM Item", "BOM Operation", "BOM Explosion Item"]
+    if any("TestProductionNativeQuality" in name for name in sys.argv[1:]):
+        tables += ["Quality Inspection", "Quality Inspection Reading", "File"]
     def snapshot():
         return {dt: hashlib.sha256(frappe.as_json(frappe.get_all(dt, fields=["*"], order_by="name", limit_page_length=0)).encode()).hexdigest() for dt in tables}
     before = snapshot()

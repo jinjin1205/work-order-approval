@@ -16,14 +16,14 @@ details_manifest = json.loads((ROOT / ".development/checks/b05-details-source-ma
 closeout_manifest = json.loads((ROOT / ".development/checks/b05-closeout-source-manifest.json").read_text())
 header_manifest = json.loads((ROOT / ".development/checks/b05-header-source-manifest.json").read_text())
 entries_manifest = json.loads((ROOT / ".development/checks/b05-entries-source-manifest.json").read_text())
-manifest = json.loads((ROOT / ".development/checks/b08-navigation-source-manifest.json").read_text())
+manifest = json.loads((ROOT / ".development/checks/b08-quality-source-manifest.json").read_text())
 metrics_manifest = json.loads((ROOT / ".development/checks/b08-metrics-source-manifest.json").read_text())
 followup_manifest = json.loads((ROOT / ".development/checks/b08-followup-source-manifest.json").read_text())
 changes = subprocess.check_output(["git", "diff", "--name-only", BASE], cwd=REPO, text=True).splitlines()
 patch = subprocess.check_output(["git", "diff", BASE], cwd=REPO)
-assert len(changes) == 28
+assert len(changes) == 31
 assert hashlib.sha256(patch).hexdigest() == manifest["patch_sha256"]
-assert patch == (ROOT / "evidence/B08/navigation-20261030/implementation.patch").read_bytes()
+assert patch == (ROOT / "evidence/B08/quality-20261030/implementation.patch").read_bytes()
 for name in changes:
     assert hashlib.sha256((REPO / name).read_bytes()).hexdigest() == manifest["files"][name]
 
@@ -50,7 +50,7 @@ def portable(text):
 for name in changes:
     add("source/erpnext/" + name, (REPO / name).read_bytes(), ".development/repos/erpnext/" + name)
 add("source/erpnext/license.txt", (REPO / "license.txt").read_bytes(), ".development/repos/erpnext/license.txt")
-for name in ("evidence/B08/navigation-20261030/implementation.patch", "evidence/B08/navigation-20261030/bounded-change.patch", "evidence/B07/materials-20261029/implementation.patch", "evidence/B07/materials-20261029/bounded-change.patch", "evidence/B06/tasks-20261029/implementation.patch", "evidence/B06/tasks-20261029/bounded-change.patch", "evidence/B05/entries-20261029/implementation.patch", "evidence/B05/entries-20261029/bounded-change.patch", "evidence/B05/header-20261029/implementation.patch", "evidence/B05/header-20261029/bounded-change.patch", "evidence/B05/closeout-20261029/implementation.patch", "evidence/B05/closeout-20261029/bounded-change.patch", "evidence/B05/explicit-details-20261029/implementation.patch", "evidence/B05/explicit-details-20261029/bounded-change.patch", "evidence/B10/combined-implementation.patch", "evidence/B19/combined-implementation.patch",
+for name in ("evidence/B08/quality-20261030/implementation.patch", "evidence/B08/quality-20261030/bounded-change.patch", "evidence/B08/navigation-20261030/implementation.patch", "evidence/B08/navigation-20261030/bounded-change.patch", "evidence/B07/materials-20261029/implementation.patch", "evidence/B07/materials-20261029/bounded-change.patch", "evidence/B06/tasks-20261029/implementation.patch", "evidence/B06/tasks-20261029/bounded-change.patch", "evidence/B05/entries-20261029/implementation.patch", "evidence/B05/entries-20261029/bounded-change.patch", "evidence/B05/header-20261029/implementation.patch", "evidence/B05/header-20261029/bounded-change.patch", "evidence/B05/closeout-20261029/implementation.patch", "evidence/B05/closeout-20261029/bounded-change.patch", "evidence/B05/explicit-details-20261029/implementation.patch", "evidence/B05/explicit-details-20261029/bounded-change.patch", "evidence/B10/combined-implementation.patch", "evidence/B19/combined-implementation.patch",
              "evidence/B19/b19-only.patch", "evidence/B19/execution-gate/combined-implementation.patch",
              "evidence/B19/entry-history/combined-implementation.patch",
              "evidence/B19/approved-changes/combined-implementation.patch",
@@ -100,6 +100,15 @@ for path in paths:
     add(relative, clean, relative, "personal paths/runtime identifiers removed" if original != clean else "unchanged")
 
 safe_json = [
+    "evidence/发布/2026-10-30-13f7f6f-remote.json",
+    "evidence/发布/2026-10-30-a06ad21-remote.json",
+    "evidence/B08/quality-20261030/source-manifest.json",
+    "evidence/B08/quality-20261030/test-batches.json",
+    "evidence/B08/quality-20261030/acceptance-summary.json",
+    "evidence/B08/quality-20261030/http-summary.json",
+    "evidence/B08/quality-20261030/old-row-audit.json",
+    "evidence/B08/quality-20261030/test-runtime.json",
+    "evidence/B08/quality-20261030/ui-runtime.json",
     "evidence/发布/2026-10-29-ff14ba9-remote.json",
     "evidence/B08/navigation-20261030/source-manifest.json",
     "evidence/B08/navigation-20261030/test-batches.json",
@@ -360,6 +369,10 @@ navigation_base = json.loads((ROOT / ".development/private/b08-navigation-202610
 assert test_receipts == navigation_base, "Historical 59 receipts must remain exact"
 for batch in json.loads((ROOT / "evidence/B08/navigation-20261030/test-batches.json").read_text())["batches"]:
     test_receipts.append({**batch, "executed_on": "2026-10-30", "group": "B08 task follow-up navigation: " + Path(batch["local_log"]).stem})
+quality_base = json.loads((ROOT / ".development/private/b08-quality-20261030/base-receipts.json").read_text())["tests"]
+assert test_receipts == quality_base, "Historical 64 receipts must remain exact"
+for batch in json.loads((ROOT / "evidence/B08/quality-20261030/test-batches.json").read_text())["batches"]:
+    test_receipts.append({**batch, "executed_on": "2026-10-30", "group": "B08 native quality/images: " + Path(batch["local_log"]).stem})
 add("publication/test-receipts.json", json.dumps({"scope": "Separate executed batches; FAILED red/intermediate batches preserved. Exact source patch where captured, explicit null otherwise. No cumulative full-suite result; publication does not rerun tests", "tests": test_receipts, "http_B02_historical": safe_http, "current_patch_sha256": manifest["patch_sha256"]}, ensure_ascii=False, indent=2) + "\n")
 
 index = []

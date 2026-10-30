@@ -60,6 +60,29 @@ frappe.ui.form.on("Job Card", {
 	refresh: function (frm) {
 		if (frm.doc.report_request_id) {
 			frm.disable_save();
+			frm.add_custom_button("查看质检与图片", () => {
+				if (!frappe.model.can_read("Quality Inspection")) {
+					frappe.msgprint("当前账号没有原生质检读取权限，请由已授权质检岗位处理。");
+					return;
+				}
+				frappe.set_route("List", "Quality Inspection", {
+					reference_type: "Job Card", reference_name: frm.doc.name,
+				});
+			});
+			if (frm.doc.docstatus === 1) {
+				frm.add_custom_button("新建质检", () => {
+					if (!frappe.model.can_create("Quality Inspection")) {
+						frappe.msgprint("当前账号没有原生质检创建权限，请由已授权质检岗位处理。");
+						return;
+					}
+					frappe.new_doc("Quality Inspection", {
+						inspection_type: "In Process", reference_type: "Job Card", reference_name: frm.doc.name,
+						item_code: frm.doc.production_item, company: frm.doc.company,
+						inspected_by: frappe.session.user, manual_inspection: 1, status: "",
+						quality_inspection_template: frm.doc.quality_inspection_template,
+					});
+				});
+			}
 			frm.add_custom_button("查看确认依据", () => {
 				const saved = JSON.parse(frm.doc.report_time_context);
 				const escape = (value) => frappe.utils.escape_html(String(value ?? ""));
@@ -172,7 +195,7 @@ frappe.ui.form.on("Job Card", {
 
 		frm.trigger("setup_quality_inspection");
 
-		if (frm.doc.work_order) {
+		if (frm.doc.work_order && !frm.doc.report_request_id) {
 			frappe.db.get_value("Work Order", frm.doc.work_order, "transfer_material_against").then((r) => {
 				if (r.message.transfer_material_against == "Work Order") {
 					frm.set_df_property("items", "hidden", 1);

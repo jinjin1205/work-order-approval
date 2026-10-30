@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 path = sys.argv[1] if len(sys.argv) > 1 else "/b01/b06-tasks-source-manifest.json"
-assert path in ("/b01/b06-tasks-source-manifest.json", "/b01/b07-materials-source-manifest.json", "/b01/b08-navigation-source-manifest.json")
+assert path in ("/b01/b06-tasks-source-manifest.json", "/b01/b07-materials-source-manifest.json", "/b01/b08-navigation-source-manifest.json", "/b01/b08-quality-source-manifest.json")
 manifest = json.loads(Path(path).read_text())
 root = Path("/home/frappe/frappe-bench/apps/erpnext")
 bad = [name for name, expected in manifest["files"].items() if hashlib.sha256((root / name).read_bytes()).hexdigest() != expected]

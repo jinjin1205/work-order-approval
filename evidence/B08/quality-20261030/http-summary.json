@@ -1,0 +1,117 @@
+{
+  "before_revoke": {
+    "mode": "before-revoke",
+    "cases": [
+      {
+        "case": "foreign-parent-read-denied",
+        "status": 403,
+        "expected_status": 403
+      },
+      {
+        "case": "native-inspection-readable",
+        "status": 200,
+        "expected_status": 200
+      },
+      {
+        "case": "native-image-metadata-readable",
+        "status": 200,
+        "expected_status": 200
+      },
+      {
+        "case": "private-url-download",
+        "status": 200,
+        "expected_status": 200
+      },
+      {
+        "case": "private-fid-download",
+        "status": 200,
+        "expected_status": 200
+      },
+      {
+        "case": "authorized-native-zip",
+        "status": 200,
+        "expected_status": 200
+      },
+      {
+        "case": "locked-image-delete-denied",
+        "status": 403,
+        "expected_status": 403
+      },
+      {
+        "case": "locked-image-publication-denied",
+        "status": 403,
+        "expected_status": 403
+      },
+      {
+        "case": "foreign-inspection-create-denied",
+        "status": 403,
+        "expected_status": 403
+      },
+      {
+        "case": "wrong-company-inspection-denied",
+        "status": 403,
+        "expected_status": 403
+      }
+    ],
+    "passed": true,
+    "scope": "Real HTTP only; native PC creation/upload/submit/reopen recorded separately; not full card or concurrency acceptance"
+  },
+  "after_revoke": {
+    "mode": "after-revoke",
+    "cases": [
+      {
+        "case": "revoked-parent-read-denied",
+        "status": 403,
+        "expected_status": 403
+      },
+      {
+        "case": "revoked-inspection-read-denied",
+        "status": 403,
+        "expected_status": 403
+      },
+      {
+        "case": "revoked-image-metadata-denied",
+        "status": 403,
+        "expected_status": 403
+      },
+      {
+        "case": "revoked-private-url-denied",
+        "status": 403,
+        "expected_status": 403
+      },
+      {
+        "case": "revoked-private-fid-denied",
+        "status": 403,
+        "expected_status": 403
+      },
+      {
+        "case": "revoked-zip-denied",
+        "status": 403,
+        "expected_status": 403
+      },
+      {
+        "case": "revoked-Quality Inspection-list-empty",
+        "status": 200,
+        "expected_status": 200
+      },
+      {
+        "case": "revoked-File-list-empty",
+        "status": 200,
+        "expected_status": 200
+      }
+    ],
+    "passed": true,
+    "scope": "Real HTTP only; native PC creation/upload/submit/reopen recorded separately; not full card or concurrency acceptance"
+  },
+  "initial_fixture_authentication_failure": {
+    "mode": "before-revoke",
+    "cases": [
+      {
+        "case": "foreign-parent-read-denied",
+        "status": 401,
+        "expected_status": 403
+      }
+    ]
+  },
+  "browser_uncached_image_after_revoke_status": 403
+}

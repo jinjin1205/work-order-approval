@@ -3732,6 +3732,72 @@
     "reason": "public copy"
   },
   {
+    "path": "evidence/B08/quality-20261030/acceptance-summary.json",
+    "original_sha256": "a69eaa5d20338fcef08f1275265a9c191a5d4fd670838c815c3aa7c86c1de7b3",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/quality-20261030/bounded-change.patch",
+    "original_sha256": "f763502527c66470a9441ee2d0492649987370d7384e19da3c71be2c89748196",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/quality-20261030/http-summary.json",
+    "original_sha256": "f240d1c0e5b9e9d8bd5a3bab2f9052e549e40d8e71895d31fafed68cc569aa8a",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/quality-20261030/implementation.patch",
+    "original_sha256": "fe0fd20526058649f5a250ff53780e2dea0b51b2a7a6ed7fb93e00cbd8dd0343",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/quality-20261030/old-row-audit.json",
+    "original_sha256": "015cf8061716d915810562dec81ede11e5c4528fbf8c47980b2be7b7b4f3701a",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/quality-20261030/review-notes.md",
+    "original_sha256": "4dc5408df9bb52161a146197d64245a16525ebf834e92f187f0f7563bd36b115",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/quality-20261030/run-record.md",
+    "original_sha256": "c4f1955284f13712faaf009c747aa9e7a71d92e4918baa547858b0e86981370e",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/quality-20261030/source-manifest.json",
+    "original_sha256": "0f443320eba44bddd233e4faf2c4f8c75b7b2407ac6a915863b3f2afa6c9b0b5",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/quality-20261030/test-batches.json",
+    "original_sha256": "b7c650490a95243d81ad9f92a157556978b140dfcecede7f8dcf5c6cf498a094",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/quality-20261030/test-runtime.json",
+    "original_sha256": "7a1904f6a0d07ff1bfa81a0b269158b51668e98432fc0f675fe81c52e5fd6b22",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B08/quality-20261030/ui-runtime.json",
+    "original_sha256": "7a1904f6a0d07ff1bfa81a0b269158b51668e98432fc0f675fe81c52e5fd6b22",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
     "path": "evidence/B08/recovery-20261028/acceptance-summary.json",
     "original_sha256": "2a46f199884fc8ed867ba4fe183cd6fd338b55c37f9b0c7321b04b00d1a9fd10",
     "published": true,
@@ -6234,6 +6300,12 @@
     "reason": "public copy"
   },
   {
+    "path": "evidence/R07/inspection-attachments.md",
+    "original_sha256": "6ae01e6a5a1def54b3432305c550ebc47092f7de2749df326d959cb0b1fa7ba3",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
     "path": "evidence/R07/permissions.md",
     "original_sha256": "a931ead35aebc39b95def0f0cf3e8cc2816a2f944bd1ebd68f154458f058b602",
     "published": true,
@@ -6450,10 +6522,16 @@
     "reason": "public copy"
   },
   {
+    "path": "evidence/发布/2026-10-30-13f7f6f-remote.json",
+    "original_sha256": "cda16c2a1b8b7ce608a2635ac25858f30a249858970ab66865f2574f86674737",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
     "path": "evidence/发布/2026-10-30-a06ad21-remote.json",
     "original_sha256": "20c1aec16a654d3c4e1687f30c383f020d1a1694dec192b4a647a7c3538dd91f",
-    "published": false,
-    "reason": "local raw execution evidence; not uploaded"
+    "published": true,
+    "reason": "public copy"
   },
   {
     "path": "evidence/发布/B04-B19-ui-2026-10-27-remote.json",

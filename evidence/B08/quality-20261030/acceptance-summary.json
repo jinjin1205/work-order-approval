@@ -1,0 +1,54 @@
+{
+  "scope": "B08 native inspection/private PNG bounded acceptance only",
+  "no_new_fields": true,
+  "product_files_changed_in_package": 5,
+  "cumulative_source_files": 31,
+  "runtime_manifest_files_each_container": 39,
+  "unique_passing_test_methods_across_batches": 21,
+  "final_affected_batch": {
+    "tests": 4,
+    "seconds": "42.360",
+    "failures": 0,
+    "errors": 0
+  },
+  "unit_rollback_old_tables_unchanged": 18,
+  "native_chinese_pc": {
+    "operator_without_qa_role_create_denied": true,
+    "initial_result_blank": true,
+    "manual_sample_size": 1,
+    "manual_result": "Rejected",
+    "draft_saved": true,
+    "private_png_uploaded": true,
+    "submitted_and_reopened": true,
+    "native_image_browser_decoded": [
+      32,
+      1
+    ],
+    "parent_share_revoked_uncached_image_http": 403
+  },
+  "http_checks_passed": 18,
+  "original_confirmed_report_entire_row_unchanged": true,
+  "existing_captured_tables_unchanged": 26,
+  "fixture_reports": 1,
+  "fixture_good": 1,
+  "fixture_bad": 1,
+  "fixture_stock_entries": 0,
+  "private_image_binary_unchanged": true,
+  "configured_fixture_role_only": {
+    "quality_role": "Quality Manager",
+    "production_parent": "select role plus exactly one read share, later revoked",
+    "read_only_reference_config": "current Item and Company only",
+    "customer_role_initialization_verified": false
+  },
+  "not_verified": [
+    "Final full 21-method suite/global ERPNext suite",
+    "Real operator 10-second target",
+    "Phone/PDA",
+    "Full G1/G2/G3 concurrency/whole B08 card",
+    "Z01 clean-environment configuration, backup/restore and independent handoff",
+    "Customer role mapping and other plugin combinations",
+    "JPEG/WebP browser uploads"
+  ],
+  "background_b19": "PAUSED, not resumed",
+  "publication": "PENDING_REMOTE_READBACK"
+}

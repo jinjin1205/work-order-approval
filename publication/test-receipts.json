@@ -845,6 +845,239 @@
       "source_patch_sha256": null,
       "executed_on": "2026-10-30",
       "group": "B08 task follow-up navigation: green-bom-capability"
+    },
+    {
+      "local_log": ".development/private/b08-quality-20261030/logs/p0.log",
+      "sha256": "9022bb1c6fe6a9ffc724bcefcac37cf86604f7355be4c89dd55682514230ada4",
+      "tests": 1,
+      "seconds": "8.603",
+      "result": "OK",
+      "method_names": [
+        "test_00_native_quality_and_private_png_runnable"
+      ],
+      "source_patch_sha256": null,
+      "failures": 0,
+      "errors": 0,
+      "old_tables_unchanged": 18,
+      "executed_on": "2026-10-30",
+      "group": "B08 native quality/images: p0"
+    },
+    {
+      "local_log": ".development/private/b08-quality-20261030/logs/red.log",
+      "sha256": "fe06c88b8a551838a96bde731de7124363b40182f8d1b0d93015350a63df58d6",
+      "tests": 3,
+      "seconds": "25.269",
+      "result": "FAILED (failures=2)",
+      "method_names": [
+        "test_saving_inspection_keeps_confirmed_report_row",
+        "test_owner_cannot_delete_image_after_inspection_submit",
+        "test_private_file_owner_loses_read_after_quality_role_revoked"
+      ],
+      "source_patch_sha256": null,
+      "failures": 2,
+      "errors": 0,
+      "old_tables_unchanged": 18,
+      "executed_on": "2026-10-30",
+      "group": "B08 native quality/images: red"
+    },
+    {
+      "local_log": ".development/private/b08-quality-20261030/logs/red-reference.log",
+      "sha256": "04cbb1c0b99d159ee134cd706dee9030210b1890ba966e8fb7457db52be72afd",
+      "tests": 1,
+      "seconds": "8.936",
+      "result": "FAILED (failures=1)",
+      "method_names": [
+        "test_saving_inspection_keeps_confirmed_report_row"
+      ],
+      "source_patch_sha256": null,
+      "failures": 1,
+      "errors": 0,
+      "old_tables_unchanged": 18,
+      "executed_on": "2026-10-30",
+      "group": "B08 native quality/images: red-reference"
+    },
+    {
+      "local_log": ".development/private/b08-quality-20261030/logs/green-first.log",
+      "sha256": "524b90cf38594c951c23ee69d245bae06c9171317d120ef0f77af3a6f1cc9253",
+      "tests": 4,
+      "seconds": "35.856",
+      "result": "OK",
+      "method_names": [
+        "test_00_native_quality_and_private_png_runnable",
+        "test_owner_cannot_delete_image_after_inspection_submit",
+        "test_private_file_owner_loses_read_after_quality_role_revoked",
+        "test_saving_inspection_keeps_confirmed_report_row"
+      ],
+      "source_patch_sha256": null,
+      "failures": 0,
+      "errors": 0,
+      "old_tables_unchanged": 18,
+      "executed_on": "2026-10-30",
+      "group": "B08 native quality/images: green-first"
+    },
+    {
+      "local_log": ".development/private/b08-quality-20261030/logs/boundaries.log",
+      "sha256": "000306decc9185f48c422b3cd39bdb3687e7ee8e87e5ba84aabcf3323d15ec71",
+      "tests": 7,
+      "seconds": "64.016",
+      "result": "FAILED (failures=1)",
+      "method_names": [
+        "test_only_one_shared_parent_can_be_read_and_queried",
+        "test_parent_item_and_saved_reference_cannot_be_changed",
+        "test_draft_image_delete_allowed_but_cancelled_history_frozen",
+        "test_native_plan_inspection_keeps_original_linkback",
+        "test_invalid_public_images_and_direct_fact_attachment_rejected",
+        "test_locked_image_cannot_be_public_or_replaced",
+        "test_unrelated_unattached_file_preserves_native_owner_permissions"
+      ],
+      "source_patch_sha256": null,
+      "failures": 1,
+      "errors": 0,
+      "old_tables_unchanged": 18,
+      "executed_on": "2026-10-30",
+      "group": "B08 native quality/images: boundaries"
+    },
+    {
+      "local_log": ".development/private/b08-quality-20261030/logs/targeted-private-bytes.log",
+      "sha256": "80e27017c63c2e52a105cc2e7a28dd52fa7131653c1f5b4c864a59619d852398",
+      "tests": 4,
+      "seconds": "36.787",
+      "result": "OK",
+      "method_names": [
+        "test_invalid_public_images_and_direct_fact_attachment_rejected",
+        "test_owner_cannot_delete_image_after_inspection_submit",
+        "test_draft_image_delete_allowed_but_cancelled_history_frozen",
+        "test_locked_image_cannot_be_public_or_replaced"
+      ],
+      "source_patch_sha256": null,
+      "failures": 0,
+      "errors": 0,
+      "old_tables_unchanged": 18,
+      "executed_on": "2026-10-30",
+      "group": "B08 native quality/images: targeted-private-bytes"
+    },
+    {
+      "local_log": ".development/private/b08-quality-20261030/logs/review-red.log",
+      "sha256": "07c44ddcfea2f506db6c00ae7e2d6d8d361a47e02e082ea44c11f694513afe63",
+      "tests": null,
+      "seconds": null,
+      "result": "INTERRUPTED_NO_COMPLETION",
+      "method_names": [
+        "test_native_download_denied_after_quality_role_revoked",
+        "test_child_shares_cannot_bypass_parent_scope"
+      ],
+      "source_patch_sha256": null,
+      "executed_on": "2026-10-30",
+      "group": "B08 native quality/images: review-red"
+    },
+    {
+      "local_log": ".development/private/b08-quality-20261030/logs/review-red-resumed.log",
+      "sha256": "4d8d90bbe53dde614a623cbae42f3904de5f60aaaedeb52bef271009485bf6d6",
+      "tests": 7,
+      "seconds": "61.721",
+      "result": "FAILED (failures=7, errors=2)",
+      "method_names": [
+        "test_native_download_denied_after_quality_role_revoked",
+        "test_child_shares_cannot_bypass_parent_scope",
+        "test_cancel_cannot_change_inspection_data_or_reference",
+        "test_project_draft_with_image_can_be_deleted",
+        "test_native_plan_draft_with_image_can_be_deleted",
+        "test_public_url_cannot_pretend_to_be_private",
+        "test_unattached_alias_cannot_publish_protected_shared_blob"
+      ],
+      "source_patch_sha256": null,
+      "failures": 7,
+      "errors": 2,
+      "old_tables_unchanged": 18,
+      "executed_on": "2026-10-30",
+      "group": "B08 native quality/images: review-red-resumed"
+    },
+    {
+      "local_log": ".development/private/b08-quality-20261030/logs/review-red-extra.log",
+      "sha256": "40ff451a8aed5b705f90bdd499132626fbc3b30eef5b837fd1542cc6e9f305f5",
+      "tests": 2,
+      "seconds": "19.085",
+      "result": "FAILED (failures=6)",
+      "method_names": [
+        "test_cancel_cannot_change_inspection_data_or_reference",
+        "test_file_list_and_shared_blob_download_follow_parent_read"
+      ],
+      "source_patch_sha256": null,
+      "failures": 6,
+      "errors": 0,
+      "old_tables_unchanged": 18,
+      "executed_on": "2026-10-30",
+      "group": "B08 native quality/images: review-red-extra"
+    },
+    {
+      "local_log": ".development/private/b08-quality-20261030/logs/review-green.log",
+      "sha256": "9b26789ddf7cf39709332ba4fde260dea4fd99964f67b06b5d2c3dd4c72f537f",
+      "tests": 19,
+      "seconds": "173.324",
+      "result": "OK",
+      "method_names": [
+        "test_00_native_quality_and_private_png_runnable",
+        "test_cancel_cannot_change_inspection_data_or_reference",
+        "test_child_shares_cannot_bypass_parent_scope",
+        "test_draft_image_delete_allowed_but_cancelled_history_frozen",
+        "test_file_list_and_shared_blob_download_follow_parent_read",
+        "test_invalid_public_images_and_direct_fact_attachment_rejected",
+        "test_locked_image_cannot_be_public_or_replaced",
+        "test_native_download_denied_after_quality_role_revoked",
+        "test_native_plan_draft_with_image_can_be_deleted",
+        "test_native_plan_inspection_keeps_original_linkback",
+        "test_only_one_shared_parent_can_be_read_and_queried",
+        "test_owner_cannot_delete_image_after_inspection_submit",
+        "test_parent_item_and_saved_reference_cannot_be_changed",
+        "test_private_file_owner_loses_read_after_quality_role_revoked",
+        "test_project_draft_with_image_can_be_deleted",
+        "test_public_url_cannot_pretend_to_be_private",
+        "test_saving_inspection_keeps_confirmed_report_row",
+        "test_unattached_alias_cannot_publish_protected_shared_blob",
+        "test_unrelated_unattached_file_preserves_native_owner_permissions"
+      ],
+      "source_patch_sha256": null,
+      "failures": 0,
+      "errors": 0,
+      "old_tables_unchanged": 18,
+      "executed_on": "2026-10-30",
+      "group": "B08 native quality/images: review-green"
+    },
+    {
+      "local_log": ".development/private/b08-quality-20261030/logs/file-api-red.log",
+      "sha256": "e4d6ea36c953fc30b80417e1caf794bff1fb1e15f04e217bbcafcd7eee4e63df",
+      "tests": 2,
+      "seconds": "17.754",
+      "result": "FAILED (failures=2)",
+      "method_names": [
+        "test_zip_download_cannot_bypass_revoked_parent",
+        "test_image_optimization_cannot_rewrite_locked_shared_binary"
+      ],
+      "source_patch_sha256": null,
+      "failures": 2,
+      "errors": 0,
+      "old_tables_unchanged": 18,
+      "executed_on": "2026-10-30",
+      "group": "B08 native quality/images: file-api-red"
+    },
+    {
+      "local_log": ".development/private/b08-quality-20261030/logs/file-api-green.log",
+      "sha256": "075fb37262823cbaf9e207f5dd9b2e3901d66bcac1538cf194090975753fe248",
+      "tests": 4,
+      "seconds": "42.360",
+      "result": "OK",
+      "method_names": [
+        "test_zip_download_cannot_bypass_revoked_parent",
+        "test_image_optimization_cannot_rewrite_locked_shared_binary",
+        "test_unrelated_unattached_file_preserves_native_owner_permissions",
+        "test_file_list_and_shared_blob_download_follow_parent_read"
+      ],
+      "source_patch_sha256": null,
+      "failures": 0,
+      "errors": 0,
+      "old_tables_unchanged": 18,
+      "executed_on": "2026-10-30",
+      "group": "B08 native quality/images: file-api-green"
     }
   ],
   "http_B02_historical": {
@@ -856,5 +1089,5 @@
     "verified_after_all_requests": true,
     "publication_note": "Only assertions/counts retained; runtime business_state and raw responses remain local."
   },
-  "current_patch_sha256": "d46c2fcab206b349a99442b227661539031ef8232b04396d9a1d4d81c2cbc84b"
+  "current_patch_sha256": "fe0fd20526058649f5a250ff53780e2dea0b51b2a7a6ed7fb93e00cbd8dd0343"
 }
