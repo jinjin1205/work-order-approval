@@ -1,5 +1,5 @@
 {
-  "status": "bounded_acceptance_passed_publication_pending",
+  "status": "bounded_acceptance_and_code_readback_passed",
   "product_files_changed": [
     "erpnext/manufacturing/doctype/job_card/job_card.py",
     "erpnext/manufacturing/doctype/job_card/job_card.json",
@@ -29,5 +29,7 @@
     "full G2/G3 and stock reversal",
     "mobile/PDA and field use",
     "Z01/CASE-11 clean delivery"
-  ]
+  ],
+  "code_commit": "48c2f4beb2162c7dde4a155e6e46ec5ca1fed499",
+  "code_ci": "NOT_CONFIGURED/NOT_TRIGGERED; exact SHA, no workflow/run/check/status and no API errors"
 }

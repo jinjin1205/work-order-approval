@@ -100,6 +100,8 @@ for path in paths:
     add(relative, clean, relative, "personal paths/runtime identifiers removed" if original != clean else "unchanged")
 
 safe_json = [
+    "evidence/发布/2026-10-30-48c2f4b-remote.json",
+    "evidence/B09/lifecycle-20261030/code-ci.json",
     "evidence/B09/lifecycle-20261030/source-manifest.json",
     "evidence/B09/lifecycle-20261030/initial-green-source.json",
     "evidence/B09/lifecycle-20261030/test-batches.json",

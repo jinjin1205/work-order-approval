@@ -382,3 +382,5 @@ docker exec xgd-b08-check env/bin/python /b01/b08_correction_rollback.py
 只复测本包7项与此修补影响的原生新建正例，并对浏览器新子表元数据做增量复制核验。之前真实队列及27表保持证据不变，队列源码/删除链不变，不重跑。
 
 子表复制实际失败进一步证实completed_qty无默认导致Python原生复制后insert出现None累加；同一Job Card Operation JSON已有数量字段补原生default=0，允许合法新计划，原实际非零/完成状态仍在新建边界拒绝。
+
+本包有限收口：最终7新＋1原生正例分批通过，中文PC原生复制保存、子表增量复制、真实11项队列及27表保持通过；审查两项已先红后绿。代码48c2f4b已公开并新克隆回读一致；源码/命令/失败/CI限制见[原记录](../B09/lifecycle-20261030/run-record.md)。整卡及库存逆向/G2/G3不关闭。

@@ -2,7 +2,7 @@
 
 # B09 作业卡复制与真实批量队列（2026-10-30）
 
-本包限定实现及验收已通过，公开推送/回读尚待完成。原卡与R07为唯一范围；OpenSpec只引用，不复制清单。
+本包限定实现、验收及代码公开回读已完成；最终交接文档另行提交。原卡与R07为唯一范围；OpenSpec只引用，不复制清单。
 
 - 基线公开main `854de6eec0eb294fb82626713ab3194390e1e2ab`；维护ERPNext `4e0dce9`，Frappe15.124.0；原累计补丁`fe0fd20526058649f5a250ff53780e2dea0b51b2a7a6ed7fb93e00cbd8dd0343`。
 - 复用：B05父工单复制/历史父删，B08历史保护、I03～I06和质检图片，不重跑。
@@ -42,7 +42,7 @@ docker exec -w /home/frappe/frappe-bench xgd-b08-check env/bin/python /b01/b09_l
 docker exec -w /home/frappe/frappe-bench xgd-b08-check env/bin/python /b01/b09_lifecycle_fixture.py audit
 ```
 
-独立最终审查及白名单公开推送待完成。G2/G3整体验收、库存逆向、跨工单/工作站/配置并发、手机/现场和Z01未验；原后台b19不恢复。
+独立审查修复及白名单代码推送已完成，见本节末的实际回执。G2/G3整体验收、库存逆向、跨工单/工作站/配置并发、手机/现场和Z01未验；原后台b19不恢复。
 
 ## 独立审查修复与边界裁定
 
@@ -65,3 +65,11 @@ docker exec -w /home/frappe/frappe-bench xgd-b08-check env/bin/python /b01/b09_l
 `openspec validate b08-followup-20261028 --strict`实际返回issues：skip_specs明确接受零delta，但引用模式tasks没有复刻checkbox，报告0 tasks warning。严格检查未获无警告通过；按用户要求保留原34卡为唯一任务表，不为消除CLI警告另建清单或归档整卡。
 
 公开准备检查：export_public.py沿文件白名单生成614文件、33源码；check_public.py检查当前/旧合成凭据、运行数据和个人路径，命中均0，所有Python可解析。旧76批测试回执逐项保持，本包追加9批（含失败），不拼成累计全套通过。
+
+## 代码保存与交接
+
+代码[`48c2f4b`](https://github.com/jinjin1205/work-order-approval/commit/48c2f4beb2162c7dde4a155e6e46ec5ca1fed499)已推送main。`python3 .publication/verify_b08.py`新克隆回读614跟踪文件/613内容哈希、33份源码完全一致，缺失/多余/哈希差异均0，见[回执](../../发布/2026-10-30-48c2f4b-remote.json)。`python3 .publication/check_ci_pause.py 48c2f4beb2162c7dde4a155e6e46ec5ca1fed499`核精确SHA全部事件：0工作流/运行/check/status、无API错误，见[CI查询](code-ci.json)；未配置/未触发，不是CI通过，无运行链接，[Actions入口](https://github.com/jinjin1205/work-order-approval/actions)。
+
+下一步从原B10真实领料提交/取消链继续：先核已验单位子项和B07/B19依赖，再补R07权限/先锁工单/原生库存调用链；随后B11/B12。B09整卡和G2/G3仍部分，等待真实下游逆向/并发证据，不重跑本包已验项。最终文档提交及其CI只在最终回复报告，不回填循环提交。
+
+公开仓库保存白名单源码/任务卡/脱敏证据；维护codex/xgd-maintenance仍以固定上游为HEAD，33份累计工作区差异已由源码锁/补丁公开归档，未向ERPNext上游推送。私有凭据、原始运行数据/图片/日志及本地验证克隆保留在本机，不属于公开交付遗漏。后台b19本轮未操作；沿原PAUSED交接状态，未重新读取实时自动化状态。

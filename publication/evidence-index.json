@@ -3883,7 +3883,7 @@
   },
   {
     "path": "evidence/B09/lifecycle-20261030/acceptance-summary.json",
-    "original_sha256": "d15c02e4bd3794f61c1c1f76de5205f695d4d9245fb8963f939888cc55dccef7",
+    "original_sha256": "758551d4fd6c92629f15cc054c43b20b0929b43d73caa77956f1778f4942488f",
     "published": true,
     "reason": "public copy"
   },
@@ -3908,6 +3908,12 @@
   {
     "path": "evidence/B09/lifecycle-20261030/checkpoint.json",
     "original_sha256": "e91ac04e9418cc85ba877b4cebbc34b1490a1432bc336f34ea9264f0fde44ae2",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B09/lifecycle-20261030/code-ci.json",
+    "original_sha256": "5d5d8cc233e1cb4dc82a3c2ef840a93592248c219da0648df4bbecbcf0bcb193",
     "published": true,
     "reason": "public copy"
   },
@@ -3949,7 +3955,7 @@
   },
   {
     "path": "evidence/B09/lifecycle-20261030/run-record.md",
-    "original_sha256": "77b373192a83f1b3b16b9ab624226b1c533620abc2060fbe54e777b8890fcfe1",
+    "original_sha256": "a1cac582680b1e7a9d7b989a5079c50b288b9b9c1de6e3eac36d6bc3c960fa32",
     "published": true,
     "reason": "public copy"
   },
@@ -6421,7 +6427,7 @@
   },
   {
     "path": "evidence/R07/report-concurrency.md",
-    "original_sha256": "902c4bc157c454ce0106c476b92291d86d2359fdea6858839ddc2b2655126815",
+    "original_sha256": "a17eda56c2fa1ebbc050f9e0027ae204dff1b370fb74725ade38cc831bfb75eb",
     "published": true,
     "reason": "public copy"
   },
@@ -6630,6 +6636,12 @@
     "reason": "public copy"
   },
   {
+    "path": "evidence/发布/2026-10-30-48c2f4b-remote.json",
+    "original_sha256": "67dde7ab89da1424f4647c1cddd4c4d1afa8c3db3677c2b1e79232093468813b",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
     "path": "evidence/发布/2026-10-30-6d4dd00-remote.json",
     "original_sha256": "e79e593b49efbe5d3ba10b955d46e0293c3743910b59294ed0c4647a688109bb",
     "published": true,
@@ -6733,7 +6745,7 @@
   },
   {
     "path": "evidence/维护/2026-10-28-暂停与保存.md",
-    "original_sha256": "03b3933e0a7321ce98e121a7eb6c52675ce3ecf6d8ea48aff4fd6ea004145861",
+    "original_sha256": "0a2dc57ce06b2a0867a2d2bfcce227903b7a32520b84e49fc0c55e2a5d71393b",
     "published": true,
     "reason": "public copy"
   },
