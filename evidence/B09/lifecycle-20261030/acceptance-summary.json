@@ -1,0 +1,33 @@
+{
+  "status": "bounded_acceptance_passed_publication_pending",
+  "product_files_changed": [
+    "erpnext/manufacturing/doctype/job_card/job_card.py",
+    "erpnext/manufacturing/doctype/job_card/job_card.json",
+    "erpnext/manufacturing/doctype/job_card/test_job_card.py",
+    "erpnext/manufacturing/doctype/job_card_operation/job_card_operation.json",
+    "erpnext/manufacturing/doctype/job_card_time_log/job_card_time_log.json"
+  ],
+  "new_fields": 0,
+  "new_doctypes": 0,
+  "runtime_files": 41,
+  "new_methods": 7,
+  "affected_native_method": 1,
+  "last_affected_tests": 2,
+  "last_affected_seconds": "23.024",
+  "real_native_menu_duplicate_save": true,
+  "child_browser_check": "constructed input to real native client copy; no save; metadata loaded after reload",
+  "queue_targets": 11,
+  "deleted_new_blank_drafts": 10,
+  "protected_original_returned": true,
+  "old_tables_unchanged": 27,
+  "inventory_new": 0,
+  "original_correction_time_quality_file_binary_unchanged": true,
+  "unverified": [
+    "nonempty Quality Inspection Reading",
+    "native asynchronous dynamic-link cleanup jobs",
+    "long-lived Worker polling and Socket.IO notification",
+    "full G2/G3 and stock reversal",
+    "mobile/PDA and field use",
+    "Z01/CASE-11 clean delivery"
+  ]
+}

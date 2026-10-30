@@ -161,7 +161,8 @@
    "fieldname": "time_logs",
    "fieldtype": "Table",
    "label": "Time Logs",
-   "options": "Job Card Time Log"
+   "options": "Job Card Time Log",
+   "no_copy": 1
   },
   {
    "fieldname": "section_break_13",
@@ -175,7 +176,8 @@
    "label": "Total Completed Qty",
    "non_negative": 1,
    "read_only": 1,
-   "precision": "6"
+   "precision": "6",
+   "no_copy": 1
   },
   {
    "fieldname": "column_break_15",
@@ -185,7 +187,8 @@
    "fieldname": "total_time_in_mins",
    "fieldtype": "Float",
    "label": "Total Time in Mins",
-   "read_only": 1
+   "read_only": 1,
+   "no_copy": 1
   },
   {
    "fieldname": "section_break_8",
@@ -469,7 +472,8 @@
    "fieldtype": "Float",
    "label": "Process Loss Qty",
    "read_only": 1,
-   "precision": "6"
+   "precision": "6",
+   "no_copy": 1
   },
   {
    "fieldname": "connections_tab",
@@ -506,13 +510,15 @@
    "fieldname": "actual_start_date",
    "fieldtype": "Datetime",
    "label": "Actual Start Date",
-   "read_only": 1
+   "read_only": 1,
+   "no_copy": 1
   },
   {
    "fieldname": "actual_end_date",
    "fieldtype": "Datetime",
    "label": "Actual End Date",
-   "read_only": 1
+   "read_only": 1,
+   "no_copy": 1
   },
   {
    "fieldname": "quality_inspection_section",

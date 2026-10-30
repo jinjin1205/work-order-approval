@@ -13,7 +13,7 @@ os.umask(0o077)
 os.chdir("sites")
 p = Path("/tmp/b08-private")
 case = sys.argv[1] if len(sys.argv) > 1 else "b06-tasks"
-assert case in ("b06-tasks", "b06-retention", "b08-navigation", "b08-quality")
+assert case in ("b06-tasks", "b06-retention", "b08-navigation", "b08-quality", "b09-lifecycle")
 access, baseline = p / (case + "-ui.json"), p / (case + "-before.json")
 assert not access.exists() and not baseline.exists(), "Resume existing B06 fixture; do not recreate"
 source = json.loads((p / "fixture.json").read_text())
@@ -25,8 +25,10 @@ try:
     assert source["site"] == "xgd-b08-http.localhost" and frappe.conf.b08_http_only
     frappe.set_user("Administrator")
     tables = ["Work Order", "Work Order Item", "Work Order Operation", "Job Card", "Job Card Time Log", "Stock Entry", "Stock Entry Detail", "Stock Ledger Entry", "Workflow Action", "Version", "Comment", "BOM", "BOM Item", "BOM Operation", "Item", "UOM", "User", "Has Role", "Role", "Custom DocPerm", "User Permission", "Employee", "Workstation"]
-    if case == "b08-quality":
+    if case in ("b08-quality", "b09-lifecycle"):
         tables += ["Quality Inspection", "Quality Inspection Reading", "File"]
+    if case == "b09-lifecycle":
+        tables += ["DocShare"]
     before = {}
     for dt in tables:
         columns = sorted(frappe.db.get_table_columns(dt))

@@ -1,5 +1,10 @@
 # Tasks
 
+## 2026-10-30 B09 lifecycle continuation
+
+当前执行原B09作业卡复制/真实批量队列包；唯一方案见[R07本包绑定](../../../evidence/R07/report-concurrency.md#2026-10-30-b09作业卡复制与真实批量队列绑定)，唯一勾选见[原B09](../../../docs/任务卡/02-生产与物料闭环.md#b09-lifecycle-20261030)。沿既有活动引用模式，不复制清单；本包限定验收通过，7新＋1原生正例分批、真实复制/11项队列与27表保持见evidence/B09/lifecycle-20261030/run-record.md；公开回读待完成。既有B08导航/质检、I03～I06不重开，整卡不归档。
+
+
 ## 2026-10-30 Native inspection and images
 
 用户已确认不新增自定义字段，当前转原生报检/图片包。唯一范围/方案/命令见[R07](../../../evidence/R07/inspection-attachments.md)，唯一进度见[原B08](../../../docs/任务卡/02-生产与物料闭环.md#b08-quality-20261030)；本包限定实现/验收通过，21方法分批、中文PC及18项HTTP、撤权403和旧26表/原报工保持见[本包证据](../../../evidence/B08/quality-20261030/run-record.md)；代码`6d4dd00`已推送main并新克隆回读591文件/590内容哈希、31源码一致，本包保存项已关闭。精确代码SHA无workflow/运行/check/status，未配置/未触发而非CI通过；整卡不归档。下文已完成导航及更早恢复保留，不重开。

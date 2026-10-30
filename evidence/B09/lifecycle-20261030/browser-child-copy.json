@@ -1,0 +1,22 @@
+{
+  "scope": "Real browser native copy function with constructed child input; no save or POST; supplements earlier native menu/save acceptance",
+  "no_copy": {
+    "Job Card Operation": {
+      "completed_qty": 1,
+      "completed_time": 1,
+      "status": 1
+    },
+    "Job Card Time Log": {
+      "from_time": 1,
+      "to_time": 1,
+      "time_in_mins": 1,
+      "completed_qty": 1
+    }
+  },
+  "sub_operation_preserved": true,
+  "employee_preserved": true,
+  "schedule_preserved": true,
+  "actual_fields_cleared": true,
+  "status": "Pending",
+  "original_form_not_modified": true
+}

@@ -1,0 +1,27 @@
+{
+  "docstatus": 0,
+  "new": true,
+  "actual": {
+    "report_request_id": null,
+    "time_logs": [],
+    "total_completed_qty": 0,
+    "process_loss_qty": null,
+    "total_time_in_mins": null,
+    "actual_start_date": null,
+    "actual_end_date": null,
+    "job_started": 0,
+    "started_time": null,
+    "current_time": null
+  },
+  "no_copy": {
+    "time_logs": 1,
+    "total_completed_qty": 1,
+    "process_loss_qty": 1,
+    "total_time_in_mins": 1,
+    "actual_start_date": 1,
+    "actual_end_date": 1,
+    "job_started": 1,
+    "started_time": 1,
+    "current_time": 1
+  }
+}

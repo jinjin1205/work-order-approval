@@ -155,8 +155,20 @@ class JobCard(Document):
 			frappe.throw("报工事实只能通过确认或关联更正保存，原记录不能改写", frappe.PermissionError)
 		if not trusted and not self.get("report_request_id") and self.work_order:
 			order = frappe.get_doc("Work Order", self.work_order)
-			if order.get("approval_requested_by") and not frappe.has_permission("Work Order", "write", doc=order):
-				frappe.throw("操作工不能修改计划卡，请通过逐笔报工确认实际数量", frappe.PermissionError)
+			if order.get("approval_requested_by"):
+				if self.is_new() and (
+					any(self.get(field) for field in (
+						"time_logs", "total_completed_qty", "process_loss_qty", "total_time_in_mins",
+						"actual_start_date", "actual_end_date", "job_started", "started_time", "current_time",
+					))
+					or any(row.completed_qty or row.completed_time or row.status not in (None, "", "Pending")
+						for row in self.sub_operations)
+					or any(row.from_time or row.to_time or row.time_in_mins or row.completed_qty
+						for row in self.employee)
+				):
+					frappe.throw("新建计划卡不能携带实际报工或计时，请通过逐笔报工确认", frappe.PermissionError)
+				if not frappe.has_permission("Work Order", "write", doc=order):
+					frappe.throw("操作工不能修改计划卡，请通过逐笔报工确认实际数量", frappe.PermissionError)
 		for row in self.get("time_logs") + self.get("employee"):
 			if row.name:
 				parent = frappe.db.get_value("Job Card Time Log", row.name, "parent")

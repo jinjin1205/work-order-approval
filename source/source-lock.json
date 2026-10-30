@@ -4,7 +4,7 @@
   "version": "15.124.1",
   "frappe_version": "15.124.0",
   "frappe_commit": "f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab",
-  "patch_sha256": "fe0fd20526058649f5a250ff53780e2dea0b51b2a7a6ed7fb93e00cbd8dd0343",
+  "patch_sha256": "b87b2f80a7fd3ad8aa0956620ba02fdbbeb51834bf54d925f0ce98363510432f",
   "files": {
     "erpnext/hooks.py": {
       "base_sha256": "e9d55d583820c5411a2133754362e2bf0b8f24ca48bf236ae27460af7fdf66bc",
@@ -36,15 +36,23 @@
     },
     "erpnext/manufacturing/doctype/job_card/job_card.json": {
       "base_sha256": "0a9c82618accc7f0d7aeb81aa056680e7810a637c2494ecaee28484337efa379",
-      "modified_sha256": "5dc807fb2a4d6ce76d171d0314cc70848d6ce9c190136899c9aeff92786f3565"
+      "modified_sha256": "aa81c891dfd6e6d73ccf5a0caaacc759b6246c0ebc4baf3f0ac695c06db31c65"
     },
     "erpnext/manufacturing/doctype/job_card/job_card.py": {
       "base_sha256": "5d7f77cea9046aaca47ae81e19ebb9766a78a06823dfdf6d392dbab869ba9779",
-      "modified_sha256": "f23a044162833122bbbfb0a328c2907bd5f39a7e7441d503f243c0dbb4195329"
+      "modified_sha256": "f105e8b1809c7c9139d7b1019af72b568011ec8a064ca7363cf75b281e6c10d1"
     },
     "erpnext/manufacturing/doctype/job_card/test_job_card.py": {
       "base_sha256": "2947cbe40ebc044332a8a5802568c2ee1d782a8609cb6e35848b9a844dd84020",
-      "modified_sha256": "41cc800e0bf89c09dc59013940f9f50a352f555046c51bc9cefe689f98ea0946"
+      "modified_sha256": "46d603b650bd60a813d04437d0ede7abfa560fe925e8c2903cd8ca4de2d2fc46"
+    },
+    "erpnext/manufacturing/doctype/job_card_operation/job_card_operation.json": {
+      "base_sha256": "d0c76015f5c29c4646481d83ee5c38944c6a5c76dc8e1e7780105faec6537e19",
+      "modified_sha256": "fcae365faab6b315e679fbd2641ff3f267a85903910fde94665c4ff70ca16e6f"
+    },
+    "erpnext/manufacturing/doctype/job_card_time_log/job_card_time_log.json": {
+      "base_sha256": "0abdd938f29a109ef92e5a83865217d249e9b15a15294f22c96463af14e994cb",
+      "modified_sha256": "372c2eaf066ec60fb875860a3a49292adff02d422302f9ae3ab83d877ecf1b12"
     },
     "erpnext/manufacturing/doctype/job_card_time_log/job_card_time_log.py": {
       "base_sha256": "1466e3819e8598968c8af885bd31a4c3bf5e1a1c7503975f740bfd20fc50ebcc",

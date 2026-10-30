@@ -354,3 +354,31 @@ docker exec xgd-b08-check env/bin/python /b01/b08_correction_rollback.py
 ## 2026-10-30 本包实际收口
 
 原3文件及实测BOM提示修补新增1文件均完成；4新＋2受影响原方法分批通过，普通中文PC和23旧表保持通过，2笔报工/0库存。独立审查的对话框遗留按钮、异步重试父单检查2项已关闭；额外可选BOM权限探测修补保留硬权限。见[实际记录](../B08/navigation-20261030/run-record.md)。失败和工具限制保留，完整门槛/现场/图片配置未扩展。
+# 2026-10-30 B09作业卡复制与真实批量队列绑定
+
+用户已授权按原B09下一包继续。此节与原B09当前清单为同一方案，不另建任务。基线main `854de6eec0eb294fb82626713ab3194390e1e2ab`已fetch一致；维护`codex/xgd-maintenance`、ERPNext15.124.1 `4e0dce9`/Frappe15.124.0，39项现有源清单一致。
+
+**差集：**B05 entries包已验父工单复制0任务/0用料/无实绩、审批历史父删拒绝；B08已验提交/取消原卡、时间行与工序行保护、I03～I06及质检/图片。上述条件未变直接复用，不重跑。不把原B09旧“下一包未执行”视为这些子项全未验。
+
+**本包做/不做/通过：**仅核Job Card原生复制（含no_copy及新建保存边界）与reportview超过10条进入原生RQ队列的删除；保留原卡、时间行、原生质检/私图及更正链，合法无事实计划草稿正常，失败无事实残留。库存逆向、跨工单/工作站/配置完整并发、手机/现场和Z01仍不验；不增加字段、DocType、通用防重/拦截平台或修改Frappe。五底座结论沿R03～R07，仍复用同一ERPNext；不重选、不另装系统。
+
+**源码依据/允许产品文件（三个原文件，失败才改）：**
+
+1. `erpnext/manufacturing/doctype/job_card/job_card.json`：核原生实际字段no_copy，不新增字段，不能丢计划/员工安排。
+2. 同目录`job_card.py:validate_report_record/before_validate/on_trash`：新建信任边界与持久化历史门槛复用原入口；合法确认/更正的服务器上下文不变，非项目原生卡不扩保护。
+3. 同目录`test_job_card.py`：组合原TestProductionReportConfirmation/原生质检fixture，新增当前未覆盖方法；先P0，再具体反例和必要正常/失败路径，不把无权限或已超计划量导致拒绝当复制历史保护通过。
+
+原生`frappe.model.copy_doc`（客户端create_new.js）尊重no_copy，服务端`frappe.copy_doc(...,ignore_no_copy=False)`可核等价字段选择；实际页面复制需对应Playwright验证，API/服务器不能冒充页面通过。`frappe.desk.reportview.delete_items`对>10条调用`frappe.enqueue(delete_bulk)`，job携带site/user；`delete_bulk`逐条commit/rollback并可能对失败项再试，不能放在整体回滚runner里假定无提交。后台验收使用专用合成站新对象、真实Redis入队，按保存的唯一job ID取出并用原生RQ SimpleWorker执行该job，不消费其他排队任务，不启动Frappe调度器/后台周期；这不证明长期worker监听或完整G3。
+
+**执行与证据：**`.development/checks/b06_tasks_tests.py <TestProductionReportLifecycle明确方法>`继续原隔离回滚站；必要时将该类纳入QI/Reading/File旧表保持。`.development/checks/b09_lifecycle_*`仅负责新合成fixture、原生复制/队列和前后数据核对，凭据/原始行/文件只在私有目录。原队列/旧数据不得清空；成功删除仅限本包新建、名单明确且无实绩的草稿。同步后核当前源码；有表单/复制行为改动时清Job Card缓存并用Playwright CLI原生页面验收。每批版本、命令、真实失败/输出/限制记`evidence/B09/lifecycle-20261030/`；代码白名单推送、远端回读及本提交CI分别记录。原卡子包满足才关闭，整卡和G2/G3不提前关闭。
+
+
+## 同包独立审查触发的子表补绑
+
+已实测：子工序复制/新建2项16.995秒均失败；员工安排夹带实际时间的复制/新建2项18.404秒均失败。`validate_time_logs`会累加子工序完成数；原生重叠查询关联Job Card Time Log时不按parentfield排除employee行，不能只保护顶层time_logs。
+
+因此本包仅新增两个**已有**元数据文件的允许改动：`erpnext/manufacturing/doctype/job_card_operation/job_card_operation.json`的completed_qty/completed_time/status；`erpnext/manufacturing/doctype/job_card_time_log/job_card_time_log.json`的from_time/to_time/time_in_mins/completed_qty，添加原生no_copy，保留sub_operation、employee和scheduled_time_logs。产品白名单共5个原文件，不新增字段/DocType。原Job Card新建guard只补这两个实绩载体，允许空的/Pending子工序定义和仅员工安排；已有计划编辑、原生计时、可信确认更正及非项目业务不扩保护。
+
+只复测本包7项与此修补影响的原生新建正例，并对浏览器新子表元数据做增量复制核验。之前真实队列及27表保持证据不变，队列源码/删除链不变，不重跑。
+
+子表复制实际失败进一步证实completed_qty无默认导致Python原生复制后insert出现None累加；同一Job Card Operation JSON已有数量字段补原生default=0，允许合法新计划，原实际非零/完成状态仍在新建边界拒绝。

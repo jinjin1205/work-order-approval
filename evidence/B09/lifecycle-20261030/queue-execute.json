@@ -1,0 +1,8 @@
+{
+  "specified_job_worker_finished": true,
+  "remaining_failed_targets": 1,
+  "protected_report_returned": true,
+  "unrelated_queue_entries_preserved": true,
+  "scheduler_started": false,
+  "continuous_worker_polling_tested": false
+}

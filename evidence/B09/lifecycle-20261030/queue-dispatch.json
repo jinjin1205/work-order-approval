@@ -1,0 +1,7 @@
+{
+  "http_status": 200,
+  "real_rq_enqueue": true,
+  "captured_user_and_site_match": true,
+  "targets_before_worker": 11,
+  "acknowledgement_not_completion": true
+}

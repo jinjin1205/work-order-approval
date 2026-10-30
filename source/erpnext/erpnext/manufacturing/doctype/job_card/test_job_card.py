@@ -2817,3 +2817,114 @@ class TestProductionReportHistoryPaths(FrappeTestCase):
 		with self.assertRaisesRegex(frappe.PermissionError, "工序已有报工历史"):
 			save(row.as_dict())
 		self.assertEqual(self.snapshot(draft.name), before)
+
+
+class TestProductionReportLifecycle(FrappeTestCase):
+	"""B09: native copy selection and the new-plan trust boundary only."""
+
+	def setUp(self):
+		self.r = TestProductionReportConfirmation()
+		self.addCleanup(self.r.doCleanups)
+		self.r.setUp()
+		frappe.set_user(self.r.approval.users["operator"])
+		self.plan = frappe.get_doc("Job Card", {"work_order": self.r.order.name,
+			"operation_id": self.r.operation_id, "report_request_id": ["is", "not set"]})
+		self.plan.for_quantity = 1
+		self.plan.save()
+		frappe.set_user(self.r.user)
+		self.report = frappe.get_doc("Job Card", self.r.report(1, 1)["name"])
+
+	def stored_report(self):
+		return frappe.as_json(frappe.get_doc("Job Card", self.report.name).as_dict())
+
+	def test_00_empty_plan_copy_is_a_valid_native_draft(self):
+		before = self.stored_report()
+		self.plan.set("employee", [{"employee": self.r.employee}])
+		self.plan.set("sub_operations", [{"sub_operation": self.plan.operation, "status": "Pending"}])
+		frappe.set_user(self.r.approval.users["operator"])
+		self.assertTrue(self.plan.has_permission("create"))
+		self.assertTrue(frappe.has_permission("Work Order", "write", doc=self.r.order))
+		doc = frappe.copy_doc(self.plan, ignore_no_copy=False)
+		doc.docstatus = 0
+		doc.insert()
+		self.assertEqual((doc.docstatus, doc.for_quantity, doc.total_completed_qty, doc.process_loss_qty), (0, 1, 0, 0))
+		self.assertEqual(doc.employee[0].employee, self.r.employee)
+		self.assertEqual((doc.sub_operations[0].sub_operation, doc.sub_operations[0].status), (self.plan.operation, "Pending"))
+		self.assertFalse(doc.time_logs or doc.report_request_id)
+		self.assertEqual(self.stored_report(), before)
+		self.assertNotIn("System Manager", frappe.get_roles())
+
+	def test_native_copy_does_not_carry_report_execution_fields(self):
+		before = self.stored_report()
+		copy = frappe.copy_doc(self.report, ignore_no_copy=False)
+		self.assertFalse(copy.report_request_id)
+		with self.subTest(field="time_logs"):
+			self.assertEqual(copy.time_logs, [])
+		for field in ("total_completed_qty", "process_loss_qty", "total_time_in_mins",
+			"actual_start_date", "actual_end_date", "job_started", "started_time", "current_time"):
+			with self.subTest(field=field):
+				self.assertFalse(copy.get(field))
+		self.assertEqual(self.stored_report(), before)
+
+	def test_new_project_plan_cannot_insert_execution_payload(self):
+		from frappe.client import insert
+		before = self.stored_report()
+		frappe.set_user(self.r.approval.users["operator"])
+		doc = frappe.copy_doc(self.plan, ignore_no_copy=False)
+		doc.docstatus = 0
+		doc.set("time_logs", [{"employee": self.r.employee, "from_time": "2026-10-21 09:00:00",
+			"to_time": "2026-10-21 10:00:00", "completed_qty": 1}])
+		self.assertTrue(doc.has_permission("create"))
+		count = frappe.db.count("Job Card", {"work_order": self.r.order.name})
+		with self.assertRaisesRegex(frappe.PermissionError, "新建计划卡不能携带实际"):
+			insert(doc.as_dict())
+		self.assertEqual(frappe.db.count("Job Card", {"work_order": self.r.order.name}), count)
+		self.assertEqual(self.stored_report(), before)
+
+	def test_sub_operation_copy_preserves_plan_without_execution(self):
+		self.report.set("sub_operations", [{"sub_operation": self.plan.operation,
+			"completed_qty": 1, "completed_time": "60", "status": "Complete"}])
+		self.report.set("employee", [{"employee": self.r.employee}])
+		self.report.set("scheduled_time_logs", [{"from_time": "2026-11-01 09:00:00", "to_time": "2026-11-01 10:00:00", "time_in_mins": 60}])
+		copy = frappe.copy_doc(self.report, ignore_no_copy=False)
+		self.assertEqual(len(copy.sub_operations), 1)
+		self.assertEqual(copy.sub_operations[0].sub_operation, self.plan.operation)
+		self.assertEqual(copy.employee[0].employee, self.r.employee)
+		self.assertEqual(str(copy.scheduled_time_logs[0].from_time), "2026-11-01 09:00:00")
+		self.assertFalse(copy.sub_operations[0].completed_qty or copy.sub_operations[0].completed_time)
+		self.assertIn(copy.sub_operations[0].status, (None, "Pending"))
+
+	def test_new_plan_cannot_insert_sub_operation_execution(self):
+		from frappe.client import insert
+		before = self.stored_report()
+		frappe.set_user(self.r.approval.users["operator"])
+		doc = frappe.copy_doc(self.plan, ignore_no_copy=False)
+		doc.docstatus = 0
+		doc.set("sub_operations", [{"sub_operation": self.plan.operation,
+			"completed_qty": 1, "completed_time": "60", "status": "Complete"}])
+		count = frappe.db.count("Job Card", {"work_order": self.r.order.name})
+		with self.assertRaisesRegex(frappe.PermissionError, "新建计划卡不能携带实际"):
+			insert(doc.as_dict())
+		self.assertEqual(frappe.db.count("Job Card", {"work_order": self.r.order.name}), count)
+		self.assertEqual(self.stored_report(), before)
+
+	def test_employee_copy_keeps_assignment_without_execution(self):
+		self.plan.set("employee", [{"employee": self.r.employee, "from_time": "2026-10-21 09:00:00",
+			"to_time": "2026-10-21 10:00:00", "time_in_mins": 60, "completed_qty": 1}])
+		copy = frappe.copy_doc(self.plan, ignore_no_copy=False)
+		self.assertEqual(copy.employee[0].employee, self.r.employee)
+		self.assertFalse(any(copy.employee[0].get(k) for k in ("from_time", "to_time", "time_in_mins", "completed_qty")))
+
+	def test_new_plan_cannot_insert_execution_in_employee_assignment(self):
+		from frappe.client import insert
+		before = self.stored_report()
+		frappe.set_user(self.r.approval.users["operator"])
+		doc = frappe.copy_doc(self.plan, ignore_no_copy=False)
+		doc.docstatus = 0
+		doc.set("employee", [{"employee": self.r.employee, "from_time": "2026-10-21 09:00:00",
+			"to_time": "2026-10-21 10:00:00", "time_in_mins": 60, "completed_qty": 1}])
+		count = frappe.db.count("Job Card", {"work_order": self.r.order.name})
+		with self.assertRaisesRegex(frappe.PermissionError, "新建计划卡不能携带实际"):
+			insert(doc.as_dict())
+		self.assertEqual(frappe.db.count("Job Card", {"work_order": self.r.order.name}), count)
+		self.assertEqual(self.stored_report(), before)
