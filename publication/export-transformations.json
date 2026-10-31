@@ -453,7 +453,7 @@
     "source": "docs/任务卡/02-生产与物料闭环.md",
     "public_path": "docs/任务卡/02-生产与物料闭环.md",
     "treatment": "personal paths/runtime identifiers removed",
-    "source_sha256": "9a0594981e1e8ca581442f0d98c7560c30e5d2077dcd60d6158b1158f9681c8e"
+    "source_sha256": "121af2a2dde987274e257bf42251c8010f5c96c437a993e547e82a096345e7f5"
   },
   {
     "source": "docs/任务卡/03-AI与交付.md",
@@ -471,7 +471,7 @@
     "source": "docs/开发TODO.md",
     "public_path": "docs/开发TODO.md",
     "treatment": "unchanged",
-    "source_sha256": "8d815d56f0b45a5a149b577cb0dcf997c8b6d703cd2fd0336c26803c75fdf78f"
+    "source_sha256": "6dd5f0bd93f6cb6220a77c16a71d13066f3f851a9e2d1ed6d611a30cb6fbe4cf"
   },
   {
     "source": "docs/验收样例.md",
@@ -663,7 +663,7 @@
     "source": "evidence/B10/issue-20261031/run-record.md",
     "public_path": "evidence/B10/issue-20261031/run-record.md",
     "treatment": "unchanged",
-    "source_sha256": "a1b767182e912e36897a7b8c5e3475e5983226b7319f5690ec5982c360934906"
+    "source_sha256": "5ae5cabd5fc3844b311bb422ec1570d7b49d0d48e77734b80c30f3de553ca817"
   },
   {
     "source": "evidence/B10/run-record.md",
@@ -921,7 +921,7 @@
     "source": "evidence/R07/quantity-return.md",
     "public_path": "evidence/R07/quantity-return.md",
     "treatment": "unchanged",
-    "source_sha256": "e626ef649b20b311103c8117df2038acbbde41ab4e9b36423d55ea053b59565a"
+    "source_sha256": "58a6da5dda570f018f69b3044f8ca8eaeeeeff3aefde9f2ceb79f0663fbb75a9"
   },
   {
     "source": "evidence/R07/report-concurrency.md",
@@ -951,7 +951,7 @@
     "source": "evidence/维护/2026-10-28-暂停与保存.md",
     "public_path": "evidence/维护/2026-10-28-暂停与保存.md",
     "treatment": "unchanged",
-    "source_sha256": "0a2dc57ce06b2a0867a2d2bfcce227903b7a32520b84e49fc0c55e2a5d71393b"
+    "source_sha256": "e2bb3deee233fd9820488b3491c9e06b72ef6d9097b1d472921870ed8f01d016"
   },
   {
     "source": "evidence/维护/2026-10-29-进度与规划核对.md",
@@ -969,19 +969,19 @@
     "source": "openspec/changes/b08-followup-20261028/design.md",
     "public_path": "openspec/changes/b08-followup-20261028/design.md",
     "treatment": "unchanged",
-    "source_sha256": "b37f7a650db9bff0a420440f7e219ade10fe96e52faaf0556938c13a18e9855c"
+    "source_sha256": "802b44d339794b6d33d6b12e0011228e1b389ba009a58538cec5d43aaf81e146"
   },
   {
     "source": "openspec/changes/b08-followup-20261028/proposal.md",
     "public_path": "openspec/changes/b08-followup-20261028/proposal.md",
     "treatment": "unchanged",
-    "source_sha256": "2be9db65fd11f92009f2ca36907eab7070c7ec2523b26938d0c9bc67dab0780b"
+    "source_sha256": "cd9e98ebcd026457452ea317c9a42d393ab7c9529507e2c0b302432cc96f3fa6"
   },
   {
     "source": "openspec/changes/b08-followup-20261028/tasks.md",
     "public_path": "openspec/changes/b08-followup-20261028/tasks.md",
     "treatment": "unchanged",
-    "source_sha256": "929b3d41ef701002d192457b699cbac2d8d2f587f4187bcb41f1ffd94b5ea9e0"
+    "source_sha256": "dcab420670bf42327236c870dd4101dac5a8b3291527ce12ca7c5be715708ac1"
   },
   {
     "source": "openspec/changes/b08-followup-20261028/.openspec.yaml",
@@ -1323,7 +1323,7 @@
     "source": ".publication/export_public.py",
     "public_path": ".publication/export_public.py",
     "treatment": "unchanged",
-    "source_sha256": "988b5cb2972f3145e90566cbb9268df3661ad38ac9d562507c4adec238d8c3e7"
+    "source_sha256": "0e54d8a118edc5688f3b1393a007d54dc4c3d6749b3060e7473ca60fa266d3ef"
   },
   {
     "source": ".publication/check_public.py",
@@ -2284,6 +2284,18 @@
     "public_path": "evidence/R05/r02-probe-attempt5.py",
     "treatment": "unchanged",
     "source_sha256": "bebd418f53e027db69fc9888dfc4bf01fc162aab71394832e1e2572c6d9cd774"
+  },
+  {
+    "source": "evidence/发布/2026-10-31-5ffe980-remote.json",
+    "public_path": "evidence/发布/2026-10-31-5ffe980-remote.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "2ef5d9465a8d0885ef216749362eed318442ab9335476f22c90e0281e2b81bd1"
+  },
+  {
+    "source": "evidence/B10/issue-20261031/code-ci.json",
+    "public_path": "evidence/B10/issue-20261031/code-ci.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "476eb0d4d27bdaab28ce860805545981be819b14e2a0b2f5131ade9fc120c05e"
   },
   {
     "source": "evidence/B10/issue-20261031/source-manifest.json",

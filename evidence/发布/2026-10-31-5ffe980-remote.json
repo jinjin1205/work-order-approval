@@ -1,0 +1,15 @@
+{
+  "verified_at": "2026-10-31T10:48:21.091737+08:00",
+  "repository": "https://github.com/jinjin1205/work-order-approval.git",
+  "branch": "main",
+  "verified_commit": "5ffe980ceeb173521df08f15c971b297341de713",
+  "method": "Fresh remote clone; remote ref, exact git tracked allowlist and all SHA256 values; 33 source files compared with local implementation",
+  "tracked_files": 629,
+  "content_hashes_verified": 628,
+  "manifest_self_verified_via_git_commit": true,
+  "source_files_exact": 33,
+  "source_patch_sha256": "f534ecfb1420246f7b881011d3e5fbcc95953f19b8d6e8fb9c48cdb801463e74",
+  "missing_or_extra_files": 0,
+  "hash_mismatches": 0,
+  "scope": "Public code/cards/sanitized evidence only; credentials, raw runtime test data and screenshots excluded. No CI, customer or full-card acceptance claim."
+}

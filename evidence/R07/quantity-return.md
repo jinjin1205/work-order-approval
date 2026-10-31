@@ -149,3 +149,5 @@ bench --site xgd-test.localhost run-tests --app erpnext --module erpnext.stock.d
 **唯一任务：**原B10的5条勾选及原2026-10-29下一包顺序，新增本日期进度注释即可，不复制清单。沿现有OpenSpec b08-followup-20261028引用到B10；CLI引用模式0任务/blocked不当作完成证明，依用户AGENTS不另造任务表。
 
 **验证计划/命令：**先最小fixture/P0，再真实无权草稿接口、非空fg下超额、物料/错仓/跨单和取消/重复入口反例；仅修已证实缺口。`docker exec -w /home/frappe/frappe-bench xgd-b08-check env/bin/python /b01/b06_tasks_tests.py erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialIssue.<明确方法>`，全事务回滚；runner新增Bin/GL Entry等库存旧表保持。允许checks/b10_issue_*构造本包独立物料/仓/工位/普通用户，真实HTTP或独立DB事务并发、受影响浏览器流程及回读；只操作新名单，原始行/凭据私有保存。并发须独立事务真实重叠，不能仅测试for_update参数便称已验。网页若无产品改动也需原生生成/保存/提交的实际操作证据，API不能代替页面。每步记录命令/版本/实际失败；结束前一次独立审查、白名单公开推送/新克隆与精确SHA CI。
+
+**2026-10-31本包结果：**20项受影响测试、独立DB事务争抢及普通仓管PC保存/提交/取消通过；31旧表保持，已修源码4文件，未改库存/估价核心。代码5ffe980公开回读通过，精确SHA无CI配置/触发。完整结果及仍未验边界见[执行记录](../B10/issue-20261031/run-record.md)。原B10仅第4/5条限定子项关闭，待批来源/完工组合/完整G3保留；下一步沿原B11。

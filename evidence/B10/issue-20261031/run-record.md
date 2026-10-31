@@ -48,10 +48,12 @@ playwright-cli -s=b10 open http://127.0.0.1:18090/login
 
 浏览器其后使用私有登录脚本，按快照引用click/fill及已观察按钮run-code操作；不公开凭据脚本。保存/提交/取消分别audit。最后31表原行无缺失/变化，含Job Card/Time Log/QI/File/权限/库存/成本/工位。只新增独立合成样例，不以新样例哈希覆盖旧失败。原始日志在私有目录，公开7批测试回执、并发摘要、31表计数/保持结果与源码清单。
 
+**OpenSpec实际检查：**`openspec validate b08-followup-20261028 --strict --json` 退出1，1项未通过：引用模式tasks.md没有checkbox、计数0而产生WARNING；skip_specs为INFO。保留原卡单一任务清单，不为消除提示复制第二份清单；不宣称OpenSpec严格检查通过，不归档整卡。
+
 ## 保留边界与下一入口
 
 当前隔离配置实查：backflush=BOM、material_consumption=0、工单skip_transfer=0、transfer_material_against=Work Order、禁负库存。实际领料仅经人工库存提交；本次未触发报工或制造过账；B08/B09既有报工不产生库存事实证据直接复用。B12完工耗料及手动领料组合不在本包称完成。
 
 Stock Entry活动Workflow=0：仅草稿/已提交/已取消，不能把草稿称“待审批”。B07待审批来源提示仍为未接入，客户库存审批配置/待审批汇总保留；不自行增加主管报工审批。完整G3含取消/退料/制造与跨工单竞争、合法替代料正例、手机、客户角色部署和Z01未验。B10整卡仍部分完成，CASE-06整体验收不关闭。
 
-本轮限定包实现/测试/页面/审查完成；公开代码、精确提交CI与新克隆回读在发布后补。下一步沿原B11退料生成与净领料，先消费本包真实已领事实并核R07差集，不重跑本包已验项。
+本轮限定包实现/测试/页面/审查完成；公开main代码[5ffe980](https://github.com/jinjin1205/work-order-approval/commit/5ffe980ceeb173521df08f15c971b297341de713)已推送，[新克隆回读](../../发布/2026-10-31-5ffe980-remote.json)629文件/628内容哈希、33源码一致，0遗漏/差异。[精确SHA CI](code-ci.json)0workflow/运行/check/status、无查询错误，未配置/未触发，非CI通过。最终文档SHA/CI只在最终回复，不回填。下一步沿原B11退料生成与净领料，先消费本包真实已领事实并核R07差集，不重跑本包已验项。
