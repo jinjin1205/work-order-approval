@@ -1,4 +1,4 @@
-> 公开归档副本（2026-10-29）：保留结论、方法与限制；个人路径/运行编号已移除。原始运行单据、响应、截图和日志不上传，原件索引见 `publication/evidence-index.json`。本页历史结果不是发布日重测。
+> 公开归档副本（2026-10-31）：保留结论、方法与限制；个人路径/运行编号已移除。原始运行单据、响应、截图和日志不上传，原件索引见 `publication/evidence-index.json`。本页历史结果不是发布日重测。
 
 # R07｜首批代码入口、改动范围与验收绑定
 
@@ -300,3 +300,152 @@ B01实际显示：新站点用`--module`未准备所需fixture，改原生`--doc
 七文件范围未扩大，16个不同方法分批通过、15旧表逐批回滚保持；普通中文PC本单需求6不隐写原BOM0.5，原生新版本草稿0.6，取消不新增版本，送审冻结。原生受控领6退6后页面显示6/6/6/0/0，待审批null/未接入；24旧表含Bin捕获行保持，36运行文件匹配。
 
 独立审查发现的提交BOM成本入口stock_qty遗漏已先红后修，仅重验反例与原正常成本更新；行身份保护同步覆盖草稿BOM成本路径。单位测试按真实原生归一结果断言持久化物料主数据单位，未增加第二套换算。失败/中间源码哈希未捕获、UI工具误选与输入未同步过程均保留，不改写历史通过。见[B07实际记录](../B07/materials-20261029/run-record.md)。当前限定包可归档，整卡、待审批实际来源与全局门槛仍未关闭；不自动启动下一责任卡。
+
+# 2026-10-31 B13手机网页、扫码与弱网恢复绑定
+
+沿原B13/CASE-08；本段只补本轮开工必要绑定，TODO/交接/提交后期统一做。ERPNext15.124.1 `4e0dce9`维护分支，B12本地累计补丁`9b8906c6`、41文件运行核实；原B08导航、B09请求幂等、B10/B11库存事实与B12入库已验项不重做。
+
+- 复用：Frappe15.124.0原响应式Form/List/Dialog、`frappe.ui.Scanner`（`frappe/public/js/frappe/scanner/index.js`）及内置html5-qrcode；原扫码组件只输出解码文本，无工单定位鉴权，错误关闭相机窗口。只补受控定位及中文人工输入回退，不改Frappe/扫码库、不新建App/打印二维码标准。
+- 扫码契约：接受本站原`/app/work-order/<name>`、`/app/job-card/<name>`链接或明确单号；拒绝站外/脚本/带额外查询参数/未知类型/不存在或无权对象；取消单据提示历史人工查看。复用各文档read及父工单当前范围，返回doctype/name仅导航，不自动报工、审批或过账。原二维码不含到期令牌，不能声称实现签名过期认证。
+- 允许文件：`work_order.py`新增最小`resolve_production_code(code)`只读白名单；`work_order_list.js`和`work_order.js`只添加入口；`erpnext/public/js/production_navigation.js`共享原Scanner/Dialog调用（两入口复用）。原扫码库不改。普通跨对象/撤权、坏格式及取消对象须有反例。
+- B11入口：`work_order.js:add_custom_button_to_return_components`仅放开已签批、可创建Stock Entry且有已领减退减耗余额的进行中/停止/结束原工单；动作仍原`make_stock_return_entry`与原库存保存/提交，不改B11计算。原有非项目流程保留。
+- 设置最小读取沿`permissions.md`第5节：只在`stock_entry.py`新增`get_stock_entry_form_settings(company,stock_entry=None)`并在`stock_entry.js`替换两次Stock Settings整份读取，保存单read/company匹配、新单create+当前Company范围；留样仓仅在当前可读/可选择范围内返回。仅返回两字段，不接受任意设置键，不授Stock Settings权限。
+- 报工弱网：仅改`work_order.js:open_production_report`的原localStorage请求恢复/输入回显；保留原键和原请求，刷新后先查询结果、无结果才原键重试；未确认响应不当失败或新建另一笔。必要捕获只补真实状态/保留输入，禁止假成功。不改`job_card.py`确认/幂等/计算或历史事实。
+- 验证文件：原`stock_entry/test_stock_entry.py`追加独立B13类并复用B11最小fixture；`.development/checks/b13_*`只增定向检查、合成独立样例及31旧表审计。用原`b06_tasks_tests.py <B13方法>`回滚测试；`node --check`改动JS；Playwright CLI本地18090，桌面Chromium156.0.8078.79触屏模拟，设备描述390×844；实际库存视口390×844、报工视口390×664（按最终浏览器实测记录）。刷新加载源码、普通岗位扫码/输入定位/审批状态/报工/领退料；断请求/后端提交后丢响应、刷新原键恢复、命名库存草稿提交丢响应后重开原单，核0重复库存/报工。新草稿保存不是库存生效，不新造库存离线提交引擎。
+- 真机型号/真实镜头成功扫码/现场网络/非开发人员均尚无条件，保持未验证；桌面触屏模拟和注入解码文本分别明示。只关闭本轮实际验过子项，不标B13整卡完成、G3或客户交付。
+
+# 2026-10-31 B14编号与默认值剩余配置绑定
+
+依据原B14及CASE-01/07配置子项；用户明确不新增字段，提交及TODO后期统一。当前维护ERPNext15.124.1 `4e0dce9`，Frappe15.124.0；承接B13累计补丁`c51578ad`及43文件清单，不重跑原B05基础唯一编号、B14时段、B08图片/计算、B13已验或缺条件项。
+
+**做什么：**原生条件编号配置、停用/优先级与冲突反馈；原生Company User Permission默认值的保存/读取、默认冲突、当前权限及旧文档保持。**不做什么：**新增字段/DocType、客户正式编号方案、重编号旧单、重置现有业务计数、改全局权限/新配置引擎、Frappe修改、客户部署或提交推送。**通过：**隔离配置管理员正常维护、普通发起人消费；无权/撤权与非法配置拒绝，旧事实不变，真实PC配置/消费及定向运行证据齐备；只认本包范围，不将旧卡未验项改成已验。
+
+1. 编号直接配置后使用：Frappe `core/doctype/document_naming_rule/document_naming_rule.py/.json`原生Form、`DocumentNamingRule.validate_fields_in_conditions/apply`、`model/naming.py:set_new_name/set_document_name_via_naming_rules`。规则仅匹配新隔离物料/公司条件，前缀明确为测试标识；原锁counter及主键唯一约束保留。编号为空/错误条件及配置计数导致冲突应真实拒绝，不承诺连续无断号。不重跑B05手工重复主键用例。
+2. 权限沿原生System Manager全站配置角色，只给本轮独立配置账号；不是公司级生产配置管理员的自动授权。普通发起人不能读取/改规则；撤掉该测试账号System Manager后原角色正常业务权限与配置拒绝分开验证。新增规则有原Version；不改已有规则、全局命名系列或元数据。
+3. 默认值直接配置后使用：`core/doctype/user_permission/user_permission.py:validate_default_permission/get_user_permissions`及`model/create_new.py:get_new_doc/set_user_and_static_default_values`。同一测试用户Company范围的`is_default`是真实配置入口，普通原Work Order新建消费；多个默认冲突按原生拒绝。既有数量默认1、计划开始now及报工默认未完成量只映射来源，不伪造可配置数量表、不重跑其已验计算。默认值不授予权限；构造好草稿后撤当前Company授权，保存仍须原工单强制范围检查；缺必要物料/BOM/交期不被默认掩盖。
+4. 默认/编号配置均仅新样例，原站全局参数不变。基于同一已批准BOM/原角色契约新建空草稿；不确认展开、不提交工单/报工/库存，不增加业务联动验收。用原样例保持函数额外捕获Document Naming Rule/Condition、User Permission、DefaultValue、Property Setter及生产/库存旧事实。
+5. 文件白名单：本轮先仅`.development/checks/b14_config_*`测试/fixture/浏览器步骤、私有`.development/private/b14-config-20261031/`及本绑定；不预先改产品源文件。若出现实际产品缺口，先留失败再补具体最小文件绑定，不直接扩改底座。
+6. 验证命令：`docker exec -w /home/frappe/frappe-bench -e PYTHONPATH=/b01 xgd-b08-check env/bin/python /b01/b14_config_tests.py [方法]`回滚独立样例；`... /b01/b14_config_fixture.py prepare|audit`用于18090持久合成样例及旧表保持；`playwright-cli -s=b14-config ...`与普通发起人会话原生配置Form/新建/保存/重开。先最小fixture，不全量初始化依赖；已有工具/容器复用。原apply引用模式0任务不是B14完成证据；遵从用户不更新TODO/任务勾选。
+
+# 2026-10-31 B15生产计划与软分组绑定
+
+用户本轮明确激活原B15；依赖原B05/B14、C03/C04、CASE-01/07。仅新增执行绑定，TODO/提交/交接后期统一；B13/B14未验证项原样保留。ERPNext15.124.1维护分支`4e0dce9`，承接B14累计补丁`c51578ad`；GPL-3.0原生Production Plan、Work Order来源字段、Project及Version复用，不新建字段/DocType。
+
+- 做：原生已提交计划的单个成品行预览→人工确认→空明细审批草稿；现有Project多工单软分组及草稿解绑留痕；来源变更不改旧工单。通过须定向受控测试、真实PC、旧行保持、运行源码核实。完整并发门槛未实际运行前仍未验证。
+- 不做：销售/MRP/自动排产/委外或子装配批量生成；全新组织单据、客户数据、业务字段、已审批依据改写、来源解绑后自动重生、计划级联删除；不改B05展开/审批与B09/B10/B11/B12数量实现。
+- 文件白名单：`erpnext/manufacturing/doctype/production_plan/production_plan.py/.js`新增`preview_approval_work_order`、`confirm_approval_work_order`及原生Dialog入口；`work_order.py:validate_production_approval`仅补来源不可伪造/移除和Project当前read/同公司检查。测试`.development/checks/b15_plan_*`，本地私有证据`.development/private/b15-plan-20261031/`。若有新实际缺口先补绑定，不扩至Frappe或权限全局配置。
+- 契约：原生plan.read/write+工单create+发起角色+当前公司班组；只接受真实父计划下成品行，排除销售/物料申请/子装配来源；BOM/Project读取权限及有效公司。预览显示品号/BOM/库存数量单位/公司/仓库/日期/班组/分组，确认重新读取并锁父计划，指纹不一致拒绝；原生来源plan+item查已存在工单（含草稿/取消），有权重试返回原单，无权不泄漏。新单仍原`insert`全部权限与必填校验，不ignore权限/验证，不预展开明细。
+- 原`ProductionPlan.make_work_order`在项目Workflow启用时阻止旧直接生成，避免绕过预览；未启用旧路径保留。来源字段只由受控确认写入，后续不可改；Project沿原草稿编辑限制，存在明细/审批冻结不得绕过，原Version保留解绑轨迹。计划原生向上数量汇总保留，无计划向下改写或删除的新逻辑。
+- 验证命令：`docker exec -w /home/frappe/frappe-bench -e PYTHONPATH=/b01 xgd-b08-check env/bin/python /b01/b15_plan_tests.py [方法]`隔离回滚；`node --check .../production_plan.js`；实际18090用`playwright-cli -s=b15-plan ...`，目标缓存/重载后确认新行为。先最小fixture，依据源码/输入变化只运行本轮新增项。最终只认实跑结果，不用锁代码代替并发验收。
+
+B15审查补充（同文件边界）：既有原生取消修订会复制no_copy来源字段；新来源保护需兼容真实已取消原单的同源修订。只复用`validate_production_approval`已有amended_from原单read/公司班组检查，另校验docstatus=2及三个来源字段完全一致；禁止改源、借用未取消原单或无权原单。不新增修订入口、不清空来源逃避防重。定向“计划→审批→取消→同源空草稿修订”先红后修。
+
+# 2026-10-31 B16对账与查询导出绑定
+
+沿原B16及CASE-01/05/06/07，复用B04/B08快照、B09原单/更正、B10～B12库存来源和B19Comment/Version。ERPNext15.124.1 `4e0dce9`维护分支承接B15累计补丁`df2308e7`，Frappe15.124.0。用户要求不新增字段、不重跑未变已验、提交/TODO后期统一；B13～B15未验保留。OpenSpec继续引用原卡，无第二清单。
+
+1. 原`Work Order Consumed Materials`（ref Work Order）：绑定`manufacturing/report/work_order_consumed_materials/*.py/.js`原execute/get_data/get_columns/filter。原get_all无对象范围、退料使用Stock Entry Detail.qty已见静态缺口；改为原get_list授权父工单，精确ID读权、状态/工单创建日期过滤，消费既有`work_order.py:get_production_material_summary`累计领/退/净领/本单需求，不另写库存汇总。库存单位按原Work Order Item.stock_uom，不跨物料相加；未有有效消耗来源时实耗留空并标“未记录”，待审批未接入不写0。成品入库读Work Order.produced_qty，工序产量不冒充成品。保留原超耗筛选；源工单链接追原库存与审批。
+2. 原`Job Card Summary`（ref Job Card）：绑定`manufacturing/report/job_card_summary/*.py/.js`原Script Report，增“逐笔生产报工”视图，不另建Report。普通列表模式保留；逐笔仅report_request_id真实确认记录，默认docstatus1，取消记录独立视图并标明不计生效。日期为原posting_date；明确工单/工序/库存单位、良/不良、有效秒、原单/amended_from。数量良品率调用`calculate_report_metrics`，效率/预计工资读取`_saved_report_metrics`历史快照，缺快照/零分母“—”，不另存汇总。get_list当前JobCard read且检查父WorkOrder read；混选无权父ID拒绝。逐笔视图关闭跨单位合计和把取消记录计完成的图表。
+3. 原列表绑定：Work Order的name/qty/produced_qty/status/workflow_state及审批字段；Job Card的docstatus/amended_from/correction_reason/原确认时间；Stock Entry的work_order/purpose/is_return/source_stock_entry/docstatus及明细against_stock_entry/transfer_qty/stock_uom。均经`frappe.desk.reportview.get/export_query/_export_query`和当前read/export。审批完整处理轨迹只消费原Work Order Comment/Version，不新造审批历史表。
+4. 导出绑定：两份Script Report统一`frappe.desk.query_report.run/export_query/_export_query`，导出重新执行原report且can_export检查相应ref DocType；不返回预缓存管理员结果、不改Frappe。列表混选ID/无过滤/!、like、%、引号与撤权定向测试，导出核实际ID和中文表头，不只计行数；read与export分别验证。后台/PreparedReport/邮件及历史下载未验保留，不新增能力。
+5. 白名单仅上述4原生报表源码；不改B04/B08计算、B09确认/冲销、库存/审批实现及全局角色。测试`.development/checks/b16_query_*`、私有`.development/private/b16-query-20261031/`和本绑定；持久只新增隔离读/导出测试账号/角色与自身权限，不改旧业务行。实际缺口扩文件先补绑定。
+6. 验证：`docker exec -w /home/frappe/frappe-bench -e PYTHONPATH=/b01 xgd-b08-check env/bin/python /b01/b16_query_tests.py [方法]`原最小fixture回滚；真实原生run/export Query/ReportView；`playwright-cli -s=b16-query ...`本地18090普通中文页面/CSV下载及源记录核对；JS node --check、运行清单。旧业务数据按基线哈希保留，不重建已验领退/报工样例。不得把两报表子包、API或只读核对冒充CASE全链/客户验收。
+
+B16 CASE-06补充：同一已绑定材料报表增加显示列`material_issue_percent`（仅报表列，非数据库字段），调用原`calculate_report_metrics`的issued_quantity/required_quantity支路；累计领料作分子，不用净领替代，零需求返回“—”。真实旧工单00041领10退2净8的HTTP检查缺列先红；只复验变化的材料页面/CSV及此分支，不重跑领退业务或已验报工报表。
+
+B16实际导出汉化缺口补绑定：原ReportView导出实际出现`docstatus`、`owner`、带上下文的`ID`英文表头。仅扩白名单至已有`erpnext/translations/zh.csv`，补3条原生翻译（单据状态、创建人、编号），第三列沿Frappe上下文格式；不改Frappe导出器、字段名、筛选或权限。清理原翻译缓存后只核受影响表头。实际取消/更正追溯复用既有[本地样例编号已移除]→00101-1/工单00029，新只读账号仅该来源；不再纠错。
+
+# 2026-10-31 B17受控核心闭环验收绑定
+
+原B17/CASE-01～08及R02；固定B16候选ERPNext15.124.1 `4e0dce9`，累计补丁SHA256 `a81070eba07db1eece06a5b823e2663fd775adfc4abf6b80ad93f74587f25f95`，49文件清单沿b16-query-source-manifest.json。遵从最新8条规则、不新增字段、不重跑未变化独立子项、提交和TODO延后；此前未验不关闭。
+
+- 做：证据差集；一张新隔离CASE-01工单，从普通发起人空明细保存→原preview/confirm_production_order_details→原apply_production_approval送审/审核/签批（三人分离）→仓管领料→操作工三道逐笔报工→部分及剩余成品入库→原B16查询/CSV和来源追溯。领5→退1→核净4→原生取消退料恢复净5后继续主链，保留退料及取消事实；逆向验证先取消成品入库、再取消领料、最后更正报工，遇真实依赖拒绝先保留证据，不绕过。
+- 样例：复用原fixture主数据创建及旧表保持工具；R02计划10、3工序、BOM基数1/用量0.5/损耗0、原料20/成品0、独立仓库和工作站。合成日期按当前隔离环境2026-10-31记录，不冒称R02原日期已跑；单位复用原Nos并记录本地映射。真实HTTP业务角色均无System Manager/Administrator；管理员仅配置新样例、读取核验。
+- 真实入口：`frappe.client.insert/get/submit/cancel`；WorkOrder原preview/confirm_production_order_details、apply_production_approval、make_stock_entry、make_stock_return_entry；JobCard原preview_production_report_time/confirm_production_report/correct_production_report；原Query Report run/export_query及原WorkOrder/JobCard/StockEntry中文页面。库存审批未配置，不把草稿算待批。
+- 通过判据：空明细0/0，确认3任务/1用料需求5；审批记录三人、时间和状态可追；领5后source15/WIP5，退1后source16/WIP4，取消退料恢复；三工序各良10不计成30成品；部分4和剩余6入库后fg10/source15/WIP0、实耗5，查询CSV同源。逆向后原单不删除、库存与派生回退，已有下游先拒绝更正。当前缺条件项及完整G1/G2/G3按证据差集保留，不能把此链当全门槛通过。
+- 白名单：本次先仅`.development/checks/b17_core_*`、私有`.development/private/b17-core-20261031/`和本绑定；复用b08_distinct_concurrency_fixture的capture_tables/compare_tables、b10的TABLES、原初始化和HTTP调用方式。没有产品改动授权扩张；出现实际失败后定位原责任卡和具体文件，再补最小修补绑定。不会为假想竞态加锁/重试/兜底。
+- 命令：`docker exec -w /home/frappe/frappe-bench -e PYTHONPATH=/b01 xgd-b08-check env/bin/python /b01/b17_core_fixture.py prepare|audit`；`python3 .development/checks/b17_core_http.py <已记录阶段>`；`playwright-cli -s=b17-core ...`复用已装CLI做实际中文页面/来源核对。每次请求及返回阶段保存，失败不自动重放整个链；检查真实当前状态后仅续接未完成动作。无旧库清理、无新增服务、无新API或第二公式。
+
+B17实际样例补充：原Nos为整单位，BOM0.5改复用已有B05小数单位（成品仍Nos），不改已有单位或字段。人工确认明细后必须由发起人通过原frappe.client.save设置WorkOrder Operation.report_scope=DEPT/report_department=本样例班组，再送审。初始00048漏配授权而报工403，保留为反例；已有领退历史禁止取消修订，按原停止执行→previous_work_order关联00049恢复，不移除历史保护。新测试发起人只公司/班组范围，单单UserPermission仅其他已建单操作角色；仅移除本轮新planner那条阻碍创建的限制。fixture增加bind/allow-continuation模式只服务本样例；无产品改动。
+
+B17证据收口位置补充：沿原卡写`evidence/B17/run-record.md`和脱敏结果摘要，原始请求/合成数据/凭据留本地受限目录，不写入公开证据；不更新TODO/交接/原卡勾选或提交。
+
+# 2026-10-31 B18前置核对与现场准备绑定
+
+依据原B18、CASE-12、C07，严格沿最新8条规则。已实际核对B17记录和A01～A03原卡：B17整卡未完成，A01～A03未见本项目完成证据；C07车间/验收人/岗位/数据范围/设备网络/观察期/接受条件仍待提供。本轮只完成可独立的现场准备，不把缺条件当已具备，不启动客户业务或代填使用日志。
+
+- **做什么：**核对前置与候选版本，复用现有普通岗位操作和失败处理说明，整理现场输入及实际记录格式。**不做什么：**产品代码/字段/权限配置更改、客户数据写入/迁移、现场部署、采购/模型调用/外部发送、重复B17或以前测试、TODO/交接/任务勾选/提交推送。**通过标准：**每个前置有现有来源及明确状态；操作说明指向既有入口，不虚构AI页面；现场记录为空且标未执行；缺项和恢复入口明确。
+- 候选沿B17：ERPNext15.124.1维护分支`codex/xgd-maintenance`、基线`4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e`，49文件和累计补丁`a81070eba07db1eece06a5b823e2663fd775adfc4abf6b80ad93f74587f25f95`已只读核实。本候选不是客户试点版或发布版，不因文档准备关闭G1/G2/G3。
+- 复用入口及实现映射（只读绑定，未授权本轮修改）：WorkOrder `work_order.js`的“预览任务和用料/确认生成任务和用料”、任务报工范围、原审批菜单、“逐笔报工/扫码或输入定位/成品入库”；后端`work_order.py`的preview/confirm_production_order_details、apply_production_approval、make_stock_entry/make_stock_return_entry、close_work_order。JobCard原确认/更正与原键恢复，StockEntry原生保存/提交/取消；B16两原生报告`Work Order Consumed Materials`和`Job Card Summary`及原导出。B18只消费原职责，不另造现场报工页、统计公式或验收系统。
+- A01～A03只引用原卡要求，未绑定新AI文件/API或模型服务；确定性明细预览不能替代AI-2字段候选或AI-3语音/文本识别验收。待其实际完成证据后，再补现场真实入口和服务条件。
+- 白名单仅本文件、`evidence/B18/run-record.md`（前置/岗位操作/现场记录，单一入口）、`.development/private/b18-pilot-20261031/`只读核对回执。本次没有合适既有现场操作手册，沿原卡要求在B18证据目录首次形成该记录，不复制TODO/34卡。
+- 当前命令只读：`sed/rg`原卡、决策、验收及既有B17证据；`git -C .development/repos/erpnext rev-parse HEAD`、`branch --show-current`、`diff --binary`取候选；Python标准库hash核49文件、保护TODO/AGENTS/任务卡/OpenSpec原文及Markdown相对链接。无业务/浏览器/数据库测试，因为没有产品或页面变化，且无现场人员设备条件。
+- 现场启动另需C07与A01～A03/B17前置实际满足，并绑定获准站点地址、版本、人员角色、单据/产品范围、数据留存范围、设备/网络、时间及验收人。当前没有真实站点/操作者/排期，不编造可执行生产命令；收到信息先核对再执行。原资料一周观察不由脚本压缩，人工10秒目标按真实操作计时，不由自动化用时替代。
+
+## B18模拟资料续接（2026-10-31）
+
+用户答复明确标注“B18现场试点信息表（模拟）”；本补充只绑定该演练输入的记录和差异核对，不将其转成真实C07确认或客户数据/删除/发送授权。仍只允许修改本R07、`evidence/B18/run-record.md`及本地受限B18证据；源文件、字段、角色配置、原TODO/任务勾选和提交推送均保持本轮边界。
+
+- 原输入受限保存在`.development/private/b18-pilot-20261031/simulation-input-original.json`；准备稿以“验收人-A”代称模拟负责人。设备系列、岗位称谓、90天、阈值及日期均按模拟来源记录，真实身份/站点/账号/产品BOM/库存/服务授权尚未取得。
+- 模拟计划2026-11-16至2026-12-11，四个工作周；Python `datetime`核起止为周一/周五，周记录日期为11-20、11-27、12-04、12-11。仅日历推导，没有创建定时任务或生成未来/连续使用记录。
+- 原C09/C10核对：独立异常返修审批无既有首版定义；模拟“工艺工程师审核→生产主管签批”与原班组长→厂长称谓/授权不同。只登记差异，未改原审批配置；原不良报工/更正不能自动当独立返修审批。
+- 审批离线暂存/重试未有证据。复用B13原报工恢复/库存重开及真机未验台账，不重跑、不将其推为离线审批通过，也不新造离线队列。
+- 原`job_card_summary.py:get_production_report_columns/get_production_reports`及B17保存CSV可核“预计工资”“确认人”等原输出；BOM原页面仍需按实际权限检查。当前没有证据满足模拟“禁止字段在界面/日志不可见”；需在真实范围和薪资字段口径明确后回原责任卡绑定实际缺口。90天起算/证据与业务账/日志导出备份等范围未定义，不配置删除或削弱历史保留。
+- 成功率98%、工作日平均审批30分钟、一致99%、加载5秒、抽20单全过、P1/P2无遗留等只记录为模拟目标。已列待明确分母/起止/工作日历/容差/抽样/分级等口径，不编造统计、测量或业务验收人签收。
+- 核验命令限Python标准库日期/文件hash/相对链接、`rg/sed`原范围/台账及报表源码、读取既有CSV表头；没有产品行为变化或新业务测试。输出回执`simulation-input-verification.json`，此前B17/A01～A03与B13～B15等未验状态不变。
+
+## B18脱敏演练证据包绑定（2026-10-31）
+
+本轮用户要求继续完成B18；原卡仍要求真实人员/周期/接受记录，现有输入明确为模拟。本次推进未完成的资料准备，复用B17正向/逆向保存回执，生成可供人工演练的脱敏副本及20单空抽检表。没有真实试点条件时不重放已有业务链，不生成未来周报或20张业务单。
+
+- 文件白名单新增`.development/checks/b18_pilot_package.py`（仅本地证据生成，不是产品API/导出器）、`evidence/B18/rehearsal-package/`生成文件及本地受限B18回执；继续维护本R07和原B18记录。无新增DocType/业务字段、角色/权限、离线审批、返修功能或90天删除任务。
+- 输入固定为`.development/private/b17-core-20261031/`中的forward-audit/reverse-audit、3份continuation审批回执、领/退/两笔制造submit回执和两份报工更正回执；不读access/login/凭据文件、不连数据库、不重新请求接口。演练身份仅角色代号，工单/工序/物料/报工/库存记录使用稳定可区分的合成别名，原始映射只留受限本地。
+- 原数据的计划/工序良不良/库存单位数量、状态和时间直接取保存结果；阶段分正向/逆向，不能把重复快照行当新增业务或多周使用。数量列仅用于本合成演练，不构成真实客户数据授权。
+- 仅输出列白名单；不输出姓名、邮箱/工号、工资/金额、价格、BOM原文、客户信息或原始内部标识。此脱敏只覆盖生成副本，不改变或证明原系统界面、日志、导出均符合模拟隐私要求。90天保留为待确认期限，不删除正式或旧测试记录。
+- 命令`python3 .development/checks/b18_pilot_package.py`，输出审批/工单/报工/库存CSV、20行未填抽检CSV和说明；源脚本为唯一生成入口，生成物不手改。检查实际输入hash、CSV白名单/行数、稳定关联、关键数量与状态、人工栏为空；结果留本地verification，不把资料验证计业务接受。
+- 通过：生成包能追溯B17来源且无禁用字段/原始身份，20行仅序号和未执行状态；原TODO/AGENTS/C09/C10/OpenSpec、产品源码不变。全部原现场/前置未验保留，B18不能关闭；此轮不提交推送。
+
+# 2026-10-31 A01取数、结构化草稿与人工确认边界绑定
+
+原总TODO顺序第6步及原A01/CASE-09为本轮入口；B12～B19已验子包沿各自证据承接，不因TODO延后而重跑。C06用户明确答复“待定”，不实调模型/语音、不发外部请求或采购；B19实发/B18现场/真机等原未验证保持。OpenSpec沿原卡引用模式，CLI 0任务/blocked不当进度依据；不复制任务清单、改勾选或归档。使用Superpowers执行原计划的必要红绿测试及一次最终审查；提交和TODO仍延后。
+
+## 复用与最小设计
+
+已查`evidence/R06/reuse-matrix.md`首版AI行：五项目核验没有证据可直接使用所需真实模型/语音实现，此结论不扩成整个生态没有AI。复用固定ERPNext15.124.1/4e0dce9、Frappe15.124.0的原权限/表单/JSON快照/事务及本项目B02/B04/B05/B08/B09/B16；当前51文件候选与B19最终manifest相符。既有WorkOrder预览/确认已覆盖AI-1确定性部分，不另写生成器；既有原生字段/来源作为AI-2候选来源，真实候选选择归A02；本轮不写文本解析或录音，归A03。
+
+只补缺失的结构化建议连接，不建Agent平台。允许新增`erpnext/manufacturing/production_ai.py`，改原`doctype/job_card/job_card.py`和`doctype/work_order/work_order.js`，测试新增`manufacturing/test_production_ai.py`及本地`.development/checks/a01_*`。不改Frappe/元数据/锁，不新增字段/DocType、角色框架或独立草稿库；测试角色只在隔离fixture。
+
+| 实际入口／拟补签名 | 权限、输入输出及边界 |
+|---|---|
+| 新`get_production_ai_context(work_order)` | 原WorkOrder.read，输出对象/modified/状态、单位及已存工序计划/良不良的最小事实和来源；不返回全单/员工/工资/BOM原文，不接受SQL或任意字段。只读身份无报工、审批、库存写权 |
+| 新`prepare_production_report_draft(work_order, operation_id, suggestion)` | 人工导入结构化建议时复用原`_report_task`校验执行/本人任务权限；suggestion只允许原6个报工输入字段。原数量/工时类型校验直接复用；缺项保持空，不猜时间/数量。返回values、missing及当前父单/工序/版本basis，不保存生产事实或服务器草稿。模式明确为结构化建议，不能称真实模型识别 |
+| 原`preview_production_report_time` | 人工补齐后按原B04实时预览，指标及fingerprint完全复用；模型金额/工时派生值一律不接受 |
+| 原`confirm_production_report(..., draft_basis=None)` | 只新增可选建议来源元数据，沿原锁/当前角色/任务/状态/余量/防重。来源只作待本人确认的客户端声明，不充当授权票据；当前版本改变时新请求须重新导入，同键已成功请求仍沿原hash回原结果。元数据纳入原请求hash及既有`report_time_context.suggestion_draft`，原JobCard.owner/时间记录确认人；不复制写入校验或建第二条确认入口 |
+| 原`open_production_report(frm, selected_task, suggestion_draft)` | 仅可选导入连接，复用同一弹窗；明确“建议草稿待本人核对”，任务绑定本对象，数量可改，缺工时不填now；取消无写入。人工按钮仍调用原确认接口，已有待核对请求优先、不被新草稿覆盖。结构化合成输入通过实际浏览器验收，不冒充真实文本/语音页面 |
+
+验证以新增A01真实fixture为主：只读AI取数/无写权、无权/跨对象/撤权、8良2不良缺工时与取消无事实、非法/注入字段拒绝、本人编辑后原API确认及同键重复/改内容拒绝、来源版本变化与撤权后确认拒绝；原JSON快照可追到来源/建议/确认人和正式单。先留功能缺失失败，再最小实现；只复验直接改变的普通确认路径，不重跑旧G1/G2/G3/并发。真实模型与语音、C06费用、A02字段候选及A03识别均未验。
+
+命令绑定：原隔离`xgd-b08-check`上`PYTHONPATH=/b01 env/bin/python /b01/a01_boundary_tests.py [方法]`回滚新合成数据并核旧表保持；Node语法检查改动JS。实际页面优先当前ego-browser技能，工具不适用时按已安装Playwright CLI与项目要求说明替代，不重装。运行来源/哈希、失败与最终结果存`evidence/A01/`及受限`.development/private/a01-boundary-20261031/`。达到原A01本轮不依赖C06的结束条件即交接A02，不在同点重复检查，不称整卡或模型实调完成。
+
+# 2026-10-31 A02明细建议与原生字段补全绑定
+
+原A02/CASE-09及用户本轮明确授权。已核A01本包7项/真实页面与53文件候选，B05/B06/B07/B14前置按现有证据消费；不重跑未变算法、防重、审批/报工/库存及原缺条件项。C06待定，不实调模型/语音；确定性预览/候选不能写成真实AI识别。原OpenSpec引用模式继续，TODO/任务卡/交接/提交延后，不复制计划或新建任务卡。
+
+已读原`preview_production_order_details`/`confirm_production_order_details`、`_production_order_detail_plan`、原弹窗及`WorkOrder.set_default_warehouse/get_default_fg_warehouse`、`Item.default_bom/get_item_defaults`。原R06五项目AI行没有可直接调用所需模型的证据，沿一个ERPNext底座复用，不重新安装/选型。
+
+**做什么：**原明细预览补可见工单/BOM版本来源；原生字段仅给BOM/原料仓/在制仓/成品仓的有据候选，交期无本单确认依据则提示本人填写。新增只读候选连接与中文选择弹窗，接受只填当前空字段，不自动保存/展开/送审。可改、可忽略，普通手工入口保留。
+
+**不做：**新字段/元数据/推荐平台/历史预测、复制计算或确认入口、任意字段/SQL、猜交期/人员/数量、模型语音调用。未查询历史样本就明确未使用，不编数量或声称历史为0。A01报工草稿及其已验项不改，已记录Minor不顺带清理。
+
+| 真实入口／允许位置 | 输入输出、权限和复用 |
+|---|---|
+| `production_ai.py:get_production_field_suggestions(production_item, company, missing_fields, bom_no=None)`拟新增 | 只接受原5字段白名单`bom_no/source_warehouse/wip_warehouse/fg_warehouse/expected_delivery_date`；原发起角色及WorkOrder.create，当前Item/Company原生read。返回候选值/标签/来源对象版本/理由、无候选说明，不改库。BOM来自Item.default_bom或已选BOM，需实际BOM.read、产品/公司及已提交启用符合；仓库候选需当前Warehouse.read、同公司/非组/启用。可选默认BOM无read时不暴露，手工流程不受影响 |
+| 原`WorkOrder.set_default_warehouse/get_default_fg_warehouse` | 在未保存的原生WorkOrder对象上获取在制/成品默认，复用原Manufacturing Settings→Item/ItemGroup规则，不复写默认算法；返回仓库版本与原方法来源。原料仓只在已授权BOM用料的非空来源仓唯一时建议，多来源或缺值保持无候选，不造领料算法 |
+| 原`_production_order_detail_plan` | 只在既有fingerprint计算后追加只读`source`（工单/modified、BOM/modified）；不改展开/哈希/确认比较。原弹窗显示来源，原确认仅消费原参数，仍生成计划而非事实 |
+| 原`work_order.js`表单 | 新“字段补全建议”按钮只给发起人的新单/可编辑草稿；先选产品/公司，收集当前空字段。弹窗默认不勾选，来源可核，忽略无改动；接受只`frm.set_value`选中空字段，来源产品/公司/BOM已改则提示重取，原保存再校验当前权限/取值。无新增服务器保存或确认API |
+
+白名单仍4个原文件：`production_ai.py`、`test_production_ai.py`、原`work_order.py/.js`；本地`.development/checks/a02_*`仅检查/隔离样例。复用原A01回滚runner，指定新增`TestProductionOrderSuggestions`类，不执行未变化A01测试；核新候选/来源、无配置/多来源、无权/撤权/select-only、错误字段输入及无写入。BOM变更与重复确认的原保护引用B05已验及未变代码，页面经本包新入口只验新增组合。实际ego-browser中文选择/忽略/修改/保存与原明细预览/确认，留各次请求耗时，单样例不外推2秒SLA。旧表保持、源清单、一次最终只读审查及失败记录齐后收口本包，整卡真实模型仍未验。
+
+A02执行补充：新接口真实接受字典参考的反例已保留，明确字符串对象ID在入口一次拒绝，不让原get_doc将其解释为筛选。审查只补本包多/空来源、真实异产品BOM及Warehouse不可读/停用/组/跨公司新失败分支证据；没有新增产品防护。页面理由和DocType来源采用中文业务表述/原生翻译，不向用户显示内部函数名。
+
+A02保持审计出现旧User1行hash变化，原基线仅hash且没有字段原值。原audit断言失败保留，不修旧User、不重写基线、不猜字段原因；本轮只新增只读observe工具，显式输出False及变化对象/其余表结果，供继续核新样例事实。该工具不改变原保持判据，不把失败当完成，功能结果与保持门槛分开报告。

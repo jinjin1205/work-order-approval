@@ -1,5 +1,29 @@
 [
   {
+    "path": "evidence/A01/run-record.md",
+    "original_sha256": "228c52fdf10c913340ac74c9ee44abd18da1286535b0ddd6832f65a565bc426e",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/A01/source-manifest.json",
+    "original_sha256": "6b9dfb4ec0d3ea7f0668e876a61fce4a0a6b5a049450d51d2f21c045e2019346",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/A02/run-record.md",
+    "original_sha256": "a3ca3511c69646e1b394e850be0ed14d27bd17eae8c9c4f59bbed41af7894139",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/A02/source-manifest.json",
+    "original_sha256": "31789f1b4075e3a4d04d21497c7c6b0abe113b68e8fe44769da8b080d150a743",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
     "path": "evidence/B01/checkout-final.json",
     "original_sha256": "73280a780cf3e6c6651f81d717c6e84703834c24319ca931c38ed6244202038c",
     "published": true,
@@ -4278,6 +4302,18 @@
     "reason": "public copy"
   },
   {
+    "path": "evidence/B12/run-record.md",
+    "original_sha256": "572ef4af445631a2252ad67839e9fbf8a90fb9d380492a6e4b67a8ce2f652345",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B13/run-record.md",
+    "original_sha256": "846cbe084e39a5a0ffacd990172ff656c28126a519ec46b95a38fff046423a21",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
     "path": "evidence/B14/build-final.log",
     "original_sha256": "d4ed24118a68001fdeac12121ca8aeaa449346f48da67392d6ab93c3ba2afc44",
     "published": false,
@@ -4567,7 +4603,7 @@
   },
   {
     "path": "evidence/B14/run-record.md",
-    "original_sha256": "7e36b063ff0fdc689e3a28478ad54033f52a69258ed26dadc80f23042e60bdd3",
+    "original_sha256": "b76a9af59afb09deecdf68df638eb93e9dff4afa53ce29051929c2c07c9444a5",
     "published": true,
     "reason": "public copy"
   },
@@ -4700,6 +4736,78 @@
   {
     "path": "evidence/B14/web-source.json",
     "original_sha256": "ebc15f5f2a94d11903177bc9d2712b9bb456c8632d9bf553d04dd0fcdbcd64dd",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B15/run-record.md",
+    "original_sha256": "08ca54cd6abb709f9bb3d9aed97c0f68e2810915fb3eeedc71cae8ca78ba57d1",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B16/run-record.md",
+    "original_sha256": "bcff66bb44dd5d0f4420d7484975a832bea7925a861919adfc8878c1c222034b",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B17/result-summary.json",
+    "original_sha256": "c425336e8a058dc8396cb4a57dfdb157a1da2f0e26f76689a7621b489e3f6766",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B17/run-record.md",
+    "original_sha256": "32bedf024a619d3af7fe2713d3da7d02496fa71d6197c673f120092a7d783a03",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B18/rehearsal-package/README.md",
+    "original_sha256": "7e9c2b0d6936ac6af6093c075762f2094331011c1529427b7da16d613481534b",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B18/rehearsal-package/approvals.csv",
+    "original_sha256": "c2d2e59cba1b0a7ff6cf114a04c9ffe1a7dd2ca5ff171f76b8ece052be0d5700",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B18/rehearsal-package/manual-sample.csv",
+    "original_sha256": "3df9e421fbdb49c591b2b308e466c36df1ada6abb2cac7561f7132e35bdbadb4",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B18/rehearsal-package/orders.csv",
+    "original_sha256": "322246de8a1fbc6dad7a499718df1e6ee2588f05a4d325545f85e37a8a0315f2",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B18/rehearsal-package/reports.csv",
+    "original_sha256": "c3485d4fdcf8399b957d5e0da661df12c512edc21b7de169cc53d7a8fdd5eb8a",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B18/rehearsal-package/source-manifest.json",
+    "original_sha256": "e10aa828b4bc789afef03da97482aa40db4da7dc310051444e5c703f978538b0",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B18/rehearsal-package/stock.csv",
+    "original_sha256": "48dcd794391348f5cee08349b216623f79cd65c1d88e580ae7034e67fd5b0689",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
+  },
+  {
+    "path": "evidence/B18/run-record.md",
+    "original_sha256": "21cba4b77d548f52f5082b3659b0c76d174ee0921d9515ec7c3285c9108fc923",
     "published": true,
     "reason": "public copy"
   },
@@ -5826,6 +5934,24 @@
     "reason": "local raw execution evidence; not uploaded"
   },
   {
+    "path": "evidence/B19/remaining-20261031/production-workflow.json",
+    "original_sha256": "ab383b4810ed2a1721c5dbf24f69278198dbb1d83ad3a0d12587c41e7a66f600",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B19/remaining-20261031/run-record.md",
+    "original_sha256": "bbe7c7f37781b60568786d3d88e0cb4257ec0d45408f248b0e45b091b51ed4a6",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B19/remaining-20261031/source-manifest.json",
+    "original_sha256": "62ab3ec8a28d068fc0c834d421fa819be4819a38152716a1f2ef10c87b6bf66d",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
     "path": "evidence/B19/review-red.log",
     "original_sha256": "1465989956ff27b6642f0e97714a9bfff2bd9a3631058e62c52e704c4e2d9e85",
     "published": false,
@@ -6511,7 +6637,7 @@
   },
   {
     "path": "evidence/R07/approval-binding.md",
-    "original_sha256": "2a288411d61e9029f1a70e6c94776987adbaa936ba5b2c4496818c3b190bd10a",
+    "original_sha256": "02b856b68bf3f39cf9287711b5a6d44b99864eab3fa151b125dc6e0e50e209ec",
     "published": true,
     "reason": "public copy"
   },
@@ -6523,7 +6649,7 @@
   },
   {
     "path": "evidence/R07/card-binding.md",
-    "original_sha256": "b4a8fc0bbac18d26199ef69e19241b5bc2e13727c60641e41150b6b736e18301",
+    "original_sha256": "ef47638b843f8db0d3be37f23f6eb30e5083602ce63cbd0b96e4d2862d9d371f",
     "published": true,
     "reason": "public copy"
   },
@@ -6553,7 +6679,7 @@
   },
   {
     "path": "evidence/R07/quantity-return.md",
-    "original_sha256": "da9bcf0c63cf12d7f90ec12877317e8575c4ff3735d6d66379b42b5821530e77",
+    "original_sha256": "a6039c616152db1256f6e15d1ced8807bde478f3f26a99d2ebcc928d378e21dd",
     "published": true,
     "reason": "public copy"
   },

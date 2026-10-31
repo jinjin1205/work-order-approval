@@ -4,3 +4,6 @@ Rest,休息
 Overtime,可加班
 hourly,计时,
 piece,计件,
+docstatus,单据状态
+owner,创建人
+ID,编号,Label of name column in report

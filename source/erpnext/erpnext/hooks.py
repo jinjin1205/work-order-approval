@@ -694,11 +694,13 @@ ignore_translatable_strings_from = ["frappe"]
 
 # Production time-rule maintenance stays within explicit company assignments.
 has_permission = {
+	"Workflow Action": "erpnext.manufacturing.permissions.workflow_action_permission",
 	"File": "erpnext.manufacturing.production_quality.has_file_permission",
 	"Quality Inspection": "erpnext.manufacturing.production_quality.has_inspection_permission",
 	"Production Time Rule": "erpnext.manufacturing.doctype.production_time_rule.production_time_rule.has_permission",
 }
 permission_query_conditions = {
+	"Workflow Action": "erpnext.manufacturing.permissions.workflow_action_query_conditions",
 	"File": "erpnext.manufacturing.production_quality.file_query_conditions",
 	"Quality Inspection": "erpnext.manufacturing.production_quality.inspection_query_conditions",
 	"Production Time Rule": "erpnext.manufacturing.doctype.production_time_rule.production_time_rule.get_permission_query_conditions",

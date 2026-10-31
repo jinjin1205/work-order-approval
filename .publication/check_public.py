@@ -26,6 +26,9 @@ credential_sources = [root / ".development/private/b11-return-20261031/access.js
 credential_sources += [root / ".development/private/b08-navigation-20261030/access.json", root / ".development/private/b06-tasks-20261029/access.json", root / ".development/private/b06-retention-20261029/access.json", root / ".development/private/b07-materials-20261029/access.json"]
 credential_sources += [root / ".development/private/b08-quality-20261030/access.json", root / ".development/private/b08-quality-20261030/retired-access.json"]
 credential_sources += [root / ".development/private/b09-lifecycle-20261030/access.json", root / ".development/private/b09-lifecycle-20261030/retired-access.json"]
+for directory in ("b12-completion", "b13-mobile", "b14-config", "b15-plan", "b16-query", "b17-core", "b18-pilot", "b19-remaining", "a01-boundary", "a02-suggestions"):
+    folder = root / ".development/private" / (directory + "-20261031")
+    credential_sources += sorted(folder.glob("*access*.json"))
 credential_sources += sorted((root / ".development/private/b08-history-paths").glob("*.json"))
 credential_sources += sorted((root / ".development/private/b08-distinct-concurrency").glob("*.json"))
 credential_sources += sorted((root / ".development/private/b08-recovery").glob("*.json"))
@@ -81,6 +84,7 @@ assert not raw_data_hits, "Runtime-data JSON in paths: " + str(raw_data_hits)
 lock = json.loads(files["source/source-lock.json"].read_text())
 for name, entry in lock["files"].items():
     assert hashlib.sha256(files["source/erpnext/" + name].read_bytes()).hexdigest() == entry["modified_sha256"]
+assert hashlib.sha256(files[lock["patch_file"]].read_bytes()).hexdigest() == lock["patch_sha256"]
 report = {"date": datetime.now(ZoneInfo("Asia/Shanghai")).date().isoformat(), "scope": "Explicit public snapshot only; application test receipts retain their execution batch and source hash; publication does not rerun application tests",
           "allowlist_passed": True, "known_credential_literal_matches": 0,
           "credential_pattern_matches": 0, "raw_runtime_json_matches": 0,

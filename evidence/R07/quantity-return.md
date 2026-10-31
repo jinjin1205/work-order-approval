@@ -171,3 +171,27 @@ bench --site xgd-test.localhost run-tests --app erpnext --module erpnext.stock.d
 **2026-10-31审查实证补绑（同三文件，不扩卡）：**`b11_lock_order_race.py lock-red run`真实复现取消先锁原单、退料先锁工单后的QueryDeadlockError；允许在原StockEntry.check_if_latest调用父类前先取关联工单锁，覆盖保存/提交/取消；取消工单来源读取已保存原单（含job_card），不得相信改写输入。保留原生版本检查、权限及before_cancel原单完整性校验，不改Frappe、不重试。当前读及草稿共享链统一此顺序。另有两来源同批序列、第一来源部分消耗后分配批2/序列1的单元红测，允许仅在原退料分支按实际剩余序列及批共同分配；复用既有按批查询，保留共享非退料分支。复测这两反例和因此受影响的保存/提交/取消；历史无关项不重跑。
 
 **本包结果：**21个新增/9受影响原方法分批通过、普通仓管PC退2/取消、四种限定竞争场景及31表旧行保持见[B11实际记录](../B11/return-20261031/run-record.md)。反向锁序及双追踪序列问题已复现并修复；此结果不关闭跨B12完整G3或客户审批待批接入。
+
+# 2026-10-31 B12成品入库与产量边界绑定
+
+**本轮授权：**按原B12四条连续实施并验收，不新增字段；提交/推送/TODO及交接更新由用户要求后期统一。本节为实施前必要绑定，本地执行记录私有保留，不提前勾完成。
+
+**版本/复用：**ERPNext15.124.1 4e0dce9、维护codex/xgd-maintenance，B11累计906010f5，隔离测试41文件已核一致；公开本地main及缓存origin/main b7c4ed5，本轮未将缓存称实时远端。复用B10手动转WIP、B11总可用量/原工单先锁、B08显式良/不良及原库存账；三项工具与初始化可用，无安装/升级。
+
+**权威口径：**沿原StockEntry.check_if_operations_completed的全部工序限制，不把三工序各10相加成30。工序completed_qty是已确认良品派生，process_loss_qty是显式不良派生；父工单/子行受B08既有保护。B12在锁定当前工单后核实际成品行库存数量不能超过各所需工序当前累计良品及剩余额度，计划/任务完成/不良不得充当良品。原生fg_completed_qty为含损耗制造数量，实际良品行为fg_completed_qty-process_loss_qty；保留该语义及原生字段，需扣除已生效制造的良品/损耗后生成剩余，不重复每批计入整单不良。未有全部工序可支撑的量明确阻止，不默认为计划已产出。部分不良分配先以原生行为实测，数量须总/良/不良分别守恒，不增加估计良品或另造产出事实。
+
+**允许文件与实际入口：**
+- work_order/work_order.py:make_stock_entry→原Stock Entry get_items；补本项目成品生成的执行状态、当前可生成量与明确无余额提示。复用既有父read/Stock Entry create、原公司/BOM/WIP/成品仓，不改领料/退料/拆解既有语义。
+- stock_entry/stock_entry.py:check_if_latest/validate_production_execution（B11父锁已验，复用）；validate→set_transfer_qty→validate_work_order/check_if_operations_completed→set_process_loss_qty→mark_finished_and_scrap_items/validate_finished_goods→validate_fg_completed_qty/validate_component_and_quantities；get_items/get_work_order_raw_materials/get_unconsumed_raw_materials及原生成分支。仅补本项目Manufacture的实际良品/不良限额、真实产品/目标仓/库存单位、实际耗料不得超本单净可用、正向/重复/提交保护。按原BOM设置：领料只转WIP，制造只耗WIP一次；已单独实际耗用者复用原剩余耗料/成本机制，不再扣同一材料。共享非项目/批序号/拆解路径仅有实际改动时做相应回归。
+- 同文件on_submit/on_cancel/update_work_order→WorkOrder.update_work_order_qty/get_transferred_or_manufactured_qty/set_process_loss_qty/update_status及原Stock Ledger/Bin：当前事实读取、成品数量回写、取消恢复与失败回滚。保留原生单据/流水/逆向，禁止只改合计或写报工。成品量与库存数量必须一致，不以可改头字段掩盖实际行。
+- test_stock_entry.py：新增B12独立测试类，复用B11审批/领料/真实报工fixture，仅参数化已有报工输入且默认不变；不继承并重跑B11整类。checks可新增b12_completion_*，复用现有31旧表审计、双DB调度及Playwright CLI真实PC流程。原job_card.py暂只读；先验证现有库存依赖→取消制造/领料→更正合法链，若确需修复须先补实证及精确范围，不自动扩。
+
+**验证输入与命令：**最小P0三道各良10、领10，制造4再6，成品10不为30，来源仓只在领料扣一次、WIP在制造耗一次；8良2不良含损耗4的首批只入良2，剩余应含损耗6/良6/不良0，累计良8/不良2，不能重复扣12原料。再测超实际良品、假损耗、错产品/仓、无权/撤权、未批准/停止、重复与取消、受控晚期回滚；真实制造争余量及制造与报工更正/取消竞争按具体链绑定，不能用锁参数代替。
+
+执行`docker exec -u frappe -w /home/frappe/frappe-bench xgd-b08-check env/bin/python /b01/b06_tasks_tests.py erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionCompletion.<方法>`；先最小fixture/具体红测，修复仅针对此反例，实际源码清单对应后运行。普通仓管在隔离18090原生成接口与原Stock Entry表单保存/提交/取消，分别记录API和页面证据；原行/报工前后捕获。共享表不并行测试批次。Frappe/库存账/估价核心/字段/客户环境/AI/新页面入口不改；达到原卡本包验收条件后停止该包，不重复旧已验项。完整跨卡G3/客户交付不能因本包通过提前关闭。
+
+B12本轮实际差异补绑：`race-cancel`两个独立连接下，A取消4后B入库7被原`WorkOrder.get_transferred_or_manufactured_qty`的旧一致性快照算为11而拒绝（私有日志保留）。允许仅将项目工单的该汇总、`set_process_loss_qty`和`update_consumed_qty_for_required_items`改为既有父锁内当前读取，并让`StockEntry.update_work_order`重读当前父单；不改账本或估价。用新取消/入库样例复验，不覆盖原失败。另两项新反例已复现：仅报工4时默认生成计划10；同产品增行取消成品标记可绕过良品汇总。允许原默认量使用各必需工序有效报工余量，实际成品物料行不以可编辑标记决定是否计量；不增加取数模型。
+
+B12页面实际差异补绑：普通仓管首笔总4=良2+不良2提交后，原工单“成品入库”弹窗仍默认8（`ui-remaining-red.yml`），而本轮后端已验证余量6。允许仅改`work_order.js:show_prompt_for_qty_input/make_se`，让项目Manufacture数量弹窗消费原`make_stock_entry`返回的当前默认总量，不另算产量；隐藏会重复扣已分配不良的旧可选开关，不改其他目的的原生流程。同步脚本后清目标DocType缓存、完整重载，真实按钮生成/保存/提交/取消验收；不以API代替页面。独立审查的小数尾差在实际生成入口复现并按既有Decimal模式处理，仅内部派生值调整，外部数字校验不放宽。
+
+页面预取补充约束：原`make_stock_entry`尾部可创建原生序列号Bundle，不能用完整生成作只读默认量查询。允许在同一接口增加`quantity_only`只读返回分支，沿同一数量计算且在`get_items`/Bundle生成前返回；原弹窗确认后才完整生成一次。不新增接口模型或字段。验收包含真实待用序列号样例：预取数量不增加Bundle，改变为4后仅最终Bundle含4个序列号。该检查仅约束本轮新增预取行为，不扩为成品序列号整卡。

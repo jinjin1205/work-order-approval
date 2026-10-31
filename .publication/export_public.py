@@ -3,6 +3,8 @@ import hashlib
 import json
 import re
 import subprocess
+import os
+import tempfile
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from pathlib import Path
@@ -16,16 +18,24 @@ details_manifest = json.loads((ROOT / ".development/checks/b05-details-source-ma
 closeout_manifest = json.loads((ROOT / ".development/checks/b05-closeout-source-manifest.json").read_text())
 header_manifest = json.loads((ROOT / ".development/checks/b05-header-source-manifest.json").read_text())
 entries_manifest = json.loads((ROOT / ".development/checks/b05-entries-source-manifest.json").read_text())
-manifest = json.loads((ROOT / ".development/checks/b11-return-source-manifest.json").read_text())
+manifest = json.loads((ROOT / ".development/checks/a02-source-manifest.json").read_text())
 metrics_manifest = json.loads((ROOT / ".development/checks/b08-metrics-source-manifest.json").read_text())
 followup_manifest = json.loads((ROOT / ".development/checks/b08-followup-source-manifest.json").read_text())
-changes = subprocess.check_output(["git", "diff", "--name-only", BASE], cwd=REPO, text=True).splitlines()
-patch = subprocess.check_output(["git", "diff", BASE], cwd=REPO)
-assert len(changes) == 33
-assert hashlib.sha256(patch).hexdigest() == manifest["patch_sha256"]
-assert patch == (ROOT / "evidence/B11/return-20261031/implementation.patch").read_bytes()
-for name in changes:
+tracked = subprocess.check_output(["git", "diff", "--name-only", BASE], cwd=REPO, text=True).splitlines()
+untracked = subprocess.check_output(["git", "ls-files", "--others", "--exclude-standard"], cwd=REPO, text=True).splitlines()
+changes = sorted(set(tracked + untracked))
+assert set(changes) <= set(manifest["files"]), "Source changes outside the accepted runtime manifest"
+tracked_patch = subprocess.check_output(["git", "diff", BASE], cwd=REPO)
+assert hashlib.sha256(tracked_patch).hexdigest() == manifest["tracked_patch_sha256"]
+for name in manifest["files"]:
     assert hashlib.sha256((REPO / name).read_bytes()).hexdigest() == manifest["files"][name]
+# Include new modules without changing the maintenance checkout's real index.
+with tempfile.TemporaryDirectory(prefix="xgd-publish-index-") as temporary:
+    environment = {**os.environ, "GIT_INDEX_FILE": str(Path(temporary) / "index")}
+    subprocess.run(["git", "read-tree", BASE], cwd=REPO, env=environment, check=True)
+    subprocess.run(["git", "add", "--intent-to-add", "--", *changes], cwd=REPO, env=environment, check=True)
+    patch = subprocess.check_output(["git", "diff", BASE, "--", *changes], cwd=REPO, env=environment)
+complete_patch_sha256 = hashlib.sha256(patch).hexdigest()
 
 published = {}
 receipt = []
@@ -49,6 +59,7 @@ def portable(text):
 # Sources contain fixture definitions, not exported runtime records; preserve exact bytes.
 for name in changes:
     add("source/erpnext/" + name, (REPO / name).read_bytes(), ".development/repos/erpnext/" + name)
+add("source/current-implementation.patch", patch)
 add("source/erpnext/license.txt", (REPO / "license.txt").read_bytes(), ".development/repos/erpnext/license.txt")
 for name in ("evidence/B11/return-20261031/implementation.patch", "evidence/B11/return-20261031/bounded-change.patch", "evidence/B10/issue-20261031/implementation.patch", "evidence/B10/issue-20261031/bounded-change.patch", "evidence/B09/lifecycle-20261030/implementation.patch", "evidence/B09/lifecycle-20261030/bounded-change.patch", "evidence/B08/quality-20261030/implementation.patch", "evidence/B08/quality-20261030/bounded-change.patch", "evidence/B08/navigation-20261030/implementation.patch", "evidence/B08/navigation-20261030/bounded-change.patch", "evidence/B07/materials-20261029/implementation.patch", "evidence/B07/materials-20261029/bounded-change.patch", "evidence/B06/tasks-20261029/implementation.patch", "evidence/B06/tasks-20261029/bounded-change.patch", "evidence/B05/entries-20261029/implementation.patch", "evidence/B05/entries-20261029/bounded-change.patch", "evidence/B05/header-20261029/implementation.patch", "evidence/B05/header-20261029/bounded-change.patch", "evidence/B05/closeout-20261029/implementation.patch", "evidence/B05/closeout-20261029/bounded-change.patch", "evidence/B05/explicit-details-20261029/implementation.patch", "evidence/B05/explicit-details-20261029/bounded-change.patch", "evidence/B10/combined-implementation.patch", "evidence/B19/combined-implementation.patch",
              "evidence/B19/b19-only.patch", "evidence/B19/execution-gate/combined-implementation.patch",
@@ -100,6 +111,12 @@ for path in paths:
     add(relative, clean, relative, "personal paths/runtime identifiers removed" if original != clean else "unchanged")
 
 safe_json = [
+    "evidence/A02/source-manifest.json",
+    "evidence/A01/source-manifest.json",
+    "evidence/B19/remaining-20261031/source-manifest.json",
+    "evidence/B19/remaining-20261031/production-workflow.json",
+    "evidence/B17/result-summary.json",
+    "evidence/B18/rehearsal-package/source-manifest.json",
     "evidence/B11/return-20261031/code-ci.json",
     "evidence/发布/2026-10-31-1eb562a-remote.json",
     "evidence/B11/return-20261031/source-manifest.json",
@@ -423,7 +440,7 @@ return_base = json.loads((ROOT / ".development/private/b11-return-20261031/base-
 assert test_receipts == return_base, "Historical 92 receipts must remain exact"
 for batch in json.loads((ROOT / "evidence/B11/return-20261031/test-batches.json").read_text())["batches"]:
     test_receipts.append({**batch, "executed_on": "2026-10-31", "group": "B11 native returns and net issue: " + Path(batch["local_log"]).stem})
-add("publication/test-receipts.json", json.dumps({"scope": "Separate executed batches; FAILED red/intermediate batches preserved. Exact source patch where captured, explicit null otherwise. No cumulative full-suite result; publication does not rerun tests", "tests": test_receipts, "http_B02_historical": safe_http, "current_patch_sha256": manifest["patch_sha256"]}, ensure_ascii=False, indent=2) + "\n")
+add("publication/test-receipts.json", json.dumps({"scope": "Separate executed batches through B11; subsequent B12-A02 commands/results and limitations are in their run-record.md. FAILED red/intermediate batches preserved. No cumulative full-suite result; publication does not rerun tests", "tests": test_receipts, "http_B02_historical": safe_http, "current_patch_sha256": complete_patch_sha256, "current_tracked_patch_sha256": manifest["tracked_patch_sha256"], "later_records": ["evidence/" + name + "/run-record.md" for name in ["B12", "B13", "B14", "B15", "B16", "B17", "B18", "B19/remaining-20261031", "A01", "A02"]]}, ensure_ascii=False, indent=2) + "\n")
 
 index = []
 for path in sorted((ROOT / "evidence").rglob("*")):
@@ -439,7 +456,7 @@ for name in changes:
     existing = subprocess.run(["git", "cat-file", "-e", BASE + ":" + name], cwd=REPO, capture_output=True).returncode == 0
     original = subprocess.check_output(["git", "show", BASE + ":" + name], cwd=REPO) if existing else None
     source_map[name] = {"base_sha256": hashlib.sha256(original).hexdigest() if original is not None else None, "modified_sha256": manifest["files"][name]}
-add("source/source-lock.json", json.dumps({"upstream": "https://github.com/frappe/erpnext.git", "commit": BASE, "version": "15.124.1", "frappe_version": "15.124.0", "frappe_commit": "f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab", "patch_sha256": manifest["patch_sha256"], "files": source_map}, indent=2) + "\n")
+add("source/source-lock.json", json.dumps({"upstream": "https://github.com/frappe/erpnext.git", "commit": BASE, "version": "15.124.1", "frappe_version": "15.124.0", "frappe_commit": "f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab", "patch_sha256": complete_patch_sha256, "tracked_patch_sha256": manifest["tracked_patch_sha256"], "patch_file": "source/current-implementation.patch", "runtime_manifest": "evidence/A02/source-manifest.json", "files": source_map}, indent=2) + "\n")
 
 # Public copies explain intentionally unexported artifacts instead of leaving silent broken links.
 for name, data in list(published.items()):

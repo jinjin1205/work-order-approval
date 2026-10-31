@@ -1,0 +1,190 @@
+{
+  "workflow_name": "生产工单两级审批",
+  "document_type": "Work Order",
+  "workflow_state_field": "workflow_state",
+  "is_active": 1,
+  "override_status": 1,
+  "send_email_alert": 0,
+  "doctype": "Workflow",
+  "name": "生产工单两级审批",
+  "states": [
+    {
+      "state": "草稿",
+      "doc_status": "0",
+      "allow_edit": "生产工单发起",
+      "update_field": null,
+      "update_value": null,
+      "send_email": 0,
+      "is_optional_state": 0
+    },
+    {
+      "state": "待审核",
+      "doc_status": "0",
+      "allow_edit": "生产工单审核",
+      "update_field": null,
+      "update_value": null,
+      "send_email": 0,
+      "is_optional_state": 0
+    },
+    {
+      "state": "待签批",
+      "doc_status": "0",
+      "allow_edit": "生产工单签批",
+      "update_field": null,
+      "update_value": null,
+      "send_email": 0,
+      "is_optional_state": 0
+    },
+    {
+      "state": "退回",
+      "doc_status": "0",
+      "allow_edit": "生产工单发起",
+      "update_field": null,
+      "update_value": null,
+      "send_email": 0,
+      "is_optional_state": 0
+    },
+    {
+      "state": "终止",
+      "doc_status": "0",
+      "allow_edit": "生产工单发起",
+      "update_field": null,
+      "update_value": null,
+      "send_email": 0,
+      "is_optional_state": 0
+    },
+    {
+      "state": "存量待核",
+      "doc_status": "1",
+      "allow_edit": "System Manager",
+      "update_field": null,
+      "update_value": null,
+      "send_email": 0,
+      "is_optional_state": 0
+    },
+    {
+      "state": "已批准",
+      "doc_status": "1",
+      "allow_edit": "生产工单签批",
+      "update_field": null,
+      "update_value": null,
+      "send_email": 0,
+      "is_optional_state": 0
+    },
+    {
+      "state": "已取消",
+      "doc_status": "2",
+      "allow_edit": "生产工单签批",
+      "update_field": null,
+      "update_value": null,
+      "send_email": 0,
+      "is_optional_state": 0
+    }
+  ],
+  "transitions": [
+    {
+      "state": "草稿",
+      "action": "送审",
+      "next_state": "待审核",
+      "allowed": "生产工单发起",
+      "allow_self_approval": 1,
+      "condition": null
+    },
+    {
+      "state": "退回",
+      "action": "送审",
+      "next_state": "待审核",
+      "allowed": "生产工单发起",
+      "allow_self_approval": 1,
+      "condition": null
+    },
+    {
+      "state": "待审核",
+      "action": "审核通过",
+      "next_state": "待签批",
+      "allowed": "生产工单审核",
+      "allow_self_approval": 0,
+      "condition": null
+    },
+    {
+      "state": "待签批",
+      "action": "签批通过",
+      "next_state": "已批准",
+      "allowed": "生产工单签批",
+      "allow_self_approval": 0,
+      "condition": null
+    },
+    {
+      "state": "待审核",
+      "action": "退回",
+      "next_state": "退回",
+      "allowed": "生产工单审核",
+      "allow_self_approval": 0,
+      "condition": null
+    },
+    {
+      "state": "待签批",
+      "action": "退回",
+      "next_state": "退回",
+      "allowed": "生产工单签批",
+      "allow_self_approval": 0,
+      "condition": null
+    },
+    {
+      "state": "待审核",
+      "action": "撤回",
+      "next_state": "草稿",
+      "allowed": "生产工单发起",
+      "allow_self_approval": 1,
+      "condition": null
+    },
+    {
+      "state": "待签批",
+      "action": "撤回",
+      "next_state": "草稿",
+      "allowed": "生产工单发起",
+      "allow_self_approval": 1,
+      "condition": null
+    },
+    {
+      "state": "已批准",
+      "action": "取消修订",
+      "next_state": "已取消",
+      "allowed": "生产工单签批",
+      "allow_self_approval": 0,
+      "condition": null
+    },
+    {
+      "state": "草稿",
+      "action": "终止",
+      "next_state": "终止",
+      "allowed": "生产工单发起",
+      "allow_self_approval": 1,
+      "condition": null
+    },
+    {
+      "state": "待审核",
+      "action": "终止",
+      "next_state": "终止",
+      "allowed": "生产工单发起",
+      "allow_self_approval": 1,
+      "condition": null
+    },
+    {
+      "state": "待签批",
+      "action": "终止",
+      "next_state": "终止",
+      "allowed": "生产工单发起",
+      "allow_self_approval": 1,
+      "condition": null
+    },
+    {
+      "state": "退回",
+      "action": "终止",
+      "next_state": "终止",
+      "allowed": "生产工单发起",
+      "allow_self_approval": 1,
+      "condition": null
+    }
+  ]
+}

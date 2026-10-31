@@ -127,6 +127,38 @@ def _has_production_execution(work_order):
 		or_filters={"work_order": work_order, **({"job_card": ["in", cards]} if cards else {})}, limit=1))
 
 
+def protect_frozen_production_approval_attachment(doc, order=None):
+	if doc.attached_to_doctype != "Work Order":
+		return
+	if order is None:
+		order = frappe.get_doc("Work Order", doc.attached_to_name)
+	if not order.get("approval_requested_by"):
+		return
+	sent_at = frappe.db.get_value("Comment", {
+		"reference_doctype": "Work Order", "reference_name": order.name,
+		"comment_type": "Comment", "content": ["like", "%审批动作：送审；依据版本：%"],
+	}, "creation", order_by="creation desc")
+	if sent_at and get_datetime(doc.creation) <= get_datetime(sent_at):
+		frappe.throw("附件已作为送审依据，不能改写、删除或改挂；请退回后追加新版并保留原附件", frappe.PermissionError)
+
+
+def validate_production_approval_attachment(doc):
+	records = {}
+	for record in (doc.get_doc_before_save(), doc):
+		if not record or record.attached_to_doctype != "Work Order":
+			continue
+		records.setdefault(record.attached_to_name, record)
+	for record in records.values():
+		order = frappe.get_doc("Work Order", record.attached_to_name)
+		if not order.get("approval_requested_by"):
+			continue
+		if cint(doc.is_private) != 1:
+			frappe.throw("生产工单审批依据必须使用私有附件", frappe.PermissionError)
+		if not doc.is_new():
+			protect_frozen_production_approval_attachment(record, order)
+		_check_production_draft_editor(order)
+
+
 def protect_production_approval_history(doc, method):
 	"""Keep native audit rows and their parent once this production order has entered approval."""
 	if method == "validate" and doc.is_new():
@@ -218,6 +250,9 @@ def apply_production_approval(work_order: str, action: str, expected_modified: s
 			escape(action), escape(viewed_modified), escape(previous_state),
 			escape(result.workflow_state), escape(reason or "无"),
 		))
+		from erpnext.manufacturing.approval_notification import schedule_notification
+
+		schedule_notification(result.name, result.workflow_state)
 		return result
 	finally:
 		# Request-local authority never comes from a client Document.flags value.
@@ -287,6 +322,8 @@ def _production_order_detail_plan(order):
 	data["fingerprint"] = hashlib.sha256(frappe.as_json({
 		"basis": basis, "bom_modified": str(bom.modified), "details": data,
 	}).encode()).hexdigest()
+	data["source"] = {"work_order": order.name, "work_order_modified": str(order.modified),
+		"bom": bom.name, "bom_modified": str(bom.modified)}
 	return plan, data
 
 
@@ -498,6 +535,13 @@ class WorkOrder(Document):
 			return
 		if not active:
 			frappe.throw("生产工单审批流程未启用，不能修改审批工单", frappe.PermissionError)
+		self.validate_production_project()
+		source_fields = ("production_plan", "production_plan_item", "production_plan_sub_assembly_item")
+		if self.is_new() and any(self.get(field) for field in source_fields):
+			if getattr(frappe.local, "production_plan_generation", None) is not self and not self.amended_from:
+				frappe.throw("计划来源只能通过计划预览确认生成，不能手工指定", frappe.PermissionError)
+		elif before and any((self.get(field) or None) != (before.get(field) or None) for field in source_fields):
+			frappe.throw("工单计划来源必须保留，不能修改或移除", frappe.PermissionError)
 		user = frappe.session.user
 		if self.is_new():
 			if "生产工单发起" not in frappe.get_roles():
@@ -513,6 +557,9 @@ class WorkOrder(Document):
 				_check_production_approval_scope(previous, team_required=True)
 				if not previous.get("approval_requested_by") or previous.company != self.company:
 					frappe.throw("只能关联本公司已确认审批依据的原工单", frappe.PermissionError)
+				if self.is_new() and self.amended_from and any(self.get(f) or previous.get(f) for f in source_fields):
+					if previous.docstatus != 2 or any((self.get(f) or None) != (previous.get(f) or None) for f in source_fields):
+						frappe.throw("计划工单修订必须保留已取消原单的同一来源", frappe.PermissionError)
 				if self.get("previous_work_order") and (
 					previous.docstatus != 1 or previous.status != "Stopped" or not _has_production_execution(previous.name)
 				):
@@ -570,6 +617,14 @@ class WorkOrder(Document):
 			frappe.throw("请通过工单审批动作处理，不能直接改审批字段或提交", frappe.PermissionError)
 		_check_production_draft_editor(self)
 		self.validate_production_header()
+
+	def validate_production_project(self):
+		before = self.get_doc_before_save()
+		if self.project and (self.is_new() or not before or self.project != before.project or self.company != before.company):
+			project = frappe.get_doc("Project", self.project)
+			project.check_permission("read")
+			if project.company != self.company:
+				frappe.throw("只能关联当前公司有权读取的项目分组", frappe.PermissionError)
 
 	def validate_production_header(self, *, for_review=False):
 		# Apply to preparation and sending only; other transitions and old approved facts stay valid.
@@ -992,19 +1047,22 @@ class WorkOrder(Document):
 		else:
 			query = query.select(Sum(table.fg_completed_qty))
 
+		if self.get("approval_requested_by"):
+			query = query.for_update()
 		return flt(query.run()[0][0])
 
 	def set_process_loss_qty(self):
 		table = frappe.qb.DocType("Stock Entry")
-		process_loss_qty = (
+		query = (
 			frappe.qb.from_(table)
 			.select(Sum(table.process_loss_qty))
 			.where(
 				(table.work_order == self.name) & (table.purpose == "Manufacture") & (table.docstatus == 1)
 			)
-		).run()[0][0]
-
-		self.db_set("process_loss_qty", flt(process_loss_qty))
+		)
+		if self.get("approval_requested_by"):
+			query = query.for_update()
+		self.db_set("process_loss_qty", flt(query.run()[0][0]))
 
 	def update_production_plan_status(self):
 		production_plan = frappe.get_doc("Production Plan", self.production_plan)
@@ -1881,7 +1939,7 @@ class WorkOrder(Document):
 						AND detail.s_warehouse IS NOT null
 						AND (detail.original_item = %(item)s
 							OR (IFNULL(detail.original_item, '') = '' AND detail.item_code = %(item)s))
-				""",
+				""" + (" FOR UPDATE" if self.get("approval_requested_by") else ""),
 				{"name": self.name, "item": item.item_code},
 			)[0][0]
 
@@ -2114,10 +2172,13 @@ def make_stock_entry(
 	qty: float | None = None,
 	target_warehouse: str | None = None,
 	source_stock_entry: str | None = None,
+	quantity_only: bool = False,
 ):
 	work_order = frappe.get_doc("Work Order", work_order_id)
 	work_order.check_permission("read")
 	frappe.has_permission("Stock Entry", "create", throw=True)
+	if purpose == "Manufacture":
+		work_order = check_production_execution(work_order_id, for_update=True) or work_order
 	if not frappe.db.get_value("Warehouse", work_order.wip_warehouse, "is_group"):
 		wip_warehouse = work_order.wip_warehouse
 	else:
@@ -2125,6 +2186,7 @@ def make_stock_entry(
 
 	stock_entry = frappe.new_doc("Stock Entry")
 	stock_entry.purpose = purpose
+	stock_entry.pro_doc = work_order
 	stock_entry.work_order = work_order_id
 	stock_entry.company = work_order.company
 	stock_entry.from_bom = 1
@@ -2134,6 +2196,19 @@ def make_stock_entry(
 	stock_entry.fg_completed_qty = (
 		qty if qty is not None else (flt(work_order.qty) - flt(work_order.produced_qty))
 	)
+
+	if purpose == "Manufacture" and work_order.get("approval_requested_by") and qty is None:
+		from decimal import Decimal
+
+		stock_entry.fg_completed_qty = float(min(
+			Decimal(str(work_order.qty)),
+			min((Decimal(str(op.completed_qty)) + Decimal(str(op.process_loss_qty)) for op in work_order.operations), default=Decimal(0)),
+		) - Decimal(str(work_order.produced_qty)) - Decimal(str(work_order.process_loss_qty)))
+
+	if quantity_only:
+		if purpose != "Manufacture" or not work_order.get("approval_requested_by") or qty is not None:
+			frappe.throw("只读数量预览仅支持本生产工单的成品入库余量")
+		return {"fg_completed_qty": validate_quantity_input(stock_entry.fg_completed_qty, "可入库完工总量")}
 
 	if work_order.bom_no:
 		stock_entry.inspection_required = frappe.db.get_value("BOM", work_order.bom_no, "inspection_required")
@@ -2643,3 +2718,45 @@ def make_stock_return_entry(work_order):
 @frappe.request_cache
 def get_hour_rate(workstation):
 	return frappe.get_cached_value("Workstation", workstation, "hour_rate") or 0.0
+
+
+@frappe.whitelist()
+def resolve_production_code(code: str):
+	"""Locate an existing native document under current read permissions; never execute it."""
+	from urllib.parse import unquote, urlsplit
+
+	invalid = "二维码或单号无效，请输入工单号、作业卡号或本站单据链接"
+	if not isinstance(code, str) or not code.strip() or len(code) > 1000:
+		frappe.throw(invalid)
+	code = code.strip()
+	parsed = urlsplit(code)
+	if parsed.query or parsed.fragment:
+		frappe.throw(invalid)
+	if parsed.scheme or parsed.netloc:
+		site = urlsplit(frappe.utils.get_url())
+		if (parsed.scheme, parsed.netloc) != (site.scheme, site.netloc):
+			frappe.throw(invalid)
+	if parsed.path.startswith("/app/"):
+		parts = parsed.path.split("/")
+		if len(parts) != 4 or parts[2] not in ("work-order", "job-card"):
+			frappe.throw(invalid)
+		doctype = {"work-order": "Work Order", "job-card": "Job Card"}[parts[2]]
+		name = unquote(parts[3])
+		if not name or "/" in name or "\\" in name:
+			frappe.throw(invalid)
+	else:
+		if parsed.scheme or parsed.netloc or "/" in code or "\\" in code:
+			frappe.throw(invalid)
+		name = code
+		doctype = next((dt for dt in ("Work Order", "Job Card") if frappe.db.exists(dt, name)), None)
+	if not doctype or not frappe.db.exists(doctype, name):
+		frappe.throw("未找到可定位的生产单据，请核对单号")
+	doc = frappe.get_doc(doctype, name)
+	doc.check_permission("read")
+	order = doc if doctype == "Work Order" else frappe.get_doc("Work Order", doc.work_order)
+	order.check_permission("read")
+	if frappe.session.user != "Administrator":
+		_check_production_approval_scope(order, team_required=False)
+	if doc.docstatus == 2 or order.docstatus == 2:
+		frappe.throw("单据已取消，不能作为当前任务定位；请从列表查看历史")
+	return {"doctype": doctype, "name": doc.name}

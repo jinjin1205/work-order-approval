@@ -32,6 +32,7 @@ from erpnext.manufacturing.doctype.bom.bom import (
 	get_op_cost_from_sub_assemblies,
 	get_scrap_items_from_sub_assemblies,
 	validate_bom_no,
+	validate_quantity_input,
 )
 from erpnext.setup.doctype.brand.brand import get_brand_defaults
 from erpnext.setup.doctype.item_group.item_group import get_item_group_defaults
@@ -824,6 +825,30 @@ class StockEntry(StockController):
 				)
 
 	def validate_fg_completed_qty(self):
+		if self.purpose == "Manufacture" and self.work_order and self.pro_doc.get("approval_requested_by"):
+			order = self.pro_doc
+			gross = validate_quantity_input(self.fg_completed_qty, "本次完工总量")
+			if not self.from_bom or self.bom_no != order.bom_no or self.is_return:
+				frappe.throw("成品入库必须沿用本工单的物料清单和正常制造方向")
+			good = 0.0
+			for row in self.items:
+				if row.item_code == order.production_item:
+					if not row.is_finished_item or row.is_scrap_item or row.t_warehouse != order.fg_warehouse or row.s_warehouse:
+						frappe.throw("成品入库目标必须是本工单的成品仓")
+					validate_quantity_input(row.conversion_factor, "成品单位换算系数")
+					good += validate_quantity_input(row.transfer_qty, "成品入库数量")
+			precision = self.precision("fg_completed_qty")
+			if flt(good + self.process_loss_qty, precision) != flt(gross, precision):
+				frappe.throw("成品库存数量加本次已确认不良量必须等于完工总量，请重新获取明细")
+			if not order.operations or any(
+				flt(good + order.produced_qty, precision) > flt(op.completed_qty, precision)
+				for op in order.operations
+			):
+				frappe.throw("成品入库不能超过各必需工序有效报工的良品余量")
+			if flt(gross + order.produced_qty + order.process_loss_qty, precision) > flt(order.qty, precision):
+				frappe.throw("完工总量不能超过本工单尚未入库的数量")
+			return
+
 		item_wise_qty = {}
 		if self.purpose == "Manufacture" and self.work_order:
 			for d in self.items:
@@ -1184,7 +1209,7 @@ class StockEntry(StockController):
 
 	def check_if_operations_completed(self):
 		"""Check if Time Sheets are completed against before manufacturing to capture operating costs."""
-		prod_order = frappe.get_doc("Work Order", self.work_order)
+		prod_order = getattr(self, "pro_doc", None) or frappe.get_doc("Work Order", self.work_order)
 		allowance_percentage = flt(
 			frappe.db.get_single_value("Manufacturing Settings", "overproduction_percentage_for_work_order")
 		)
@@ -1194,6 +1219,9 @@ class StockEntry(StockController):
 			completed_qty = (
 				d.completed_qty + d.process_loss_qty + (allowance_percentage / 100 * d.completed_qty)
 			)
+			if prod_order.get("approval_requested_by"):
+				total_completed_qty += flt(prod_order.process_loss_qty)
+				completed_qty = d.completed_qty + d.process_loss_qty
 			if flt(total_completed_qty, self.precision("fg_completed_qty")) > flt(
 				completed_qty, self.precision("fg_completed_qty")
 			):
@@ -1300,7 +1328,7 @@ class StockEntry(StockController):
 				)
 
 	def validate_component_and_quantities(self):
-		if self.work_order and self.pro_doc.get("approval_requested_by") and self.purpose == "Material Consumption for Manufacture":
+		if self.work_order and self.pro_doc.get("approval_requested_by") and self.purpose in ("Material Consumption for Manufacture", "Manufacture"):
 			available, _ = get_material_return_context(self.work_order, exclude_entry=self.name, for_update=True)
 			consumption = defaultdict(float)
 			for row in self.items:
@@ -2444,7 +2472,7 @@ class StockEntry(StockController):
 			job_doc.set_transferred_qty_in_job_card_item(self)
 
 		if self.work_order:
-			pro_doc = frappe.get_doc("Work Order", self.work_order)
+			pro_doc = frappe.get_doc("Work Order", self.work_order, for_update=True)
 			_validate_work_order(pro_doc)
 
 			if self.fg_completed_qty:
@@ -2946,6 +2974,14 @@ class StockEntry(StockController):
 			return
 
 		precision = self.precision("process_loss_qty")
+		if self.purpose == "Manufacture" and self.work_order and self.pro_doc.get("approval_requested_by"):
+			# Native gross quantity includes loss. Allocate only loss not already posted; never infer it from a short FG row.
+			reported_loss = max((flt(op.process_loss_qty) for op in self.pro_doc.operations), default=0)
+			remaining_loss = max(0, reported_loss - flt(self.pro_doc.process_loss_qty))
+			gross = validate_quantity_input(self.fg_completed_qty, "本次完工总量")
+			self.process_loss_qty = flt(min(gross, remaining_loss), precision)
+			self.process_loss_percentage = flt(self.process_loss_qty * 100 / gross)
+			return
 		if self.work_order:
 			data = frappe.get_all(
 				"Work Order Operation",
@@ -4840,3 +4876,31 @@ def get_transferred_qty(material_request):
 	).run(as_dict=True)
 
 	return query[0]
+
+
+@frappe.whitelist()
+def get_stock_entry_form_settings(company: str, stock_entry: str | None = None):
+	"""Expose only the two native form options, without granting Stock Settings read."""
+	from frappe.core.doctype.user_permission.user_permission import get_user_permissions
+
+	if stock_entry:
+		doc = frappe.get_doc("Stock Entry", stock_entry)
+		doc.check_permission("read")
+		if doc.company != company:
+			frappe.throw("库存单与当前公司不一致", frappe.PermissionError)
+	else:
+		frappe.has_permission("Stock Entry", "create", throw=True)
+		if frappe.session.user != "Administrator" and not any(
+			p.doc == company and p.applicable_for in (None, "", "Stock Entry")
+			for p in get_user_permissions().get("Company", [])
+		):
+			frappe.throw("没有当前公司的库存操作授权", frappe.PermissionError)
+	warehouse = frappe.db.get_single_value("Stock Settings", "sample_retention_warehouse")
+	if warehouse:
+		doc = frappe.get_doc("Warehouse", warehouse)
+		if doc.company != company or not frappe.has_permission("Warehouse", "read", doc=doc):
+			warehouse = None
+	return {
+		"sample_retention_warehouse": warehouse,
+		"disable_serial_no_and_batch_selector": cint(frappe.db.get_single_value("Stock Settings", "disable_serial_no_and_batch_selector")),
+	}

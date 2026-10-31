@@ -1,4 +1,4 @@
-> 公开归档副本（2026-10-27）：保留结论、方法与限制；个人路径/运行编号已移除。原始运行单据、响应、截图和日志不上传，原件索引见 `publication/evidence-index.json`。本页历史结果不是发布日重测。
+> 公开归档副本（2026-10-31）：保留结论、方法与限制；个人路径/运行编号已移除。原始运行单据、响应、截图和日志不上传，原件索引见 `publication/evidence-index.json`。本页历史结果不是发布日重测。
 
 # R07｜生产工单审批复用、入口与最小范围
 
@@ -107,3 +107,75 @@ docker compose -f .development/compose.json run --rm --no-deps -T -e CI=1 bench 
 用户已确认批准后取消修订/停止仅生产厂长，必须原因；批准前终止由发起人。实际入口沿WorkOrder.before_update_after_submit/before_cancel、apply_production_approval、原stop_unstop/close_work_order，以及StockEntry.update_work_order。补原生Workflow终止/取消转换，停止动作通过同一工单专用入口校验版本/岗位/原因后调用原生状态更新；原生恢复旁路拒绝。新增的previous_work_order仅采用第5节已有字段方案，通过b19_prepare仅在隔离测试站点准备，仍未成为客户部署配置。
 
 V07的无事实含无任何已生效库存（包括已取消记录）、无计时/已提交报工历史；纯待执行任务不冒充事实。取消沿amended_from；有事实则保留原单并停止，剩余需求通过previous_work_order新建再审批。来源新增/改挂/公司改变均核源对象权限与合法状态；不自动计算剩余数量、不改数量算法。停止后的真实退料和库存取消按原入口处理；结束参数不得恢复执行，完整结束差额/计时收尾仍归B05/G2。用例、实测结果及限制见[本批记录](../B19/approved-changes/run-record.md)，运行结果不由本绑定提前保证。
+
+
+## 2026-10-31 B19剩余项续接绑定
+
+用户授权原B19余1～余6从实际未完成处开发验收，遵守最新8规则，不新增字段、不重跑未变化已验；提交/TODO后期统一，B18现场未验保留。版本ERPNext15.124.1 `4e0dce9`/Frappe15.124.0，49文件候选，累计patch `a81070eba07db1eece06a5b823e2663fd775adfc4abf6b80ad93f74587f25f95`。
+
+1. 证据差集：余1停止后关联新单直接引用B17保留原单00048→停止→previous_work_order新单00049真实HTTP及PC来源，不再重跑。原普通三级角色审批、B05保存/明细、B08/B10～B16未变独立项直接复用；各旧日志只证明对应版本/范围。
+2. 余2本包：沿当前已启用审批的专用`xgd-b08-http.localhost`（本地18090，b08_http_only）而非重建老B19副本，普通新样例角色真实页面退回→改交期→重送审、终止、无事实取消/修订、有事实停止及窄屏；三人仍原C10。新建工单页面仅作为该未验链的起点，不另重跑B05全套。截图/DOM/请求结果和数据库回读共同验，不以API成功代替页面。
+3. 新样例复用`.development/checks/b17_core_fixture.py`的prepare主数据/新账号工具，P指向本轮独立目录；前缀沿该工具b17-core唯一随机值，不重建已有fixture。旧37类表基线保持；新工作站/物料/仓库隔离，所有新业务仅该样例。管理员只配置/审计，新页面和业务请求普通角色执行。
+4. 当前文件白名单：`.development/checks/b19_remaining_*`、私有`.development/private/b19-remaining-20261031/`及原`evidence/B19/`本轮结果、本绑定。产品先不改；真实失败后回原责任位置，只补确需的`work_order.py/.js`、现有test_work_order.py及hooks中已规划关联事件；附件/配置新增细节在实际读完入口、失败证据后另补，不默认增加快照框架、字段或防护。
+5. 余3/4：沿原Version/Comment/File及B02原权限；先读当前文件控制器/原扩展点和实际日志清理配置，只补未验附件/依据/待办、跨公司及撤权。余5是原卡已有双击/批准撤回/签批执行及故障回滚，先运行真实独立事务，不因假想竞态加锁/重试。需要本卡以外或额外防护时先陈述实际失败/代码代价，不擅自扩边界。
+6. 命令：`docker exec -w /home/frappe/frappe-bench -e PYTHONPATH=/b01 xgd-b08-check env/bin/python /b01/b19_remaining_fixture.py prepare|audit`；实际18090 `playwright-cli -s=b19-remaining-* open/run-code/click/fill/resize/snapshot/...`；本轮HTTP阶段脚本仅未验路径；当前源码哈希核原b16_query_source_check。原生配置重复导入、附件及并发测试各落点在实施前补详细绑定。不安装/升级工具、清旧数据、激活开发/客户审批或发送外部消息。
+
+做：补本卡实际证据差集、必要最小修补与验收。通过：普通岗位页面与后端当前状态、原因/历史/副作用一致，原业务与字段保持，权限/并发分别据实；只关通过子项。未有全部V01～V10/余1～余6及现场/渠道条件时不宣称整卡或交付完成。
+
+
+### B19余3附件反例与原入口绑定（2026-10-31）
+
+实际已读固定Frappe File.before_insert/validate/validate_attachment_references/on_trash：原私有File写入/回滚清理、关联父单write检查可复用；现ERPNext ProductionQualityFile只保护报工质检附件，B19历史hooks仅WorkOrder/Version/Comment。先用真实新File与审批fixture验证进入审批后的文件名修改、删除、改挂（审核岗位有原单write及File权限，保留草稿附件可编辑正例），不预先加新机制。
+
+测试白名单`.development/checks/b19_remaining_tests.py`在xgd-test.localhost回滚，复用原TestWorkOrderApproval真实fixture；记录File与原31表/Workflow表保持和原附件字节。命令`docker exec -w /home/frappe/frappe-bench -e PYTHONPATH=/b01 xgd-b08-check env/bin/python /b01/b19_remaining_tests.py [方法]`。若出现真实缺口，仅回既有work_order.py历史保护/hook事件及现有File子类必要位置补保护，不新增字段、附件账或全局审批框架；具体验收与修补以反例和追加绑定为准。
+
+
+B19余3实际反例后最小修补绑定：`attachments-red-initialized.log`三项均真实失败（修改/删除/改挂未抛PermissionError），原35表回滚保持。仅扩至既有`work_order.py`附件冻结判定及`production_quality.py:ProductionQualityFile`原File扩展，不改Frappe。使用原审批送审Comment.creation和File.creation判定曾纳入送审的附件：已送审附件保持不变，退回草稿可追加新附件，新增附件在再次送审前仍可改/删；送审后不允许新挂依据。原审批角色/权限/状态仍沿原函数。原File内容覆盖和共享文件私有性移动涉及同一依据时一并用同一判定，避免绕过；不加锁重试或概率防护，不新建附件/快照账。附件版本还原沿原File字节/hash、创建时间和Version/Comment阶段核对；没有新增字段。验证新增反例、草稿正常路径及直接受影响的原质检文件正常/冻结分支，其他B08已验不重跑。
+
+
+B19余2/余3/余4接续具体绑定：页面已补普通发起人新建/确认、审核人390窄屏退回、改交期重送审、签批人390取消、原修订空草稿保存后终止及有领料390停止；回读37旧表保持，停止原因在原审批Comment（不冒充approval_note字段）。仅引用原B17停止关联HTTP。
+
+余4新增普通测试账号foreign_director（现存隔离对照公司，签批+只读角色）及revoked_reviewer（同公司班组，审核+只读，后仅撤审核角色），原角色定义不改；File维护权限用本轮独立Role仅给本轮planner/reviewer。通过实际原生read/get_transitions/apply接口验证撤权读正例与动作拒绝、跨公司签批拒绝；先取完整原生错误body，不只状态码。
+
+余3真实HTTP新样例沿b19_remaining_http.py：空草稿准备→File私有作业要求v1→送审→退回→改交期/追加v2→重送审；保留两轮送审时点、File内容hash/本地字节及Version差异，核改删挂/晚加拒绝和原记录读。File权限与下载沿原native File接口/ProductionQualityFile；撤对象范围时需核原附件owner是否仍可下载，有真实失败才补原has_permission/is_downloadable/query入口。本卡不开发B18全站隐私/90天清理。
+
+余2配置重复使用限定：原生Workflow配置serialize→frappe.modules.import_file.import_doc两次（只在rollback fixture）；既有角色/字段必须已存在，元数据不新建。验证同一流程1份、旧draft/submitted不被批准、旧业务/历史不变；导出的Workflow纯配置不含User/业务行/凭据。固定配置只作已有环境的受控导入证据，不称Z01空环境已部署。真实导出/作用站点先隔离，只读核当前Log Settings与scheduler，不运行清理。
+
+
+B19配置与日志证据文件细化：新增仅检查脚本`b19_remaining_config.py`，在专用站只读导出当前原生Workflow的白名单字段/子行到`evidence/B19/remaining-20261031/production-workflow.json`，不导出User/账号/业务数据或新增CustomField。回滚测试读取该固定JSON，用原生import_doc(data_import=True,ignore_version=True)两次，核旧业务/待办/历史及单流程/存量未批准；不在持久站执行配置导入，不视为完整部署包。read-settings模式只读当前Log Settings、默认hook及scheduler状态，无清理动作。命令和原始输出留本轮private。
+
+
+B19余5调度与判据冻结：4个新工单各处于待签批，均沿本轮同一隔离BOM/工作站；不是B18人工/连续使用记录。`b19_remaining_race.py`仅测试进程：A在原apply_production_approval已经完成状态更新、写中文审批Comment前受控暂停；B独立DB连接/普通角色并发，观察SHOW FULL PROCESSLIST的同Work Order父锁等待后释放。真实业务方法不替换，只暂停A的add_comment；没有API生产注入入口。
+
+- double：同一director、同一expected_modified签批两次，最终只一次生效，第二旧版本/状态冲突，不返回假成功。
+- withdraw：A director签批，B原发起人撤回，同版本；先完成签批后，旧撤回失败，原依据/事实保留。
+- execute：A director签批，B仓管原make_stock_entry→insert→submit领5；批准提交前不能生效，父锁/当前读取后按实际结果验证。仅允许合法成功或明确未批准拒绝，其他业务错误不当通过；原料/库存账与单据各只一次，完整G3仍另验。
+- fault：仅A最终签批中文Comment写入点注入一次RuntimeError，确认原native动作已把当前事务docstatus推至1，再由测试边界rollback；新连接应看到原待签批/0状态、原工单整行hash及既有WorkflowAction/Comment/Version/JobCard数量与行hash不变。故障恢复验证不称HTTP真实系统故障。
+
+runner只用已准备race-cases和本轮新账号；进程边界捕获错误如实落盘并rollback，finally释放/结束子进程和DB连接，超时明确失败，不自动重跑或追加锁/重试。每case/source.json只允许首次运行；输出本地/private/b19-remaining/races，CLI `docker exec -w /home/frappe/frappe-bench -e PYTHONPATH=/b01 xgd-b08-check env/bin/python /b01/b19_remaining_race.py <case> run`。实际结果才决定通过，不以锁文字/状态机代码当验收。
+
+
+B19待办真实反例后的权限补绑：当前foreign_director工单read/sign已403，但pending-foreign-director查询HTTP200返回该待办1行，单张WorkflowAction读取也须核。原Frappe get_permission_query_conditions/has_permission只依permitted_roles。本次仅启用第5节已允许拟增`erpnext/manufacturing/permissions.py`及原hooks中WorkflowAction对应项；不改Frappe。
+
+查询追加父WorkOrder原生DatabaseQuery权限条件（含Company/Department/owner/单单分享），与原Frappe角色/Open条件AND；单张读取先沿原native has_permission角色，再检查父WorkOrder read。非WorkOrder待办维持原生行为。原生select不等read；仅select者无权，但原生单张read分享应只授权该父单，不扩大到同角色其他待办；原like/%/引号/!筛选语义由原查询构造保留，不二次格式化原SQL。
+
+验证新增同班组正例、跨班组/跨公司查询和单张读取反例、select-only与单张分享、like/%/引号/!=必要筛选；待办导出若原native该角色无export则保留403不越权赋全局。源控制和权限信息不新建表/字段/权限引擎。代码改动仅此模块/钩子及实际覆盖测试，不因猜测增加角色框架或并发锁。
+
+待办父单条件最终直接复用已存在的production_quality._read_match（只补真实reference_doctype上下文），不保留第二份role/read/share条件；相关待办2方法及原质检单张分享查询1方法定向复验，结果据本轮日志。
+
+
+B19附件撤范围实际反例补绑：owner先有父单read/原URL下载200；仅将本轮新planner的Company范围改为对照公司后父单403，但File元数据200/原私有URL200，原列表已正确0行（native过滤复用，不加第二份File列表条件）。回滚新增测试也复现File.has_permission仍True；另普通发起人在退回草稿上传is_private=0未被拒绝。原35表回滚保持。
+
+最小补现有production_quality.has_file_permission的WorkOrder父单read检查，沿已有ProductionQualityFile.is_downloadable→_file_download_scope覆盖直链/共享blob；新增生产工单审批依据要求本地上传使用已有is_private=1，拒绝显式公开输入，在原work_order附件校验入口先拒绝再写文件；不新增字段、角色或平台。检查范围为本地私有附件，外部网址版本及客户历史公有文件未验证，不静默搬迁或删除。原File列表正确行为保留，只验metadata/下载/公开上传及现有正例/相关原质检。
+
+### B19余3还原与余6企业微信群机器人补绑（2026-10-31）
+
+沿原卡补本轮00052两轮送审依据还原：只读脚本`b19_remaining_basis.py`核对既有Version日期差异（用原生format_value比较，不自造日期解析）、原送审Comment时点、两份File的创建时间/私有属性/字节MD5及送审HTTP快照；工序/用料输入与批准后派生排程区别记录，不新建快照或通用还原框架。普通审核账号真实Desk页检查附件/活动/版本入口，不以API代页面。
+
+用户已选企业微信群机器人；授权仅三试点群内角色，内容只脱敏工单号/审批状态/待办及登录链接，排除姓名/材料/价格。B19先绑定“B18试点-总装二车间审批群”，另两群不自动接收审批提醒。外部登录URL及该群受限Webhook文件尚待提供，未实发。原生Webhook实际会保存含key的URL/headers/data，且只检HTTP，不能直接配置照搬。允许拟增`erpnext/manufacturing/approval_notification.py`与原apply_production_approval成功写审计后的一处入队调用，复用Frappe提交后回调/队列/原生Error Log；不改Frappe、不增字段/DocType、SDK、重试或多渠道平台。
+
+通知仅配置显式启用且转至待审核/待签批时登记提交后入队；回滚不发送，入队只带脱敏标识/状态，密钥由worker读取受限配置文件。固定企业微信HTTPS地址、登录URL与群名在配置入口校验一次。HTTP失败、业务errcode非0、非JSON、超时均明确失败且不存原URL/异常原文；不影响已提交审批，不称已送达；未配置为未启用，不造默认群或URL。新增检查脚本`b19_remaining_notification_tests.py`，本地实际HTTP端点核协议边界，原审批fixture/真实提交回调及原队列核事务差异；条件齐后仅该群一条脱敏真实验收通知，服务端接受与群内收到分别记录。结果以实测追加，不提前关余6。
+
+用户补充的是明确标注“示例域名、实际部署时替换”的URL及试点机路径模板，不算实际可达性/SSO/403证据。本机只检查`/etc/b18-pilot/secrets/local.env`是否存在，不搜索其他凭据或对示例域名发送。适配契约按用户指定读取受限env文件中唯一`B18_ASSEMBLY_APPROVAL_WEBHOOK`值，不执行source；Frappe配置仅`xgd_wecom_robot_secret_file`与`xgd_wecom_login_url`（无业务字段），群名固定本次审批群。提供的`/m`路径不自动替代登录URL。缺少真实文件/实际地址时余6实发保留未验证，禁止审计登记“已发”。
+
+一次最终只读审查后的实证补绑：`review-file-inputs-red.log`两项均真实失败，35旧表保持。①新File以`is_private=1`加公有`/files/`URL入参，原生set_is_private改为0后仍可附入退回工单；②可写无关File同次改file_url指向冻结依据、is_private改0，原生按当前URL移动磁盘，而旧hash检查漏掉目标。仅在现有ProductionQualityFile.set_is_private规范化后调用同一审批附件校验（新记录不再在规范化前重复检查），在现有privacy-change保护按实际目标URL及原生更新涉及的旧/当前hash关联项检查；复用冻结判定，不新增字段、锁、重试或新权限层。原正常私有上传、退回新版本、已冻附件及直接受影响质检分支定向复验。未发生真机/客户迁移或历史文件改造。

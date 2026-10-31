@@ -69,10 +69,12 @@ def has_inspection_permission(doc, ptype=None, user=None, debug=False):
 	return None  # Native inspection roles remain required; share the parent report only.
 
 
-def _read_match(doctype, user):
+def _read_match(doctype, user, reference_doctype=None):
 	perms = frappe.permissions.get_role_permissions(frappe.get_meta(doctype), user=user)
 	if perms.get("read"):
-		return DatabaseQuery(doctype, user=user).build_match_conditions() or "1=1"
+		query = DatabaseQuery(doctype, user=user)
+		query.reference_doctype = reference_doctype
+		return query.build_match_conditions() or "1=1"
 	shared = frappe.share.get_shared(doctype, user, rights=["read"])
 	return f"`tab{doctype}`.name in ({', '.join(frappe.db.escape(name) for name in shared)})" if shared else "0=1"
 
@@ -117,6 +119,10 @@ def _file_parents(doc):
 
 
 def has_file_permission(doc, ptype=None, user=None, debug=False):
+	if doc.attached_to_doctype == "Work Order" and not frappe.has_permission(
+		"Work Order", "read", doc=doc.attached_to_name, user=user, throw=False
+	):
+		return False
 	inspection, card = _file_parents(doc)
 	if not card:
 		return None
@@ -170,18 +176,31 @@ class ProductionQualityFile(File):
 
 	def set_is_private(self):
 		super().set_is_private()
+		if self.is_new():
+			from erpnext.manufacturing.doctype.work_order.work_order import validate_production_approval_attachment
+
+			validate_production_approval_attachment(self)
 		if _file_parents(self)[1] and cint(self.is_private) != 1:
 			frappe.throw("报工质检图片必须使用本地私有附件")
 
 	def save_file(self, content=None, decode=False, ignore_existing_file_check=False, overwrite=False):
 		if overwrite:
+			from erpnext.manufacturing.doctype.work_order.work_order import protect_frozen_production_approval_attachment
+
 			for name in frappe.get_all("File", filters={"file_url": self.file_url}, pluck="name"):
+				protect_frozen_production_approval_attachment(frappe.get_doc("File", name))
 				if _file_parents(frappe.get_doc("File", name))[1]:
 					frappe.throw("报工质检图片不能覆盖，请在质检草稿移除后重新上传", frappe.PermissionError)
 		return super().save_file(content, decode, ignore_existing_file_check, overwrite)
 
 	def _validate_quality_write(self):
-		from erpnext.manufacturing.doctype.work_order.work_order import _check_production_approval_scope
+		from erpnext.manufacturing.doctype.work_order.work_order import (
+			_check_production_approval_scope,
+			validate_production_approval_attachment,
+		)
+
+		if not self.is_new():
+			validate_production_approval_attachment(self)
 
 		old = self.get_doc_before_save()
 		protected = None
@@ -224,8 +243,13 @@ class ProductionQualityFile(File):
 			self._validate_quality_write()
 			old = self.get_doc_before_save()
 			if cint(old.is_private) != cint(self.is_private):
-				# Native privacy changes move the binary and update same-content aliases.
-				for name in frappe.get_all("File", filters={"content_hash": old.content_hash}, pluck="name"):
+				from erpnext.manufacturing.doctype.work_order.work_order import protect_frozen_production_approval_attachment
+
+				# Native privacy changes move the current URL and update same-content aliases.
+				for name in frappe.get_all("File", or_filters={
+					"file_url": self.file_url, "content_hash": ["in", [old.content_hash, self.content_hash]],
+				}, pluck="name"):
+					protect_frozen_production_approval_attachment(frappe.get_doc("File", name))
 					if _file_parents(frappe.get_doc("File", name))[1]:
 						frappe.throw("共享图片仍关联报工质检，不能改变私有性", frappe.PermissionError)
 		super().validate()

@@ -184,6 +184,10 @@ frappe.ui.form.on("Work Order", {
 	},
 
 	refresh: function (frm) {
+		if ((frm.is_new() || frm.doc.docstatus === 0 && ["草稿", "退回"].includes(frm.doc.workflow_state)) &&
+			frappe.user.has_role("生产工单发起")) {
+			frm.add_custom_button("字段补全建议", () => erpnext.work_order.suggest_production_fields(frm));
+		}
 		frm.fields_dict.operations.grid.update_docfield_property("report_scope", "options", [
 			{ value: "", label: __("未授权") },
 			{ value: "ALL", label: __("所有人") },
@@ -216,6 +220,8 @@ frappe.ui.form.on("Work Order", {
 				frm.set_intro("审批状态：" + frm.doc.workflow_state + "。从“操作”菜单处理审批；签批通过前不能执行生产或库存过账。");
 			}
 		}
+		frm.add_custom_button("扫码或输入定位", () => frappe.require("/assets/erpnext/js/production_navigation.js")
+			.then(() => erpnext.production_navigation.open()));
 		erpnext.work_order.show_production_header_guidance(frm);
 		erpnext.work_order.show_production_material_summary(frm);
 
@@ -293,7 +299,9 @@ frappe.ui.form.on("Work Order", {
 	},
 
 	add_custom_button_to_return_components: function (frm) {
-		if (frm.doc.docstatus === 1 && ["Closed", "Completed"].includes(frm.doc.status)) {
+		const project_return = frm.doc.approval_requested_by && frm.doc.workflow_state === "已批准"
+			&& frappe.model.can_create("Stock Entry") && !["Cancelled"].includes(frm.doc.status);
+		if (frm.doc.docstatus === 1 && (project_return || (!frm.doc.approval_requested_by && ["Closed", "Completed"].includes(frm.doc.status)))) {
 			let non_consumed_items = frm.doc.required_items.filter((d) => {
 				return flt(d.consumed_qty) < flt(d.transferred_qty - d.returned_qty);
 			});
@@ -820,7 +828,7 @@ erpnext.work_order = {
 		const dialog = new frappe.ui.Dialog({
 			title: "预览任务和用料", size: "large",
 			fields: [{ fieldtype: "HTML", fieldname: "preview", options:
-				`<p>确认后保存工序任务和用料计划，不生成报工或库存记录。</p><h5>工序任务</h5><table class="table table-bordered"><thead><tr><th>顺序</th><th>工序</th><th>计划数量</th></tr></thead><tbody>${rows}</tbody></table><h5>用料计划</h5><table class="table table-bordered"><thead><tr><th>物料</th><th>需求数量</th><th>库存单位</th></tr></thead><tbody>${items}</tbody></table>` }],
+				`<p>确认后保存工序任务和用料计划，不生成报工或库存记录。</p><p>依据：工单 ${escape(plan.source.work_order)}（${escape(plan.source.work_order_modified)}）；BOM ${escape(plan.source.bom)}（${escape(plan.source.bom_modified)}）。</p><h5>工序任务</h5><table class="table table-bordered"><thead><tr><th>顺序</th><th>工序</th><th>计划数量</th></tr></thead><tbody>${rows}</tbody></table><h5>用料计划</h5><table class="table table-bordered"><thead><tr><th>物料</th><th>需求数量</th><th>库存单位</th></tr></thead><tbody>${items}</tbody></table>` }],
 			primary_action_label: "确认生成任务和用料",
 			primary_action: async () => {
 				await frappe.call({
@@ -1128,21 +1136,23 @@ erpnext.work_order = {
 		});
 	},
 
-	show_prompt_for_qty_input: function (frm, purpose) {
-		let max = this.get_max_transferable_qty(frm, purpose);
+	show_prompt_for_qty_input: function (frm, purpose, confirmed_max) {
+		const confirmed_output = confirmed_max !== undefined;
+		let max = confirmed_output ? confirmed_max : this.get_max_transferable_qty(frm, purpose);
 
 		let fields = [
 			{
 				fieldtype: "Float",
-				label: __("Qty for {0}", [__(purpose)]),
+				label: confirmed_output ? "本次完工总量" : __("Qty for {0}", [__(purpose)]),
 				fieldname: "qty",
-				description: __("Max: {0}", [max]),
+				description: confirmed_output ? `含本次已确认不良量；当前可入库总量：${max}` : __("Max: {0}", [max]),
 				default: max,
 			},
 			{
 				fieldtype: "Check",
 				label: __("Consider Process Loss"),
 				fieldname: "consider_process_loss",
+				hidden: confirmed_output,
 				default: 0,
 				onchange: function () {
 					if (this.value) {
@@ -1158,7 +1168,9 @@ erpnext.work_order = {
 			frm.qty_prompt = frappe.prompt(
 				fields,
 				(data) => {
-					max += (frm.doc.qty * (frm.doc.__onload.overproduction_percentage || 0.0)) / 100;
+					if (!confirmed_output) {
+						max += (frm.doc.qty * (frm.doc.__onload.overproduction_percentage || 0.0)) / 100;
+					}
 
 					if (data.qty > max) {
 						frappe.msgprint(__("Quantity must not be more than {0}", [max]));
@@ -1173,19 +1185,16 @@ erpnext.work_order = {
 		});
 	},
 
-	make_se: function (frm, purpose) {
-		this.show_prompt_for_qty_input(frm, purpose)
-			.then((data) => {
-				return frappe.xcall("erpnext.manufacturing.doctype.work_order.work_order.make_stock_entry", {
-					work_order_id: frm.doc.name,
-					purpose: purpose,
-					qty: data.qty,
-				});
-			})
-			.then((stock_entry) => {
-				frappe.model.sync(stock_entry);
-				frappe.set_route("Form", stock_entry.doctype, stock_entry.name);
-			});
+	make_se: async function (frm, purpose) {
+		const method = "erpnext.manufacturing.doctype.work_order.work_order.make_stock_entry";
+		const args = { work_order_id: frm.doc.name, purpose };
+		// Use the same server-derived output as the draft; posting still checks current facts.
+		const remaining = frm.doc.approval_requested_by && purpose === "Manufacture"
+			? await frappe.xcall(method, { ...args, quantity_only: true }) : null;
+		const data = await this.show_prompt_for_qty_input(frm, purpose, remaining?.fg_completed_qty);
+		const stock_entry = await frappe.xcall(method, { ...args, qty: data.qty });
+		frappe.model.sync(stock_entry);
+		frappe.set_route("Form", stock_entry.doctype, stock_entry.name);
 	},
 
 	create_pick_list: function (frm, purpose = "Material Transfer for Manufacture") {
@@ -1375,31 +1384,86 @@ frappe.tour["Work Order"] = [
 	},
 ];
 
+erpnext.work_order.suggest_production_fields = async function (frm) {
+	if (!frm.doc.production_item || !frm.doc.company) {
+		frappe.msgprint("请先选择生产物料和公司，再查看字段建议。"); return;
+	}
+	const fields = ["bom_no", "source_warehouse", "wip_warehouse", "fg_warehouse", "expected_delivery_date"];
+	const missing_fields = fields.filter(field => !frm.doc[field]);
+	if (!missing_fields.length) { frappe.msgprint("当前这些字段已填写，无需补全。"); return; }
+	const context = { production_item: frm.doc.production_item, company: frm.doc.company, bom_no: frm.doc.bom_no || null };
+	const { message: result } = await frappe.call("erpnext.manufacturing.production_ai.get_production_field_suggestions", {
+		...context, missing_fields,
+	});
+	const escape = value => frappe.utils.escape_html(String(value));
+	const dialog = new frappe.ui.Dialog({
+		title: "字段补全建议（配置依据）", size: "large",
+		fields: [
+			{ fieldname: "basis", fieldtype: "HTML", options: "<p>候选来自当前原生配置，未使用历史样本；不推测交期、人员或数量。只填入勾选的空字段，保存前仍可修改。</p>" },
+			...result.candidates.flatMap(row => [
+				{ fieldname: "use_" + row.fieldname, fieldtype: "Check", label: `${escape(row.label)}：${escape(row.value)}`, default: 0 },
+				{ fieldname: "source_" + row.fieldname, fieldtype: "HTML", options: `<p>${escape(row.reason)}。来源：${escape(__(row.source.doctype))} ${escape(row.source.name)}（${escape(row.source.modified)}）。</p>` },
+			]),
+			{ fieldname: "missing", fieldtype: "HTML", options: result.missing.map(row => `<p>${escape(row.label)}：${escape(row.reason)}</p>`).join("") },
+		],
+		primary_action_label: "填入所选建议（尚未保存）",
+		primary_action: async values => {
+			if (frm.doc.production_item !== context.production_item || frm.doc.company !== context.company ||
+				(frm.doc.bom_no || null) !== context.bom_no) {
+				frappe.msgprint("产品、公司或BOM已变化，请重新查看字段建议。"); return;
+			}
+			for (const row of result.candidates) {
+				if (values["use_" + row.fieldname] && !frm.doc[row.fieldname]) await frm.set_value(row.fieldname, row.value);
+			}
+			dialog.hide();
+		},
+	});
+	dialog.set_secondary_action(() => dialog.hide());
+	dialog.set_secondary_action_label("忽略建议");
+	dialog.show();
+};
+
 // B08 reuses the native form/dialog; quantities and confirmation remain server-authoritative.
-erpnext.work_order.open_production_report = async function (frm, selected_task) {
+erpnext.work_order.open_production_report = async function (frm, selected_task, suggestion_draft) {
 	const work_order = frm.doc.name;
 	const api = "erpnext.manufacturing.doctype.job_card.job_card.";
 	const { message: menu } = await frappe.call(api + "get_production_report_tasks", { work_order });
 	if (frm.doc.name !== work_order) { frappe.msgprint("工单页面已变化，请重新打开报工。"); return; }
-	if (!menu.tasks.length) {
+	const storage_key = `production-report:${frappe.session.user}:${work_order}`;
+	const pending = localStorage.getItem(storage_key);
+	const original = pending ? JSON.parse(pending) : null;
+	if (suggestion_draft) {
+		if (original || suggestion_draft.work_order !== work_order) {
+			frappe.msgprint("请先核对原提交结果；建议草稿只能用于其来源工单。"); return;
+		}
+		selected_task = suggestion_draft.operation_id;
+	}
+	if (!menu.tasks.length && !original) {
 		frappe.msgprint("没有已授权的工序任务，请由负责人检查任务授权。");
 		return;
 	}
 	const has_remaining = (task) => task.unfinished > 0 && task.status !== "Completed";
-	if (selected_task && !menu.tasks.some((task) => task.name === selected_task && has_remaining(task))) {
+	if (!original && selected_task && !menu.tasks.some((task) => task.name === selected_task && has_remaining(task))) {
 		frappe.msgprint("所选任务已完成或授权已变化，请重新打开工单选择。");
 		return;
 	}
-	const storage_key = `production-report:${frappe.session.user}:${work_order}`;
+	const task_options = menu.tasks.map((t) => ({ value: t.name, label: `第${t.idx}任务 · ${t.operation}` }));
+	if (original && !task_options.some((option) => option.value === original.operation_id)) {
+		task_options.push({ value: original.operation_id, label: "原请求工序（仅核对原提交）" });
+	}
 	let fingerprint = null;
 	let preview_generation = 0;
+	let restoring = Boolean(original);
 	const escape = (value) => frappe.utils.escape_html(String(value ?? ""));
 	const dialog = new frappe.ui.Dialog({
-		title: "逐笔报工", size: "large",
+		title: suggestion_draft ? "报工建议草稿（待本人核对）" : "逐笔报工", size: "large",
 		fields: [
+			{ fieldname: "suggestion_notice", fieldtype: "HTML", options: suggestion_draft
+				? `<p>结构化建议，尚未验证真实模型识别。请核对数量并补齐实际时间；取消不会入账。</p><p>来源工单版本：${escape(suggestion_draft.basis.modified)}。建议只作参考，确认仍检查当前权限与余量。</p>` : "" },
 			{ fieldname: "task", label: "工序任务", fieldtype: "Select", reqd: 1,
-				options: menu.tasks.map((t) => ({ value: t.name, label: `第${t.idx}任务 · ${t.operation}` })),
-				default: selected_task || menu.tasks.find(has_remaining)?.name || menu.tasks[0].name,
+				read_only: Boolean(suggestion_draft),
+				options: task_options,
+				default: original?.operation_id || selected_task || menu.tasks.find(has_remaining)?.name || menu.tasks[0]?.name,
 				onchange: () => { update_task(); update_preview(); } },
 			{ fieldname: "summary", fieldtype: "HTML" },
 			{ fieldname: "good_quantity", label: "本次良品数量", fieldtype: "Data", reqd: 1, onchange: () => update_preview() },
@@ -1410,26 +1474,36 @@ erpnext.work_order.open_production_report = async function (frm, selected_task) 
 			{ fieldname: "overtime_seconds", label: "加班秒数", fieldtype: "Int", default: 0, onchange: () => update_preview() },
 			{ fieldname: "time_preview", fieldtype: "HTML" },
 			{ fieldname: "history", fieldtype: "HTML" },
-		],
+		].map((field) => {
+			const key = field.fieldname === "task" ? "operation_id" : field.fieldname;
+			return original && Object.hasOwn(original, key)
+				? { ...field, default: original[key], read_only: 1 }
+				: suggestion_draft && Object.hasOwn(suggestion_draft.values, key)
+					? { ...field, default: suggestion_draft.values[key] }
+					: suggestion_draft && ["good_quantity", "bad_quantity", "from_time", "to_time"].includes(key)
+						? { ...field, default: "" } : field;
+		}),
 		primary_action_label: "确认报工",
 		primary_action: async (values) => {
 			if (frm.doc.name !== work_order) { frappe.msgprint("工单页面已变化，请重新打开报工。"); return; }
-			if (!fingerprint) { frappe.msgprint("请先填写数量和起止时间，并核对工时、预计工资与效率预览。"); return; }
 			if (localStorage.getItem(storage_key)) {
 				frappe.msgprint("上次提交结果尚未核对，请先使用“查询或重试上次报工”，不要重复创建新记录。"); return;
 			}
+			if (!fingerprint) { frappe.msgprint("请先填写数量和起止时间，并核对工时、预计工资与效率预览。"); return; }
 			const args = { work_order, operation_id: values.task,
 				request_id: crypto.randomUUID(), good_quantity: values.good_quantity, bad_quantity: values.bad_quantity,
 				from_time: values.from_time, to_time: values.to_time, shutdown_seconds: values.shutdown_seconds,
 				overtime_seconds: values.overtime_seconds, context_fingerprint: fingerprint };
+			if (suggestion_draft) args.draft_basis = suggestion_draft.basis;
 			localStorage.setItem(storage_key, JSON.stringify(args));
 			await submit(args);
 		},
 	});
 	function update_task() {
+		if (restoring) return;
 		const task = menu.tasks.find((t) => t.name === dialog.get_value("task"));
 		if (!task) return;
-		dialog.set_value("good_quantity", String(task.unfinished));
+		if (!suggestion_draft) dialog.set_value("good_quantity", String(task.unfinished));
 		dialog.fields_dict.summary.$wrapper.html(`<p>工单 ${escape(work_order)}，第${escape(task.idx)}任务 · ${escape(task.operation)}。</p><p>计划 ${escape(task.plan)}；累计良品 ${escape(task.good)}；累计不良 ${escape(task.bad)}；未完成 ${escape(task.unfinished)}（${escape(menu.unit)}）。本次确认不改计划量。</p>`);
 		const rows = menu.reports.filter((r) => r.operation_id === task.name);
 		dialog.fields_dict.history.$wrapper.html("<b>最近50笔中的本道工序记录</b>" + (rows.length ?
@@ -1437,6 +1511,7 @@ erpnext.work_order.open_production_report = async function (frm, selected_task) 
 				`<tr><td><a href='/app/job-card/${encodeURIComponent(r.name)}' target='_blank'>${escape(r.name)}</a></td><td>${escape(r.total_completed_qty)}</td><td>${escape(r.process_loss_qty)}</td><td>${escape(r.report_effective_seconds)}</td><td>${r.docstatus === 1 ? "已确认" : "已冲销"}</td></tr>`).join("") + "</tbody></table>" : "<p>暂无已确认记录。</p>"));
 	}
 	async function update_preview() {
+		if (restoring) return;
 		const generation = ++preview_generation;
 		fingerprint = null;
 		dialog.fields_dict.time_preview.$wrapper.html("<p>请填写数量和实际起止时间，核对服务器预览后确认。</p>");
@@ -1469,7 +1544,14 @@ erpnext.work_order.open_production_report = async function (frm, selected_task) 
 			`<p>标准效率：${value(source.standard_efficiency, "未配置")} ${value(source.unit)}/小时；实际效率：${value(metrics.actual_efficiency)} ${value(source.unit)}/小时；达标率：${metrics.efficiency_percent == null ? "—" : `${value(metrics.efficiency_percent)}%`}。</p>` +
 			`<p>来源：工单 ${value(source.work_order)}，工序 ${value(source.operation)}（${value(source.operation_id)}）；计算版本 ${value(source.calculation_version)}。</p>`);
 	}
+	function lock_pending(locked) {
+		restoring = locked;
+		for (const field of ["task", "good_quantity", "bad_quantity", "from_time", "to_time", "shutdown_seconds", "overtime_seconds"]) {
+			dialog.set_df_property(field, "read_only", locked);
+		}
+	}
 	async function submit(args) {
+		lock_pending(true);
 		dialog.get_primary_btn().prop("disabled", true);
 		let saved;
 		try {
@@ -1478,6 +1560,7 @@ erpnext.work_order.open_production_report = async function (frm, selected_task) 
 		} catch (error) {
 			if (error.status >= 400 && error.responseJSON?.exc_type) {
 				localStorage.removeItem(storage_key);
+				lock_pending(false);
 				fingerprint = null;
 				dialog.fields_dict.time_preview.$wrapper.html("<p>服务器已拒绝本次报工，未保存。请按错误提示修正并重新核对工时。</p>");
 			} else {
@@ -1542,5 +1625,9 @@ erpnext.work_order.open_production_report = async function (frm, selected_task) 
 	});
 	dialog.set_secondary_action_label("查询或重试上次报工");
 	dialog.show();
-	update_task();
+	if (original) {
+		dialog.fields_dict.time_preview.$wrapper.html("<p>上次提交结果待核对，已保留原数量和时间。请先“查询或重试上次报工”，不要新建另一笔。</p>");
+	} else {
+		update_task();
+	}
 };

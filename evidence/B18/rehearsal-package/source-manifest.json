@@ -1,0 +1,29 @@
+{
+  "kind": "B17 retained synthetic evidence rehearsal copy",
+  "source_record_date": "2026-10-31",
+  "head": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+  "patch_sha256": "a81070eba07db1eece06a5b823e2663fd775adfc4abf6b80ad93f74587f25f95",
+  "source_files": {
+    "forward-audit.json": "c3b1b8961bb05cae1009f8de4164612eb6e67452626676f40fdaa5fa2f8e8076",
+    "reverse-audit.json": "9e75f750cde9aa6cfdd01481112cbb0d6c373f6e518d9c372dbaf0e2fd72f246",
+    "continuation-06-request.json": "b55cceee69fef63f6ea3936d0f38569fd9639f0e23ed7e1f5592774c2d864511",
+    "continuation-07-review.json": "16bc9bc5e9d6eb02274114220c786df83e4d49a948dca2307e7a84c810cc3a17",
+    "continuation-08-sign.json": "4ec82709bf51b57b1f52aee4f8b04f52e89101939792617a8064ee21a52f9467",
+    "continuation-10-issue-submit.json": "37938e353016ae41f9f62c5aea26b29c1948ac9f37719ae339310f588fca86fb",
+    "continuation-12-return-submit.json": "a1032f3cbef2313b3504a64dfa85656beb92b6a9eb90d493a7b3172ff24f3c0f",
+    "continuation-21-manufacture-four-submit.json": "c32b0acb9b71f18e461b8b39caac7638c7f6a96a7442d76fbcb285b25f800eee",
+    "continuation-25-manufacture-six-submit.json": "db0e9b5b81327cf4bd1df8e82f24406c7c50acb485bbd4b881128307f7457dd0",
+    "continuation-27-reports.json": "6e8f8d8aa0366b11afc837d8be1381e490977adf780b38ce3237ff00d0c1d220",
+    "continuation-after-reverse-27-reports.json": "69392866d452ddbe75218df3721647373be13e160a7b74524e09cc9a65657bb4",
+    "continuation-35-original-preserved.json": "8b6073109e4fb4b30dfdcd506fcedac5f83dda208dde23c71a11ee72cdd47a9f",
+    "final-source-check.json": "4fd5175112a33862db361ef2b68666b35efdccb3082020ede0d39215b54818d2"
+  },
+  "outputs": {
+    "orders.csv": "322246de8a1fbc6dad7a499718df1e6ee2588f05a4d325545f85e37a8a0315f2",
+    "approvals.csv": "c2d2e59cba1b0a7ff6cf114a04c9ffe1a7dd2ca5ff171f76b8ece052be0d5700",
+    "reports.csv": "c3485d4fdcf8399b957d5e0da661df12c512edc21b7de169cc53d7a8fdd5eb8a",
+    "stock.csv": "48dcd794391348f5cee08349b216623f79cd65c1d88e580ae7034e67fd5b0689",
+    "manual-sample.csv": "3df9e421fbdb49c591b2b308e466c36df1ada6abb2cac7561f7132e35bdbadb4"
+  },
+  "real_field_acceptance": false
+}

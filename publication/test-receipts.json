@@ -1,5 +1,5 @@
 {
-  "scope": "Separate executed batches; FAILED red/intermediate batches preserved. Exact source patch where captured, explicit null otherwise. No cumulative full-suite result; publication does not rerun tests",
+  "scope": "Separate executed batches through B11; subsequent B12-A02 commands/results and limitations are in their run-record.md. FAILED red/intermediate batches preserved. No cumulative full-suite result; publication does not rerun tests",
   "tests": [
     {
       "local_log": "evidence/B05/entries-20261029/final-fixture.log",
@@ -1706,5 +1706,18 @@
     "verified_after_all_requests": true,
     "publication_note": "Only assertions/counts retained; runtime business_state and raw responses remain local."
   },
-  "current_patch_sha256": "906010f517f003af5311be474ec0927184690d392c31cd5a864b0581455f4e51"
+  "current_patch_sha256": "0d009b05ac6e359b33e694098f770deb895b12d5ddfa07708125c5c0b0d8fbb3",
+  "current_tracked_patch_sha256": "da34b87ae13a6e8753d173d448ef04c0118dc92add599e774c450e15efcbeac8",
+  "later_records": [
+    "evidence/B12/run-record.md",
+    "evidence/B13/run-record.md",
+    "evidence/B14/run-record.md",
+    "evidence/B15/run-record.md",
+    "evidence/B16/run-record.md",
+    "evidence/B17/run-record.md",
+    "evidence/B18/run-record.md",
+    "evidence/B19/remaining-20261031/run-record.md",
+    "evidence/A01/run-record.md",
+    "evidence/A02/run-record.md"
+  ]
 }

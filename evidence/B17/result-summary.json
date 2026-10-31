@@ -1,0 +1,46 @@
+{
+  "head": "4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e",
+  "branch": "codex/xgd-maintenance",
+  "product_files_unchanged": 49,
+  "patch_sha256": "a81070eba07db1eece06a5b823e2663fd775adfc4abf6b80ad93f74587f25f95",
+  "old_tables_unchanged": 37,
+  "new_custom_fields": 0,
+  "b17_python_syntax": "PASS",
+  "scripts": {
+    "b17_core_fixture.py": "830e1dac241ffcfd42abe110c359185ac0747bedef0b4879c91b2fefc8fc8225",
+    "b17_core_http.py": "90015117796a2042e18fc52932fede632f1bd7116bd8d5df119cbc3af6fa2ea0"
+  },
+  "forward": {
+    "planned": 10,
+    "operations_good": [
+      10,
+      10,
+      10
+    ],
+    "finished": 10,
+    "consumed": 5,
+    "stock": [
+      15,
+      0,
+      10
+    ]
+  },
+  "reverse": {
+    "operations_good": [
+      10,
+      10,
+      8
+    ],
+    "original_good_retained": 10,
+    "finished": 0,
+    "stock": [
+      20,
+      0,
+      0
+    ]
+  },
+  "b17_card_complete": false,
+  "prior_unverified_retained": true,
+  "committed": false,
+  "pushed": false
+}

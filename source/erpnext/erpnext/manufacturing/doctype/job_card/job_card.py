@@ -1765,9 +1765,13 @@ def preview_production_report_time(work_order, operation_id, from_time, to_time,
 
 @frappe.whitelist()
 def confirm_production_report(work_order, operation_id, request_id, good_quantity, bad_quantity,
-	from_time, to_time, context_fingerprint, shutdown_seconds=0, overtime_seconds=0):
+	from_time, to_time, context_fingerprint, shutdown_seconds=0, overtime_seconds=0, draft_basis=None):
+	if draft_basis is not None:
+		from erpnext.manufacturing.production_ai import validate_report_draft_basis
+
+		draft_basis = validate_report_draft_basis(draft_basis, work_order, operation_id)
 	return _confirm_production_report(work_order, operation_id, request_id, good_quantity, bad_quantity,
-		from_time, to_time, context_fingerprint, shutdown_seconds, overtime_seconds)
+		from_time, to_time, context_fingerprint, shutdown_seconds, overtime_seconds, draft_basis=draft_basis)
 
 
 @frappe.whitelist()
@@ -1786,7 +1790,7 @@ def correct_production_report(original_job_card, request_id, good_quantity, bad_
 
 
 def _confirm_production_report(work_order, operation_id, request_id, good_quantity, bad_quantity,
-	from_time, to_time, context_fingerprint, shutdown_seconds=0, overtime_seconds=0, *, original=None, correction_reason=None):
+	from_time, to_time, context_fingerprint, shutdown_seconds=0, overtime_seconds=0, *, original=None, correction_reason=None, draft_basis=None):
 	"""A single native Job Card in the request transaction; no internal commit."""
 	from erpnext.manufacturing.doctype.bom.bom import validate_quantity_input
 
@@ -1803,6 +1807,8 @@ def _confirm_production_report(work_order, operation_id, request_id, good_quanti
 		"good": format(good.normalize(), "f"), "bad": format(bad.normalize(), "f"), "from": start.isoformat(), "to": end.isoformat(),
 		"shutdown": _whole_non_negative(shutdown_seconds, "停工秒数"), "overtime": _whole_non_negative(overtime_seconds, "加班秒数"),
 		"context_fingerprint": context_fingerprint, "original": original.name if original else None, "correction_reason": correction_reason}
+	if draft_basis is not None:
+		payload["suggestion_draft"] = draft_basis
 	payload_hash = hashlib.sha256(frappe.as_json(payload).encode()).hexdigest()
 	existing = frappe.db.get_value("Job Card", {"report_request_id": request_id}, ["name", "report_payload_hash", "owner", "docstatus"], as_dict=True, for_update=True)
 	if existing:
@@ -1810,6 +1816,8 @@ def _confirm_production_report(work_order, operation_id, request_id, good_quanti
 			frappe.throw("请求编号已用于其他报工内容，不能覆盖原记录", frappe.PermissionError)
 		frappe.get_doc("Job Card", existing.name, for_update=True).check_permission("read")
 		return {"name": existing.name, "docstatus": existing.docstatus}
+	if draft_basis is not None and get_datetime(draft_basis["modified"]) != get_datetime(order.modified):
+		frappe.throw("建议来源工单已变化，请重新导入并核对草稿", frappe.TimestampMismatchError)
 	from erpnext.manufacturing.doctype.work_order.work_order import validate_production_execution_state
 	validate_production_execution_state(order)
 	if operation.status == "Completed" and not original:
@@ -1834,6 +1842,8 @@ def _confirm_production_report(work_order, operation_id, request_id, good_quanti
 		if fingerprint != context_fingerprint:
 			frappe.throw("时段依据已变化，请重新核对工时后确认")
 	context["confirmed_at"] = frappe.utils.now()
+	if draft_basis is not None:
+		context["suggestion_draft"] = draft_basis
 	metrics = _report_metrics(source, good, bad, context["result"]["effective_seconds"]) if source else None
 	doc = frappe.get_doc({"doctype": "Job Card", "amended_from": original.name if original else None, "correction_reason": correction_reason,
 		"work_order": work_order, "operation_id": operation_id,

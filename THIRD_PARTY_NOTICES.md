@@ -1,6 +1,6 @@
 # 第三方来源与本轮修改
 
-本次归档日期：2026-10-28。本文件登记实际来源和范围，不替代完整依赖许可审查。
+本次归档日期：2026-10-31。本文件登记实际来源和范围，不替代完整依赖许可审查。
 
 ## 项目工作流程说明
 
@@ -11,7 +11,7 @@
 ## 实际包含的第三方源码
 
 - 上游：[frappe/erpnext](https://github.com/frappe/erpnext)，v15.124.1，提交`4e0dce9ea8d351cd7023ad5ed66faf3cdec0680e`。
-- `source/erpnext/`共25个修改或新增文件；其中17个源自该版本、8个为维护分支新增，在原文件上局部修改辅助读取权限、库存单位汇总/限额、B19审批核心、任务/库存执行门槛及审批历史保护（原hooks扩展点）及B08逐笔事实、历史结果查询、工序计价冻结与金额/效率来源快照及其测试。计价包成果保留；本轮history-paths仅修改原Work Order Operation控制器和原Job Card测试两个文件，补工序已生效/已取消报工引用的直接保存及删除保护，不新增元数据、不修改Frappe框架。保留原版权头；上游GPL文本原样附于[license.txt](source/erpnext/license.txt)。修改日期2026-10-26至2026-10-28，当前差异见[history-paths补丁](evidence/B08/history-paths-20261028/implementation.patch)与文件哈希。
+- `source/erpnext/`共46个修改或新增文件：32个源自该固定版本、14个维护新增。累计包含数量/工时、逐笔事实、审批权限、领退料/入库、移动恢复、计划来源、同源报表以及AI只读候选/人工草稿边界和测试，具体内容以[source-lock](source/source-lock.json)及[完整补丁](source/current-implementation.patch)为准；不改Frappe框架。保留原版权头与GPL许可证[license.txt](source/erpnext/license.txt)，修改日期2026-10-26至2026-10-31。新增配置/确定性建议不代表真实外部模型或客户服务接入。
 - 未修改文件按锁定上游SHA获取。运行依赖Frappe v15.124.0；本归档不复制Frappe源码，也不宣称已完成全部容器/依赖许可证兼容核验。
 
 ## 要持续核对的参考产品
