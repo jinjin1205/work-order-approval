@@ -2,7 +2,7 @@
 
 ## 2026-10-31 B11 material return continuation
 
-唯一任务仍为原B11四条及R07 quantity-return.md绑定。本包3原文件、无新字段；21新＋9受影响原方法分批、真实PC和并发通过，死锁/双追踪审查反例已修复，见evidence/B11/return-20261031/run-record.md。原卡前3项按证据勾选，完整逆向/G3和客户待批未验；整卡不归档。下一步原B12先补R07，不重开未变化已验项。公开推送收尾待回填。
+唯一任务仍为原B11四条及R07 quantity-return.md绑定。本包3原文件、无新字段；21新＋9受影响原方法分批、真实PC和并发通过，死锁/双追踪审查反例已修复，见evidence/B11/return-20261031/run-record.md。原卡前3项按证据勾选，完整逆向/G3和客户待批未验；整卡不归档。下一步原B12先补R07，不重开未变化已验项。代码1eb562a已推main并新克隆核646文件/33源码一致，精确SHA无CI配置/触发，不称CI通过；最终文档提交与CI仅最终回复。
 
 
 ## 2026-10-31 B10 material issue continuation

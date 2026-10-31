@@ -1,0 +1,20 @@
+{
+  "checked_at": "2026-10-31T11:33:59.574945+08:00",
+  "repo": "jinjin1205/work-order-approval",
+  "workflow_count": 0,
+  "workflows": [],
+  "workflow_errors": null,
+  "commits": [
+    {
+      "sha": "1eb562a083da7f9d5bccf2109e60794904f49af1",
+      "actions_total": 0,
+      "runs": [],
+      "check_runs_total": 0,
+      "check_runs": [],
+      "statuses_total": 0,
+      "statuses": [],
+      "errors": []
+    }
+  ],
+  "scope": "Exact SHA, all events; zero checks is NOT CI success; no permission assumptions for unnamed collaborators"
+}

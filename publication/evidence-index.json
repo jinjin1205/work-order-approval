@@ -4224,6 +4224,12 @@
     "reason": "public copy"
   },
   {
+    "path": "evidence/B11/return-20261031/code-ci.json",
+    "original_sha256": "ac7791145d69a6ea27bed2298ac335853c94ee4298c53a77fbdd05eb4a7cb79f",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
     "path": "evidence/B11/return-20261031/concurrency-summary.json",
     "original_sha256": "c82673bf8bab0ac2541ea4cc59b9c2a58f9070eeb24aeea6790ab5efa684a23f",
     "published": true,
@@ -4243,7 +4249,7 @@
   },
   {
     "path": "evidence/B11/return-20261031/run-record.md",
-    "original_sha256": "62c494e3623e986694259830adc35db2ec155549f526fffc7346f5dfad848fec",
+    "original_sha256": "8811d5ea88edad8b4e529537b9f8f6f99dc1047ff6b908e5c7f24f3ebd45871f",
     "published": true,
     "reason": "public copy"
   },
@@ -6792,6 +6798,12 @@
     "reason": "local raw execution evidence; not uploaded"
   },
   {
+    "path": "evidence/发布/2026-10-31-1eb562a-remote.json",
+    "original_sha256": "602aa14a0b3a664d018604a64947bc7eb752b9fc2f43afa70cf8b39702bb9b7a",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
     "path": "evidence/发布/2026-10-31-5ffe980-remote.json",
     "original_sha256": "2ef5d9465a8d0885ef216749362eed318442ab9335476f22c90e0281e2b81bd1",
     "published": true,
@@ -6883,7 +6895,7 @@
   },
   {
     "path": "evidence/维护/2026-10-28-暂停与保存.md",
-    "original_sha256": "e2bb3deee233fd9820488b3491c9e06b72ef6d9097b1d472921870ed8f01d016",
+    "original_sha256": "2e1485a5632e71da534f0c27d2745cb98dba0cf6bbe61749fbe645a6b44e7392",
     "published": true,
     "reason": "public copy"
   },

@@ -465,7 +465,7 @@
     "source": "docs/任务卡/02-生产与物料闭环.md",
     "public_path": "docs/任务卡/02-生产与物料闭环.md",
     "treatment": "personal paths/runtime identifiers removed",
-    "source_sha256": "a64fd4824894f82f38c34ccaae92f2c41be47ee7bebbc1bc0428397aa28be6d1"
+    "source_sha256": "521ce5c21774c126014b4339e76cfa69ffc2eaf3a847e86d21fa889373d37a10"
   },
   {
     "source": "docs/任务卡/03-AI与交付.md",
@@ -483,7 +483,7 @@
     "source": "docs/开发TODO.md",
     "public_path": "docs/开发TODO.md",
     "treatment": "unchanged",
-    "source_sha256": "5ea6f0bd564f23cd88f5ca745b59bbf8a000ed41f65af5900267ad769fd44a35"
+    "source_sha256": "24fc36653c2c29437fce8962f05c36c759ccb5ffebb0f2890ae3a5ab149d1d31"
   },
   {
     "source": "docs/验收样例.md",
@@ -687,7 +687,7 @@
     "source": "evidence/B11/return-20261031/run-record.md",
     "public_path": "evidence/B11/return-20261031/run-record.md",
     "treatment": "unchanged",
-    "source_sha256": "62c494e3623e986694259830adc35db2ec155549f526fffc7346f5dfad848fec"
+    "source_sha256": "8811d5ea88edad8b4e529537b9f8f6f99dc1047ff6b908e5c7f24f3ebd45871f"
   },
   {
     "source": "evidence/B14/final-review.md",
@@ -969,7 +969,7 @@
     "source": "evidence/维护/2026-10-28-暂停与保存.md",
     "public_path": "evidence/维护/2026-10-28-暂停与保存.md",
     "treatment": "unchanged",
-    "source_sha256": "e2bb3deee233fd9820488b3491c9e06b72ef6d9097b1d472921870ed8f01d016"
+    "source_sha256": "2e1485a5632e71da534f0c27d2745cb98dba0cf6bbe61749fbe645a6b44e7392"
   },
   {
     "source": "evidence/维护/2026-10-29-进度与规划核对.md",
@@ -987,19 +987,19 @@
     "source": "openspec/changes/b08-followup-20261028/design.md",
     "public_path": "openspec/changes/b08-followup-20261028/design.md",
     "treatment": "unchanged",
-    "source_sha256": "a290e7fd75479b7b2c9b0412135a951f7d4baccce41075a3358133631a3521db"
+    "source_sha256": "dbf584659fabea6b263be50768fd0416e6ab825562e4bd15dfe2cf79316b2ee4"
   },
   {
     "source": "openspec/changes/b08-followup-20261028/proposal.md",
     "public_path": "openspec/changes/b08-followup-20261028/proposal.md",
     "treatment": "unchanged",
-    "source_sha256": "8ddc4b8e2d524c70d4501fc06fe7627f0018d06a53d58165bf74e06b6d49cdab"
+    "source_sha256": "fe4c47ba7dfee6f5d32789fa4b83e6d5ecb2a90c24ef59fa015163a97f09fea2"
   },
   {
     "source": "openspec/changes/b08-followup-20261028/tasks.md",
     "public_path": "openspec/changes/b08-followup-20261028/tasks.md",
     "treatment": "unchanged",
-    "source_sha256": "993e57ba8e1a0ae66a897e8c17f12475efc96ad9afb38d4c4d90201b8b780c34"
+    "source_sha256": "c0ab1ff8e11389da1a2994766df64c665d8f2aa2e21cf724e0e2fb303588ce1b"
   },
   {
     "source": "openspec/changes/b08-followup-20261028/.openspec.yaml",
@@ -1341,7 +1341,7 @@
     "source": ".publication/export_public.py",
     "public_path": ".publication/export_public.py",
     "treatment": "unchanged",
-    "source_sha256": "73b65fb78a5f6d9887099d53dad2623a2d1b3144746704b077e1ccd8fc91148a"
+    "source_sha256": "db4c2d214b0aee351a6ba79c54150dd1ca6f2674b49790ec448d745ca603e577"
   },
   {
     "source": ".publication/check_public.py",
@@ -2332,6 +2332,18 @@
     "public_path": "evidence/R05/r02-probe-attempt5.py",
     "treatment": "unchanged",
     "source_sha256": "bebd418f53e027db69fc9888dfc4bf01fc162aab71394832e1e2572c6d9cd774"
+  },
+  {
+    "source": "evidence/B11/return-20261031/code-ci.json",
+    "public_path": "evidence/B11/return-20261031/code-ci.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "ac7791145d69a6ea27bed2298ac335853c94ee4298c53a77fbdd05eb4a7cb79f"
+  },
+  {
+    "source": "evidence/发布/2026-10-31-1eb562a-remote.json",
+    "public_path": "evidence/发布/2026-10-31-1eb562a-remote.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "602aa14a0b3a664d018604a64947bc7eb752b9fc2f43afa70cf8b39702bb9b7a"
   },
   {
     "source": "evidence/B11/return-20261031/source-manifest.json",
