@@ -12,6 +12,12 @@
     "reason": "public copy"
   },
   {
+    "path": "evidence/A02/code-ci.json",
+    "original_sha256": "d57b4b230143541749e1c9752887a3fc3a36cf6aec25c8d9f84bff5d998cb6d6",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
     "path": "evidence/A02/run-record.md",
     "original_sha256": "a3ca3511c69646e1b394e850be0ed14d27bd17eae8c9c4f59bbed41af7894139",
     "published": true,
@@ -6936,6 +6942,12 @@
     "reason": "public copy"
   },
   {
+    "path": "evidence/发布/2026-10-31-f699955-remote.json",
+    "original_sha256": "eb1e8ec07256b24bc78fe7f6859156880cd15fa37648f47cdcd025e023ac6f78",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
     "path": "evidence/发布/B04-B19-ui-2026-10-27-remote.json",
     "original_sha256": "5de69034f0249f1dfa15abd56adf892d8ba9a6c1bc18a77eb984ee94344e86fc",
     "published": true,
@@ -7021,7 +7033,7 @@
   },
   {
     "path": "evidence/维护/2026-10-28-暂停与保存.md",
-    "original_sha256": "2e1485a5632e71da534f0c27d2745cb98dba0cf6bbe61749fbe645a6b44e7392",
+    "original_sha256": "d422d7541012099285ff5c4d8f4b7092c94577b4f9b34e27fbd074cc2b927390",
     "published": true,
     "reason": "public copy"
   },
