@@ -491,7 +491,7 @@ class TestWorkOrderApprovalHistory(FrappeTestCase):
 		self.assertFalse(frappe.db.exists("Work Order", draft.name))
 
 
-def make_approval_execution_fixture(test_case, *, stock=False):
+def make_approval_execution_fixture(test_case, *, stock=False, stock_receipts=((100, 2),), valuation_method=None):
 	"""Reuse B19 setup, adding genuine pre-activation tasks and stock in the same rollback."""
 	fixture = TestWorkOrderApproval()
 	test_case.addCleanup(fixture.doCleanups)
@@ -510,7 +510,13 @@ def make_approval_execution_fixture(test_case, *, stock=False):
 			f.raw = f.legacy_order.required_items[0].item_code
 			f.legacy_card.append("items", {"item_code": f.raw, "source_warehouse": f.order_args["source_warehouse"], "uom": "Nos", "required_qty": 10})
 			f.legacy_card.save()
-			test_stock_entry.make_stock_entry(item_code=f.raw, company=f.company, target=f.order_args["source_warehouse"], qty=100, basic_rate=2)
+			if valuation_method:
+				item = frappe.get_doc("Item", f.raw)
+				item.valuation_method = valuation_method
+				item.save()
+			for quantity, rate in stock_receipts:
+				test_stock_entry.make_stock_entry(item_code=f.raw, company=f.company,
+					target=f.order_args["source_warehouse"], qty=quantity, basic_rate=rate)
 
 	fixture.setUp(before_workflow=seed_before_workflow)
 	if stock:

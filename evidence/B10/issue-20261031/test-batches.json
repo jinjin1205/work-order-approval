@@ -1,0 +1,138 @@
+{
+  "scope": "20 affected methods passed on final tested source; seven actual unit batches, historical failures preserved; no full ERPNext or unchanged B05-B09/U01 rerun",
+  "unique_passing_methods": 20,
+  "batches": [
+    {
+      "local_log": ".development/private/b10-issue-20261031/logs/p0.log",
+      "sha256": "e12c93c500a253d6171ffb166888e4b946f27247732e870fafffe4cf06e02294",
+      "tests": 1,
+      "seconds": "9.834",
+      "result": "OK",
+      "method_names": [
+        "test_00_issue_draft_post_and_cancel_real_stock"
+      ],
+      "source_patch_sha256": null,
+      "failures": 0,
+      "errors": 0,
+      "old_tables_unchanged": 23
+    },
+    {
+      "local_log": ".development/private/b10-issue-20261031/logs/entry-red.log",
+      "sha256": "2b8a63d98d8dd1ca79aa07adf5fd838e882eb5ba595fc8dec345ee56306e2d9e",
+      "tests": 4,
+      "seconds": "31.630",
+      "result": "FAILED",
+      "method_names": [
+        "test_issue_draft_generator_requires_parent_read",
+        "test_issue_draft_generator_requires_stock_create",
+        "test_issue_nonzero_fg_cannot_exceed_actual_material_plan",
+        "test_issue_other_authorized_warehouse_cannot_replace_order_wip"
+      ],
+      "source_patch_sha256": null,
+      "failures": 4,
+      "errors": 0,
+      "old_tables_unchanged": 23
+    },
+    {
+      "local_log": ".development/private/b10-issue-20261031/logs/entry-green.log",
+      "sha256": "db5e9e1d5ecaca85d8cdb0e2289b93c10f5353aec93dd274263e303ae99d46a5",
+      "tests": 5,
+      "seconds": "40.831",
+      "result": "OK",
+      "method_names": [
+        "test_00_issue_draft_post_and_cancel_real_stock",
+        "test_issue_draft_generator_requires_parent_read",
+        "test_issue_draft_generator_requires_stock_create",
+        "test_issue_nonzero_fg_cannot_exceed_actual_material_plan",
+        "test_issue_other_authorized_warehouse_cannot_replace_order_wip"
+      ],
+      "source_patch_sha256": null,
+      "failures": 0,
+      "errors": 0,
+      "old_tables_unchanged": 23
+    },
+    {
+      "local_log": ".development/private/b10-issue-20261031/logs/material-red.log",
+      "sha256": "95bdd0ea5d161c524a3a7eed45f08237536cd5313962c0b5ee3219f313ebe81a",
+      "tests": 4,
+      "seconds": "32.886",
+      "result": "FAILED",
+      "method_names": [
+        "test_issue_transferred_backflush_setting_cannot_bypass_plan",
+        "test_issue_unknown_material_cannot_enter_order_totals",
+        "test_issue_split_rows_share_one_material_limit",
+        "test_issue_cost_and_duplicate_submit_preserve_ledger"
+      ],
+      "source_patch_sha256": null,
+      "failures": 2,
+      "errors": 0,
+      "old_tables_unchanged": 23
+    },
+    {
+      "local_log": ".development/private/b10-issue-20261031/logs/material-green-source-red.log",
+      "sha256": "7e65a80ee523da18ecfa1f33ee860575ee18c8bf5afc4f298486d5d628e1fb8d",
+      "tests": 3,
+      "seconds": "24.112",
+      "result": "FAILED",
+      "method_names": [
+        "test_issue_transferred_backflush_setting_cannot_bypass_plan",
+        "test_issue_unknown_material_cannot_enter_order_totals",
+        "test_issue_other_authorized_source_cannot_replace_plan_source"
+      ],
+      "source_patch_sha256": null,
+      "failures": 1,
+      "errors": 0,
+      "old_tables_unchanged": 23
+    },
+    {
+      "local_log": ".development/private/b10-issue-20261031/logs/integrity-red.log",
+      "sha256": "6d676bb14e16c66af26705622de7dddc6f0758e364a9bca027a05e7f378efac5",
+      "tests": 4,
+      "seconds": "35.876",
+      "result": "FAILED",
+      "method_names": [
+        "test_issue_other_authorized_source_cannot_replace_plan_source",
+        "test_issue_insufficient_stock_rolls_back",
+        "test_issue_cancel_changed_quantity_denied",
+        "test_issue_unknown_material_cannot_spoof_original_item"
+      ],
+      "source_patch_sha256": null,
+      "failures": 2,
+      "errors": 0,
+      "old_tables_unchanged": 23
+    },
+    {
+      "local_log": ".development/private/b10-issue-20261031/logs/final-affected.log",
+      "sha256": "70ae0d256f097e7e5b4c389fbbe7b0871749e93520dfeb1cd8049c4022335877",
+      "tests": 20,
+      "seconds": "194.911",
+      "result": "OK",
+      "method_names": [
+        "test_00_issue_draft_post_and_cancel_real_stock",
+        "test_issue_cancel_changed_quantity_denied",
+        "test_issue_cost_and_duplicate_submit_preserve_ledger",
+        "test_issue_draft_generator_requires_parent_read",
+        "test_issue_draft_generator_requires_stock_create",
+        "test_issue_draft_only_role_cannot_post",
+        "test_issue_insufficient_stock_rolls_back",
+        "test_issue_late_posting_failure_rolls_back",
+        "test_issue_nonzero_fg_cannot_exceed_actual_material_plan",
+        "test_issue_other_authorized_source_cannot_replace_plan_source",
+        "test_issue_other_authorized_warehouse_cannot_replace_order_wip",
+        "test_issue_split_rows_share_one_material_limit",
+        "test_issue_transferred_backflush_setting_cannot_bypass_plan",
+        "test_issue_unknown_material_cannot_enter_order_totals",
+        "test_issue_unknown_material_cannot_spoof_original_item",
+        "test_unapproved_submitted_order_stock_denied",
+        "test_mismatched_job_card_cannot_borrow_approved_order",
+        "test_disabled_workflow_stock_submit_denied",
+        "test_approved_material_return_preserved",
+        "test_stopped_order_preserves_stock_cancellation"
+      ],
+      "source_patch_sha256": "f534ecfb1420246f7b881011d3e5fbcc95953f19b8d6e8fb9c48cdb801463e74",
+      "failures": 0,
+      "errors": 0,
+      "old_tables_unchanged": 23
+    }
+  ]
+}

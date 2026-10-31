@@ -2116,6 +2116,8 @@ def make_stock_entry(
 	source_stock_entry: str | None = None,
 ):
 	work_order = frappe.get_doc("Work Order", work_order_id)
+	work_order.check_permission("read")
+	frappe.has_permission("Stock Entry", "create", throw=True)
 	if not frappe.db.get_value("Warehouse", work_order.wip_warehouse, "is_group"):
 		wip_warehouse = work_order.wip_warehouse
 	else:

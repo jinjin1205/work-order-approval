@@ -4116,6 +4116,66 @@
     "reason": "local raw execution evidence; not uploaded"
   },
   {
+    "path": "evidence/B10/issue-20261031/acceptance-summary.json",
+    "original_sha256": "9de796ec9bd61209186d32873d0669b98f16a04bdac8d1044405674a63eaf862",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B10/issue-20261031/bounded-change.patch",
+    "original_sha256": "c22c41e840eb8f7cdf3944ed0b78d0e62424ff98d3449d0014b649e16ebd06ab",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B10/issue-20261031/concurrency-summary.json",
+    "original_sha256": "6d7685e3b486d9f209e27f6929076716dda5c0395d543d1b93072d0ae9596a5b",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B10/issue-20261031/implementation.patch",
+    "original_sha256": "f534ecfb1420246f7b881011d3e5fbcc95953f19b8d6e8fb9c48cdb801463e74",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B10/issue-20261031/old-row-audit.json",
+    "original_sha256": "c49d798fe250de116386109d775c612a09b4719f1951ab0c6b1bb8ed30e4cf7a",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B10/issue-20261031/run-record.md",
+    "original_sha256": "a1b767182e912e36897a7b8c5e3475e5983226b7319f5690ec5982c360934906",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B10/issue-20261031/source-manifest.json",
+    "original_sha256": "4b6b3161202d65679b5843b29fd29d94763c76e961ec9f2264057bafe212abb8",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B10/issue-20261031/test-batches.json",
+    "original_sha256": "3ecb1e1e18f2d368df556eadd717727573fd234b9968c5aca228e4ebb4dab56e",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B10/issue-20261031/test-runtime.json",
+    "original_sha256": "19b6018ee12d5f14098397abd0b693d81495c75c3a6c3960f36ed87873a73955",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B10/issue-20261031/ui-runtime.json",
+    "original_sha256": "faabe1bff7cf556317bd6030e71e674e8ebb9a913a167020fb836efa8cb96810",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
     "path": "evidence/B10/pause-save-check.json",
     "original_sha256": "72be3284259559111f52cd0907e044b0dd32c4c89d73b77316661a0b1ee9d2fe",
     "published": true,
@@ -6421,7 +6481,7 @@
   },
   {
     "path": "evidence/R07/quantity-return.md",
-    "original_sha256": "a7547a2b7e64f1f4af62452f221f6b64d949b7cf380551c8c8a987e522ce92ca",
+    "original_sha256": "e626ef649b20b311103c8117df2038acbbde41ab4e9b36423d55ea053b59565a",
     "published": true,
     "reason": "public copy"
   },
@@ -6658,6 +6718,12 @@
     "original_sha256": "20c1aec16a654d3c4e1687f30c383f020d1a1694dec192b4a647a7c3538dd91f",
     "published": true,
     "reason": "public copy"
+  },
+  {
+    "path": "evidence/发布/2026-10-30-d5ea916-remote.json",
+    "original_sha256": "90096f0287131d673bc8dde42dafd50d83d5e5b4a12c2308cf2296ee9ead3f75",
+    "published": false,
+    "reason": "local raw execution evidence; not uploaded"
   },
   {
     "path": "evidence/发布/B04-B19-ui-2026-10-27-remote.json",

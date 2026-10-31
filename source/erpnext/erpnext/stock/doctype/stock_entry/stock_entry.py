@@ -240,9 +240,8 @@ class StockEntry(StockController):
 			)
 
 	def validate(self):
-		self.validate_production_execution()
-		self.pro_doc = frappe._dict()
-		if self.work_order:
+		self.pro_doc = self.validate_production_execution() or frappe._dict()
+		if self.work_order and not self.pro_doc:
 			self.pro_doc = frappe.get_doc("Work Order", self.work_order)
 
 		self.validate_duplicate_serial_and_batch_bundle("items")
@@ -327,9 +326,9 @@ class StockEntry(StockController):
 			return
 
 		is_return = bool(self.is_return and self.purpose == "Material Transfer for Manufacture")
-		order = check_production_execution(work_order, material_return=is_return)
+		order = check_production_execution(work_order, material_return=is_return, for_update=True)
 		if not (order and is_return):
-			return
+			return order
 
 		# A return is the reverse route of a real issue, not a client-supplied bypass flag.
 		entry = frappe.qb.DocType("Stock Entry")
@@ -346,6 +345,29 @@ class StockEntry(StockController):
 		for row in self.items:
 			if (row.item_code, row.s_warehouse or self.from_warehouse, row.t_warehouse or self.to_warehouse) not in routes:
 				frappe.throw("退料必须对应本工单已生效领料的物料和反向仓库，不能用退料标记新增投料", frappe.PermissionError)
+		return order
+
+	def before_cancel(self):
+		# Cancellation reverses saved facts; stopped orders and disabled Workflow still allow it.
+		previous = self.get_doc_before_save()
+		work_order = previous.work_order
+		if not work_order and previous.job_card:
+			work_order = frappe.db.get_value("Job Card", previous.job_card, "work_order")
+		if work_order:
+			order = frappe.get_doc("Work Order", work_order, for_update=True)
+			if order.get("approval_requested_by"):
+				order.check_permission("read")
+				def saved_values(doc):
+					ignored = {"docstatus", "modified", "modified_by"}
+					values = {key: value for key, value in doc.get_valid_dict().items() if key not in ignored}
+					for field in doc._table_fieldnames:
+						values[field] = [
+							{key: value for key, value in row.get_valid_dict().items() if key not in ignored}
+							for row in doc.get(field)
+						]
+					return frappe.as_json(values)
+				if saved_values(self) != saved_values(previous):
+					frappe.throw("取消领料只能冲销已保存的原单，不能同时改写原单内容", frappe.PermissionError)
 
 	def validate_finished_good_serial_batch_for_work_order(self):
 		if not (
@@ -1267,8 +1289,12 @@ class StockEntry(StockController):
 		if self.purpose not in ["Manufacture", "Material Transfer for Manufacture"]:
 			return
 
+		project_issue = (self.purpose == "Material Transfer for Manufacture" and self.work_order
+			and self.pro_doc.get("approval_requested_by") and not self.is_return)
+		if project_issue:
+			self._validate_no_excess_transfer()
 		if not self.fg_completed_qty:
-			if self.work_order and self.purpose == "Material Transfer for Manufacture":
+			if not project_issue and self.work_order and self.purpose == "Material Transfer for Manufacture":
 				self._validate_no_excess_transfer()
 			return
 
@@ -1302,15 +1328,21 @@ class StockEntry(StockController):
 		if self.is_return:
 			return
 
-		if (
-			frappe.db.get_single_value("Manufacturing Settings", "backflush_raw_materials_based_on")
-			== "Material Transferred for Manufacture"
-		):
-			return
-
 		wo = self.pro_doc
 		if not wo:
 			return
+
+		if (
+			frappe.db.get_single_value("Manufacturing Settings", "backflush_raw_materials_based_on")
+			== "Material Transferred for Manufacture"
+			and not wo.get("approval_requested_by")
+		):
+			return
+
+		if wo.get("approval_requested_by"):
+			for row in self.items:
+				if row.t_warehouse != wo.wip_warehouse:
+					frappe.throw("领料目标仓必须是本工单的线边在制仓", frappe.PermissionError)
 
 		pending_by_item = {}
 		for r in wo.required_items:
@@ -1326,7 +1358,19 @@ class StockEntry(StockController):
 
 			key = item.original_item or item.item_code
 			if key not in pending_by_item:
+				if wo.get("approval_requested_by"):
+					frappe.throw("领料物料必须属于本工单已确认的用料明细", frappe.PermissionError)
 				continue
+			if wo.get("approval_requested_by") and item.s_warehouse not in {
+				row.source_warehouse or wo.source_warehouse for row in wo.required_items if row.item_code == key
+			}:
+				frappe.throw("领料来源仓必须与本工单已确认的用料明细一致", frappe.PermissionError)
+			if wo.get("approval_requested_by") and item.item_code != key:
+				if not item.allow_alternative_item or not (
+					frappe.db.exists("Item Alternative", {"item_code": key, "alternative_item_code": item.item_code})
+					or frappe.db.exists("Item Alternative", {"item_code": item.item_code, "alternative_item_code": key, "two_way": 1})
+				):
+					frappe.throw("领料替代物料必须已允许并配置有效替代关系", frappe.PermissionError)
 
 			transfer_by_item[key] = transfer_by_item.get(key, 0.0) + flt(item.transfer_qty)
 			first_row_by_item.setdefault(key, item)

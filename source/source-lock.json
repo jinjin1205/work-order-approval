@@ -4,7 +4,7 @@
   "version": "15.124.1",
   "frappe_version": "15.124.0",
   "frappe_commit": "f1cf50cf9bbc641bb015adb7008bf2ea1c8483ab",
-  "patch_sha256": "b87b2f80a7fd3ad8aa0956620ba02fdbbeb51834bf54d925f0ce98363510432f",
+  "patch_sha256": "f534ecfb1420246f7b881011d3e5fbcc95953f19b8d6e8fb9c48cdb801463e74",
   "files": {
     "erpnext/hooks.py": {
       "base_sha256": "e9d55d583820c5411a2133754362e2bf0b8f24ca48bf236ae27460af7fdf66bc",
@@ -88,7 +88,7 @@
     },
     "erpnext/manufacturing/doctype/work_order/test_work_order.py": {
       "base_sha256": "7fee421acd6c7616c621a648d129df834ec09fbb62e7a814a556975961a82285",
-      "modified_sha256": "732c282d22d68f71b34df9a5fe8cec04cb654b15ac70625fef35806ee7a49a5b"
+      "modified_sha256": "81fdc0ed01ff961c3578a7f8fd19e9a84762d7aadc9540561e644e02b195b2e3"
     },
     "erpnext/manufacturing/doctype/work_order/work_order.js": {
       "base_sha256": "680f5c40b12430b1a511aeb7a981d06612309ee632c681b65793befc5b07d6a8",
@@ -100,7 +100,7 @@
     },
     "erpnext/manufacturing/doctype/work_order/work_order.py": {
       "base_sha256": "4592b2f82a9045c74dbfdb8ea1d82dbd5c39bedd1d4bb6d6c21158af63c9d546",
-      "modified_sha256": "94f71944f7f5d09bd6b49a2531ed3799e2e615834904cf9213ebb8eb535ec404"
+      "modified_sha256": "b75a292edaee82d57125006af3130e28515547340f2b055d8e876bbd395293d7"
     },
     "erpnext/manufacturing/doctype/work_order_item/work_order_item.py": {
       "base_sha256": "478c6eab8e9195ba3c89d1618b7806d947964fdfc9319ec790c4af689163957b",
@@ -128,11 +128,11 @@
     },
     "erpnext/stock/doctype/stock_entry/stock_entry.py": {
       "base_sha256": "d3b32c0f711e12bc2dcab7367d13ab36252a6a67e3e14219a11ee9f003eae19d",
-      "modified_sha256": "9589a27b63ddbc7568913e5281f22df875b7c4d26d8b893c5729a0f4a3fe7fc9"
+      "modified_sha256": "8a42a1bee661ec4081862b460122e76b136b4707caf5fe07986748b95747783b"
     },
     "erpnext/stock/doctype/stock_entry/test_stock_entry.py": {
       "base_sha256": "aa89dfe1a05bf9110ebdafae03cc88dd2d392a629b71b08496af76fcfcad6238",
-      "modified_sha256": "09f0e195a7ffe8a886fb59436818709a3157e8ce23fcff304e9e04b3036a6285"
+      "modified_sha256": "5c81e4750f5e7892f7b9721f2935386b47464fd59566ef43d48cb48b232ee183"
     },
     "erpnext/translations/zh.csv": {
       "base_sha256": null,

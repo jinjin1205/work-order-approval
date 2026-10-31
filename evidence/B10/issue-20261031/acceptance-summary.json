@@ -1,0 +1,102 @@
+{
+  "ordinary_role": "fixture-only warehouse read/create/write/submit/cancel; Work Order read only; no System Manager",
+  "browser": "Playwright CLI 0.1.22, ordinary warehouse actor, native Work Order production issue -> Stock Entry save -> submit -> cancel",
+  "stages": {
+    "draft": {
+      "plan": 10.0,
+      "transferred": 0.0,
+      "consumed": 0.0,
+      "order_transferred": 0.0,
+      "bins": {
+        "source": {
+          "actual_qty": 20.0,
+          "stock_value": 60.0
+        },
+        "wip": {
+          "actual_qty": 0,
+          "stock_value": 0
+        }
+      },
+      "entries": [
+        {
+          "docstatus": 0,
+          "sle": 0
+        }
+      ],
+      "report_facts": 0
+    },
+    "submitted": {
+      "plan": 10.0,
+      "transferred": 5.0,
+      "consumed": 0.0,
+      "order_transferred": 5.0,
+      "bins": {
+        "source": {
+          "actual_qty": 15.0,
+          "stock_value": 45.0
+        },
+        "wip": {
+          "actual_qty": 5.0,
+          "stock_value": 15.0
+        }
+      },
+      "entries": [
+        {
+          "docstatus": 1,
+          "sle": 2
+        }
+      ],
+      "report_facts": 0
+    },
+    "cancelled": {
+      "plan": 10.0,
+      "transferred": 0.0,
+      "consumed": 0.0,
+      "order_transferred": 0.0,
+      "bins": {
+        "source": {
+          "actual_qty": 20.0,
+          "stock_value": 60.0
+        },
+        "wip": {
+          "actual_qty": 0.0,
+          "stock_value": 0.0
+        }
+      },
+      "entries": [
+        {
+          "docstatus": 2,
+          "sle": 4
+        }
+      ],
+      "report_facts": 0
+    }
+  },
+  "manual_issue_configuration": {
+    "backflush_raw_materials_based_on": "BOM",
+    "material_consumption": 0,
+    "active_stock_entry_workflows": 0,
+    "stock_allow_negative": 0
+  },
+  "limitations": [
+    "No active Stock Entry Workflow at isolated site; draft is not pending approval; customer approval configuration and pending-quantity display remain unverified",
+    "Native Manufacture/return and complete G3 cross-order/stock cancellation concurrency are not accepted here; B11/B12 remain separate",
+    "No mobile/customer/clean Z01 delivery acceptance",
+    "HTTP-only fixture has expected socket.io 404; no realtime notification acceptance"
+  ],
+  "failures_preserved": [
+    "4 missing-permission/quota/target-warehouse red tests",
+    "2 backflush/material red tests",
+    "1 source-warehouse red test",
+    "2 cancellation/original-item spoof red tests",
+    "Race-red observer PROCESS permission denied; no extra privilege granted; actual A committed, B rolled back QueryDeadlockError",
+    "Initial UI missing Stock Settings read; no posting; fixture-only read config fixed, browser flow then passed",
+    "Local py_compile cache destination denied; syntax checked via ast/public checker instead"
+  ],
+  "browser_snapshot_sha256": {
+    "page-2026-10-31T02-41-48-994Z.yml": "869a81b4cff736084185e6f3769a93a0c108511d9a96d0ebc4124a1a78d8a432",
+    "page-2026-10-31T02-42-24-951Z.yml": "bb64f0e3060052bbad36145660420fb55de05d308f3f30a74ca3e7986b9a36d7"
+  },
+  "posted_screenshot_sha256": "e4843333d49b9997b0e3f79ec6a97e2b2767b6c47040b5682ce0ebcb9504ad74",
+  "old_rows_unchanged": true
+}

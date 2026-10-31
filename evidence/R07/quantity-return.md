@@ -1,4 +1,4 @@
-> 公开归档副本（2026-10-27）：保留结论、方法与限制；个人路径/运行编号已移除。原始运行单据、响应、截图和日志不上传，原件索引见 `publication/evidence-index.json`。本页历史结果不是发布日重测。
+> 公开归档副本（2026-10-31）：保留结论、方法与限制；个人路径/运行编号已移除。原始运行单据、响应、截图和日志不上传，原件索引见 `publication/evidence-index.json`。本页历史结果不是发布日重测。
 
 # R07 数量、单位与退料入口绑定
 
@@ -133,3 +133,19 @@ bench --site xgd-test.localhost run-tests --app erpnext --module erpnext.stock.d
 结束条件：可运行fixture和实际原生失败；上述有限计算及修补红绿通过；原数据/源码核对；原卡和可公开证据提交推送回读。仅关闭本批子项。完整G1、G2、G3，B08/B14/B16持久化/页面与客户验收不提前关闭；新发现登记归属，不自动扩大。
 
 本批实际结果：6组原生探针、初次红色及亚秒交集审查反例保留；最终`TestProductionTimeMetrics`12项通过1.854秒，22项运行源码匹配、11张业务表不变，见[B04工时证据](../B04/time-metrics/run-record.md)。实际入口为`job_card.py:205/1434/1474`、`bom.py:44`及`test_job_card.py:1642`（以本批补丁为准）。规则先按真实交集匹配，再取并集完整秒；计件只良品、效率良+不良按C13。此次只完成计算层及分钟漏洞，不关闭原记录/并发/配置页面与其他数量保存门槛；既有网页未替换。
+
+# 2026-10-31 B10实际领料提交与取消绑定
+
+执行前基线：公开main d5ea916c1e542e32eae6a8f042c72fa7e2c65bb6已fetch一致；维护codex/xgd-maintenance/ERPNext15.124.1上游4e0dce9、Frappe15.124.0。现有41源文件/22Python与b87b2f8累计补丁一致。Docker原未运行，已仅恢复现有dev数据库/Redis与b08-check/ui；不初始化站点/模块、不启动其他项目。五底座选择沿原R03～R07，不再重选。U01单位、B19原审批拒绝、B07用料冻结、B08/B09已验事实保护直接复用。
+
+**做/不做/通过：**推进原B10已有下一包，复用原生Stock Entry、Stock Ledger Entry、Bin和估价。普通限定仓管生成/保存/提交/取消领料，单据、库存、工单累计一致；草稿不入账；真实并发不超本单额度，权限和失败无残留；CASE02移动平均20/60/3→出5余15/45。本卡不实施B11退料生成器或B12成品入库，不更改库存账/估价核心、Frappe、自动发料、财务、字段/DocType和手机。取消只恢复授权本包新样例单据，不删客户/旧记录。完整逆向与跨对象G3仍按原责任卡验收，不以此包代替整体验收。
+
+**已读真实入口与白名单（4个原文件）：**
+- work_order/work_order.py:make_stock_entry（whitelisted）当前直接get_doc后生成原生草稿，未显式read/create检查；核无权调用后才补必要权限。get_items/get_raw_materials从已批准本单需求和BOM生成，计划和实发分开；不重算U01。
+- stock_entry/stock_entry.py:validate_production_execution→check_production_execution当前未for_update；validate→set_transfer_qty→validate_component_and_quantities/_validate_no_excess_transfer；on_submit先update_stock_ledger后update_work_order；on_cancel先update_work_order后update_stock_ledger。两者必须在库存/工单派生前取得同一父工单锁并重读当前状态/额度，复用原父锁和原数据库事务，不建锁框架。
+- 同上：原生组件限额仅fg_completed_qty为空时调用，且Material Transferred回冲设置提前返回；先测真实领料输入，任何最小修补仅限本项目正向领料。原退料、制造/拆解和非项目行为不在此包重写。仓库/物料来源按已批准用料行核实际失败后补，保留原生公司、用户权限、换算和库存不足检查。
+- work_order/test_work_order.py:make_approval_execution_fixture最小扩展仅合成库存输入/估价参数，原调用默认不变；stock_entry/test_stock_entry.py新增TestProductionMaterialIssue，复用此fixture、普通仓管和原StockEntry生成/提交/取消；不复跑旧审批或U01全套。
+
+**唯一任务：**原B10的5条勾选及原2026-10-29下一包顺序，新增本日期进度注释即可，不复制清单。沿现有OpenSpec b08-followup-20261028引用到B10；CLI引用模式0任务/blocked不当作完成证明，依用户AGENTS不另造任务表。
+
+**验证计划/命令：**先最小fixture/P0，再真实无权草稿接口、非空fg下超额、物料/错仓/跨单和取消/重复入口反例；仅修已证实缺口。`docker exec -w /home/frappe/frappe-bench xgd-b08-check env/bin/python /b01/b06_tasks_tests.py erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialIssue.<明确方法>`，全事务回滚；runner新增Bin/GL Entry等库存旧表保持。允许checks/b10_issue_*构造本包独立物料/仓/工位/普通用户，真实HTTP或独立DB事务并发、受影响浏览器流程及回读；只操作新名单，原始行/凭据私有保存。并发须独立事务真实重叠，不能仅测试for_update参数便称已验。网页若无产品改动也需原生生成/保存/提交的实际操作证据，API不能代替页面。每步记录命令/版本/实际失败；结束前一次独立审查、白名单公开推送/新克隆与精确SHA CI。
