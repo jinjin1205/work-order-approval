@@ -151,3 +151,23 @@ bench --site xgd-test.localhost run-tests --app erpnext --module erpnext.stock.d
 **验证计划/命令：**先最小fixture/P0，再真实无权草稿接口、非空fg下超额、物料/错仓/跨单和取消/重复入口反例；仅修已证实缺口。`docker exec -w /home/frappe/frappe-bench xgd-b08-check env/bin/python /b01/b06_tasks_tests.py erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialIssue.<明确方法>`，全事务回滚；runner新增Bin/GL Entry等库存旧表保持。允许checks/b10_issue_*构造本包独立物料/仓/工位/普通用户，真实HTTP或独立DB事务并发、受影响浏览器流程及回读；只操作新名单，原始行/凭据私有保存。并发须独立事务真实重叠，不能仅测试for_update参数便称已验。网页若无产品改动也需原生生成/保存/提交的实际操作证据，API不能代替页面。每步记录命令/版本/实际失败；结束前一次独立审查、白名单公开推送/新克隆与精确SHA CI。
 
 **2026-10-31本包结果：**20项受影响测试、独立DB事务争抢及普通仓管PC保存/提交/取消通过；31旧表保持，已修源码4文件，未改库存/估价核心。代码5ffe980公开回读通过，精确SHA无CI配置/触发。完整结果及仍未验边界见[执行记录](../B10/issue-20261031/run-record.md)。原B10仅第4/5条限定子项关闭，待批来源/完工组合/完整G3保留；下一步沿原B11。
+
+
+# 2026-10-31 B11退料生成与净领料绑定
+
+**开工版本与复用：**公开main `517027e71e2f808d40c6fd47cfe00521503cd0a5`已fetch与本地一致；维护codex/xgd-maintenance、上游ERPNext4e0dce9/Frappe f1cf50。B10累计补丁f534ecf、41运行文件核对一致。已有OpenSpec1.15.0、Playwright CLI0.1.22/Superpowers、两隔离站均复用，不重装、不初始化。原B11四条为唯一任务清单；活动OpenSpec仍只引用原卡，0任务blocked不当作完成，也不复制清单。用户已授权按原卡连续实施并公开推送。
+
+**做什么/不做什么/通过：**沿原第4节原单、额度、锁及更正契约。实现原生退料生成，复用against_stock_entry/ste_detail；领10退2→累计领10/退2/净8/耗0、再生成8；耗7再生成1；草稿不变正式量。提交重读同物料同WIP总额度及原行额度，拒绝越权/跨单/超退/拆行/无效数量；重复及取消留原单、失败回滚。真实退退/退耗/退与取消原领料竞争需独立事务。库存账/估价/Frappe/字段/DocType/财务/AI/客户部署不改；B12成品/不良闭环和B13新退料按钮不在此包。现有按钮仅Closed/Completed，本包不为退料强行关单；真实HTTP生成加原生表单保存/提交可验后台链，入口可达性如实留B13。
+
+**只解锁3个原文件与必要验收辅助：**
+- `work_order.py:make_stock_return_entry`：先父单read/Stock Entry create与本项目退料执行准入，再调用同一原生可退事实入口；填公司/BOM/库存单位及原领料引用，无可退量明确提示，不返回假成功。`WorkOrder.update_returned_qty`仅若实际多来源/替代料回写反例需要，修原聚合，不新建合计。
+- `stock_entry.py:get_stock_entry_data/get_available_materials`：原查询增加已存在的is_return、库存数量、原单引用和日期/顺序元数据，领入加、退回/明确耗减；拆解分支保持原语义，仍使用原批序号获取/分配函数。允许增加可退上下文内部函数，唯一计算同时供生成/提交复用，不持久化新账、不复制一套单位换算。
+- 同上`add_transfered_raw_materials_in_items/update_item_in_stock_entry_detail`：退料按posting_date/time/name/idx/name原领料行分配，填写引用并沿原批序号组件填行；制造/实耗分支不重写。历史缺引用退料明确阻塞该对象，禁止猜关联。
+- 同上`validate_production_execution/validate_component_and_quantities/before_cancel`：复用B10父工单锁；数量检查必须在原set_transfer_qty之后。当前DB实查REPEATABLE-READ，事实查询须当前读，不能只用旧快照。退料总量、同单重复行与原行上限一起验证；明确耗料只补与退料竞争所需同实际物料余额，不实施B12成品业务；取消原领料有退/耗依赖须拒绝或按原生逆序，不删历史。先测具体失败再最小修。
+- `test_stock_entry.py`：新TestProductionMaterialReturn复用make_approval_execution_fixture及原库存单据；原B10/审批/拆解/批序号/替代料测试仅选被本次共享实现改变者。checks可新增b11_return_*辅助，复用b10/B08旧行保持/独立连接方式，不复制底座/账户/库存模型。不得在同一rollback测试站同时运行多批。
+
+**命令与证据：**`docker exec -w /home/frappe/frappe-bench xgd-b08-check env/bin/python /b01/b06_tasks_tests.py erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.<真实方法>`；最小样例先跑，反例红→最小修复→相关绿。旧23表回滚保持，HTTP样例用独立新物料/仓/工位/用户并核旧行。源清单/原始失败私有，公开摘要到`evidence/B11/return-20261031/`；完成后一次独立审查，代码与交接文档分提交，远端回读与精确SHA CI。完整G3/CASE整卡只在全部条件满足才勾。
+
+**2026-10-31审查实证补绑（同三文件，不扩卡）：**`b11_lock_order_race.py lock-red run`真实复现取消先锁原单、退料先锁工单后的QueryDeadlockError；允许在原StockEntry.check_if_latest调用父类前先取关联工单锁，覆盖保存/提交/取消；取消工单来源读取已保存原单（含job_card），不得相信改写输入。保留原生版本检查、权限及before_cancel原单完整性校验，不改Frappe、不重试。当前读及草稿共享链统一此顺序。另有两来源同批序列、第一来源部分消耗后分配批2/序列1的单元红测，允许仅在原退料分支按实际剩余序列及批共同分配；复用既有按批查询，保留共享非退料分支。复测这两反例和因此受影响的保存/提交/取消；历史无关项不重跑。
+
+**本包结果：**21个新增/9受影响原方法分批通过、普通仓管PC退2/取消、四种限定竞争场景及31表旧行保持见[B11实际记录](../B11/return-20261031/run-record.md)。反向锁序及双追踪序列问题已复现并修复；此结果不关闭跨B12完整G3或客户审批待批接入。

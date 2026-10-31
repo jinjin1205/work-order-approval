@@ -1,0 +1,321 @@
+{
+  "scope": "Separate real batches; red/intermediate and fixture failures retained. No full-suite claim; only changed paths rechecked. Wrong-order-source test renamed wrong-document-reference without behavior change; separate real approved cross-order case passed.",
+  "batches": [
+    {
+      "local_log": ".development/private/b11-return-20261031/logs/p0.log",
+      "sha256": "cff2e18eb416356526cf02e0e5a4fbb50f4a5cadaa625fff2aa5b77e9d2d7d5e",
+      "tests": 1,
+      "seconds": "9.261",
+      "result": "OK",
+      "failures": 0,
+      "errors": 0,
+      "old_tables_unchanged": 23,
+      "selected_methods": [
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_00_native_partial_return_and_cancel"
+      ],
+      "runner": "docker exec -u frappe -w /home/frappe/frappe-bench xgd-b08-check env/bin/python /b01/b06_tasks_tests.py",
+      "source_patch_sha256": null,
+      "source_note": "Intermediate whole-patch digest not captured for this batch; raw failures retained; no invented final full-suite pass"
+    },
+    {
+      "local_log": ".development/private/b11-return-20261031/logs/return-red.log",
+      "sha256": "4ae3d206f0e6ea03512f1031e8472b6fa696a4badc610717c90441a6d6f1f0e3",
+      "tests": 7,
+      "seconds": "56.965",
+      "result": "FAILED",
+      "failures": 6,
+      "errors": 1,
+      "old_tables_unchanged": 23,
+      "selected_methods": [
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_generator_uses_remaining_and_source_reference",
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_generator_requires_parent_read_and_create",
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_return_extra_warehouse_stock_does_not_increase_order_allowance",
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_return_missing_source_reference_rejected",
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_return_wrong_order_source_rejected",
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_return_split_rows_share_source_limit",
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_issue_cancel_with_return_dependency_rejected"
+      ],
+      "runner": "docker exec -u frappe -w /home/frappe/frappe-bench xgd-b08-check env/bin/python /b01/b06_tasks_tests.py",
+      "source_patch_sha256": null,
+      "source_note": "Intermediate whole-patch digest not captured for this batch; raw failures retained; no invented final full-suite pass"
+    },
+    {
+      "local_log": ".development/private/b11-return-20261031/logs/return-green.log",
+      "sha256": "afa2b6178d291ca99168a52107ab6505e921a8b8a6f8125f1fdb0ad2c52f37ba",
+      "tests": 8,
+      "seconds": "73.169",
+      "result": "FAILED",
+      "failures": 0,
+      "errors": 1,
+      "old_tables_unchanged": 23,
+      "selected_methods": [
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_00_native_partial_return_and_cancel",
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_generator_requires_parent_read_and_create",
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_generator_uses_remaining_and_source_reference",
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_issue_cancel_with_return_dependency_rejected",
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_return_extra_warehouse_stock_does_not_increase_order_allowance",
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_return_missing_source_reference_rejected",
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_return_split_rows_share_source_limit",
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_return_wrong_order_source_rejected"
+      ],
+      "runner": "docker exec -u frappe -w /home/frappe/frappe-bench xgd-b08-check env/bin/python /b01/b06_tasks_tests.py",
+      "source_patch_sha256": null,
+      "source_note": "Intermediate whole-patch digest not captured for this batch; raw failures retained; no invented final full-suite pass"
+    },
+    {
+      "local_log": ".development/private/b11-return-20261031/logs/consumption-red.log",
+      "sha256": "43832b9ceb4fa4326ebcb4852830f308855f4640a52f104bc3ee149e644ede49",
+      "tests": 5,
+      "seconds": "50.798",
+      "result": "FAILED",
+      "failures": 1,
+      "errors": 0,
+      "old_tables_unchanged": 23,
+      "selected_methods": [
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_00_native_partial_return_and_cancel",
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_return_after_consumption_uses_actual_remaining",
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_consumption_cannot_spend_material_already_returned",
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_issue_cancel_with_consumption_dependency_rejected",
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_multiple_issue_sources_keep_individual_allowance"
+      ],
+      "runner": "docker exec -u frappe -w /home/frappe/frappe-bench xgd-b08-check env/bin/python /b01/b06_tasks_tests.py",
+      "source_patch_sha256": null,
+      "source_note": "Intermediate whole-patch digest not captured for this batch; raw failures retained; no invented final full-suite pass"
+    },
+    {
+      "local_log": ".development/private/b11-return-20261031/logs/consumption-green.log",
+      "sha256": "7e87c64e0a2f2485b69914c29b8cc34e8474762081fa2991c650bf952125ae51",
+      "tests": 2,
+      "seconds": "20.220",
+      "result": "OK",
+      "failures": 0,
+      "errors": 0,
+      "old_tables_unchanged": 23,
+      "selected_methods": [
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_consumption_cannot_spend_material_already_returned",
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_return_after_consumption_uses_actual_remaining"
+      ],
+      "runner": "docker exec -u frappe -w /home/frappe/frappe-bench xgd-b08-check env/bin/python /b01/b06_tasks_tests.py",
+      "source_patch_sha256": null,
+      "source_note": "Intermediate whole-patch digest not captured for this batch; raw failures retained; no invented final full-suite pass"
+    },
+    {
+      "local_log": ".development/private/b11-return-20261031/logs/shared-native.log",
+      "sha256": "65b86cab0700958a06a2fd500f6aec2e109f455c394552f44da2c086720670cd",
+      "tests": 6,
+      "seconds": "0.184",
+      "result": "FAILED",
+      "failures": 0,
+      "errors": 6,
+      "old_tables_unchanged": 15,
+      "selected_methods": [
+        "erpnext.manufacturing.doctype.work_order.test_work_order.TestWorkOrder.test_non_consumed_material_return_against_work_order",
+        "erpnext.manufacturing.doctype.work_order.test_work_order.TestWorkOrder.test_disassembly_with_multiple_manufacture_entries",
+        "erpnext.manufacturing.doctype.work_order.test_work_order.TestWorkOrder.test_disassembly_batch_tracked_items",
+        "erpnext.manufacturing.doctype.work_order.test_work_order.TestWorkOrder.test_disassembly_serial_tracked_items",
+        "erpnext.manufacturing.doctype.work_order.test_work_order.TestWorkOrder.test_partial_alternative_item_transfer_with_material_consumption",
+        "erpnext.manufacturing.doctype.work_order.test_work_order.TestWorkOrder.test_partial_material_consumption_with_batch"
+      ],
+      "runner": "docker exec -u frappe -w /home/frappe/frappe-bench xgd-b08-check env/bin/python /b01/b06_tasks_tests.py",
+      "source_patch_sha256": null,
+      "source_note": "Intermediate whole-patch digest not captured for this batch; raw failures retained; no invented final full-suite pass"
+    },
+    {
+      "local_log": ".development/private/b11-return-20261031/logs/remaining-checks.log",
+      "sha256": "31776f24941e37cfd99e4148d7bba45e371111a360e67fbb6cf479aa7d783387",
+      "tests": 7,
+      "seconds": "59.146",
+      "result": "OK",
+      "failures": 0,
+      "errors": 0,
+      "old_tables_unchanged": 23,
+      "selected_methods": [
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_return_other_approved_order_reference_rejected",
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_return_transaction_unit_converted_once",
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_historical_missing_return_reference_requires_review",
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_return_late_failure_rolls_back_native_facts",
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_generator_revoked_parent_read_denied",
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestStockExecutionApproval.test_approved_material_return_preserved",
+        "erpnext.manufacturing.doctype.work_order.test_work_order.TestWorkOrderApprovalChanges.test_stopped_order_preserves_material_return"
+      ],
+      "runner": "docker exec -u frappe -w /home/frappe/frappe-bench xgd-b08-check env/bin/python /b01/b06_tasks_tests.py",
+      "source_patch_sha256": null,
+      "source_note": "Intermediate whole-patch digest not captured for this batch; raw failures retained; no invented final full-suite pass"
+    },
+    {
+      "local_log": ".development/private/b11-return-20261031/logs/shared-native-fixture.log",
+      "sha256": "1113dd22240b1106e4d30f21f573b68aacd53afc36b1efb2a0ed2e47d669b267",
+      "tests": 6,
+      "seconds": "4.882",
+      "result": "OK",
+      "failures": 0,
+      "errors": 0,
+      "old_tables_unchanged": 15,
+      "selected_methods": [
+        "erpnext.manufacturing.doctype.work_order.test_work_order.TestWorkOrder.test_non_consumed_material_return_against_work_order",
+        "erpnext.manufacturing.doctype.work_order.test_work_order.TestWorkOrder.test_disassembly_with_multiple_manufacture_entries",
+        "erpnext.manufacturing.doctype.work_order.test_work_order.TestWorkOrder.test_disassembly_batch_tracked_items",
+        "erpnext.manufacturing.doctype.work_order.test_work_order.TestWorkOrder.test_disassembly_serial_tracked_items",
+        "erpnext.manufacturing.doctype.work_order.test_work_order.TestWorkOrder.test_partial_alternative_item_transfer_with_material_consumption",
+        "erpnext.manufacturing.doctype.work_order.test_work_order.TestWorkOrder.test_partial_material_consumption_with_batch"
+      ],
+      "runner": "docker exec -u frappe -w /home/frappe/frappe-bench xgd-b08-check env/bin/python /b01/b06_tasks_tests.py",
+      "source_patch_sha256": null,
+      "source_note": "Intermediate whole-patch digest not captured for this batch; raw failures retained; no invented final full-suite pass"
+    },
+    {
+      "local_log": ".development/private/b11-return-20261031/logs/serial-review-red.log",
+      "sha256": "500190921e7d7448f9d4cfe04194b17eac6538fa04046d6ecfa71c19752fc514",
+      "tests": 1,
+      "seconds": "10.155",
+      "result": "FAILED",
+      "failures": 1,
+      "errors": 0,
+      "old_tables_unchanged": 23,
+      "selected_methods": [
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_serial_batch_allocation_matches_remaining_source_serials"
+      ],
+      "runner": "docker exec -u frappe -w /home/frappe/frappe-bench xgd-b08-check env/bin/python /b01/b06_tasks_tests.py",
+      "source_patch_sha256": null,
+      "source_note": "Intermediate whole-patch digest not captured for this batch; raw failures retained; no invented final full-suite pass"
+    },
+    {
+      "local_log": ".development/private/b11-return-20261031/logs/review-green.log",
+      "sha256": "bc276ed1486477ae413d7f203f6fc8caa0a8fb8fb61caae30877af7c56108776",
+      "tests": 7,
+      "seconds": "62.059",
+      "result": "OK",
+      "failures": 0,
+      "errors": 0,
+      "old_tables_unchanged": 23,
+      "selected_methods": [
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_serial_batch_allocation_matches_remaining_source_serials",
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_00_native_partial_return_and_cancel",
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_consumption_cannot_spend_material_already_returned",
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_return_after_consumption_uses_actual_remaining",
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_issue_cancel_with_return_dependency_rejected",
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialIssue.test_issue_cancel_changed_quantity_denied",
+        "erpnext.manufacturing.doctype.work_order.test_work_order.TestWorkOrder.test_non_consumed_material_return_against_work_order"
+      ],
+      "runner": "docker exec -u frappe -w /home/frappe/frappe-bench xgd-b08-check env/bin/python /b01/b06_tasks_tests.py",
+      "source_patch_sha256": null,
+      "source_note": "Intermediate whole-patch digest not captured for this batch; raw failures retained; no invented final full-suite pass"
+    },
+    {
+      "local_log": ".development/private/b11-return-20261031/logs/serial-native-red.log",
+      "sha256": "47d087fd1a64b5d98127d226b435df8bf0548e7c602a1e64e7e1b51cd6ba1a94",
+      "tests": 1,
+      "seconds": "0.748",
+      "result": "FAILED",
+      "failures": 0,
+      "errors": 1,
+      "old_tables_unchanged": 23,
+      "selected_methods": [
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturnSerial.test_real_serial_batch_sources_after_partial_consumption"
+      ],
+      "runner": "docker exec -u frappe -w /home/frappe/frappe-bench xgd-b08-check env/bin/python /b01/b06_tasks_tests.py",
+      "source_patch_sha256": null,
+      "source_note": "Intermediate whole-patch digest not captured for this batch; raw failures retained; no invented final full-suite pass"
+    },
+    {
+      "local_log": ".development/private/b11-return-20261031/logs/serial-native-fixture-red.log",
+      "sha256": "d6908bdbff2b39dd48615705397e6350efa2fda1f594d32b856b11ae940c0888",
+      "tests": 1,
+      "seconds": "0.798",
+      "result": "FAILED",
+      "failures": 0,
+      "errors": 1,
+      "old_tables_unchanged": 23,
+      "selected_methods": [
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturnSerial.test_real_serial_batch_sources_after_partial_consumption"
+      ],
+      "runner": "docker exec -u frappe -w /home/frappe/frappe-bench xgd-b08-check env/bin/python /b01/b06_tasks_tests.py",
+      "source_patch_sha256": null,
+      "source_note": "Intermediate whole-patch digest not captured for this batch; raw failures retained; no invented final full-suite pass"
+    },
+    {
+      "local_log": ".development/private/b11-return-20261031/logs/serial-native-green.log",
+      "sha256": "4bf8137ce3db668e26f47cd9bb0292b1c8846dcdc7028344e280d063666284f2",
+      "tests": 2,
+      "seconds": "9.310",
+      "result": "FAILED",
+      "failures": 0,
+      "errors": 1,
+      "old_tables_unchanged": 23,
+      "selected_methods": [
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturnSerial.test_real_serial_batch_sources_after_partial_consumption",
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_serial_batch_allocation_matches_remaining_source_serials"
+      ],
+      "runner": "docker exec -u frappe -w /home/frappe/frappe-bench xgd-b08-check env/bin/python /b01/b06_tasks_tests.py",
+      "source_patch_sha256": null,
+      "source_note": "Intermediate whole-patch digest not captured for this batch; raw failures retained; no invented final full-suite pass"
+    },
+    {
+      "local_log": ".development/private/b11-return-20261031/logs/serial-native-diagnostic.log",
+      "sha256": "4611350958b771e647d962a0748414ff74bc0ffc6b79c4eeb6b268f02fabd0cb",
+      "tests": 1,
+      "seconds": "1.751",
+      "result": "FAILED",
+      "failures": 0,
+      "errors": 1,
+      "old_tables_unchanged": 23,
+      "selected_methods": [
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturnSerial.test_real_serial_batch_sources_after_partial_consumption"
+      ],
+      "runner": "docker exec -u frappe -w /home/frappe/frappe-bench xgd-b08-check env/bin/python /b01/b06_tasks_tests.py",
+      "source_patch_sha256": null,
+      "source_note": "Intermediate whole-patch digest not captured for this batch; raw failures retained; no invented final full-suite pass"
+    },
+    {
+      "local_log": ".development/private/b11-return-20261031/logs/serial-final-reports.log",
+      "sha256": "3cbea3fc98dd280af5ae5aed6426b4280b6bc708e1b814bd29b3054977c6e1a0",
+      "tests": 3,
+      "seconds": "17.426",
+      "result": "OK",
+      "failures": 0,
+      "errors": 0,
+      "old_tables_unchanged": 23,
+      "selected_methods": [
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturnSerial.test_real_serial_batch_bundle_sources_after_partial_consumption",
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturnSerial.test_real_serial_batch_sources_after_partial_consumption",
+        "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_return_and_cancel_preserve_confirmed_reports_and_issue"
+      ],
+      "runner": "docker exec -u frappe -w /home/frappe/frappe-bench xgd-b08-check env/bin/python /b01/b06_tasks_tests.py",
+      "source_patch_sha256": "906010f517f003af5311be474ec0927184690d392c31cd5a864b0581455f4e51",
+      "source_note": "Final exact source"
+    }
+  ],
+  "new_methods_passed": 21,
+  "latest_method_outcomes": {
+    "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_00_native_partial_return_and_cancel": "ok",
+    "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_generator_uses_remaining_and_source_reference": "ok",
+    "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_generator_requires_parent_read_and_create": "ok",
+    "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_return_extra_warehouse_stock_does_not_increase_order_allowance": "ok",
+    "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_return_missing_source_reference_rejected": "ok",
+    "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_return_split_rows_share_source_limit": "ok",
+    "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_issue_cancel_with_return_dependency_rejected": "ok",
+    "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_return_after_consumption_uses_actual_remaining": "ok",
+    "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_consumption_cannot_spend_material_already_returned": "ok",
+    "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_issue_cancel_with_consumption_dependency_rejected": "ok",
+    "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_multiple_issue_sources_keep_individual_allowance": "ok",
+    "erpnext.manufacturing.doctype.work_order.test_work_order.TestWorkOrder.test_non_consumed_material_return_against_work_order": "ok",
+    "erpnext.manufacturing.doctype.work_order.test_work_order.TestWorkOrder.test_disassembly_with_multiple_manufacture_entries": "ok",
+    "erpnext.manufacturing.doctype.work_order.test_work_order.TestWorkOrder.test_disassembly_batch_tracked_items": "ok",
+    "erpnext.manufacturing.doctype.work_order.test_work_order.TestWorkOrder.test_disassembly_serial_tracked_items": "ok",
+    "erpnext.manufacturing.doctype.work_order.test_work_order.TestWorkOrder.test_partial_alternative_item_transfer_with_material_consumption": "ok",
+    "erpnext.manufacturing.doctype.work_order.test_work_order.TestWorkOrder.test_partial_material_consumption_with_batch": "ok",
+    "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_return_other_approved_order_reference_rejected": "ok",
+    "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_return_transaction_unit_converted_once": "ok",
+    "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_historical_missing_return_reference_requires_review": "ok",
+    "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_return_late_failure_rolls_back_native_facts": "ok",
+    "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_generator_revoked_parent_read_denied": "ok",
+    "erpnext.stock.doctype.stock_entry.test_stock_entry.TestStockExecutionApproval.test_approved_material_return_preserved": "ok",
+    "erpnext.manufacturing.doctype.work_order.test_work_order.TestWorkOrderApprovalChanges.test_stopped_order_preserves_material_return": "ok",
+    "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_serial_batch_allocation_matches_remaining_source_serials": "ok",
+    "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialIssue.test_issue_cancel_changed_quantity_denied": "ok",
+    "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturnSerial.test_real_serial_batch_sources_after_partial_consumption": "ok",
+    "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturnSerial.test_real_serial_batch_bundle_sources_after_partial_consumption": "ok",
+    "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_return_and_cancel_preserve_confirmed_reports_and_issue": "ok",
+    "erpnext.stock.doctype.stock_entry.test_stock_entry.TestProductionMaterialReturn.test_return_wrong_document_reference_rejected": "ok"
+  }
+}

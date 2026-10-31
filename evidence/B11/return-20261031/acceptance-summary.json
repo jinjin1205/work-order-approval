@@ -1,0 +1,115 @@
+{
+  "scope": "B11 bounded return package; no new fields, no new front-end entry, no customer approval deployment",
+  "new_unit_methods": 21,
+  "existing_affected_methods_latest_passed": 9,
+  "pc_browser": "Playwright CLI ordinary warehouse user; real HTTP generation -> native row qty2/save/submit/cancel; generator call is not claimed as a Work Order button",
+  "ui_stages": {
+    "ui-draft-audit": {
+      "plan": 10.0,
+      "transferred": 10.0,
+      "consumed": 0.0,
+      "order_transferred": 10.0,
+      "skip_transfer": 0,
+      "from_wip_warehouse": 0,
+      "transfer_material_against": "Work Order",
+      "bins": {
+        "source": {
+          "actual_qty": 10.0,
+          "stock_value": 30.0
+        },
+        "wip": {
+          "actual_qty": 10.0,
+          "stock_value": 30.0
+        }
+      },
+      "entries": [
+        {
+          "docstatus": 1,
+          "sle": 2
+        },
+        {
+          "docstatus": 0,
+          "sle": 0
+        }
+      ],
+      "report_facts": 0,
+      "returned": 0.0,
+      "net_issued": 10.0,
+      "issue_status": 1
+    },
+    "ui-posted-audit": {
+      "plan": 10.0,
+      "transferred": 10.0,
+      "consumed": 0.0,
+      "order_transferred": 10.0,
+      "skip_transfer": 0,
+      "from_wip_warehouse": 0,
+      "transfer_material_against": "Work Order",
+      "bins": {
+        "source": {
+          "actual_qty": 12.0,
+          "stock_value": 36.0
+        },
+        "wip": {
+          "actual_qty": 8.0,
+          "stock_value": 24.0
+        }
+      },
+      "entries": [
+        {
+          "docstatus": 1,
+          "sle": 2
+        },
+        {
+          "docstatus": 1,
+          "sle": 2
+        }
+      ],
+      "report_facts": 0,
+      "returned": 2.0,
+      "net_issued": 8.0,
+      "issue_status": 1
+    },
+    "ui-cancelled-audit": {
+      "plan": 10.0,
+      "transferred": 10.0,
+      "consumed": 0.0,
+      "order_transferred": 10.0,
+      "skip_transfer": 0,
+      "from_wip_warehouse": 0,
+      "transfer_material_against": "Work Order",
+      "bins": {
+        "source": {
+          "actual_qty": 10.0,
+          "stock_value": 30.0
+        },
+        "wip": {
+          "actual_qty": 10.0,
+          "stock_value": 30.0
+        }
+      },
+      "entries": [
+        {
+          "docstatus": 1,
+          "sle": 2
+        },
+        {
+          "docstatus": 2,
+          "sle": 4
+        }
+      ],
+      "report_facts": 0,
+      "returned": 0.0,
+      "net_issued": 10.0,
+      "issue_status": 1
+    }
+  },
+  "report_preservation": "3 confirmed reports with child rows and original issue full-document snapshots unchanged by return+cancel in real rollback test",
+  "independent_review": "Both important findings reproduced, fixed and re-reviewed; no remaining Important/Critical in reviewed scope",
+  "limits": [
+    "Active Work Order return button belongs to B13",
+    "Stock Entry approval workflow not enabled; draft is not pending approval",
+    "Full cross-card G3, B12 finished-goods integration, mobile, customer acceptance and Z01 remain unverified"
+  ],
+  "openspec_strict": "exit 1: reference-only tasks count zero; original cards retained; no archive"
+}

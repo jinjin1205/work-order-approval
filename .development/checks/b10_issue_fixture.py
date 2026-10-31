@@ -19,7 +19,7 @@ def runtime():
     paths = json.loads(Path('/b01/b09-lifecycle-source-manifest.json').read_text())['files']
     return {name: hashlib.sha256((root/name).read_bytes()).hexdigest() for name in paths}
 
-def setup():
+def setup(*, prefix_label="b10-issue-", cases=("ui", "race-red", "race-green"), prepare_issue_drafts=True):
     from erpnext.stock.doctype.item.test_item import create_item
     from erpnext.stock.doctype.stock_entry.test_stock_entry import make_stock_entry
     from erpnext.manufacturing.doctype.work_order.work_order import apply_production_approval, make_stock_entry as draft
@@ -29,7 +29,7 @@ def setup():
     details = json.loads(Path('/tmp/b08-private/b05-details-ui.json').read_text())
     old = frappe.get_doc('Work Order', entries['copy_source'])
     base_bom = frappe.get_doc('BOM', details['bom_no'])
-    prefix = 'b10-issue-' + frappe.generate_hash(length=8)
+    prefix = prefix_label + frappe.generate_hash(length=8)
     a = {'site':frappe.local.site,'base_url':'http://127.0.0.1:18090','prefix':prefix,'company':old.company,'actors':{},'cases':{},'source':runtime()}
     wh = {}
     for kind in ('source','wip','fg'):
@@ -55,7 +55,7 @@ def setup():
         for warehouse in wh.values():
             add_user_permission('Warehouse',warehouse,user)
         assert 'System Manager' not in frappe.get_roles(user)
-    for case in ('ui','race-red','race-green'):
+    for case in cases:
         raw = create_item(prefix+'-'+case+'-raw',company=old.company,warehouse=wh['source'])
         raw.valuation_method='Moving Average'; raw.save()
         fg = create_item(prefix+'-'+case+'-fg',company=old.company,warehouse=wh['fg'])
@@ -82,7 +82,7 @@ def setup():
         for alias in ('A','B'):
             add_user_permission('Work Order',order.name,a['actors'][alias]['user'])
         a['cases'][case]={'order':order.name,'raw':raw.name,'drafts':{}}
-        if case.startswith('race'):
+        if prepare_issue_drafts and case.startswith('race'):
             for alias in ('A','B'):
                 frappe.set_user(a['actors'][alias]['user'])
                 doc=frappe.get_doc(draft(order.name,'Material Transfer for Manufacture',qty=6)).insert()
@@ -97,7 +97,7 @@ def setup():
     assert preserved(retention),'Old rows changed during setup'
     write_private(P/'access.json',a)
     frappe.db.commit()
-    return {'setup':True,'cases':3,'ordinary_warehouse_users':2,'old_tables':len(retention),'old_rows_unchanged':True,'source':runtime(),'credentials_printed':False}
+    return {'setup':True,'cases':len(cases),'ordinary_warehouse_users':2,'old_tables':len(retention),'old_rows_unchanged':True,'source':runtime(),'credentials_printed':False}
 
 def audit():
     a=json.loads((P/'access.json').read_text())

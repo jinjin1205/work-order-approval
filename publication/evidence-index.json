@@ -4212,6 +4212,66 @@
     "reason": "local raw execution evidence; not uploaded"
   },
   {
+    "path": "evidence/B11/return-20261031/acceptance-summary.json",
+    "original_sha256": "a196b5a16277a70782abc28efc5f33eaa9e9c749171ba6cbed00923335b6ea5a",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B11/return-20261031/bounded-change.patch",
+    "original_sha256": "3a761321fb60fec175276759c59bab6f0a7faa72540a1af269f3f2f6deb18c48",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B11/return-20261031/concurrency-summary.json",
+    "original_sha256": "c82673bf8bab0ac2541ea4cc59b9c2a58f9070eeb24aeea6790ab5efa684a23f",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B11/return-20261031/implementation.patch",
+    "original_sha256": "906010f517f003af5311be474ec0927184690d392c31cd5a864b0581455f4e51",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B11/return-20261031/old-row-audit.json",
+    "original_sha256": "169b7f711cb02103750c1e35901d6fb6922ba68922ea14cbc6d2092b6ed4f320",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B11/return-20261031/run-record.md",
+    "original_sha256": "62c494e3623e986694259830adc35db2ec155549f526fffc7346f5dfad848fec",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B11/return-20261031/source-manifest.json",
+    "original_sha256": "157f910e857fed0be10d50cd69a7b2df3dc1b56b3b1808cf9f088e29c0a76c8f",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B11/return-20261031/test-batches.json",
+    "original_sha256": "d4d2024cc82fb4173c6fd82e9e25591dfa819864a306947db345369792fa42a2",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B11/return-20261031/test-runtime.json",
+    "original_sha256": "5173f51097320e27dfaf1997ee9e114e1195fb8ec469dfef7a87b61fa25eb1d1",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
+    "path": "evidence/B11/return-20261031/ui-runtime.json",
+    "original_sha256": "5173f51097320e27dfaf1997ee9e114e1195fb8ec469dfef7a87b61fa25eb1d1",
+    "published": true,
+    "reason": "public copy"
+  },
+  {
     "path": "evidence/B14/build-final.log",
     "original_sha256": "d4ed24118a68001fdeac12121ca8aeaa449346f48da67392d6ab93c3ba2afc44",
     "published": false,
@@ -6487,7 +6547,7 @@
   },
   {
     "path": "evidence/R07/quantity-return.md",
-    "original_sha256": "58a6da5dda570f018f69b3044f8ca8eaeeeeff3aefde9f2ceb79f0663fbb75a9",
+    "original_sha256": "da9bcf0c63cf12d7f90ec12877317e8575c4ff3735d6d66379b42b5821530e77",
     "published": true,
     "reason": "public copy"
   },

@@ -4746,3 +4746,350 @@ class TestProductionMaterialIssue(FrappeTestCase):
 		self.assertEqual(self.balances(), before)
 		self.assertEqual(frappe.db.get_value("Stock Entry", doc.name, "docstatus"), 0)
 		self.assertFalse(frappe.db.exists("Stock Ledger Entry", {"voucher_no": doc.name}))
+
+
+class TestProductionMaterialReturn(FrappeTestCase):
+	"""B11: native stock facts, source-line linkage and net issue; rollback fixture."""
+
+	def setUp(self):
+		from erpnext.manufacturing.doctype.work_order.test_work_order import make_approval_execution_fixture
+		from erpnext.manufacturing.doctype.work_order.work_order import make_stock_entry as generate
+		self.f = make_approval_execution_fixture(self, stock=True, stock_receipts=((20, 2),))
+		frappe.set_user(self.f.users["operator"])
+		for row in self.f.order.operations:
+			row.report_scope = "ALL"
+		self.f.order.save()
+		self.f.act("operator", "送审")
+		self.f.act("reviewer", "审核通过")
+		with change_settings("Manufacturing Settings", {"disable_capacity_planning": 1}):
+			self.f.act("director", "签批通过")
+		frappe.set_user(self.f.users["warehouse"])
+		self.issue = frappe.get_doc(generate(self.f.order.name, "Material Transfer for Manufacture", qty=10)).insert().submit()
+
+	def returned(self, quantity=2, issue=None):
+		issue = issue or self.issue
+		doc = frappe.new_doc("Stock Entry")
+		doc.update({"company": self.f.company, "purpose": "Material Transfer for Manufacture", "work_order": self.f.order.name, "is_return": 1})
+		doc.append("items", {"item_code": self.f.raw, "qty": quantity, "uom": "Nos", "stock_uom": "Nos", "conversion_factor": 1,
+			"s_warehouse": self.f.wip, "t_warehouse": self.f.order_args["source_warehouse"], "cost_center": frappe.get_cached_value("Company", self.f.company, "cost_center"),
+			"against_stock_entry": issue.name, "ste_detail": issue.items[0].name})
+		doc.set_stock_entry_type()
+		return doc
+
+	def generated(self):
+		from erpnext.manufacturing.doctype.work_order.work_order import make_stock_return_entry
+		return make_stock_return_entry(self.f.order.name)
+
+	def totals(self):
+		self.f.order.reload()
+		row = self.f.order.required_items[0]
+		return (row.transferred_qty, row.returned_qty, row.transferred_qty - row.returned_qty, row.consumed_qty)
+
+	def test_00_native_partial_return_and_cancel(self):
+		doc = self.returned().insert()
+		self.assertEqual(self.totals(), (10, 0, 10, 0))
+		doc.submit()
+		self.assertEqual(self.totals(), (10, 2, 8, 0))
+		self.assertEqual(frappe.db.get_value("Bin", {"item_code": self.f.raw, "warehouse": self.f.wip}, "actual_qty"), 8)
+		doc.submit()
+		self.assertEqual(self.totals(), (10, 2, 8, 0))
+		doc.reload().cancel()
+		self.assertEqual(self.totals(), (10, 0, 10, 0))
+		self.assertEqual(frappe.db.get_value("Stock Entry", doc.name, "docstatus"), 2)
+
+	def test_generator_uses_remaining_and_source_reference(self):
+		self.returned().insert().submit()
+		doc = self.generated()
+		self.assertEqual(len(doc.items), 1)
+		self.assertEqual(doc.company, self.f.company)
+		self.assertEqual(doc.items[0].qty, 8)
+		self.assertEqual(doc.items[0].against_stock_entry, self.issue.name)
+		self.assertEqual(doc.items[0].ste_detail, self.issue.items[0].name)
+		doc.insert().submit()
+		self.assertEqual(self.totals(), (10, 10, 0, 0))
+		with self.assertRaisesRegex(frappe.ValidationError, "没有可退"):
+			self.generated()
+
+	def test_generator_requires_parent_read_and_create(self):
+		for user in (self.f.users["outsider"], self.f.users["operator"]):
+			frappe.set_user(user)
+			with self.assertRaises(frappe.PermissionError):
+				self.generated()
+
+	def test_return_extra_warehouse_stock_does_not_increase_order_allowance(self):
+		self.returned().insert().submit()
+		frappe.set_user("Administrator")
+		make_stock_entry(item_code=self.f.raw, company=self.f.company, target=self.f.wip, qty=10, basic_rate=2)
+		frappe.set_user(self.f.users["warehouse"])
+		with self.assertRaises(frappe.ValidationError):
+			self.returned(9).insert().submit()
+		self.assertEqual(self.totals(), (10, 2, 8, 0))
+
+	def test_return_missing_source_reference_rejected(self):
+		doc = self.returned()
+		doc.items[0].against_stock_entry = None
+		doc.items[0].ste_detail = None
+		with self.assertRaises(frappe.ValidationError):
+			doc.insert().submit()
+
+	def test_return_wrong_document_reference_rejected(self):
+		doc = self.returned()
+		# A real existing different Stock Entry, not a nonexistent Link validation.
+		doc.items[0].against_stock_entry = frappe.db.get_value("Stock Entry", {"purpose": "Material Receipt", "company": self.f.company}, "name")
+		with self.assertRaises(frappe.ValidationError):
+			doc.insert().submit()
+
+	def test_return_split_rows_share_source_limit(self):
+		self.returned().insert().submit()
+		doc = self.returned(5)
+		row = doc.items[0].as_dict()
+		row.pop("name", None)
+		row["qty"] = 4
+		doc.append("items", row)
+		frappe.set_user("Administrator")
+		make_stock_entry(item_code=self.f.raw, company=self.f.company, target=self.f.wip, qty=10, basic_rate=2)
+		frappe.set_user(self.f.users["warehouse"])
+		with self.assertRaises(frappe.ValidationError):
+			doc.insert().submit()
+
+	def test_issue_cancel_with_return_dependency_rejected(self):
+		self.returned().insert().submit()
+		frappe.set_user("Administrator")
+		make_stock_entry(item_code=self.f.raw, company=self.f.company, target=self.f.wip, qty=10, basic_rate=2)
+		frappe.set_user(self.f.users["warehouse"])
+		with self.assertRaises(frappe.ValidationError):
+			self.issue.reload().cancel()
+
+	def prepare_consumption(self):
+		from frappe.permissions import add_permission, update_permission_property
+		from erpnext.manufacturing.doctype.job_card.job_card import preview_production_report_time, confirm_production_report
+		frappe.set_user("Administrator")
+		if not frappe.db.exists("Role", "生产报工"):
+			frappe.get_doc({"doctype": "Role", "role_name": "生产报工", "desk_access": 1}).insert()
+		for dt in ("Work Order", "Job Card"):
+			add_permission(dt, "生产报工", ptype="read")
+		for permission in ("create", "write", "submit"):
+			update_permission_property("Job Card", "生产报工", 0, permission, 1)
+		frappe.get_doc("User", self.f.users["operator"]).add_roles("生产报工")
+		frappe.get_doc({"doctype": "Employee", "first_name": "退耗验收", "gender": "Male", "date_of_birth": "1990-01-01", "date_of_joining": "2020-01-01", "company": self.f.company, "department": self.f.teams[0], "status": "Active", "user_id": self.f.users["operator"], "create_user_permission": 0}).insert()
+		frappe.set_user(self.f.users["operator"])
+		for index, row in enumerate(self.f.order.operations):
+			args = dict(work_order=self.f.order.name, operation_id=row.name, from_time=f"2026-10-30 {8+index:02}:00:00", to_time=f"2026-10-30 {9+index:02}:00:00")
+			preview = preview_production_report_time(**args)
+			confirm_production_report(**args, request_id=frappe.generate_hash(length=32), good_quantity=10, bad_quantity=0, shutdown_seconds=0, overtime_seconds=0, context_fingerprint=preview["context_fingerprint"])
+		frappe.set_user(self.f.users["warehouse"])
+
+	def consumed(self, quantity):
+		doc = self.returned(quantity)
+		doc.purpose = "Material Consumption for Manufacture"
+		doc.is_return = 0
+		doc.from_bom = 1
+		doc.bom_no = self.f.order.bom_no
+		doc.fg_completed_qty = quantity
+		doc.items[0].t_warehouse = None
+		doc.items[0].against_stock_entry = None
+		doc.items[0].ste_detail = None
+		doc.set_stock_entry_type()
+		return doc
+
+	def test_return_after_consumption_uses_actual_remaining(self):
+		self.returned().insert().submit()
+		self.prepare_consumption()
+		with change_settings("Manufacturing Settings", {"material_consumption": 1}):
+			self.consumed(7).insert().submit()
+		self.assertEqual(self.totals(), (10, 2, 8, 7))
+		doc = self.generated()
+		self.assertEqual(len(doc.items), 1)
+		self.assertEqual(doc.items[0].qty, 1)
+		doc.insert().submit()
+		self.assertEqual(self.totals(), (10, 3, 7, 7))
+		with self.assertRaisesRegex(frappe.ValidationError, "没有可退"):
+			self.generated()
+
+	def test_consumption_cannot_spend_material_already_returned(self):
+		self.returned().insert().submit()
+		self.prepare_consumption()
+		frappe.set_user("Administrator")
+		make_stock_entry(item_code=self.f.raw, company=self.f.company, target=self.f.wip, qty=10, basic_rate=2)
+		frappe.set_user(self.f.users["warehouse"])
+		with change_settings("Manufacturing Settings", {"material_consumption": 1}):
+			with self.assertRaises(frappe.ValidationError):
+				self.consumed(9).insert().submit()
+
+	def test_issue_cancel_with_consumption_dependency_rejected(self):
+		self.prepare_consumption()
+		with change_settings("Manufacturing Settings", {"material_consumption": 1}):
+			self.consumed(7).insert().submit()
+		frappe.set_user("Administrator")
+		make_stock_entry(item_code=self.f.raw, company=self.f.company, target=self.f.wip, qty=10, basic_rate=2)
+		frappe.set_user(self.f.users["warehouse"])
+		with self.assertRaises(frappe.ValidationError):
+			self.issue.reload().cancel()
+
+	def test_multiple_issue_sources_keep_individual_allowance(self):
+		from erpnext.manufacturing.doctype.work_order.work_order import make_stock_entry as generate
+		self.issue.reload().cancel()
+		first = frappe.get_doc(generate(self.f.order.name, "Material Transfer for Manufacture", qty=4)).insert().submit()
+		second = frappe.get_doc(generate(self.f.order.name, "Material Transfer for Manufacture", qty=6)).insert().submit()
+		doc = self.generated()
+		self.assertEqual([(row.against_stock_entry, row.qty) for row in doc.items], [(first.name, 4), (second.name, 6)])
+		with self.assertRaises(frappe.ValidationError):
+			self.returned(5, issue=first).insert().submit()
+		self.returned(2, issue=first).insert().submit()
+		self.assertEqual([row.qty for row in self.generated().items], [2, 6])
+
+	def test_return_other_approved_order_reference_rejected(self):
+		from erpnext.manufacturing.doctype.work_order.test_work_order import make_wo_order_test_record
+		from erpnext.manufacturing.doctype.work_order.work_order import make_stock_entry as generate
+		original_order = self.f.order
+		frappe.set_user(self.f.users["operator"])
+		other = make_wo_order_test_record(**self.f.order_args)
+		other.production_team = self.f.teams[0]
+		other.set("operations", [])
+		other.set("required_items", [])
+		other.insert()
+		for operation in self.f.operations:
+			other.append("operations", {"operation": operation, "workstation": self.f.workstation, "time_in_mins": 1})
+		other.set_required_items()
+		other.save()
+		self.f.order = other
+		self.f.act("operator", "送审")
+		self.f.act("reviewer", "审核通过")
+		with change_settings("Manufacturing Settings", {"disable_capacity_planning": 1}):
+			self.f.act("director", "签批通过")
+		frappe.set_user(self.f.users["warehouse"])
+		other_issue = frappe.get_doc(generate(other.name, "Material Transfer for Manufacture", qty=10)).insert().submit()
+		self.f.order = original_order
+		with self.assertRaisesRegex(frappe.ValidationError, "原领料"):
+			self.returned(2, issue=other_issue).insert().submit()
+		self.assertEqual(self.totals(), (10, 0, 10, 0))
+
+	def test_return_transaction_unit_converted_once(self):
+		frappe.set_user("Administrator")
+		unit = self.f.prefix + "-箱"
+		frappe.get_doc({"doctype": "UOM", "uom_name": unit, "must_be_whole_number": 1}).insert()
+		item = frappe.get_doc("Item", self.f.raw)
+		item.append("uoms", {"uom": unit, "conversion_factor": 2})
+		item.save()
+		frappe.set_user(self.f.users["warehouse"])
+		doc = self.returned(1)
+		doc.items[0].uom = unit
+		doc.items[0].conversion_factor = 2
+		doc.insert().submit()
+		self.assertEqual(doc.items[0].transfer_qty, 2)
+		self.assertEqual(self.totals(), (10, 2, 8, 0))
+		generated = self.generated()
+		self.assertEqual((generated.items[0].qty, generated.items[0].conversion_factor, generated.items[0].uom), (8, 1, "Nos"))
+
+	def test_historical_missing_return_reference_requires_review(self):
+		doc = self.returned().insert().submit()
+		# Controlled legacy fixture only: emulate an old posted return without source fields.
+		frappe.db.set_value("Stock Entry Detail", doc.items[0].name, {"against_stock_entry": None, "ste_detail": None})
+		with self.assertRaisesRegex(frappe.ValidationError, "历史退料.*人工核对"):
+			self.generated()
+
+	def test_return_late_failure_rolls_back_native_facts(self):
+		from unittest.mock import patch
+		from erpnext.stock.doctype.stock_entry.stock_entry import StockEntry
+		doc = self.returned().insert()
+		before = self.totals()
+		bins = frappe.as_json(frappe.get_all("Bin", filters={"item_code": self.f.raw}, fields=["*"], order_by="name"))
+		frappe.db.savepoint("b11_return_failure")
+		try:
+			with patch.object(StockEntry, "make_gl_entries", side_effect=frappe.ValidationError("B11受控过账失败")):
+				with self.assertRaisesRegex(frappe.ValidationError, "B11受控过账失败"):
+					doc.submit()
+		finally:
+			frappe.db.rollback(save_point="b11_return_failure")
+		self.assertEqual(self.totals(), before)
+		self.assertEqual(frappe.as_json(frappe.get_all("Bin", filters={"item_code": self.f.raw}, fields=["*"], order_by="name")), bins)
+		self.assertEqual(frappe.db.get_value("Stock Entry", doc.name, "docstatus"), 0)
+		self.assertFalse(frappe.db.exists("Stock Ledger Entry", {"voucher_no": doc.name}))
+
+	def test_generator_revoked_parent_read_denied(self):
+		from frappe.permissions import update_permission_property
+		self.assertTrue(self.generated().items)
+		frappe.set_user("Administrator")
+		update_permission_property("Work Order", self.f.prefix + "-仓管", 0, "read", 0)
+		frappe.set_user(self.f.users["warehouse"])
+		with self.assertRaises(frappe.PermissionError):
+			self.generated()
+
+	def test_serial_batch_allocation_matches_remaining_source_serials(self):
+		from collections import defaultdict
+		from unittest.mock import patch
+		from erpnext.stock.doctype.stock_entry.stock_entry import StockEntry
+		# Valid fact shape: two sources with two serials each in one batch; the first lost s1 to consumption.
+		base = dict(name=self.issue.name, item_code=self.f.raw, warehouse=self.f.wip, s_warehouse=self.f.order_args["source_warehouse"], qty=2, batch_nos={"batch": 2}, stock_uom="Nos")
+		sources = [frappe._dict(item_details=frappe._dict(**base, detail_name="source-1", serial_nos="s1\ns2"), qty=2), frappe._dict(item_details=frappe._dict(**base, detail_name="source-2", serial_nos="s3\ns4"), qty=2)]
+		pool = {(self.f.raw, self.f.wip): frappe._dict(qty=3, batch_details=defaultdict(float, {"batch": 3}), serial_nos=["s2", "s3", "s4"])}
+		allocations = []
+		def capture(row, item, qty):
+			self.assertEqual(sum(row.batches_to_be_consume.values()), qty)
+			self.assertEqual(len(row.serial_nos), qty)
+			allocations.append(qty)
+		with patch("erpnext.stock.doctype.stock_entry.stock_entry.get_material_return_context", return_value=(pool, sources)), patch("erpnext.stock.doctype.stock_entry.stock_entry.get_batchwise_serial_nos", side_effect=lambda item, row: {batch: list(row.serial_nos) for batch in row.batches_to_be_consume}), patch.object(StockEntry, "update_item_in_stock_entry_detail", side_effect=capture):
+			doc = frappe.new_doc("Stock Entry")
+			doc.work_order = self.f.order.name
+			doc.is_return = 1
+			doc.add_transfered_raw_materials_in_items()
+		self.assertEqual(allocations, [1, 2])
+
+	def test_return_and_cancel_preserve_confirmed_reports_and_issue(self):
+		self.prepare_consumption()
+		reports = frappe.get_all("Job Card", filters={"work_order": self.f.order.name, "report_request_id": ["is", "set"]}, pluck="name")
+		self.assertEqual(len(reports), 3)
+		def facts():
+			return frappe.as_json([frappe.get_doc("Job Card", name).as_dict() for name in sorted(reports)] + [frappe.get_doc("Stock Entry", self.issue.name).as_dict()])
+		before = facts()
+		doc = self.returned().insert().submit()
+		self.assertEqual(facts(), before)
+		doc.reload().cancel()
+		self.assertEqual(facts(), before)
+
+
+class TestProductionMaterialReturnSerial(FrappeTestCase):
+	def tearDown(self):
+		frappe.db.rollback()
+		frappe.clear_cache()
+
+	def test_real_serial_batch_sources_after_partial_consumption(self):
+		with change_settings("Stock Settings", {"use_serial_batch_fields": 1}):
+			self.check_real_serial_batch_sources()
+
+	def test_real_serial_batch_bundle_sources_after_partial_consumption(self):
+		with change_settings("Stock Settings", {"use_serial_batch_fields": 0}):
+			self.check_real_serial_batch_sources()
+
+	def check_real_serial_batch_sources(self):
+		from erpnext.manufacturing.doctype.work_order.test_work_order import prepare_data_for_backflush_based_on_materials_transferred, make_wo_order_test_record
+		from erpnext.manufacturing.doctype.work_order.work_order import make_stock_entry as generate, make_stock_return_entry
+		frappe.set_user("Administrator")
+		if not frappe.db.exists("Item Group", "Products"):
+			frappe.get_doc({"doctype": "Item Group", "item_group_name": "Products", "parent_item_group": "All Item Groups"}).insert()
+		prepare_data_for_backflush_based_on_materials_transferred()
+		raw = "Test Batch Serial No WebCam"
+		receipt = make_stock_entry(item_code=raw, target="Stores - _TC", qty=4, basic_rate=100)
+		receipt.reload()
+		batch = get_batch_from_bundle(receipt.items[0].serial_and_batch_bundle)
+		order = make_wo_order_test_record(production_item="Test FG Item with Serial & Batch No Raw Materials", qty=4)
+		first = frappe.get_doc(generate(order.name, "Material Transfer for Manufacture", 2)).insert().submit()
+		second = frappe.get_doc(generate(order.name, "Material Transfer for Manufacture", 2)).insert().submit()
+		first.reload()
+		serial = get_serial_nos_from_bundle(first.items[0].serial_and_batch_bundle)[0]
+		consumed = make_stock_entry(item_code=raw, source=order.wip_warehouse, qty=1, serial_no=serial, batch_no=batch, use_serial_batch_fields=1, do_not_save=True)
+		consumed.purpose = "Material Consumption for Manufacture"
+		consumed.work_order = order.name
+		consumed.from_bom = 1
+		consumed.bom_no = order.bom_no
+		consumed.fg_completed_qty = 1
+		consumed.set_stock_entry_type()
+		with change_settings("Manufacturing Settings", {"material_consumption": 1}):
+			consumed.insert().submit()
+		returned = make_stock_return_entry(order.name)
+		self.assertEqual([row.qty for row in returned.items], [1, 2])
+		self.assertEqual([row.against_stock_entry for row in returned.items], [first.name, second.name])
+		returned.insert().submit()
+		self.assertEqual(frappe.db.get_value("Bin", {"item_code": raw, "warehouse": order.wip_warehouse}, "actual_qty"), 0)
+		order.reload()
+		self.assertEqual((order.required_items[0].transferred_qty, order.required_items[0].returned_qty, order.required_items[0].consumed_qty), (4, 3, 1))

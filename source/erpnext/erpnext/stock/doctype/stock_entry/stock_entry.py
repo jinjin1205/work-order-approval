@@ -199,6 +199,20 @@ class StockEntry(StockController):
 				}
 			)
 
+	def check_if_latest(self):
+		# Take the parent before native Document.check_if_latest locks this Stock Entry.
+		# Fact current-reads later also lock source entries; the opposite order deadlocks cancellation.
+		basis = self
+		if self.docstatus == 2 and not self.is_new():
+			basis = frappe.db.get_value("Stock Entry", self.name, ["work_order", "job_card"], as_dict=True)
+		if basis:
+			work_order = basis.work_order
+			if not work_order and basis.job_card:
+				work_order = frappe.db.get_value("Job Card", basis.job_card, "work_order")
+			if work_order:
+				frappe.db.get_value("Work Order", work_order, "name", for_update=True)
+		return super().check_if_latest()
+
 	def onload(self):
 		self.update_items_from_bin_details()
 
@@ -1286,6 +1300,18 @@ class StockEntry(StockController):
 				)
 
 	def validate_component_and_quantities(self):
+		if self.work_order and self.pro_doc.get("approval_requested_by") and self.purpose == "Material Consumption for Manufacture":
+			available, _ = get_material_return_context(self.work_order, exclude_entry=self.name, for_update=True)
+			consumption = defaultdict(float)
+			for row in self.items:
+				if not row.s_warehouse:
+					continue
+				key = (row.item_code, row.s_warehouse)
+				consumption[key] += flt(row.transfer_qty)
+				if key not in available or flt(consumption[key], row.precision("transfer_qty")) > flt(available[key].qty, row.precision("transfer_qty")):
+					frappe.throw("实际消耗不能超过本工单已领减已退及已耗的余额，请核对退料记录")
+		if self.work_order and self.pro_doc.get("approval_requested_by") and self.is_return:
+			self.validate_material_return_quantities()
 		if self.purpose not in ["Manufacture", "Material Transfer for Manufacture"]:
 			return
 
@@ -1323,6 +1349,33 @@ class StockEntry(StockController):
 					),
 					title=_("Incorrect Component Quantity"),
 				)
+
+	def validate_material_return_quantities(self):
+		if self.purpose != "Material Transfer for Manufacture":
+			return
+		available, sources = get_material_return_context(self.work_order, exclude_entry=self.name, for_update=True)
+		by_source = {row.item_details.detail_name: row for row in sources}
+		by_item = defaultdict(float)
+		by_line = defaultdict(float)
+		for row in self.items:
+			source = by_source.get(row.ste_detail)
+			if not source or row.against_stock_entry != source.item_details.name:
+				frappe.throw("退料必须引用本工单有效的原领料单和原行")
+			item = source.item_details
+			if (row.item_code, row.s_warehouse, row.t_warehouse, row.original_item or row.item_code) != (
+				item.item_code, item.warehouse, item.s_warehouse, item.original_item or item.item_code
+			):
+				frappe.throw("退料物料、仓库方向和计划项必须与原领料行一致")
+			frappe.get_doc("Stock Entry", item.name).check_permission("read")
+			if flt(row.conversion_factor) <= 0 or flt(row.transfer_qty) <= 0:
+				frappe.throw("退料数量和单位换算系数必须大于0")
+			key = (row.item_code, row.s_warehouse)
+			by_item[key] += flt(row.transfer_qty)
+			by_line[row.ste_detail] += flt(row.transfer_qty)
+			precision = row.precision("transfer_qty")
+			maximum = min(flt(available[key].qty, precision), flt(source.qty, precision))
+			if flt(by_item[key], precision) > flt(available[key].qty, precision) or flt(by_line[row.ste_detail], precision) > flt(source.qty, precision):
+				frappe.throw(f"物料{row.item_code}退料超过可退数量；当前原行最多可退{maximum} {row.stock_uom}，请核对原领料单")
 
 	def _validate_no_excess_transfer(self):
 		if self.is_return:
@@ -3351,8 +3404,48 @@ class StockEntry(StockController):
 					)
 
 	def add_transfered_raw_materials_in_items(self) -> None:
-		available_materials = get_available_materials(self.work_order)
+		if self.is_return:
+			available_materials, sources = get_material_return_context(self.work_order)
+			allocated = defaultdict(float)
+			for source in sources:
+				item = source.item_details
+				key = (item.item_code, item.warehouse)
+				pool = available_materials[key]
+				qty = min(source.qty, pool.qty - allocated[key])
+				if flt(qty, frappe.get_precision("Stock Entry Detail", "transfer_qty")) <= 0:
+					continue
+				frappe.get_doc("Stock Entry", item.name).check_permission("read")
+				row = frappe._dict(item_details=item, qty=qty, batch_details=defaultdict(float), serial_nos=[])
+				serials = get_serial_nos(item.serial_no or item.serial_nos)
+				eligible_serials = [serial for serial in serials if serial in pool.serial_nos]
+				if serials:
+					qty = min(qty, len(eligible_serials))
+				if item.batch_no or item.batch_nos:
+					batches = {item.batch_no: item.qty} if item.batch_no else item.batch_nos
+					batch_serials = get_batchwise_serial_nos(item.item_code, frappe._dict(batches_to_be_consume=batches, serial_nos=eligible_serials)) if serials else {}
+					row.batches_to_be_consume = defaultdict(float)
+					remaining = qty
+					for batch, amount in sorted(batches.items()):
+						amount = min(flt(amount), flt(pool.batch_details.get(batch)), remaining)
+						if amount <= 0:
+							continue
+						if serials:
+							selected = batch_serials.get(batch, [])[:cint(amount)]
+							amount = len(selected)
+							row.serial_nos.extend(selected)
+						row.batches_to_be_consume[batch] = amount
+						pool.batch_details[batch] -= amount
+						remaining -= amount
+					qty -= remaining
+				elif serials:
+					row.serial_nos = eligible_serials[:cint(qty)]
+				for serial in row.serial_nos:
+					pool.serial_nos.remove(serial)
+				allocated[key] += qty
+				self.update_item_in_stock_entry_detail(row, item, qty)
+			return
 
+		available_materials = get_available_materials(self.work_order)
 		wo_data = frappe.db.get_value(
 			"Work Order",
 			self.work_order,
@@ -3439,9 +3532,14 @@ class StockEntry(StockController):
 
 		if self.is_return:
 			ste_item_details["to_warehouse"] = item.s_warehouse
+			ste_item_details["against_stock_entry"] = item.name
+			ste_item_details["ste_detail"] = item.detail_name
 
 		if use_serial_batch_fields and not row.serial_no and row.batches_to_be_consume:
+			return_serials = get_batchwise_serial_nos(item.item_code, row) if self.is_return and row.serial_nos else {}
 			for batch_no, batch_qty in row.batches_to_be_consume.items():
+				if self.is_return and row.serial_nos:
+					ste_item_details["serial_no"] = "\n".join(return_serials.get(batch_no, []))
 				ste_item_details.update(
 					{
 						"batch_no": batch_no,
@@ -3604,6 +3702,8 @@ class StockEntry(StockController):
 			for field in [
 				self.subcontract_data.rm_detail_field,
 				"original_item",
+				"against_stock_entry",
+				"ste_detail",
 				"expense_account",
 				"description",
 				"item_name",
@@ -4466,13 +4566,13 @@ def get_items_from_subcontract_order(source_name, target_doc=None):
 	return target_doc
 
 
-def get_available_materials(work_order, stock_entry_doc=None) -> dict:
-	data = get_stock_entry_data(work_order, stock_entry_doc=stock_entry_doc)
+def get_available_materials(work_order, stock_entry_doc=None, *, stock_entry_data=None) -> dict:
+	data = get_stock_entry_data(work_order, stock_entry_doc=stock_entry_doc) if stock_entry_data is None else stock_entry_data
 
 	available_materials = {}
 	for row in data:
 		key = (row.item_code, row.warehouse)
-		if row.purpose != "Material Transfer for Manufacture":
+		if row.purpose != "Material Transfer for Manufacture" or row.is_return:
 			key = (row.item_code, row.s_warehouse)
 
 		if stock_entry_doc and stock_entry_doc.purpose == "Disassemble":
@@ -4488,7 +4588,7 @@ def get_available_materials(work_order, stock_entry_doc=None) -> dict:
 
 		item_data = available_materials[key]
 
-		if row.purpose == "Material Transfer for Manufacture" or (
+		if (row.purpose == "Material Transfer for Manufacture" and not row.is_return) or (
 			stock_entry_doc and stock_entry_doc.purpose == "Disassemble" and row.purpose == "Manufacture"
 		):
 			item_data.qty += row.qty
@@ -4530,7 +4630,33 @@ def get_available_materials(work_order, stock_entry_doc=None) -> dict:
 	return available_materials
 
 
-def get_stock_entry_data(work_order, stock_entry_doc=None):
+def get_material_return_context(work_order, *, exclude_entry=None, for_update=False):
+	"""One native fact source for generation and posting; no separate inventory ledger."""
+	data = get_stock_entry_data(work_order, exclude_entry=exclude_entry, for_update=for_update)
+	available = get_available_materials(work_order, stock_entry_data=data)
+	sources = {
+		row.detail_name: frappe._dict(item_details=row, qty=row.qty)
+		for row in data if row.purpose == "Material Transfer for Manufacture" and not row.is_return
+	}
+	for row in data:
+		if row.purpose != "Material Transfer for Manufacture" or not row.is_return:
+			continue
+		source = sources.get(row.ste_detail)
+		if not source or row.against_stock_entry != source.item_details.name:
+			frappe.throw("历史退料缺少有效原领料引用，请人工核对；不能自动猜测原单")
+		item = source.item_details
+		if (row.item_code, row.s_warehouse, row.warehouse, row.original_item or row.item_code) != (
+			item.item_code, item.warehouse, item.s_warehouse, item.original_item or item.item_code
+		):
+			frappe.throw("历史退料与原领料的物料或仓库不一致，请人工核对")
+		source.qty -= row.qty
+	precision = frappe.get_precision("Stock Entry Detail", "transfer_qty")
+	if any(flt(row.qty, precision) < 0 for row in (*available.values(), *sources.values())):
+		frappe.throw("本工单可退数量为负，请核对原领料、退料和实际消耗")
+	return available, list(sources.values())
+
+
+def get_stock_entry_data(work_order, stock_entry_doc=None, *, exclude_entry=None, for_update=False):
 	from erpnext.stock.doctype.serial_and_batch_bundle.serial_and_batch_bundle import (
 		get_voucher_wise_serial_batch_from_bundle,
 	)
@@ -4545,7 +4671,11 @@ def get_stock_entry_data(work_order, stock_entry_doc=None):
 			stock_entry_detail.item_name,
 			stock_entry_detail.original_item,
 			stock_entry_detail.item_code,
-			stock_entry_detail.qty,
+			stock_entry_detail.transfer_qty.as_("qty"),
+			stock_entry_detail.name.as_("detail_name"),
+			stock_entry_detail.against_stock_entry,
+			stock_entry_detail.ste_detail,
+			stock_entry.is_return,
 			(stock_entry_detail.t_warehouse).as_("warehouse"),
 			(stock_entry_detail.s_warehouse).as_("s_warehouse"),
 			stock_entry_detail.description,
@@ -4563,7 +4693,7 @@ def get_stock_entry_data(work_order, stock_entry_doc=None):
 			& (stock_entry.work_order == work_order)
 			& (stock_entry.docstatus == 1)
 		)
-		.orderby(stock_entry.creation, stock_entry_detail.item_code, stock_entry_detail.idx)
+		.orderby(stock_entry.posting_date, stock_entry.posting_time, stock_entry.name, stock_entry_detail.idx, stock_entry_detail.name)
 	)
 
 	if stock_entry_doc and stock_entry_doc.purpose == "Disassemble":
@@ -4590,6 +4720,10 @@ def get_stock_entry_data(work_order, stock_entry_doc=None):
 
 		data = data.where(stock_entry_detail.s_warehouse.isnotnull())
 
+	if exclude_entry:
+		data = data.where(stock_entry.name != exclude_entry)
+	if for_update:
+		data = data.for_update()
 	data = data.run(as_dict=1)
 
 	if not data:
@@ -4600,7 +4734,7 @@ def get_stock_entry_data(work_order, stock_entry_doc=None):
 		bundle_data = get_voucher_wise_serial_batch_from_bundle(voucher_no=voucher_nos)
 		for row in data:
 			key = (row.item_code, row.warehouse, row.name)
-			if row.purpose != "Material Transfer for Manufacture":
+			if row.purpose != "Material Transfer for Manufacture" or row.is_return:
 				key = (row.item_code, row.s_warehouse, row.name)
 
 			if stock_entry_doc and stock_entry_doc.purpose == "Disassemble":

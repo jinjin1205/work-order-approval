@@ -141,7 +141,7 @@
     "source": ".development/repos/erpnext/erpnext/manufacturing/doctype/work_order/work_order.py",
     "public_path": "source/erpnext/erpnext/manufacturing/doctype/work_order/work_order.py",
     "treatment": "unchanged",
-    "source_sha256": "b75a292edaee82d57125006af3130e28515547340f2b055d8e876bbd395293d7"
+    "source_sha256": "57ad23b120a94232f8cf866189bf97849da47fc72b93081801a9b7d5a773f061"
   },
   {
     "source": ".development/repos/erpnext/erpnext/manufacturing/doctype/work_order_item/work_order_item.py",
@@ -183,13 +183,13 @@
     "source": ".development/repos/erpnext/erpnext/stock/doctype/stock_entry/stock_entry.py",
     "public_path": "source/erpnext/erpnext/stock/doctype/stock_entry/stock_entry.py",
     "treatment": "unchanged",
-    "source_sha256": "8a42a1bee661ec4081862b460122e76b136b4707caf5fe07986748b95747783b"
+    "source_sha256": "c463557719d68860ec4bb15bc50679d2e16fbc5d98e898f70016c6dbb0ce7d7f"
   },
   {
     "source": ".development/repos/erpnext/erpnext/stock/doctype/stock_entry/test_stock_entry.py",
     "public_path": "source/erpnext/erpnext/stock/doctype/stock_entry/test_stock_entry.py",
     "treatment": "unchanged",
-    "source_sha256": "5c81e4750f5e7892f7b9721f2935386b47464fd59566ef43d48cb48b232ee183"
+    "source_sha256": "d95770145e8e20661fca6c007f107b9737782014fc29cfcd5814c1ec6940d03d"
   },
   {
     "source": ".development/repos/erpnext/erpnext/translations/zh.csv",
@@ -202,6 +202,18 @@
     "public_path": "source/erpnext/license.txt",
     "treatment": "unchanged",
     "source_sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+  },
+  {
+    "source": "evidence/B11/return-20261031/implementation.patch",
+    "public_path": "evidence/B11/return-20261031/implementation.patch",
+    "treatment": "unchanged",
+    "source_sha256": "906010f517f003af5311be474ec0927184690d392c31cd5a864b0581455f4e51"
+  },
+  {
+    "source": "evidence/B11/return-20261031/bounded-change.patch",
+    "public_path": "evidence/B11/return-20261031/bounded-change.patch",
+    "treatment": "unchanged",
+    "source_sha256": "3a761321fb60fec175276759c59bab6f0a7faa72540a1af269f3f2f6deb18c48"
   },
   {
     "source": "evidence/B10/issue-20261031/implementation.patch",
@@ -453,7 +465,7 @@
     "source": "docs/任务卡/02-生产与物料闭环.md",
     "public_path": "docs/任务卡/02-生产与物料闭环.md",
     "treatment": "personal paths/runtime identifiers removed",
-    "source_sha256": "121af2a2dde987274e257bf42251c8010f5c96c437a993e547e82a096345e7f5"
+    "source_sha256": "a64fd4824894f82f38c34ccaae92f2c41be47ee7bebbc1bc0428397aa28be6d1"
   },
   {
     "source": "docs/任务卡/03-AI与交付.md",
@@ -471,7 +483,7 @@
     "source": "docs/开发TODO.md",
     "public_path": "docs/开发TODO.md",
     "treatment": "unchanged",
-    "source_sha256": "6dd5f0bd93f6cb6220a77c16a71d13066f3f851a9e2d1ed6d611a30cb6fbe4cf"
+    "source_sha256": "5ea6f0bd564f23cd88f5ca745b59bbf8a000ed41f65af5900267ad769fd44a35"
   },
   {
     "source": "docs/验收样例.md",
@@ -670,6 +682,12 @@
     "public_path": "evidence/B10/run-record.md",
     "treatment": "unchanged",
     "source_sha256": "096f8106fb93445d6fc2e448f034b821c5f4e1a9c60dfc9349110fc170ccf985"
+  },
+  {
+    "source": "evidence/B11/return-20261031/run-record.md",
+    "public_path": "evidence/B11/return-20261031/run-record.md",
+    "treatment": "unchanged",
+    "source_sha256": "62c494e3623e986694259830adc35db2ec155549f526fffc7346f5dfad848fec"
   },
   {
     "source": "evidence/B14/final-review.md",
@@ -921,7 +939,7 @@
     "source": "evidence/R07/quantity-return.md",
     "public_path": "evidence/R07/quantity-return.md",
     "treatment": "unchanged",
-    "source_sha256": "58a6da5dda570f018f69b3044f8ca8eaeeeeff3aefde9f2ceb79f0663fbb75a9"
+    "source_sha256": "da9bcf0c63cf12d7f90ec12877317e8575c4ff3735d6d66379b42b5821530e77"
   },
   {
     "source": "evidence/R07/report-concurrency.md",
@@ -969,19 +987,19 @@
     "source": "openspec/changes/b08-followup-20261028/design.md",
     "public_path": "openspec/changes/b08-followup-20261028/design.md",
     "treatment": "unchanged",
-    "source_sha256": "802b44d339794b6d33d6b12e0011228e1b389ba009a58538cec5d43aaf81e146"
+    "source_sha256": "a290e7fd75479b7b2c9b0412135a951f7d4baccce41075a3358133631a3521db"
   },
   {
     "source": "openspec/changes/b08-followup-20261028/proposal.md",
     "public_path": "openspec/changes/b08-followup-20261028/proposal.md",
     "treatment": "unchanged",
-    "source_sha256": "cd9e98ebcd026457452ea317c9a42d393ab7c9529507e2c0b302432cc96f3fa6"
+    "source_sha256": "8ddc4b8e2d524c70d4501fc06fe7627f0018d06a53d58165bf74e06b6d49cdab"
   },
   {
     "source": "openspec/changes/b08-followup-20261028/tasks.md",
     "public_path": "openspec/changes/b08-followup-20261028/tasks.md",
     "treatment": "unchanged",
-    "source_sha256": "dcab420670bf42327236c870dd4101dac5a8b3291527ce12ca7c5be715708ac1"
+    "source_sha256": "993e57ba8e1a0ae66a897e8c17f12475efc96ad9afb38d4c4d90201b8b780c34"
   },
   {
     "source": "openspec/changes/b08-followup-20261028/.openspec.yaml",
@@ -1323,13 +1341,13 @@
     "source": ".publication/export_public.py",
     "public_path": ".publication/export_public.py",
     "treatment": "unchanged",
-    "source_sha256": "0e54d8a118edc5688f3b1393a007d54dc4c3d6749b3060e7473ca60fa266d3ef"
+    "source_sha256": "73b65fb78a5f6d9887099d53dad2623a2d1b3144746704b077e1ccd8fc91148a"
   },
   {
     "source": ".publication/check_public.py",
     "public_path": ".publication/check_public.py",
     "treatment": "unchanged",
-    "source_sha256": "f94324afabfe0b059f889c5cad81ce2b3791072084d2df28354b6851b1705538"
+    "source_sha256": "04204bd8f3ea79bcd1935897009f485f7d995dbff258fec6d40912ac7555ef19"
   },
   {
     "source": ".publication/verify_b08.py",
@@ -1545,7 +1563,7 @@
     "source": ".development/checks/b06_tasks_tests.py",
     "public_path": ".development/checks/b06_tasks_tests.py",
     "treatment": "unchanged",
-    "source_sha256": "6aa59ce362eca923b538a447e2f5e0df6786082ea6c817902b7841fa97bf9fda"
+    "source_sha256": "661a75bc28e0affab6ed9c6562f8bd7487e1f4847baf99d540b3b6f94326f4b9"
   },
   {
     "source": ".development/checks/b06_tasks_ui_fixture.py",
@@ -1773,13 +1791,37 @@
     "source": ".development/checks/b10_issue_fixture.py",
     "public_path": ".development/checks/b10_issue_fixture.py",
     "treatment": "unchanged",
-    "source_sha256": "85e493b63a65280d416577f2833d37b7a7ea542b9001e6afda7baa080f849e8f"
+    "source_sha256": "30b0d5ed125206272520b38d2cca888f04a791037793620ecaeb3265ee17cd3f"
   },
   {
     "source": ".development/checks/b10_issue_race.py",
     "public_path": ".development/checks/b10_issue_race.py",
     "treatment": "unchanged",
     "source_sha256": "553f865e28409c58152a172952f606f4d77d29bd4bf4f245fa894e8ae5b49625"
+  },
+  {
+    "source": ".development/checks/b11_lock_order_race.py",
+    "public_path": ".development/checks/b11_lock_order_race.py",
+    "treatment": "unchanged",
+    "source_sha256": "59f4743fb13f55e8f4d1242512e646711942b6e8454f06588709fa67cffb80ae"
+  },
+  {
+    "source": ".development/checks/b11_return_fixture.py",
+    "public_path": ".development/checks/b11_return_fixture.py",
+    "treatment": "unchanged",
+    "source_sha256": "7007de71b05bad5aefc30ecca6a290b4099576652ec69cfc513d154dbdcf7ec7"
+  },
+  {
+    "source": ".development/checks/b11_return_race.py",
+    "public_path": ".development/checks/b11_return_race.py",
+    "treatment": "unchanged",
+    "source_sha256": "0436083ffaf466bdd39ab3d83c5bc88567751735d21c8c99f08e7a061ddc0adc"
+  },
+  {
+    "source": ".development/checks/b11_source_check.py",
+    "public_path": ".development/checks/b11_source_check.py",
+    "treatment": "unchanged",
+    "source_sha256": "1e3b59ced5c802f229c58fc55920abd714c9560417c1b3781b5c36a81c87cb15"
   },
   {
     "source": ".development/checks/b14_boundary_probe.py",
@@ -2112,6 +2154,12 @@
     "source_sha256": "4b6b3161202d65679b5843b29fd29d94763c76e961ec9f2264057bafe212abb8"
   },
   {
+    "source": ".development/checks/b11-return-source-manifest.json",
+    "public_path": ".development/checks/b11-return-source-manifest.json",
+    "treatment": "unchanged",
+    "source_sha256": "157f910e857fed0be10d50cd69a7b2df3dc1b56b3b1808cf9f088e29c0a76c8f"
+  },
+  {
     "source": ".development/checks/b14-p0-source-manifest.json",
     "public_path": ".development/checks/b14-p0-source-manifest.json",
     "treatment": "unchanged",
@@ -2284,6 +2332,48 @@
     "public_path": "evidence/R05/r02-probe-attempt5.py",
     "treatment": "unchanged",
     "source_sha256": "bebd418f53e027db69fc9888dfc4bf01fc162aab71394832e1e2572c6d9cd774"
+  },
+  {
+    "source": "evidence/B11/return-20261031/source-manifest.json",
+    "public_path": "evidence/B11/return-20261031/source-manifest.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "157f910e857fed0be10d50cd69a7b2df3dc1b56b3b1808cf9f088e29c0a76c8f"
+  },
+  {
+    "source": "evidence/B11/return-20261031/test-batches.json",
+    "public_path": "evidence/B11/return-20261031/test-batches.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "d4d2024cc82fb4173c6fd82e9e25591dfa819864a306947db345369792fa42a2"
+  },
+  {
+    "source": "evidence/B11/return-20261031/old-row-audit.json",
+    "public_path": "evidence/B11/return-20261031/old-row-audit.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "169b7f711cb02103750c1e35901d6fb6922ba68922ea14cbc6d2092b6ed4f320"
+  },
+  {
+    "source": "evidence/B11/return-20261031/acceptance-summary.json",
+    "public_path": "evidence/B11/return-20261031/acceptance-summary.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "a196b5a16277a70782abc28efc5f33eaa9e9c749171ba6cbed00923335b6ea5a"
+  },
+  {
+    "source": "evidence/B11/return-20261031/concurrency-summary.json",
+    "public_path": "evidence/B11/return-20261031/concurrency-summary.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "c82673bf8bab0ac2541ea4cc59b9c2a58f9070eeb24aeea6790ab5efa684a23f"
+  },
+  {
+    "source": "evidence/B11/return-20261031/test-runtime.json",
+    "public_path": "evidence/B11/return-20261031/test-runtime.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "5173f51097320e27dfaf1997ee9e114e1195fb8ec469dfef7a87b61fa25eb1d1"
+  },
+  {
+    "source": "evidence/B11/return-20261031/ui-runtime.json",
+    "public_path": "evidence/B11/return-20261031/ui-runtime.json",
+    "treatment": "allowlisted metadata; personal paths removed",
+    "source_sha256": "5173f51097320e27dfaf1997ee9e114e1195fb8ec469dfef7a87b61fa25eb1d1"
   },
   {
     "source": "evidence/发布/2026-10-31-5ffe980-remote.json",

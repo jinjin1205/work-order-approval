@@ -1,0 +1,192 @@
+{
+  "old_rows_unchanged": true,
+  "tables": {
+    "Work Order": {
+      "old_rows": 40,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 4
+    },
+    "Work Order Item": {
+      "old_rows": 37,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 4
+    },
+    "Work Order Operation": {
+      "old_rows": 101,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 12
+    },
+    "Job Card": {
+      "old_rows": 112,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 15
+    },
+    "Job Card Time Log": {
+      "old_rows": 34,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 3
+    },
+    "Stock Entry": {
+      "old_rows": 16,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 24
+    },
+    "Stock Entry Detail": {
+      "old_rows": 16,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 24
+    },
+    "Stock Ledger Entry": {
+      "old_rows": 21,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 36
+    },
+    "Bin": {
+      "old_rows": 18,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 12
+    },
+    "GL Entry": {
+      "old_rows": 14,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 16
+    },
+    "Repost Item Valuation": {
+      "old_rows": 2,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 4
+    },
+    "Workflow Action": {
+      "old_rows": 118,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 16
+    },
+    "Version": {
+      "old_rows": 346,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 85
+    },
+    "Comment": {
+      "old_rows": 387,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 27
+    },
+    "BOM": {
+      "old_rows": 8,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 4
+    },
+    "BOM Item": {
+      "old_rows": 8,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 4
+    },
+    "BOM Operation": {
+      "old_rows": 18,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 12
+    },
+    "BOM Explosion Item": {
+      "old_rows": 8,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 4
+    },
+    "Item": {
+      "old_rows": 33,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 8
+    },
+    "Item Default": {
+      "old_rows": 35,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 8
+    },
+    "User": {
+      "old_rows": 48,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 3
+    },
+    "Has Role": {
+      "old_rows": 749,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 7
+    },
+    "Role": {
+      "old_rows": 75,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 1
+    },
+    "Custom DocPerm": {
+      "old_rows": 236,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 13
+    },
+    "User Permission": {
+      "old_rows": 115,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 23
+    },
+    "Employee": {
+      "old_rows": 15,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 1
+    },
+    "Workstation": {
+      "old_rows": 16,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 4
+    },
+    "Quality Inspection": {
+      "old_rows": 2,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 0
+    },
+    "Quality Inspection Reading": {
+      "old_rows": 0,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 0
+    },
+    "File": {
+      "old_rows": 4,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 0
+    },
+    "DocShare": {
+      "old_rows": 46,
+      "missing": 0,
+      "changed": 0,
+      "new_rows": 3
+    }
+  },
+  "scope": "31 preexisting tables captured before new B11 fixtures; added B11 rows excluded from old-row comparison"
+}
